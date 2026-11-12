@@ -81,7 +81,7 @@ function load(pages, calls) {
       'pageSize',
       'createError',
       'text',
-      'readMatchingMenuDishes',
+      'readMatchingMenuItems',
       'matchesFoodSearch',
       'getRuntimeFirestore',
     ]
@@ -283,14 +283,14 @@ const serviceSections = compileFunction(
   stripTypeScriptTypes(projectionSource) + '; return serviceSections',
   ['readOpeningHoursStatus', ...Object.keys(pricingHelpers)]
 )(readOpeningHoursStatus, ...Object.values(pricingHelpers))
-const sourceMenu = (id, label, dishIds, offering = 'evening') => ({
+const sourceMenu = (id, label, itemIds, offering = 'evening') => ({
   manifest: {
     content: {
       sections: [
         {
           id: 'section',
           label,
-          items: dishIds.map((dishId) => ({
+          items: itemIds.map((dishId) => ({
             id: `${id}-${dishId}`,
             dishId,
             name: dishId,

@@ -27,7 +27,7 @@ export async function loadMiseboxProductDemo(
     import('fireux-kitchens/runtime/kitchen/demo/presentation/index'),
     import('fireux-businesses/runtime/business/demo/business/scenarios'),
     import('fireux-suppliers/runtime/supplier/demo/scenarios'),
-    import('fireux-kitchens/runtime/kitchen/utils/demo-dishes'),
+    import('fireux-kitchens/runtime/kitchen/utils/demo-items'),
     import('fireux-kitchens/runtime/kitchen/utils/demo-suppliers'),
     import('fireux-kitchens/runtime/kitchen/utils/demo-finance'),
     import('fireux-kitchens/runtime/kitchen/utils/kitchen-readers'),
@@ -77,7 +77,7 @@ export async function loadMiseboxProductDemo(
   const workspaceMenuCascadeById = new Map(
     workspaceMenuCascade.menus.map((menu) => [menu.id, menu])
   )
-  const workspaceDishCascadeById = new Map(
+  const workspaceItemCascadeById = new Map(
     workspaceMenuCascade.dishes.map((dish) => [dish.id, dish])
   )
   const workspaceRecipeCascadeById = new Map(
@@ -113,7 +113,7 @@ export async function loadMiseboxProductDemo(
     kitchenSpineModule,
     loadIngredientRoots,
   })
-  const workspaceDishOperation = dishesModule.buildKitchenDemoDishesOperation({
+  const workspaceItemOperation = dishesModule.buildKitchenDemoItemsOperation({
     scenario: workspaceScenario,
     supplierScenarios: supplierDemoWorld,
     ingredientRoots: workspaceIngredientRoots,
@@ -170,7 +170,7 @@ export async function loadMiseboxProductDemo(
   }
 
   const workspaceMenus = workspaceScenario.menus.map((menu) => {
-    const linkedDishIds = menu.menuSections
+    const linkedItemIds = menu.menuSections
       .filter(({ section }) => section.status === 'active')
       .sort((left, right) => left.section.sort_order - right.section.sort_order)
       .flatMap(({ items }) =>
@@ -180,7 +180,7 @@ export async function loadMiseboxProductDemo(
       )
       .map((item) => String(item.dish_id || '').trim())
       .filter(Boolean)
-    const previewDish = linkedDishIds
+    const previewItem = linkedItemIds
       .map((dishId) => menu.dishes.find((dish) => dish.id === dishId))
       .find((dish) => Boolean(dish?.image))
 
@@ -188,10 +188,10 @@ export async function loadMiseboxProductDemo(
       id: menu.kitchenMenu.id,
       defaultInService:
         workspaceMenuCascadeById.get(menu.kitchenMenu.id)?.inService === true,
-      imageAlt: previewDish
-        ? `${previewDish.name} from ${menu.kitchenMenu.name}`
+      imageAlt: previewItem
+        ? `${previewItem.name} from ${menu.kitchenMenu.name}`
         : menu.kitchenMenu.name,
-      imageUrl: String(previewDish?.image || '').trim(),
+      imageUrl: String(previewItem?.image || '').trim(),
       mode: workspaceMenuCascadeById.get(menu.kitchenMenu.id)?.mode ?? 'off',
       name: menu.kitchenMenu.name,
     }
@@ -214,12 +214,12 @@ export async function loadMiseboxProductDemo(
         : amount.unit
     return `${amount.quantity} ${unit}`
   }
-  const workspaceDishes = workspaceDishOperation.items
+  const workspaceItems = workspaceItemOperation.items
     .map((item) => {
       const { dish, finance, spec } = item
       if (!spec || !finance) {
         throw new Error(
-          `Product Demo Dish projection is incomplete: ${dish.id}`
+          `Product Demo Item projection is incomplete: ${dish.id}`
         )
       }
       const price =
@@ -230,7 +230,7 @@ export async function loadMiseboxProductDemo(
         id: dish.id,
         imageUrl: String(dish.image || '').trim(),
         kind: dish.item_kind === 'drink' ? 'Drink' : 'Food',
-        menuIds: [...(workspaceDishCascadeById.get(dish.id)?.menuIds ?? [])],
+        menuIds: [...(workspaceItemCascadeById.get(dish.id)?.menuIds ?? [])],
         name: dish.name || dish.id,
         priceLabel: price === null ? '' : workspacePriceFormatter.format(price),
         finance: finance
@@ -277,15 +277,14 @@ export async function loadMiseboxProductDemo(
     dataSource: productDemoDataSource,
     workspace: {
       kitchenId: workspaceScenario.kitchen.id,
-      kitchenName:
-        workspaceKitchenPill.title,
+      kitchenName: workspaceKitchenPill.title,
       kitchenPill: {
         title: workspaceKitchenPill.title,
         subtitle: workspaceKitchenPill.subtitle,
         imageUrl: workspaceKitchenPill.imageUrl,
         imageShade: workspaceKitchenPill.imageShade,
       },
-      dishes: workspaceDishes,
+      dishes: workspaceItems,
       ingredients: workspaceIngredients,
       finance: {
         periods: workspaceFinancePeriods,
@@ -309,9 +308,7 @@ export async function loadMiseboxProductDemo(
     },
     menu: {
       kitchenName: menuManifest.presentation.kitchenName,
-      kitchenTagline: String(
-        menuScenario.place.tagline || ''
-      ).trim(),
+      kitchenTagline: String(menuScenario.place.tagline || '').trim(),
       manifest: menuManifest,
       placeLabel: String(
         menuScenario.place.short_address ||
@@ -328,8 +325,7 @@ export async function loadMiseboxProductDemo(
       kitchens: kioskKitchens,
     },
     service: {
-      kitchenName:
-        serviceScenario.place.name,
+      kitchenName: serviceScenario.place.name,
     },
   }
 }

@@ -136,9 +136,9 @@ test('Prep create captures seed inputs, invalidates pre-dispatch continuations a
     }
 })
 const specification = load(
-  '../../runtime/kitchen/utils/dish-specification.ts',
+  '../../runtime/kitchen/utils/item-specification.ts',
   { isFirestoreDocumentId },
-  '({emptyDishSpecification,validateDishSpecification})'
+  '({emptyItemSpecification,validateItemSpecification})'
 )
 test('Recipe Prep button saves only Prep and snapshots quantity for its local unsaved reference', async () => {
   for (const changed of [false, true]) {
@@ -191,18 +191,18 @@ test('Recipe Prep button saves only Prep and snapshots quantity for its local un
     assert.equal(api.message.value, '')
   }
 })
-test('Dish Prep button ignores stale failure after focus round trip', async () => {
+test('Item Prep button ignores stale failure after focus round trip', async () => {
   const h = scope(),
     dishId = ref('dish'),
     pending = deferred()
-  const useDishEditorScope = load(
-    '../../runtime/kitchen/composables/dish/useDishEditorScope.ts',
+  const useItemEditorScope = load(
+    '../../runtime/kitchen/composables/item/useItemEditorScope.ts',
     {
       watch,
       onBeforeUnmount: () => {},
       useAuth: () => ({ currentUser: h.currentUser }),
     },
-    'useDishEditorScope'
+    'useItemEditorScope'
   )
   const api = load(
     '../../runtime/kitchen/components/Menu/Items/Spec.vue',
@@ -210,7 +210,7 @@ test('Dish Prep button ignores stale failure after focus round trip', async () =
       ref,
       computed,
       ...specification,
-      useDishEditorScope,
+      useItemEditorScope,
       useRoute: () => ({ query: {} }),
       useKitchenWorkspace: () => ({ id: h.selectedId, outcome: ref('ready') }),
       useRouteParam: () => dishId,
@@ -232,9 +232,9 @@ test('Dish Prep button ignores stale failure after focus round trip', async () =
       useKitchenPrepItemCreate: () => ({
         createPrepItem: () => pending.promise,
       }),
-      useDishUpdate: () => ({
-        updateDish: () => {
-          throw Error('Dish save remains separate')
+      useItemUpdate: () => ({
+        updateItem: () => {
+          throw Error('Item save remains separate')
         },
       }),
     },

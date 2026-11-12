@@ -83,7 +83,7 @@ const notes: Record<
     references: {
       Component: 'Menu/Items/Index.vue — food or drink context.',
       Reader:
-        'useKitchenDishCollection — live dishes for the selected Kitchen.',
+        'useKitchenItemCollection — live dishes for the selected Kitchen.',
       Classification: 'item_kind separates food and drink records.',
     },
   },

@@ -17,7 +17,7 @@
     <FireCopyError v-if="error" :message="String(error)" />
     <p v-else-if="pending" role="status">Loading sections…</p>
     <template v-else>
-      <DishMenuSection
+      <ItemMenuSection
         v-for="section in sections"
         :key="section.id"
         :menu="menu"
@@ -32,8 +32,8 @@ import { useMenuRecordNavigation } from '../../../composables/workspace/menus/us
 const { rememberView } = useMenuRecordNavigation()
 import { computed, reactive, watch } from 'vue'
 import type { Menu } from '../../../../menu/models/menu.model'
-import DishMenuSection from './MenuSection.vue'
-import { useKitchenItemDetail } from '../../../composables/dish/useKitchenItemDetailContext'
+import ItemMenuSection from './MenuSection.vue'
+import { useKitchenItemDetail } from '../../../composables/item/useKitchenItemDetailContext'
 import { useMenuSectionCollection } from '../../../../menu/composables/useMenuSectionCollection'
 const props = defineProps<{ menu: Menu }>()
 const { storageKitchenId, databaseId, rootCollection } = useKitchenItemDetail()

@@ -1,7 +1,7 @@
 <template>
   <div>
     <WorkspaceKitchenResearchEvidence
-      capability="Dishes"
+      capability="Items"
       base-path="/workspace/kitchen/menu/items/search-demand"
       :demand="demand"
     />
@@ -9,9 +9,9 @@
 </template>
 
 <script setup lang="ts">
-import { kitchenDishesSearchDemand } from '../../../../../../kitchen/models/dishes-search-demand'
+import { kitchenItemsSearchDemand } from '../../../../../../kitchen/models/items-search-demand'
 
-const demand = kitchenDishesSearchDemand
+const demand = kitchenItemsSearchDemand
 
 definePageMeta({
   layout: false,

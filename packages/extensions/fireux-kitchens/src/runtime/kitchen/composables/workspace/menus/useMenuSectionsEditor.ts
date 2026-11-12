@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorScope'
 import { useState } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenDishCollection } from '../../useKitchenDishCollection'
+import { useKitchenItemCollection } from '../../useKitchenItemCollection'
 import { useKitchenMenuRecordContext } from './useKitchenMenuRecordContext'
 
 export function useMenuSectionsEditor() {
@@ -34,7 +34,7 @@ export function useMenuSectionsEditor() {
   const previewKitchenId = computed(() =>
     daily.value ? storageKitchenId.value : ''
   )
-  const previewDishes = useKitchenDishCollection(previewKitchenId, {
+  const previewItems = useKitchenItemCollection(previewKitchenId, {
     kitchenCollectionPath: rootCollection,
     databaseId,
   })
@@ -273,7 +273,7 @@ export function useMenuSectionsEditor() {
   }
   return {
     menu,
-    previewDishes,
+    previewItems,
     menuSlug,
     sectionsPending,
     sectionsError,

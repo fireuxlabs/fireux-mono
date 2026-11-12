@@ -24,7 +24,7 @@ const props = defineProps<{ selected: boolean }>()
 const cards = computed(() => [
   {
     title: 'Menus',
-    description: 'Dishes, prices and what your guests see.',
+    description: 'Items, prices and what your guests see.',
     icon: 'i-lucide-notebook-text',
     capability: 'menu/menus',
     to: '/operations/menus',

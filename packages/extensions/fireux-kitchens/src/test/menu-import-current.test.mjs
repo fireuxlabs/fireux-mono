@@ -3,7 +3,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { dishPricingHelpers } from './helpers/dish-pricing.mjs'
+import { itemPricingHelpers } from './helpers/item-pricing.mjs'
 
 function fixture() {
   const records = new Map([
@@ -67,7 +67,7 @@ function fixture() {
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export /gm, '')
   const dependencies = {
-    ...dishPricingHelpers,
+    ...itemPricingHelpers,
     getRuntimeFirestore: () => db,
     readString: (value) => (typeof value === 'string' ? value.trim() : ''),
   }
@@ -78,7 +78,7 @@ function fixture() {
   return { records, reads, read: () => read('kitchens/k', 'm') }
 }
 
-test('import comparison resolves all normal terms from Dish and ignores stale placement prices', async () => {
+test('import comparison resolves all normal terms from Item and ignores stale placement prices', async () => {
   const f = fixture()
   Object.assign(f.records.get('kitchens/k/menus/m/sections/s/items/i'), {
     price: 99,
@@ -105,7 +105,7 @@ test('canonical placements need no copied prices, and an explicit zero remains z
   assert.equal((await f.read()).sections[0].items[0].price, 0)
 })
 
-test('archived sections and entries are excluded before Dish pricing validation', async () => {
+test('archived sections and entries are excluded before Item pricing validation', async () => {
   const f = fixture()
   f.records.set('kitchens/k/menus/m/sections/old', {
     label: 'Archived',
@@ -126,10 +126,10 @@ test('archived sections and entries are excluded before Dish pricing validation'
   assert.ok(!f.reads.includes('kitchens/k/menus/m/sections/old/items'))
 })
 
-for (const problem of ['missing Dish', 'missing price', 'invalid terms']) {
+for (const problem of ['missing Item', 'missing price', 'invalid terms']) {
   test(`import comparison rejects ${problem} instead of inventing a zero price`, async () => {
     const f = fixture()
-    if (problem === 'missing Dish') f.records.delete('kitchens/k/dishes/d')
+    if (problem === 'missing Item') f.records.delete('kitchens/k/dishes/d')
     if (problem === 'missing price')
       delete f.records.get('kitchens/k/dishes/d').price
     if (problem === 'invalid terms')
@@ -138,13 +138,13 @@ for (const problem of ['missing Dish', 'missing price', 'invalid terms']) {
   })
 }
 
-test('meal-deal entries fail explicitly rather than being compared as zero-priced Dishes', async () => {
+test('meal-deal entries fail explicitly rather than being compared as zero-priced Items', async () => {
   const f = fixture()
   f.records.set('kitchens/k/menus/m/sections/s/items/i', {
     promotion_id: 'meal',
     status: 'active',
   })
-  await assert.rejects(f.read(), /Import comparison supports Dish entries only/)
+  await assert.rejects(f.read(), /Import comparison supports Item entries only/)
 })
 
 test('a missing Menu retains its missing outcome without reading children', async () => {

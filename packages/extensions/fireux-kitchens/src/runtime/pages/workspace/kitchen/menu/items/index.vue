@@ -3,8 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenDishesContext } from '../../../../../kitchen/composables/workspace/dishes/useKitchenDishesContext'
-provideKitchenDishesContext('all')
+import { provideKitchenItemsContext } from '../../../../../kitchen/composables/workspace/items/useKitchenItemsContext'
+provideKitchenItemsContext('all')
 
 definePageMeta({
   layout: false,

@@ -69,7 +69,7 @@ export function foodVenueGroups(
       descriptions: [
         ...new Set(entries.map((menu) => menu.description).filter(Boolean)),
       ],
-      matchingDishes: uniqueById(
+      matchingItems: uniqueById(
         entries.flatMap((menu) => menu.matching_dishes || [])
       ),
       actions: foodPortalServices

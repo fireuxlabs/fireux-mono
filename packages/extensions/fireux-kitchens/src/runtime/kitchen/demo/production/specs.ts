@@ -1,9 +1,9 @@
 import { deanosKitchenDemoCoreSpecs } from './specs/core'
 import { deanosKitchenDemoPartySpecs } from './specs/party'
 import { deanosKitchenDemoSeasonalSpecs } from './specs/seasonal'
-import type { KitchenDemoDishSpec } from './types'
+import type { KitchenDemoItemSpec } from './types'
 
-export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
+export const deanosKitchenDemoSpecs: KitchenDemoItemSpec[] = [
   ...deanosKitchenDemoCoreSpecs,
   ...deanosKitchenDemoPartySpecs,
   ...deanosKitchenDemoSeasonalSpecs,

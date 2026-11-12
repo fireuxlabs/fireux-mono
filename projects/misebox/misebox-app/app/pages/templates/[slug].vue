@@ -35,7 +35,7 @@ import {
 } from 'fireux-misebox/runtime/content/template-one-fixtures'
 import { useTemplateOneProductDemo } from '~/composables/product-demo/useTemplateOneProductDemo'
 import type { MenuDetailPayload } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
-import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/kitchen/server/dishes/flagship-projection'
+import type { KitchenFlagshipItemResult } from 'fireux-kitchens/runtime/kitchen/server/items/flagship-projection'
 import type { TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/models/template-one'
 import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/utils/media/misebox'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
@@ -71,7 +71,7 @@ const [{ data: flagship }, { data: menuResult }] = await Promise.all([
     async (_nuxtApp, { signal }) => {
       const fetchRead = $fetch.create({ signal, cache: 'no-store' })
       return isTemplateOne && kitchen.id !== 'deanos'
-        ? fetchRead<KitchenFlagshipDishResult>(
+        ? fetchRead<KitchenFlagshipItemResult>(
             `/api/kitchens/${kitchen.appProps!.kitchenId}/flagship-dish`,
             { query: { appId: kitchen.appProps!.appId } }
           )
@@ -93,7 +93,7 @@ const projection = computed(() => {
     return createTemplateOneFixtureProjection({
       kitchen,
       menu: deanosData!.menu,
-      flagshipDish: deanosData!.flagshipDish,
+      flagshipItem: deanosData!.flagshipItem,
       media: (path) => miseboxDemoMediaUrl(`kitchens/deanos/${path}`),
       wordmarkSrc: miseboxDemoMediaUrl('kitchens/deanos/logo.png'),
     })
@@ -106,7 +106,7 @@ const projection = computed(() => {
       menuHref: '/menus/friiites',
       menuActionLabel: 'Browse menu',
     },
-    flagshipDish: flagship.value?.dish || null,
+    flagshipItem: flagship.value?.dish || null,
     media: storageUrl,
     wordmarkSrc: kitchen.rootProps.wordmarkSrc,
   })

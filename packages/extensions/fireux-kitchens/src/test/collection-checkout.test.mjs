@@ -76,7 +76,7 @@ const ordering = makeMenuOrdering({
     target(`kitchens/${k}/menus/${m}/sections`),
   serverKitchenMenuItemsTarget: (k, m, s) =>
     target(`kitchens/${k}/menus/${m}/sections/${s}/items`),
-  serverKitchenDishesTarget: (k) => target(`kitchens/${k}/dishes`),
+  serverKitchenItemsTarget: (k) => target(`kitchens/${k}/dishes`),
   kitchenPromotionsTarget: (k) => target(`kitchens/${k}/promotions`),
   PLACE_MUTATION_TARGETS: { places: target('places') },
   KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
@@ -272,7 +272,7 @@ test('server rejects tampered choices, prices, foreign sources and missing menu/
   )
 })
 
-test('standalone dish offers use the serving weekday without changing the normal Dish price', async () => {
+test('standalone dish offers use the serving weekday without changing the normal Item price', async () => {
   const { records, tx } = catalogue()
   records.set('kitchens/venue/promotions/pizzas', {
     name: 'Monday pizzas',
@@ -507,7 +507,7 @@ test('checkout blocks stale/unverified baskets and unlocks editing after a defin
 
 test('the existing command stores canonical choices once and retries without another order or price write', async () => {
   const { records, tx } = catalogue()
-  const beforeDishes = structuredClone(
+  const beforeItems = structuredClone(
     [...records].filter(([path]) => path.includes('/dishes/'))
   )
   const channels = loadOfferingSource(
@@ -627,7 +627,7 @@ test('the existing command stores canonical choices once and retries without ano
   )
   assert.deepEqual(
     [...records].filter(([path]) => path.includes('/dishes/')),
-    beforeDishes
+    beforeItems
   )
 })
 

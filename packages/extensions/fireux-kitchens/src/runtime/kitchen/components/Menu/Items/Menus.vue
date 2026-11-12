@@ -13,7 +13,7 @@
     />
     <p v-else-if="pending" role="status">Loading menus…</p>
     <template v-else>
-      <DishMenu
+      <ItemMenu
         v-for="menu in activeMenus"
         :key="`${kitchenId}:${dishId}:${menu.id}`"
         :menu="menu"
@@ -34,8 +34,8 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import DishMenu from './Menu.vue'
-import { useKitchenItemDetail } from '../../../composables/dish/useKitchenItemDetailContext'
+import ItemMenu from './Menu.vue'
+import { useKitchenItemDetail } from '../../../composables/item/useKitchenItemDetailContext'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
 const { kitchenId, dishId, storageKitchenId, rootCollection, databaseId } =
   useKitchenItemDetail()

@@ -10,7 +10,7 @@ export function normalizeMenuItemPatch(
     Object.keys(patch).some((key) => !['status', 'sort_order'].includes(key))
   )
     throw new Error(
-      'Menu placements only support availability and display order. Edit pricing on the Dish.'
+      'Menu placements only support availability and display order. Edit pricing on the Item.'
     )
   if (
     'status' in patch &&

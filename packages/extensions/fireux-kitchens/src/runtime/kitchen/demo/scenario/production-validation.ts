@@ -14,8 +14,8 @@ export function validateKitchenDemoProduction(
     menuModes,
     kitchenIngredients,
     supplierIngredientLinks,
-    dishSpecs,
-    dishFinance,
+    itemSpecs,
+    itemFinance,
     completedOrders,
     menuItemComponentDeltas,
     prepItems,
@@ -56,12 +56,12 @@ export function validateKitchenDemoProduction(
       (mode) => !KITCHEN_DEMO_MENU_MODES.includes(mode)
     )
 
-  const dishSpecDishIds = dishSpecs.map((spec) => spec.dishId)
+  const itemSpecItemIds = itemSpecs.map((spec) => spec.dishId)
 
   const hasDuplicateProductionIds =
     prepItemIds.size !== prepItems.length ||
     recipeIds.size !== recipes.length ||
-    new Set(dishSpecDishIds).size !== dishSpecDishIds.length
+    new Set(itemSpecItemIds).size !== itemSpecItemIds.length
 
   const hasInvalidPrepItem = prepItems.some(
     (prepItem) =>
@@ -73,7 +73,7 @@ export function validateKitchenDemoProduction(
       prepItem.yield.quantity <= 0
   )
 
-  const hasInvalidDishSpec = dishSpecs.some((spec) => {
+  const hasInvalidItemSpec = itemSpecs.some((spec) => {
     if (!dishes.has(spec.dishId) || !stationIds.has(spec.station)) return true
 
     const componentIds = new Set(
@@ -157,7 +157,7 @@ export function validateKitchenDemoProduction(
     })
 
   const hasMissingMenuItemDelta =
-    dishSpecs.length > 0 &&
+    itemSpecs.length > 0 &&
     menus.some((menu) =>
       menu.menuSections.some(({ section, items }) =>
         items.some((item) => {
@@ -185,22 +185,22 @@ export function validateKitchenDemoProduction(
       )
     )
 
-  const hasIncompleteDishSpecs =
-    dishSpecs.length > 0 &&
-    (dishSpecs.length !== dishes.size ||
-      [...dishes.keys()].some((dishId) => !dishSpecDishIds.includes(dishId)))
+  const hasIncompleteItemSpecs =
+    itemSpecs.length > 0 &&
+    (itemSpecs.length !== dishes.size ||
+      [...dishes.keys()].some((dishId) => !itemSpecItemIds.includes(dishId)))
 
-  const dishFinanceDishIds = dishFinance.map((entry) => entry.dishId)
+  const itemFinanceItemIds = itemFinance.map((entry) => entry.dishId)
 
-  const hasInvalidDishFinance =
-    new Set(dishFinanceDishIds).size !== dishFinanceDishIds.length ||
-    dishFinance.some(
+  const hasInvalidItemFinance =
+    new Set(itemFinanceItemIds).size !== itemFinanceItemIds.length ||
+    itemFinance.some(
       (entry) =>
         !dishes.has(entry.dishId) ||
         !Number.isSafeInteger(entry.quantitySold) ||
         entry.quantitySold <= 0
     ) ||
-    dishFinance.some((entry) => {
+    itemFinance.some((entry) => {
       const sourceQuantity = completedOrders.reduce(
         (total, order) =>
           total +
@@ -219,10 +219,10 @@ export function validateKitchenDemoProduction(
     hasInvalidRecipeLine && 'recipe lines',
     hasDuplicateProductionIds && 'production ids',
     hasInvalidPrepItem && 'prep items',
-    hasInvalidDishSpec && 'dish specs',
+    hasInvalidItemSpec && 'dish specs',
     hasInvalidMenuItemDelta && 'menu item deltas',
     hasMissingMenuItemDelta && 'menu item delta coverage',
-    hasIncompleteDishSpecs && 'incomplete dish specs',
-    hasInvalidDishFinance && 'dish finance',
+    hasIncompleteItemSpecs && 'incomplete dish specs',
+    hasInvalidItemFinance && 'dish finance',
   ].filter((item): item is string => Boolean(item))
 }

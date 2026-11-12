@@ -190,7 +190,7 @@ async function confirmDraft() {
         menuId: props.menuId,
         uploadId: uploadId.value,
         name: props.existingMenuName || reviewedName.value.trim(),
-        confirmDishes: true,
+        confirmItems: true,
       }),
     })
     const payload = await response.json().catch(() => null)

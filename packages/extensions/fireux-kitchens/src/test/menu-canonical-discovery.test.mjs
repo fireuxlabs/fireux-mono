@@ -67,7 +67,10 @@ function reader(rows, kitchens) {
           }
         : null,
     menuServiceOfferings: () => [],
-    readMatchingMenuDishes: async (_db, menu) => { searched.push(menu.id); return [{id:'pizza',name:'Pizza Margherita'}] },
+    readMatchingMenuItems: async (_db, menu) => {
+      searched.push(menu.id)
+      return [{ id: 'pizza', name: 'Pizza Margherita' }]
+    },
     matchesFoodSearch: () => false,
     createError: (input) =>
       Object.assign(new Error(input.statusMessage), input),
@@ -176,16 +179,27 @@ test('Menu detail routes have only Kitchen-directory or tenant scope, with no ro
   assert.ok(tenant.every((page) => !page.alias))
 })
 
-test('food search never reads dishes through private, protected, draft, archived or hidden Menu entrances',async()=>{
-  const h=reader([
-    menu('kitchens/a/menus/archived',{status:'archived'}),
-    menu('kitchens/a/menus/draft',{status:'draft'}),
-    menu('kitchens/a/menus/private',{audience:'private_link'}),
-    menu('kitchens/a/menus/protected',{audience:'protected_group'}),
-    menu('kitchens/a/menus/public'),
-    menu('kitchens/hidden/menus/food'),
-  ],{a:visible('alpha'),hidden:{identity:{slug:'hidden',status:'active',visibility:false}}})
-  const result=await h.read({search:'Margherita',limit:1})
-  assert.deepEqual(h.searched,['kitchens/a/menus/public'])
-  assert.deepEqual(result.items.map(row=>row.id),['kitchens/a/menus/public'])
+test('food search never reads dishes through private, protected, draft, archived or hidden Menu entrances', async () => {
+  const h = reader(
+    [
+      menu('kitchens/a/menus/archived', { status: 'archived' }),
+      menu('kitchens/a/menus/draft', { status: 'draft' }),
+      menu('kitchens/a/menus/private', { audience: 'private_link' }),
+      menu('kitchens/a/menus/protected', { audience: 'protected_group' }),
+      menu('kitchens/a/menus/public'),
+      menu('kitchens/hidden/menus/food'),
+    ],
+    {
+      a: visible('alpha'),
+      hidden: {
+        identity: { slug: 'hidden', status: 'active', visibility: false },
+      },
+    }
+  )
+  const result = await h.read({ search: 'Margherita', limit: 1 })
+  assert.deepEqual(h.searched, ['kitchens/a/menus/public'])
+  assert.deepEqual(
+    result.items.map((row) => row.id),
+    ['kitchens/a/menus/public']
+  )
 })

@@ -1,6 +1,10 @@
 import type { DocumentData } from 'firebase-admin/firestore'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverKitchenDishesTarget, serverKitchenMenuItemsTarget, serverKitchenMenuSectionsTarget } from '../../../kitchen/server/mutation-targets'
+import {
+  serverKitchenItemsTarget,
+  serverKitchenMenuItemsTarget,
+  serverKitchenMenuSectionsTarget,
+} from '../../../kitchen/server/mutation-targets'
 import type { planKitchenMenuDraft } from './plan'
 
 /** Apply content changes inside the caller's authorized transaction, after its reads. */
@@ -11,11 +15,11 @@ export function replaceKitchenMenuDraftContent(
     menuId: string
     plannedSections: ReturnType<typeof planKitchenMenuDraft>['plannedSections']
     oldItems: Map<string, Set<string>>
-    existingDishIds: Set<string>
+    existingItemIds: Set<string>
   }
 ) {
-  const { plannedSections, oldItems, existingDishIds } = input
-  const dishes = serverKitchenDishesTarget(input.kitchenId)
+  const { plannedSections, oldItems, existingItemIds } = input
+  const dishes = serverKitchenItemsTarget(input.kitchenId)
   const plannedSectionIds = new Set(
     plannedSections.map((section) => section.sectionId)
   )
@@ -66,10 +70,10 @@ export function replaceKitchenMenuDraftContent(
   plannedSections
     .flatMap((section) => section.items)
     .forEach((item) => {
-      if (existingDishIds.has(item.dishId)) {
-        mutations.update(dishes, item.dishId, item.dishData)
+      if (existingItemIds.has(item.dishId)) {
+        mutations.update(dishes, item.dishId, item.catalogueItemData)
       } else {
-        mutations.create(dishes, item.dishId, item.dishData)
+        mutations.create(dishes, item.dishId, item.catalogueItemData)
       }
     })
 }

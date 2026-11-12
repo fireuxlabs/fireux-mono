@@ -3,9 +3,9 @@ import {
   prepItemComponent,
   recipeComponent,
 } from '../components'
-import type { KitchenDemoDishSpec } from '../types'
+import type { KitchenDemoItemSpec } from '../types'
 
-export const deanosKitchenDemoSeasonalSpecs: KitchenDemoDishSpec[] = [
+export const deanosKitchenDemoSeasonalSpecs: KitchenDemoItemSpec[] = [
   {
     id: 'deanos-christmas-stack-spec',
     dishId: 'deanos-christmas-stack',

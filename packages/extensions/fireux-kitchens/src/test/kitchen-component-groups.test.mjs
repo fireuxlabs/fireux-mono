@@ -59,7 +59,7 @@ test('component registration uses current owner paths without retired-name alias
     .join('\n')
   assert.doesNotMatch(
     sources,
-    /WorkspaceKitchen(?:Dishes|Menus|Offerings|Recipes|Ingredients|Promotions|Finance|Identity|Team)/
+    /WorkspaceKitchen(?:Items|Menus|Offerings|Recipes|Ingredients|Promotions|Finance|Identity|Team)/
   )
   for (const name of [
     'KitchenMenuServices',

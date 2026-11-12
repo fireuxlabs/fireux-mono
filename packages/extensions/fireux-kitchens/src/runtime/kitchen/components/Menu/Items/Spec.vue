@@ -20,7 +20,7 @@
           <UFormField label="Portions"
             ><UInput
               v-model.number="draft.portion"
-              aria-label="Dish portions"
+              aria-label="Item portions"
               type="number"
               min="1" /></UFormField
           ><UFormField
@@ -35,7 +35,7 @@
             <USelect
               v-model="row.ingredient_id"
               :items="ingredientOptions"
-              :aria-label="`Dish ingredient ${i + 1}`"
+              :aria-label="`Item ingredient ${i + 1}`"
             />
             <UInput
               v-model.number="row.quantity"
@@ -78,7 +78,7 @@
             <USelect
               v-model="row.prep_item_id"
               :items="prepOptions"
-              :aria-label="`Dish prep item ${i + 1}`"
+              :aria-label="`Item prep item ${i + 1}`"
             />
             <UInput
               v-model.number="row.quantity"
@@ -165,15 +165,15 @@
             v-model="draft.recipe_ids"
             :items="recipeOptions"
             multiple
-            aria-label="Dish recipes"
+            aria-label="Item recipes"
         /></UFormField>
         <UFormField label="Assembly · one step per line"
-          ><UTextarea v-model="assembly" aria-label="Dish assembly" :rows="8"
+          ><UTextarea v-model="assembly" aria-label="Item assembly" :rows="8"
         /></UFormField>
         <UFormField label="Kitchen notes"
           ><UTextarea
             v-model="draft.source_note"
-            aria-label="Dish kitchen notes"
+            aria-label="Item kitchen notes"
             :rows="3"
         /></UFormField>
         <UButton
@@ -184,7 +184,7 @@
         />
       </fieldset>
     </form>
-    <div v-else-if="dish && dish.spec" class="dish-spec-layout">
+    <div v-else-if="dish && dish.spec" class="item-spec-layout">
       <div>
         <section v-if="dish.spec.ingredients.length">
           <h3>Ingredients</h3>
@@ -266,21 +266,21 @@
   </UCard>
 </template>
 <script setup lang="ts">
-import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
+import { useItemEditorScope } from '../../../composables/item/useItemEditorScope'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
 const route = useRoute()
-import type { DishSpec } from '../../../models/dish.model'
+import type { ItemSpec } from '../../../models/item.model'
 import {
-  emptyDishSpecification,
-  validateDishSpecification,
-} from '../../../utils/dish-specification'
-import { useKitchenItemDetail } from '../../../composables/dish/useKitchenItemDetailContext'
+  emptyItemSpecification,
+  validateItemSpecification,
+} from '../../../utils/item-specification'
+import { useKitchenItemDetail } from '../../../composables/item/useKitchenItemDetailContext'
 import { useKitchenIngredients } from '../../../composables/ingredients/useKitchenIngredients'
 import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
 import { useKitchenRecipeCollection } from '../../../composables/useKitchenRecipeCollection'
 import { useKitchenPrepItemCreate } from '../../../composables/prep-item/useKitchenPrepItemCreate'
-import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
+import { useItemUpdate } from '../../../composables/item/useItemUpdate'
 const {
   dish,
   dishId,
@@ -318,8 +318,8 @@ const prepOptions = computed(() =>
 const recipeOptions = computed(() =>
   recipes.value.map((x) => ({ label: x.name, value: x.id }))
 )
-const empty = emptyDishSpecification
-const draft = ref<DishSpec>(empty()),
+const empty = emptyItemSpecification
+const draft = ref<ItemSpec>(empty()),
   assembly = ref(''),
   editing = ref(false),
   saving = ref(false),
@@ -400,7 +400,7 @@ const ownerSources = [
   databaseId,
   () => route.fullPath,
 ]
-useDishEditorScope(ownerSources, () => {
+useItemEditorScope(ownerSources, () => {
   saving.value = false
   creating.value = false
   editing.value = false
@@ -422,15 +422,15 @@ const draftIntent = computed(() =>
 )
 const prepIntent = computed(() => JSON.stringify(newPrep.value))
 const actionSources = [...ownerSources, editing, draftIntent]
-const captureScope = useDishEditorScope(actionSources, () => {
+const captureScope = useItemEditorScope(actionSources, () => {
   saving.value = false
   error.value = ''
 })
-const capturePrep = useDishEditorScope([...actionSources, prepIntent], () => {
+const capturePrep = useItemEditorScope([...actionSources, prepIntent], () => {
   creating.value = false
   error.value = ''
 })
-const { updateDish } = useDishUpdate([...actionSources, canWrite])
+const { updateItem } = useItemUpdate([...actionSources, canWrite])
 const { createPrepItem } = useKitchenPrepItemCreate([
   ...actionSources,
   prepIntent,
@@ -472,7 +472,7 @@ async function save() {
   saving.value = true
   error.value = ''
   try {
-    const spec = JSON.parse(JSON.stringify(draft.value)) as DishSpec
+    const spec = JSON.parse(JSON.stringify(draft.value)) as ItemSpec
     spec.portion = positiveQuantity(spec.portion)
     spec.ingredients = spec.ingredients.map((row) => ({
       ...row,
@@ -486,9 +486,9 @@ async function save() {
       .split('\n')
       .map((x) => x.trim())
       .filter(Boolean)
-    await updateDish(
+    await updateItem(
       dishId.value,
-      { spec: validateDishSpecification(spec) },
+      { spec: validateItemSpecification(spec) },
       { kitchenId: kitchenId.value }
     )
     if (!isCurrent()) return
@@ -503,12 +503,12 @@ async function save() {
 </script>
 
 <style scoped>
-.dish-spec-layout {
+.item-spec-layout {
   display: grid;
   gap: 2rem;
 }
 @media (min-width: 1000px) {
-  .dish-spec-layout {
+  .item-spec-layout {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
   }
 }

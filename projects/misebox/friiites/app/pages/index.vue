@@ -11,12 +11,12 @@ import {
   findLandingTemplateBrand,
 } from 'fireux-misebox/runtime/content/template-one-fixtures'
 import type { MenuDetailPayload } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
-import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/kitchen/server/dishes/flagship-projection'
+import type { KitchenFlagshipItemResult } from 'fireux-kitchens/runtime/kitchen/server/items/flagship-projection'
 
 const kitchen = findLandingTemplateBrand('friiites')!
 const [{ data: menuResult }, { data: flagshipResult }] = await Promise.all([
   useFetch<MenuDetailPayload>('/api/menus/friiites'),
-  useFetch<KitchenFlagshipDishResult>(
+  useFetch<KitchenFlagshipItemResult>(
     '/api/kitchens/5dGJgdjDv7Zi0tjva61O/flagship-dish',
     {
       query: { appId: 'friiites' },
@@ -27,7 +27,7 @@ const projection = computed(() => {
   if (menuResult.value?.kind !== 'manifest') return null
   return createTemplateOneFixtureProjection({
     kitchen,
-    flagshipDish: flagshipResult.value?.dish || null,
+    flagshipItem: flagshipResult.value?.dish || null,
     menu: {
       menu: menuResult.value.manifest.content,
       menuHref: '/menus',

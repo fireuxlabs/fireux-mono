@@ -7,9 +7,9 @@ import {
   serverKitchenMenusTarget,
   serverKitchenMenuSectionsTarget,
   serverKitchenMenuItemsTarget,
-  serverKitchenDishesTarget,
+  serverKitchenItemsTarget,
 } from '../../../kitchen/server/mutation-targets'
-import { readDishPricing } from '../../../kitchen/utils/dish-pricing'
+import { readItemPricing } from '../../../kitchen/utils/item-pricing'
 import type { KitchenMenuReview } from '../../models/menu-review.model'
 import { normalizeMenuDocument } from '../../utils/records/metadata'
 
@@ -141,18 +141,18 @@ export async function readKitchenMenuReview(
         throw createError({
           statusCode: 409,
           statusMessage:
-            'Menu Express review currently supports individual Dishes.',
+            'Menu Express review currently supports individual Items.',
         })
       const dish = await tx.read(
-        serverKitchenDishesTarget(kitchenId),
+        serverKitchenItemsTarget(kitchenId),
         String(row.data.dish_id)
       )
       if (!dish.exists || dish.data?.status === 'archived')
         throw createError({
           statusCode: 409,
-          statusMessage: 'A Menu Dish is unavailable.',
+          statusMessage: 'A Menu Item is unavailable.',
         })
-      const pricing = readDishPricing(dish.data!)
+      const pricing = readItemPricing(dish.data!)
       if (
         pricing.choice_groups?.length ||
         pricing.add_ons?.length ||

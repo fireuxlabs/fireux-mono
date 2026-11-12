@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { serverKitchenDishesTarget } from '../mutation-targets'
+import { serverKitchenItemsTarget } from '../mutation-targets'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import {
@@ -13,7 +13,7 @@ import {
 import {
   normalizeKitchenPromotion,
   promotionsOverlap,
-  promotionDishIds,
+  promotionItemIds,
 } from '../../utils/promotions/pricing'
 import { kitchenPromotionsTarget } from './target'
 
@@ -53,8 +53,8 @@ export async function saveKitchenPromotion(event: H3Event, input: unknown) {
     if (promotion.currency !== readPlaceCurrencyCode(access.placeData))
       throw bad('Promotion currency must match the venue currency.')
     const dishes = await tx.readMany(
-      serverKitchenDishesTarget(kitchenId),
-      promotionDishIds(promotion)
+      serverKitchenItemsTarget(kitchenId),
+      promotionItemIds(promotion)
     )
     if (
       dishes.some(

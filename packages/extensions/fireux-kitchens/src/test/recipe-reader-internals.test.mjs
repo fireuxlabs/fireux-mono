@@ -541,7 +541,7 @@ test('actual Recipe preview exposes independent linked failures', async () => {
   assert.match(html, /Prep items unavailable/)
   assert.match(html, /Recipe method remains/)
 })
-test('Dish Prep consumer receives additive lifecycle states without losing saved requirements', () => {
+test('Item Prep consumer receives additive lifecycle states without losing saved requirements', () => {
   const f = prepFixture(),
     dish = ref({
       spec: { prep_items: [{ prep_item_id: 'sauce', quantity: 2, unit: 'g' }] },
@@ -572,16 +572,16 @@ test('Dish Prep consumer receives additive lifecycle states without losing saved
   assert.equal(state.rows.value[0].quantity, 2)
   f.scope.stop()
 })
-test('Dish Spec options consume masked Prep data while preserving their existing readError contract', () => {
+test('Item Spec options consume masked Prep data while preserving their existing readError contract', () => {
   const f = prepFixture()
   const specification = load(
-    'kitchen/utils/dish-specification.ts',
-    '({emptyDishSpecification,validateDishSpecification})',
+    'kitchen/utils/item-specification.ts',
+    '({emptyItemSpecification,validateItemSpecification})',
     { isFirestoreDocumentId }
   )
-  const useDishEditorScope = load(
-    'kitchen/composables/dish/useDishEditorScope.ts',
-    'useDishEditorScope',
+  const useItemEditorScope = load(
+    'kitchen/composables/item/useItemEditorScope.ts',
+    'useItemEditorScope',
     commandScopeDeps({
       watch,
       useAuth: () => ({ currentUser: ref({ uid: 'actor' }) }),
@@ -597,7 +597,7 @@ test('Dish Spec options consume masked Prep data while preserving their existing
         watch,
         ...specification,
         useRoute: () => ({ query: {} }),
-        useDishEditorScope,
+        useItemEditorScope,
         useKitchenWorkspace: () => ({ id: f.kitchenId, outcome: ref('ready') }),
         useRouteParam: () => ref('dish'),
         useKitchenItemDetail: () => ({
@@ -618,7 +618,7 @@ test('Dish Spec options consume masked Prep data while preserving their existing
           recipes: ref([]),
           error: ref(null),
         }),
-        useDishUpdate: () => ({}),
+        useItemUpdate: () => ({}),
         useKitchenPrepItemCreate: () => ({}),
       }
     )
@@ -640,7 +640,7 @@ test('Detail local editor seed survives only same-intent read refresh/failure an
       storageKitchenId: ref('mine'),
       rootCollection: ref('kitchens'),
       databaseId: ref('misebox'),
-      dishUsage: ref([]),
+      itemUsage: ref([]),
       pending: ref(false),
       canWrite: ref(true),
       debug: ref({}),

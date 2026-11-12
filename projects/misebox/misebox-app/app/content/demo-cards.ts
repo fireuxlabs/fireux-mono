@@ -1,7 +1,7 @@
 import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/utils/media/misebox'
 import type { MenuDirectoryEntry } from 'fireux-kitchens/runtime/menu/models/menu-directory.response'
 
-export const dishImage = miseboxDemoMediaUrl(
+export const itemImage = miseboxDemoMediaUrl(
   'kitchens/deanos/menu/deanos-classic.jpg'
 )
 export const ingredientImage = '/img/showcase/ingredients/beef-mince.jpg'
@@ -12,7 +12,7 @@ export const placeCard = {
   to: '/',
   name: 'Interlaken',
   formattedAddress: '3800 Interlaken, Switzerland',
-  imageUrl: dishImage,
+  imageUrl: itemImage,
   imageShade: 'dark' as const,
   source: 'fireux' as const,
   prop: 'Between Lake Thun and Lake Brienz.',
@@ -22,12 +22,12 @@ export const placePill = {
   title: 'Interlaken',
   shortName: 'Interlaken',
   subtitle: 'Bernese Oberland',
-  imageUrl: dishImage,
+  imageUrl: itemImage,
   imageShade: 'dark' as const,
   badges: ['Switzerland'],
 }
 export const placePreview = {
-  imageUrl: dishImage,
+  imageUrl: itemImage,
   imageShade: 'dark' as const,
   name: 'Interlaken',
   formattedAddress: '3800 Interlaken, Switzerland',
@@ -40,11 +40,11 @@ export const kitchenPill = {
   to: '/',
   title: 'Card Specimen Kitchen',
   subtitle: 'Sample venue',
-  imageUrl: dishImage,
+  imageUrl: itemImage,
   imageShade: 'dark' as const,
 }
 export const kitchenPreview = {
-  imageUrl: dishImage,
+  imageUrl: itemImage,
   imageShade: 'dark' as const,
   name: 'Card Specimen Kitchen',
   formattedAddress: 'Sample venue, Switzerland',
@@ -65,7 +65,7 @@ export const menu = {
   contexts: ['generic', 'collection', 'kiosk'],
   kitchen: {
     name: 'Card Specimen Kitchen',
-    image_url: dishImage,
+    image_url: itemImage,
     image_shade: 'dark',
   },
   source: {
@@ -176,7 +176,7 @@ export const jobCard = {
   description: 'Join the hot section for a busy summer service.',
   badges: ['Full time', 'Kitchen'],
   status: 'open',
-  imageUrl: dishImage,
+  imageUrl: itemImage,
   compensationLabel: 'CHF 5,200 / month',
   openingsLabel: '1 opening',
   contractTypeLabel: 'Permanent',

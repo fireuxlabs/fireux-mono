@@ -18,7 +18,7 @@ export const kitchenMenuImportFromSourceTool = defineFireuxCompoundTool({
   description:
     'Upload a menu source, convert it into a review draft and confirm the dishes to create.',
   problem:
-    'A Kitchen has an existing menu document but no structured digital menu or Dish collection.',
+    'A Kitchen has an existing menu document but no structured digital menu or Item collection.',
   searchIntents: [
     {
       phrase: 'convert PDF menu to digital menu',
@@ -81,7 +81,7 @@ export const kitchenMenuImportFromSourceTool = defineFireuxCompoundTool({
     },
     {
       capability: kitchenMenuConfirmImportTool.id,
-      role: 'Create the reviewed Menu and Dish data at the explicit commit point.',
+      role: 'Create the reviewed Menu and Item data at the explicit commit point.',
       classification: 'domain-tool',
       status: 'source-proven',
     },
@@ -95,7 +95,7 @@ export const kitchenMenuImportFromSourceTool = defineFireuxCompoundTool({
   ai: {
     baked: {
       purpose:
-        'Turn existing restaurant menu sources into reviewed Kitchen Menu and Dish data.',
+        'Turn existing restaurant menu sources into reviewed Kitchen Menu and Item data.',
       knows: [
         'The selected Kitchen, authorized sources, current Menu data and the documented workflow stages.',
       ],
@@ -124,6 +124,6 @@ export const kitchenMenuImportFromSourceTool = defineFireuxCompoundTool({
   documentation: {
     slug: 'import-menu-from-source',
     guide:
-      'Use the Kitchen Workspace import flow. AI may prepare a draft, but only an authorized human confirmation creates or changes Menu and Dish data.',
+      'Use the Kitchen Workspace import flow. AI may prepare a draft, but only an authorized human confirmation creates or changes Menu and Item data.',
   },
 })

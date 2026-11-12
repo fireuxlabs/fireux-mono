@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto'
 import {
-  normalizeDishPriceOptions,
-  normalizeDishAddOns,
-} from '../../../kitchen/utils/dish-pricing'
+  normalizeItemPriceOptions,
+  normalizeItemAddOns,
+} from '../../../kitchen/utils/item-pricing'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import type { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import type {
@@ -41,7 +41,7 @@ export function planKitchenMenuDraft(
   stamp: ReturnType<typeof serverAuditStamp>
 ) {
   const sectionIds = new Set<string>()
-  const dishIds = new Set<string>()
+  const itemIds = new Set<string>()
   const sproochliCacheUnits: SproochliMenuCacheImportUnit[] = []
   const plannedSections = input.sections.map((section, sectionIndex) => {
     const sectionId = uniqueSlug(
@@ -56,20 +56,20 @@ export function planKitchenMenuDraft(
     })
 
     const items = section.items.map((item, itemIndex) => {
-      const dishKey = uniqueSlug(
-        dishIds,
+      const sourceItemKey = uniqueSlug(
+        itemIds,
         `dish-${sectionIndex + 1}-${itemIndex + 1}`,
         item.name
       )
-      // A source creates its own Dishes; a matching catalogue name is not identity.
+      // A source creates its own Items; a matching catalogue name is not identity.
       const dishId = createHash('sha256')
-        .update(JSON.stringify([input.menuId, dishKey]))
+        .update(JSON.stringify([input.menuId, sourceItemKey]))
         .digest('hex')
         .slice(0, 32)
       const itemId = `${dishId}-${itemIndex + 1}`
       const itemKey = `dish:${fieldSegment(sectionId)}__${fieldSegment(itemId)}`
-      const addOns = normalizeDishAddOns(item.add_ons)
-      const priceOptions = normalizeDishPriceOptions(item.price_options)
+      const addOns = normalizeItemAddOns(item.add_ons)
+      const priceOptions = normalizeItemPriceOptions(item.price_options)
       appendKitchenMenuCacheUnits(sproochliCacheUnits, {
         fieldId: `${itemKey}:name`,
         sourceText: item.name,
@@ -118,7 +118,7 @@ export function planKitchenMenuDraft(
       return {
         itemId,
         dishId,
-        dishData: {
+        catalogueItemData: {
           id: dishId,
           price,
           price_options: priceOptions,

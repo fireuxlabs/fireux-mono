@@ -10,7 +10,7 @@
       :subtitle="profile?.chef_organization_name"
       :title="card.title"
       :summary="heroSummary"
-      :labels="signatureDishes"
+      :labels="signatureItems"
       :stats="profileStats"
     >
       <template #actions>
@@ -68,7 +68,7 @@
 
       <aside class="public-profile-detail__sidebar">
         <UserProfileSection
-          v-if="signatureDishes.length"
+          v-if="signatureItems.length"
           compact
           icon="i-lucide-sparkles"
           eyebrow="Known for"
@@ -76,7 +76,7 @@
         >
           <div>
             <UBadge
-              v-for="dish in signatureDishes"
+              v-for="dish in signatureItems"
               :key="dish"
               :label="dish"
               color="neutral"
@@ -132,18 +132,18 @@ const aboutCopy = computed(() => {
   const bio = String(props.profile?.chef_bio || '').trim()
   return bio && bio !== heroSummary.value ? bio : ''
 })
-const signatureDishes = computed(() =>
+const signatureItems = computed(() =>
   cleanList(props.profile?.chef_signature_dishes)
 )
 const gallery = computed(() => props.profile?.chef_gallery ?? [])
 const profileStats = computed(() => [
   {
     label: 'Signature dishes',
-    value: signatureDishes.value.length,
+    value: signatureItems.value.length,
     icon: 'i-lucide-sparkles',
   },
   {
-    label: 'Dish photos',
+    label: 'Item photos',
     value: gallery.value.length,
     icon: 'i-lucide-images',
   },

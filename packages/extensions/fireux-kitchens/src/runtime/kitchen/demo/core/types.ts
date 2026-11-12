@@ -3,7 +3,7 @@ import type { KitchenOffering } from '../../models/offering.model'
 // Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: preserve Deanos and Garden Room as separate coherent scenarios.
 // Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: keep the two named restaurant scenarios distinct.
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import type { Dish } from '../../utils/dish.ts'
+import type { Item } from '../../utils/item.ts'
 import type { KitchenIngredient } from '../../utils/kitchen-ingredient.ts'
 import type { KitchenStation } from '../../utils/station.ts'
 import type { KitchenSupplierIngredient } from '../../utils/kitchen-supplier-ingredient.ts'
@@ -19,9 +19,9 @@ import type {
   KitchenDemoCompletedOrder,
   KitchenDemoService,
 } from '../operations/Orders/history'
-import type { KitchenDemoDishFinance } from '../operations/Dishes/finance'
+import type { KitchenDemoItemFinance } from '../operations/Items/finance'
 import type {
-  KitchenDemoDishSpec,
+  KitchenDemoItemSpec,
   KitchenDemoMenuItemComponentDelta,
   KitchenDemoPrepItem,
   KitchenDemoProductionRecipe,
@@ -51,14 +51,14 @@ export type KitchenDemoAccess = {
 /**
  * Authoring bundle for one coherent Demo Menu.
  *
- * Dishes are included here only so the fixture can keep its references
+ * Items are included here only so the fixture can keep its references
  * together. Workspace operations consume the scenario's operation-level
  * `menus`, `dishes`, and `menuSections` projections instead.
  */
 export type KitchenDemoMenu = {
   rootMenu: Menu
   kitchenMenu: Menu
-  dishes: Dish[]
+  dishes: Item[]
   menuSections: KitchenDemoMenuSection[]
 }
 
@@ -76,9 +76,9 @@ export type KitchenDemoScenario = {
   supplierIngredientLinks: KitchenSupplierIngredient[]
   rootMenu: Menu
   kitchenMenu: Menu
-  dishes: Dish[]
-  dishSpecs: KitchenDemoDishSpec[]
-  dishFinance: KitchenDemoDishFinance[]
+  dishes: Item[]
+  itemSpecs: KitchenDemoItemSpec[]
+  itemFinance: KitchenDemoItemFinance[]
   finance: KitchenDemoFinance | null
   team: readonly KitchenDemoTeamMember[]
   services: readonly KitchenDemoService[]

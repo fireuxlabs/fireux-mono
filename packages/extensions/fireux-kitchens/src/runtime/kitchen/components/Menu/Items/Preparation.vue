@@ -82,7 +82,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenItemDetail } from '../../../composables/dish/useKitchenItemDetailContext'
+import { useKitchenItemDetail } from '../../../composables/item/useKitchenItemDetailContext'
 import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
 const { dish, storageKitchenId, databaseId, rootCollection } =
   useKitchenItemDetail()

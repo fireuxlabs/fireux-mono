@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="addDish">
+  <form @submit.prevent="addItem">
     <UFormField label="Image">
       <div>
         <FireFormsEditableImagePicker
@@ -7,7 +7,7 @@
           :alt="name.trim() || `New ${singular}`"
           :initials="imageInitials"
           :button-label="`Choose ${singular} image`"
-          :disabled="saving || !canCreateDish"
+          :disabled="saving || !canCreateItem"
           :update="stageImage"
         />
         <p>Choose a clear photo of the Item. You can add or change it later.</p>
@@ -19,7 +19,7 @@
         <UInput
           v-model="name"
           placeholder="Margherita"
-          :disabled="saving || !canCreateDish"
+          :disabled="saving || !canCreateItem"
         />
       </UFormField>
 
@@ -27,7 +27,7 @@
         <UTextarea
           v-model="description"
           placeholder="Tomato sauce, mozzarella, oregano"
-          :disabled="saving || !canCreateDish"
+          :disabled="saving || !canCreateItem"
           :rows="3"
         />
       </UFormField>
@@ -42,7 +42,7 @@
         step="0.01"
         placeholder="Enter price"
         aria-label="Normal price"
-        :disabled="saving || !canCreateDish"
+        :disabled="saving || !canCreateItem"
       />
     </UFormField>
 
@@ -51,7 +51,7 @@
         type="submit"
         icon="i-lucide-plus"
         :loading="saving"
-        :disabled="!canCreateDish || saving || !name.trim() || !validPrice"
+        :disabled="!canCreateItem || saving || !name.trim() || !validPrice"
       >
         Create {{ singular }}
       </UButton>
@@ -64,19 +64,20 @@
 </template>
 
 <script setup lang="ts">
-import { useDishEditorScope } from '../../../../composables/dish/useDishEditorScope'
+import { useItemEditorScope } from '../../../../composables/item/useItemEditorScope'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useRoute } from '#imports'
-import { useKitchenDishesContext } from '../../../../composables/workspace/dishes/useKitchenDishesContext'
-import { useDishCreate } from '../../../../composables/dish/useDishCreate'
-import { useDishImageUpload } from '../../../../composables/dish/useDishImageUpload'
+import { useKitchenItemsContext } from '../../../../composables/workspace/items/useKitchenItemsContext'
+import { useItemCreate } from '../../../../composables/item/useItemCreate'
+import { useItemImageUpload } from '../../../../composables/item/useItemImageUpload'
 
-const { kitchenId, readOnly, catalogue } = useKitchenDishesContext()
-const props = defineProps<{ itemKind?: 'food' | 'drink' }>()
+const { kitchenId, readOnly, catalogue } = useKitchenItemsContext()
+const props = defineProps<{ itemKind?: string }>()
 const emit = defineEmits<{ created: [] }>()
 const itemKind = computed(
-  () => props.itemKind || (catalogue.itemKind === 'drink' ? 'drink' : 'food')
+  () =>
+    props.itemKind || (catalogue.itemKind === 'all' ? '' : catalogue.itemKind)
 )
 const singular = 'item'
 const toast = useToastify()
@@ -97,7 +98,7 @@ const imageFile = ref<File | null>(null)
 const imagePreviewUrl = ref('')
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const canCreateDish = computed(
+const canCreateItem = computed(
   () => !readOnly.value && Boolean(normalizeString(kitchenId.value))
 )
 const imageInitials = computed(() => {
@@ -121,7 +122,7 @@ const stageImage = (file: File) => {
 
 onBeforeUnmount(clearImageDraft)
 
-useDishEditorScope(
+useItemEditorScope(
   [kitchenId, () => itemKind.value, () => route.fullPath],
   () => {
     price.value = ''
@@ -134,19 +135,19 @@ useDishEditorScope(
 )
 const ownerSources = [kitchenId, () => itemKind.value, () => route.fullPath]
 const draftSources = [...ownerSources, name, description, price, imageFile]
-const captureScope = useDishEditorScope(draftSources, () => {
+const captureScope = useItemEditorScope(draftSources, () => {
   saving.value = false
   message.value = ''
 })
-const { createDish } = useDishCreate([...draftSources, canCreateDish])
-const { uploadDishImage } = useDishImageUpload([...draftSources, canCreateDish])
-const addDish = async () => {
+const { createItem } = useItemCreate([...draftSources, canCreateItem])
+const { uploadItemImage } = useItemImageUpload([...draftSources, canCreateItem])
+const addItem = async () => {
   const isCurrent = captureScope()
   const requestedImage = imageFile.value
-  if (!canCreateDish.value || saving.value || !validPrice.value) return
+  if (!canCreateItem.value || saving.value || !validPrice.value) return
 
-  const dishName = normalizeString(name.value)
-  if (!dishName) {
+  const itemName = normalizeString(name.value)
+  if (!itemName) {
     toast.add({
       title: 'Item name is required',
       color: 'error',
@@ -160,9 +161,9 @@ const addDish = async () => {
 
   try {
     const resolvedKitchenId = normalizeString(kitchenId.value)
-    const result = await createDish(
+    const result = await createItem(
       {
-        name: dishName,
+        name: itemName,
         price: Number(price.value),
         description: normalizeString(description.value),
       },
@@ -172,7 +173,7 @@ const addDish = async () => {
     if (!isCurrent()) return
     if (requestedImage) {
       try {
-        await uploadDishImage({
+        await uploadItemImage({
           dishId: result.id,
           kitchenId: resolvedKitchenId,
           file: requestedImage,
@@ -186,7 +187,7 @@ const addDish = async () => {
             error ||
             'Image upload failed.'
         )
-        const partialMessage = `Created ${dishName}, but its image was not saved: ${imageError}`
+        const partialMessage = `Created ${itemName}, but its image was not saved: ${imageError}`
         toast.add({
           title: 'Item created without its image',
           description: 'Open the Item to retry the image upload.',
@@ -207,7 +208,7 @@ const addDish = async () => {
     name.value = ''
     description.value = ''
     clearImageDraft()
-    message.value = `Created ${dishName}.`
+    message.value = `Created ${itemName}.`
     toast.add({ title: 'Item created', icon: 'i-heroicons-check-circle' })
     emit('created')
   } catch (error) {

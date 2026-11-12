@@ -14,7 +14,7 @@ function load(path, names, deps = {}) {
 }
 const helpers = load(
   '../runtime/kitchen/utils/promotions/pricing.ts',
-  'normalizeKitchenPromotion,promotionsOverlap,promotionDishIds'
+  'normalizeKitchenPromotion,promotionsOverlap,promotionItemIds'
 )
 const offer = () => ({
   name: 'Sunday pizzas',
@@ -36,10 +36,10 @@ function harness(options = {}) {
     async readMany(_target, ids) {
       return ids.map((id) => ({
         id,
-        exists: !options.missingDish,
+        exists: !options.missingItem,
         data: {
-          kitchen_id: options.foreignDish ? 'other' : 'kitchen',
-          ...(options.archivedDish ? { status: 'archived' } : {}),
+          kitchen_id: options.foreignItem ? 'other' : 'kitchen',
+          ...(options.archivedItem ? { status: 'archived' } : {}),
         },
       }))
     },
@@ -86,7 +86,7 @@ function harness(options = {}) {
         if (options.denied) throw new Error('Denied')
         return { placeData: { currency: 'CHF' } }
       },
-      serverKitchenDishesTarget: () => 'dishes',
+      serverKitchenItemsTarget: () => 'dishes',
       kitchenPromotionsTarget: () => 'promotions',
       readPlaceCurrencyCode: (data) => data.currency,
       serverAuditStamp: () => ({ by: 'cook', at: 'stamp' }),
@@ -128,8 +128,8 @@ test('saving writes only the promotion', async () => {
 test('authority, currency, catalogue ownership and overlapping offers reject before writes', async () => {
   for (const [options, patch] of [
     [{ denied: true }, {}],
-    [{ missingDish: true }, {}],
-    [{ foreignDish: true }, {}],
+    [{ missingItem: true }, {}],
+    [{ foreignItem: true }, {}],
     [{}, { currency: 'EUR' }],
     [{ promotions: [['other', offer()]] }, {}],
   ]) {
@@ -301,25 +301,25 @@ test('malformed meal deals and mixed promotion forms reject before writes', asyn
   }
 })
 
-test('meal deals check every Dish owner and status without touching normal Dish terms', async () => {
+test('meal deals check every Item owner and status without touching normal Item terms', async () => {
   for (const options of [
     { denied: true },
-    { missingDish: true },
-    { foreignDish: true },
-    { archivedDish: true },
+    { missingItem: true },
+    { foreignItem: true },
+    { archivedItem: true },
   ]) {
     const h = harness(options)
     await assert.rejects(h.save(mealDeal()))
     assert.equal(h.writes.length, 0)
   }
-  assert.deepEqual(helpers.promotionDishIds(mealDeal()), [
+  assert.deepEqual(helpers.promotionItemIds(mealDeal()), [
     'margherita',
     'swiss',
     'water',
   ])
 })
 
-test('meal deals can share Dishes with other promotions without repricing standalone items', async () => {
+test('meal deals can share Items with other promotions without repricing standalone items', async () => {
   assert.equal(helpers.promotionsOverlap(mealDeal(), offer()), false)
   assert.equal(helpers.promotionsOverlap(offer(), mealDeal()), false)
   assert.equal(helpers.promotionsOverlap(mealDeal(), mealDeal()), false)

@@ -566,7 +566,7 @@ test('ranked capability definitions separate target responsibilities from implem
   }
   const menu = misebox.capabilities.capabilities.find((c) => c.id === 'menus')
   assert.ok(menu.definition.tools.includes('Publish or withdraw a menu'))
-  assert.match(menu.definition.boundaries.join(' '), /canonical Dish or Recipe/)
+  assert.match(menu.definition.boundaries.join(' '), /canonical Item or Recipe/)
   assert.match(menu.definition.service_example, /ordering configuration/)
   assert.equal(
     misebox.capabilities.capabilities.find((c) => c.id === 'orders-service')

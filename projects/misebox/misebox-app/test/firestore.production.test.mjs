@@ -389,7 +389,7 @@ test('access records and App membership cannot be forged or self-promoted', asyn
   )
   denied(await get('kitchen_access/operator-0', 'operator-1'))
 })
-test('each Kitchen App reads its Dish but cannot bypass trusted create, update or delete', async () => {
+test('each Kitchen App reads its Item but cannot bypass trusted create, update or delete', async () => {
   for (const [index, app] of apps.entries()) {
     const uid = `operator-${index}`,
       kitchen = `kitchen-${index}`

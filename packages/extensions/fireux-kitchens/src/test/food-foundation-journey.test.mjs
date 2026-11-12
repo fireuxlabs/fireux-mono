@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { harness } from './helpers/menu-publication.mjs'
 import * as helpers from './offering-test-helpers.mjs'
-import { dishPricingHelpers } from './helpers/dish-pricing.mjs'
+import { itemPricingHelpers } from './helpers/item-pricing.mjs'
 import { readOpeningHoursStatus } from '../../../fireux-places/src/runtime/place/utils/opening-hours-status.ts'
 const {
   loadOfferingSource: load,
@@ -31,7 +31,7 @@ const targets = {
   PLACE_MUTATION_TARGETS: { places: target('places') },
   serverAppUsersTarget: (app) => target(`apps/${app}/users`),
   serverKitchenAccessTarget: () => target('kitchen_access'),
-  serverKitchenDishesTarget: (k) => target(`kitchens/${k}/dishes`),
+  serverKitchenItemsTarget: (k) => target(`kitchens/${k}/dishes`),
   serverKitchenMenusTarget: (k) => target(`kitchens/${k}/menus`),
   serverKitchenMenuSectionsTarget: (k, m) =>
     target(`kitchens/${k}/menus/${m}/sections`),
@@ -42,7 +42,7 @@ const targets = {
 }
 const promotions = load(
   'kitchen/utils/promotions/pricing',
-  'normalizeKitchenPromotion,promotionDishIds,promotionsOverlap,promotionPricedSections,promotionPricedItem,promotionDay,promotionDays'
+  'normalizeKitchenPromotion,promotionItemIds,promotionsOverlap,promotionPricedSections,promotionPricedItem,promotionDay,promotionDays'
 )
 const table = load(
   'kitchen/utils/table-service',
@@ -302,7 +302,7 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
   const deps = {
     ...targets,
     ...authority,
-    ...dishPricingHelpers,
+    ...itemPricingHelpers,
     ...promotions,
     ...table,
     ...options,
@@ -315,7 +315,7 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
     runGuardedServerTransaction,
     readRecordString,
     readRecord: (value) => value,
-    readDishItemKind: (value) => (value === 'drink' ? 'drink' : 'food'),
+    readLegacyItemKind: (value) => (value === 'drink' ? 'drink' : 'food'),
     randomUUID: () => `fixture-${++sequence}`,
     normalizeSlug: (value) =>
       value
@@ -335,8 +335,8 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
   Object.assign(
     deps,
     load(
-      'kitchen/server/dishes/record-input',
-      'dishFields,dishText,validateDishInput',
+      'kitchen/server/items/record-input',
+      'itemFields,itemText,validateItemInput',
       deps
     )
   )
@@ -344,11 +344,7 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
     deps,
     load('menu/server/display-order', 'nextMenuDisplayOrder', deps)
   )
-  const { createDish } = load(
-    'kitchen/server/dishes/create',
-    'createDish',
-    deps
-  )
+  const { createItem } = load('kitchen/server/items/create', 'createItem', deps)
   const { createKitchenMenuSection } = load(
     'menu/server/sections/commands',
     'createKitchenMenuSection',
@@ -431,7 +427,7 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
     { ...deps, normalizeMenuMetadataPatch }
   )
 
-  const dish = await createDish(
+  const dish = await createItem(
     {},
     {
       kitchenId: 'k',
@@ -447,7 +443,7 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
       },
     }
   )
-  const drink = await createDish(
+  const drink = await createItem(
     {},
     {
       kitchenId: 'k',

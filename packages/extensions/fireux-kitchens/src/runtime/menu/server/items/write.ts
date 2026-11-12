@@ -9,7 +9,7 @@ import {
   requireKitchenMutationAuthority,
 } from '../../../kitchen/server/core/mutation-authority'
 import {
-  serverKitchenDishesTarget,
+  serverKitchenItemsTarget,
   serverKitchenMenusTarget,
   serverKitchenMenuSectionsTarget,
   serverKitchenMenuItemsTarget,
@@ -44,10 +44,10 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
   if (Boolean(value.dishId) === Boolean(value.promotionId))
     throw createError({
       statusCode: 400,
-      statusMessage: 'Choose one Dish or meal deal.',
+      statusMessage: 'Choose one Item or meal deal.',
     })
   const dishId = value.dishId
-    ? requireFirestoreDocumentId(value.dishId, 'Dish id')
+    ? requireFirestoreDocumentId(value.dishId, 'Item id')
     : ''
   const promotionId = value.promotionId
     ? requireFirestoreDocumentId(value.promotionId, 'Promotion id')
@@ -62,14 +62,14 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
         tx.read(serverKitchenMenusTarget(kitchenId), menuId),
         tx.read(serverKitchenMenuSectionsTarget(kitchenId, menuId), sectionId),
         dishId
-          ? tx.read(serverKitchenDishesTarget(kitchenId), dishId)
+          ? tx.read(serverKitchenItemsTarget(kitchenId), dishId)
           : tx.read(kitchenPromotionsTarget(kitchenId), promotionId),
       ])
       if (!menu.exists || !section.exists || !dish.exists)
         throw createError({
           statusCode: 404,
           statusMessage:
-            'Select an existing Menu section and Dish from this Kitchen.',
+            'Select an existing Menu section and Item from this Kitchen.',
         })
       if (
         menu.data?.schedule === 'daily' &&

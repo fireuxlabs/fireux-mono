@@ -577,8 +577,8 @@ test('Menu owner fingerprints customer-facing content, not internal context, and
         target(`kitchens/${k}/menus/${m}/sections`),
       serverKitchenMenuItemsTarget: (k, m, s) =>
         target(`kitchens/${k}/menus/${m}/sections/${s}/items`),
-      serverKitchenDishesTarget: (k) => target(`kitchens/${k}/dishes`),
-      readDishPricing: (data) => ({
+      serverKitchenItemsTarget: (k) => target(`kitchens/${k}/dishes`),
+      readItemPricing: (data) => ({
         price: data.price,
         price_options: [],
         add_ons: [],

@@ -96,7 +96,7 @@ test('Menu discovery retains each menu, filters services and preserves destinati
     matching_dishes: [],
   }
   assert.equal(
-    group([...rows, drinks], 'collection')[0].matchingDishes.length,
+    group([...rows, drinks], 'collection')[0].matchingItems.length,
     1
   )
   assert.equal(group([...rows, drinks])[0].title, 'Food & drinks')

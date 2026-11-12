@@ -25,17 +25,17 @@
       :menus="productDemo?.workspace.menus || []"
       :error="Boolean(productDemoError)"
     />
-    <LandingWorkspacePreviewDishes
+    <LandingWorkspacePreviewItems
       v-else-if="selectedSurface?.id === 'kitchen.dishes'"
       :key="selectedSurface.id"
-      :dishes="previewDishes"
-      :dish="selectedDish"
-      :page="selectedDishPage"
+      :dishes="previewItems"
+      :dish="selectedItem"
+      :page="selectedItemPage"
       :error="Boolean(productDemoError)"
-      @select="selectDish"
-      @select-page="selectedDishPage = $event"
-      @show-collection="clearSelectedDish"
-      @show-detail="selectedDishPage = 'detail'"
+      @select="selectItem"
+      @select-page="selectedItemPage = $event"
+      @show-collection="clearSelectedItem"
+      @show-detail="selectedItemPage = 'detail'"
     />
     <LandingWorkspacePreviewIngredients
       v-else-if="selectedSurface?.id === 'kitchen.ingredients'"
@@ -85,7 +85,7 @@ import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/
 import { computed, ref } from 'vue'
 import { kitchenCapabilities } from 'fireux-kitchens/runtime/kitchen/models/capabilities'
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
-import type { DishChildPage } from '~/types/product-demo'
+import type { ItemChildPage } from '~/types/product-demo'
 import LandingWorkspacePreviewFinance from './Finance.vue'
 import LandingWorkspacePreviewStations from './Stations.vue'
 import LandingWorkspacePreviewSuppliers from './Suppliers.vue'
@@ -95,12 +95,12 @@ const operations = kitchenCapabilities
 const emptyFinance: MiseboxProductDemo['workspace']['finance'] = {
   periods: [],
 }
-type ProductDemoDish = MiseboxProductDemo['workspace']['dishes'][number]
+type ProductDemoItem = MiseboxProductDemo['workspace']['dishes'][number]
 const selectedSurfaceId = defineModel<string>('surfaceId', {
   default: 'kitchen.dishes',
 })
-const selectedDishId = ref('')
-const selectedDishPage = ref<DishChildPage>('detail')
+const selectedItemId = ref('')
+const selectedItemPage = ref<ItemChildPage>('detail')
 const selectedSurface = computed(() => {
   return (
     operations.find((operation) => operation.id === selectedSurfaceId.value) ||
@@ -109,9 +109,9 @@ const selectedSurface = computed(() => {
 })
 const { data: productDemo, error: productDemoError } =
   await useMiseboxProductDemo()
-const previewDishes = computed(() =>
+const previewItems = computed(() =>
   (productDemo.value?.workspace.dishes ?? []).filter(
-    (dish: ProductDemoDish) => dish.kind !== 'Drink'
+    (dish: ProductDemoItem) => dish.kind !== 'Drink'
   )
 )
 const workspaceKitchenPill = computed<
@@ -125,23 +125,23 @@ const workspaceKitchenPill = computed<
       imageShade: 'none',
     }
 )
-const selectedDish = computed(
+const selectedItem = computed(
   () =>
-    previewDishes.value.find(
-      (dish: ProductDemoDish) => dish.id === selectedDishId.value
+    previewItems.value.find(
+      (dish: ProductDemoItem) => dish.id === selectedItemId.value
     ) || null
 )
-const selectDish = (dishId: string) => {
-  selectedDishId.value = dishId
-  selectedDishPage.value = 'detail'
+const selectItem = (dishId: string) => {
+  selectedItemId.value = dishId
+  selectedItemPage.value = 'detail'
 }
-const clearSelectedDish = () => {
-  selectedDishId.value = ''
-  selectedDishPage.value = 'detail'
+const clearSelectedItem = () => {
+  selectedItemId.value = ''
+  selectedItemPage.value = 'detail'
 }
 const selectSurface = (surfaceId: string) => {
   selectedSurfaceId.value = surfaceId
-  clearSelectedDish()
+  clearSelectedItem()
 }
 const openFullKitchenWorkspace = async (event: MouseEvent) => {
   event.preventDefault()

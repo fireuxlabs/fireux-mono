@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
-import { dishPricingHelpers } from '../helpers/dish-pricing.mjs'
+import { itemPricingHelpers } from '../helpers/item-pricing.mjs'
 import { makeMenuOrdering } from '../helpers/menu-checkout.mjs'
 import {
   load,
@@ -389,7 +389,7 @@ test('submission has no test mode or test metadata', async () => {
 })
 const menuOrdering = makeMenuOrdering({
   ...menuServices,
-  ...dishPricingHelpers,
+  ...itemPricingHelpers,
   readKitchenOfferingsInTransaction: async (tx) =>
     tx.offerings ?? [publicOffering],
   createError: (v) => Object.assign(new Error(v.statusMessage), v),
@@ -402,7 +402,7 @@ const menuOrdering = makeMenuOrdering({
   serverKitchenMenusTarget: () => ({ path: 'menus' }),
   serverKitchenMenuSectionsTarget: () => ({ path: 'sections' }),
   serverKitchenMenuItemsTarget: () => ({ path: 'items' }),
-  serverKitchenDishesTarget: () => ({ path: 'dishes' }),
+  serverKitchenItemsTarget: () => ({ path: 'dishes' }),
   PLACE_MUTATION_TARGETS: { places: { path: 'places' } },
   KITCHEN_MUTATION_TARGETS: { kitchens: { path: 'kitchens' } },
   readPlaceCurrencyCode: (v) => v.currency,

@@ -1,7 +1,7 @@
 import { miseboxRestaurantKitchenDemoIdentity } from '../../core/fixtures'
 import type { KitchenDemoMenu } from '../../core/types'
 import { kitchenMenu, rootMenu } from './builders'
-import { miseboxRestaurantDemoDishes } from './misebox-restaurant-dishes'
+import { miseboxRestaurantDemoItems } from './misebox-restaurant-items'
 import { miseboxRestaurantDemoMenuSections } from './misebox-restaurant-sections'
 
 const miseboxRestaurantRootMenu = rootMenu(
@@ -16,6 +16,6 @@ export const miseboxRestaurantKitchenDemoMenu: KitchenDemoMenu = {
     miseboxRestaurantKitchenDemoIdentity,
     miseboxRestaurantRootMenu
   ),
-  dishes: miseboxRestaurantDemoDishes,
+  dishes: miseboxRestaurantDemoItems,
   menuSections: miseboxRestaurantDemoMenuSections,
 }

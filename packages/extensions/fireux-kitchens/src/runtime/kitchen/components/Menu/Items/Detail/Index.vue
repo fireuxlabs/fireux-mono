@@ -1,11 +1,5 @@
 <template>
-  <section class="dish-workspace">
-    <NuxtLink v-if="!menuReturn" :to="catalogueReturn"
-      ><UIcon name="i-lucide-arrow-left" />Items</NuxtLink
-    >
-    <NuxtLink v-if="menuReturn" :to="menuReturn"
-      >← Back to Menu section</NuxtLink
-    >
+  <section class="item-workspace">
     <UAlert
       v-if="outcome === 'idle'"
       color="neutral"
@@ -25,28 +19,26 @@
       :title="`${catalogue.singular} not found`"
     />
     <template v-else>
-      <header class="dish-header">
-        <KitchenMenuItemsPhoto
-          :src="dish.image"
-          :alt="dish.name"
-          class="dish-image"
-        />
-        <div>
-          <p>{{ selectedKitchen?.name }}</p>
-          <h1>
-            {{ dish.name }}
-          </h1>
-        </div>
-        <UButton
-          v-if="canWrite"
-          icon="i-lucide-settings-2"
-          label="Item actions"
-          color="neutral"
-          variant="outline"
-          @click="manage = true"
-        />
-      </header>
-      <nav aria-label="Item views" class="dish-tabs">
+      <WorkspacePageHeader :title="dish.name" variant="child">
+        <template #actions>
+          <UButton
+            :to="menuReturn || catalogueReturn"
+            :label="menuReturn ? 'Back to Menu section' : 'Back to Items'"
+            icon="i-lucide-arrow-left"
+            color="neutral"
+            variant="ghost"
+          />
+          <UButton
+            v-if="canWrite"
+            icon="i-lucide-ellipsis"
+            aria-label="Item actions"
+            color="neutral"
+            variant="ghost"
+            @click="manage = true"
+          />
+        </template>
+      </WorkspacePageHeader>
+      <nav aria-label="Item views" class="item-tabs">
         <UButton
           v-for="item in views"
           :key="item.id"
@@ -58,10 +50,13 @@
           :aria-current="view === item.id ? 'page' : undefined"
         />
       </nav>
-      <template v-if="view === 'details'">
+      <div
+        v-if="view === 'details'"
+        class="workspace-surface__grid workspace-surface__grid--2 item-details-panels"
+      >
         <KitchenMenuItemsEdit />
         <KitchenMenuItemsPricing />
-      </template>
+      </div>
       <template v-if="view === 'preparation' && dish">
         <KitchenMenuItemsPreparationStations
           :dish="dish"
@@ -69,18 +64,14 @@
           :can-write="canWrite"
         />
       </template>
-      <DishMenus v-if="view === 'menus'" />
-      <UModal
-        v-model:open="manage"
-        title="Item actions"
-        description="Manage this item record."
-      >
+      <ItemMenus v-if="view === 'menus'" />
+      <UModal v-model:open="manage" title="Item actions">
         <template #body
-          ><KitchenMenuItemsDelete :remove="removeDish"
+          ><KitchenMenuItemsDelete :remove="removeItem"
         /></template>
       </UModal>
     </template>
-    <DishSpec
+    <ItemSpec
       v-if="
         view === 'preparation' &&
         storageKitchenId &&
@@ -92,7 +83,7 @@
       v-if="view === 'preparation' && dish"
       title="Preparation requirements"
       :default-open="false"
-      ><DishPreparation
+      ><ItemPreparation
     /></FireDisclosurePanel>
     <FireDisclosurePanel
       v-if="dish && canWrite"
@@ -112,21 +103,20 @@
 <script setup lang="ts">
 import { useKitchenWorkspace } from '../../../../composables/workspace/useKitchenWorkspace'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useKitchenDishesContext } from '../../../../composables/workspace/dishes/useKitchenDishesContext'
+import { useKitchenItemsContext } from '../../../../composables/workspace/items/useKitchenItemsContext'
 const workspace = useKitchenWorkspace()
-const { catalogue } = useKitchenDishesContext()
-const selectedKitchen = workspace.data
+const { catalogue } = useKitchenItemsContext()
 import { computed, ref } from 'vue'
-import { dishCatalogueReturn } from '../../../../utils/dish-catalogue-route'
+import { itemCatalogueReturn } from '../../../../utils/item-catalogue-route'
 import { useRoute, navigateTo } from '#imports'
-import { useDishDelete } from '../../../../composables/dish/useDishDelete'
-import { useDishEditorScope } from '../../../../composables/dish/useDishEditorScope'
+import { useItemDelete } from '../../../../composables/item/useItemDelete'
+import { useItemEditorScope } from '../../../../composables/item/useItemEditorScope'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import DishSpec from '../Spec.vue'
-import DishMenus from '../Menus.vue'
-import DishPreparation from '../Preparation.vue'
-import { provideKitchenItemDetail } from '../../../../composables/dish/useKitchenItemDetailContext'
-import { useKitchenDishDetail } from '../../../../composables/dish/useKitchenDishDetail'
+import ItemSpec from '../Spec.vue'
+import ItemMenus from '../Menus.vue'
+import ItemPreparation from '../Preparation.vue'
+import { provideKitchenItemDetail } from '../../../../composables/item/useKitchenItemDetailContext'
+import { useKitchenItemRecord } from '../../../../composables/item/useKitchenItemRecord'
 const {
   dish,
   dishId,
@@ -137,39 +127,39 @@ const {
   outcome,
   canWrite,
 } = provideKitchenItemDetail(
-  useKitchenDishDetail(
+  useKitchenItemRecord(
     () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
     useRouteParam('dishId')
   )
 )
 const route = useRoute()
 const manage = ref(false)
-const { deleteDish } = useDishDelete([
+const { deleteItem } = useItemDelete([
   kitchenId,
   dishId,
   () => route.fullPath,
   canWrite,
 ])
 const toast = useToastify()
-const captureIntent = useDishEditorScope(
+const captureIntent = useItemEditorScope(
   [kitchenId, dishId, () => route.fullPath],
   () => {
     manage.value = false
   }
 )
-async function removeDish() {
-  if (!canWrite.value || !dish.value) throw new Error('This Dish is read-only.')
+async function removeItem() {
+  if (!canWrite.value || !dish.value) throw new Error('This Item is read-only.')
   const isCurrent = captureIntent()
   const targetId = dishId.value,
     targetKitchen = kitchenId.value
   const destination = catalogue.path,
     label = catalogue.singular
-  await deleteDish(targetId, { kitchenId: targetKitchen })
+  await deleteItem(targetId, { kitchenId: targetKitchen })
   if (!isCurrent()) return
   toast.add({ title: `${label} deleted`, icon: 'i-heroicons-check-circle' })
   await navigateTo(destination)
 }
-const catalogueReturn = computed(() => dishCatalogueReturn(route.query))
+const catalogueReturn = computed(() => itemCatalogueReturn(route.query))
 const menuReturn = computed(() =>
   typeof route.query.menu === 'string' &&
   typeof route.query.section === 'string'
@@ -194,42 +184,17 @@ const view = computed(() =>
 )
 </script>
 <style scoped>
-.dish-workspace {
+.item-workspace {
   display: grid;
-  gap: 1.75rem;
-  max-width: 80rem;
-  margin-inline: auto;
-  padding-bottom: 2rem;
+  min-width: 0;
+  gap: calc(var(--spacing) * 4);
 }
-.dish-header {
+.item-details-panels {
+  align-items: start;
+}
+.item-tabs {
   display: flex;
-  gap: 1.5rem;
-  align-items: flex-start;
   flex-wrap: wrap;
-}
-.dish-image {
-  width: 5rem;
-  height: 5rem;
-  border-radius: 1.25rem;
-  flex-shrink: 0;
-}
-.dish-tabs {
-  display: flex;
-  gap: 0.25rem;
-  overflow-x: auto;
-  border-bottom: 1px solid var(--ui-border);
-  padding-bottom: 0.75rem;
-}
-.dish-tabs > * {
-  flex-shrink: 0;
-}
-@media (max-width: 640px) {
-  .dish-header {
-    gap: 1rem;
-  }
-  .dish-image {
-    width: 3.5rem;
-    height: 3.5rem;
-  }
+  gap: var(--spacing);
 }
 </style>

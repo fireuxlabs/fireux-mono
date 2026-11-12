@@ -6,7 +6,10 @@ import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
-import { serverKitchenDishesTarget, serverKitchenMenuUploadsTarget } from '../../../../../kitchen/server/mutation-targets'
+import {
+  serverKitchenItemsTarget,
+  serverKitchenMenuUploadsTarget,
+} from '../../../../../kitchen/server/mutation-targets'
 import { writeKitchenMenuDraft } from '../../../../../menu/server/draft/write'
 import { menuNameAndSlug } from '../../../../../menu/server/name'
 import { compareKitchenMenuDraftToCurrent } from '../../../../../menu/server/draft/comparison'
@@ -28,12 +31,12 @@ import {
   menuMediaReviewKey,
 } from '../../../../../menu/server/media/review'
 import { fetchPublicRasterImage } from 'fireux-core/runtime/server/utils/http/public-raster-image'
-import { normalizeAndSaveDishImage } from '../../../../../kitchen/server/dishes/image'
+import { normalizeAndSaveItemImage } from '../../../../../kitchen/server/items/image'
 
 type ConfirmMenuBody = Partial<
   Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId' | 'name', string>
 > & {
-  confirmDishes?: boolean
+  confirmItems?: boolean
 }
 
 const record = (value: unknown): Record<string, unknown> =>
@@ -64,7 +67,7 @@ export default defineEventHandler(async (event: H3Event) => {
   await assertKitchenMenuUploadAccess(appId, kitchenId, uid)
   await assertKitchenMenuCurrencyCode(appId, kitchenId)
 
-  if (!body?.confirmDishes) {
+  if (!body?.confirmItems) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Confirm before creating dishes from this menu draft.',
@@ -98,7 +101,8 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const missingMediaDecisions = sections.flatMap((section, sectionIndex) =>
     section.items.flatMap((item, itemIndex) =>
-      !item.image_url || mediaReview[menuMediaReviewKey(sectionIndex, itemIndex)]
+      !item.image_url ||
+      mediaReview[menuMediaReviewKey(sectionIndex, itemIndex)]
         ? []
         : [item.name]
     )
@@ -106,7 +110,7 @@ export default defineEventHandler(async (event: H3Event) => {
   if (missingMediaDecisions.length) {
     throw createError({
       statusCode: 409,
-      statusMessage: `Review Dish media before confirming: ${missingMediaDecisions.join(', ')}.`,
+      statusMessage: `Review Item media before confirming: ${missingMediaDecisions.join(', ')}.`,
     })
   }
   const queuedAiMedia = Object.values(mediaReview).filter(
@@ -117,7 +121,7 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError({
       statusCode: 409,
       statusMessage:
-        'Generate or reprocess the selected Dish media before confirming the menu.',
+        'Generate or reprocess the selected Item media before confirming the menu.',
     })
   }
 
@@ -172,22 +176,22 @@ export default defineEventHandler(async (event: H3Event) => {
   })
   const {
     sproochliCacheUnits,
-    dish_targets: dishTargets,
+    dish_targets: itemTargets,
     ...write
   } = writeResult
   const mediaApplied: Array<{ dish_id: string; image: string }> = []
-  for (const target of dishTargets) {
+  for (const target of itemTargets) {
     const decision = mediaReview[target.review_key]
     if (decision?.action !== 'keep' || !decision.candidate_url) continue
     const fetched = await fetchPublicRasterImage(decision.candidate_url)
-    const saved = await normalizeAndSaveDishImage({
+    const saved = await normalizeAndSaveItemImage({
       appId,
       kitchenId,
       dishId: target.dish_id,
       data: fetched.buffer,
     })
     try {
-      await serverUpdate(serverKitchenDishesTarget(kitchenId), target.dish_id, {
+      await serverUpdate(serverKitchenItemsTarget(kitchenId), target.dish_id, {
         image: saved.imageUrl,
         updated: serverAuditStamp({ by: uid, appId }),
       })
@@ -258,6 +262,6 @@ export default defineEventHandler(async (event: H3Event) => {
     cacheImport,
     mediaApplied,
     message:
-      'Menu draft confirmed. Dishes, sections, and menu items were created.',
+      'Menu draft confirmed. Items, sections, and menu items were created.',
   }
 })

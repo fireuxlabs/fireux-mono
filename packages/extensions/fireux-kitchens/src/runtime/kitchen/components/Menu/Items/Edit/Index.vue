@@ -1,94 +1,79 @@
 <template>
   <UCard v-if="dish">
     <template #header>
-      <div class="card__header">
-        <div>
-          <h2>Item details</h2>
-          <p>
-            Changes to this Item’s image, name and description appear everywhere
-            it is used.
-          </p>
-        </div>
-      </div>
+      <h2>Details</h2>
     </template>
 
     <div class="fx-card-body-stack">
-      <UFormField label="Image">
-        <div class="fx-card-body-stack">
+      <div class="item-details-identity">
+        <UFormField label="Photo">
           <FireFormsEditableImagePicker
             v-if="canWrite"
-            :src="dishImageUrl"
-            :alt="dishName || catalogue.singular"
+            :src="photoImageUrl(itemImageUrl)"
+            :alt="itemName || catalogue.singular"
             :initials="imageInitials"
+            avatar-class="item-details-photo"
+            button-label="Change Item photo"
             :loading="imageUploading"
             :disabled="busy"
             :update="handleImageUpload"
           />
           <UAvatar
             v-else
-            :src="dishImageUrl || undefined"
-            :alt="dishName || 'Dish'"
+            :src="photoImageUrl(itemImageUrl) || undefined"
+            :alt="itemName || 'Item'"
             :text="imageInitials"
-            icon="i-lucide-utensils"
+            icon="i-lucide-sandwich"
             size="3xl"
+            class="item-details-photo"
           />
-          <p v-if="imageUploading">Uploading image...</p>
-          <p v-else-if="canWrite">Choose a clear photo of this Item.</p>
-        </div>
-      </UFormField>
-
-      <div class="fx-card-body-stack">
-        <UFormField
-          v-if="dish.item_kind === 'food'"
-          label="Food category"
-          description="Optional food description."
-        >
-          <USelect
-            :model-value="dish.category"
-            :items="[...dishCategories]"
-            placeholder="Choose category"
-            aria-label="Item category"
-            :disabled="!canWrite || busy"
-            @update:model-value="handleCategory"
-          />
+          <p v-if="imageUploading" role="status">Uploading photo…</p>
         </UFormField>
+        <div class="fx-card-body-stack">
+          <FireFormsEditableSimpleField
+            label="Name"
+            :value="itemName"
+            :placeholder="`${singularTitle} name`"
+            :maxlength="140"
+            :disabled="!canWrite || imageUploading || flagshipSaving"
+            :disabled-message="`This ${catalogue.singular} is read-only.`"
+            :validation-function="validateItemName"
+            :capture-intent="captureScope"
+            :update="handleName"
+          />
+          <FireFormsEditableSimpleField
+            label="Description"
+            type="textarea"
+            :rows="5"
+            :value="itemDescription"
+            :placeholder="`Default ${catalogue.singular} description`"
+            :maxlength="800"
+            :disabled="!canWrite || imageUploading || flagshipSaving"
+            :disabled-message="`This ${catalogue.singular} is read-only.`"
+            :capture-intent="captureScope"
+            :update="handleDescription"
+          />
+          <KitchenMenuItemsDescriptionAssistant
+            v-if="catalogue.itemKind === 'drink'"
+          />
+        </div>
+      </div>
+      <div class="item-details-organisation">
+        <FireFormsEditableSimpleField
+          label="Category"
+          :value="dish.category || ''"
+          placeholder="Add category"
+          :disabled="!canWrite || busy"
+          :capture-intent="captureScope"
+          :update="handleCategory"
+        />
         <UFormField label="Featured item">
           <USwitch
-            :model-value="dishFlagship"
+            :model-value="itemFlagship"
             :disabled="!canWrite || busy"
             @update:model-value="handleFlagship"
           />
-          <p>Choose the item highlighted by your Kitchen’s templates.</p>
         </UFormField>
-
-        <FireFormsEditableSimpleField
-          label="Name"
-          :value="dishName"
-          :placeholder="`${singularTitle} name`"
-          :maxlength="140"
-          :disabled="!canWrite || imageUploading || flagshipSaving"
-          :disabled-message="`This ${catalogue.singular} is read-only.`"
-          :validation-function="validateDishName"
-          :capture-intent="captureScope"
-          :update="handleName"
-        />
-
-        <FireFormsEditableSimpleField
-          label="Description"
-          type="textarea"
-          :rows="5"
-          :value="dishDescription"
-          :placeholder="`Default ${catalogue.singular} description`"
-          :maxlength="800"
-          :disabled="!canWrite || imageUploading || flagshipSaving"
-          :disabled-message="`This ${catalogue.singular} is read-only.`"
-          :capture-intent="captureScope"
-          :update="handleDescription"
-        />
-
-        <KitchenMenuItemsDescriptionAssistant
-          v-if="catalogue.itemKind === 'drink'"
-        />
       </div>
     </div>
   </UCard>
@@ -96,19 +81,19 @@
 
 <script setup lang="ts">
 import { refreshNuxtData } from 'nuxt/app'
+import { photoImageUrl } from 'fireux-core/runtime/utils/photo-image-url'
 
-import { useKitchenDishesContext } from '../../../../composables/workspace/dishes/useKitchenDishesContext'
-const { catalogue } = useKitchenDishesContext()
-import { useDishEditorScope } from '../../../../composables/dish/useDishEditorScope'
+import { useKitchenItemsContext } from '../../../../composables/workspace/items/useKitchenItemsContext'
+const { catalogue } = useKitchenItemsContext()
+import { useItemEditorScope } from '../../../../composables/item/useItemEditorScope'
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenItemDetail } from '../../../../composables/dish/useKitchenItemDetailContext'
-import { useDishImageUpload } from '../../../../composables/dish/useDishImageUpload'
-import { useDishUpdate } from '../../../../composables/dish/useDishUpdate'
-import { dishCategories } from '../../../../models/dish.model'
-import type { DishUpdateInput } from '../../../../utils/dish.ts'
+import { useKitchenItemDetail } from '../../../../composables/item/useKitchenItemDetailContext'
+import { useItemImageUpload } from '../../../../composables/item/useItemImageUpload'
+import { useItemUpdate } from '../../../../composables/item/useItemUpdate'
+import type { ItemUpdateInput } from '../../../../utils/item.ts'
 
 const { dish, dishId, kitchenId, canWrite } = useKitchenItemDetail()
 
@@ -123,7 +108,7 @@ let fieldGeneration = 0
 const busy = computed(
   () => imageUploading.value || flagshipSaving.value || fieldSaving.value
 )
-const captureScope = useDishEditorScope(
+const captureScope = useItemEditorScope(
   [kitchenId, dishId, () => catalogue.itemKind, () => route.fullPath],
   () => {
     imageUploading.value = false
@@ -138,42 +123,42 @@ const ownerSources = [
   () => route.fullPath,
   canWrite,
 ]
-const { updateDish } = useDishUpdate(ownerSources)
-const { uploadDishImage } = useDishImageUpload(ownerSources)
+const { updateItem } = useItemUpdate(ownerSources)
+const { uploadItemImage } = useItemImageUpload(ownerSources)
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const singularTitle = computed(
   () =>
     `${catalogue.singular.charAt(0).toUpperCase()}${catalogue.singular.slice(1)}`
 )
-const dishName = computed(() => normalizeString(dish.value?.name))
-const dishDescription = computed(() => normalizeString(dish.value?.description))
-const dishImageUrl = computed(() => normalizeString(dish.value?.image))
-const dishFlagship = computed(() => dish.value?.is_flagship === true)
+const itemName = computed(() => normalizeString(dish.value?.name))
+const itemDescription = computed(() => normalizeString(dish.value?.description))
+const itemImageUrl = computed(() => normalizeString(dish.value?.image))
+const itemFlagship = computed(() => dish.value?.is_flagship === true)
 const imageInitials = computed(() => {
-  const parts = dishName.value.split(/\s+/).filter(Boolean)
+  const parts = itemName.value.split(/\s+/).filter(Boolean)
   if (!parts.length) return 'D'
   if (parts.length === 1) return (parts[0] || '').slice(0, 2).toUpperCase()
   return `${parts[0]?.[0] || ''}${parts[1]?.[0] || ''}`.toUpperCase()
 })
 
-const validateDishName = (value: string) => {
+const validateItemName = (value: string) => {
   const next = normalizeString(value)
   return {
     isValid: Boolean(next),
-    message: next ? '' : 'Dish name is required.',
+    message: next ? '' : 'Item name is required.',
   }
 }
 
-async function updateDishField(
-  patch: DishUpdateInput,
+async function updateItemField(
+  patch: ItemUpdateInput,
   successTitle: string,
   failTitle: string,
   isSurfaceCurrent?: () => boolean
 ) {
   if (fieldSaving.value && fieldCurrent.value && !fieldCurrent.value())
     fieldSaving.value = false
-  if (busy.value) throw new Error('A Dish change is already being saved.')
+  if (busy.value) throw new Error('A Item change is already being saved.')
   fieldCurrent.value = isSurfaceCurrent
   const generation = ++fieldGeneration
   const isOwnerCurrent = captureScope()
@@ -189,7 +174,7 @@ async function updateDishField(
   }
   fieldSaving.value = true
   try {
-    await updateDish(dishId.value, patch, {
+    await updateItem(dishId.value, patch, {
       kitchenId: kitchenId.value,
       isCurrent,
     })
@@ -211,18 +196,16 @@ async function updateDishField(
   }
 }
 
-const handleCategory = (value: unknown) => {
-  const category = dishCategories.find((item) => item.value === value)?.value
-  if (category)
-    return updateDishField(
-      { category },
-      'Category updated',
-      'Could not update category'
-    )
-}
+const handleCategory = (value: string, isSurfaceCurrent?: () => boolean) =>
+  updateItemField(
+    { category: value.trim() },
+    'Category updated',
+    'Could not update category',
+    isSurfaceCurrent
+  )
 
 const handleName = async (value: string, isSurfaceCurrent?: () => boolean) =>
-  updateDishField(
+  updateItemField(
     { name: normalizeString(value) },
     `${catalogue.singular} name updated`,
     `Could not update ${catalogue.singular} name`,
@@ -233,7 +216,7 @@ const handleDescription = async (
   value: string,
   isSurfaceCurrent?: () => boolean
 ) =>
-  updateDishField(
+  updateItemField(
     { description: normalizeString(value) },
     `${catalogue.singular} description updated`,
     `Could not update ${catalogue.singular} description`,
@@ -242,15 +225,15 @@ const handleDescription = async (
 
 const handleFlagship = async (value: boolean) => {
   const isCurrent = captureScope()
-  const requestedDishId = dishId.value,
+  const requestedItemId = dishId.value,
     requestedKitchenId = kitchenId.value
   if (!canWrite.value || busy.value || !dishId.value || !kitchenId.value) return
   flagshipSaving.value = true
   try {
     const token = await currentUser.value?.getIdToken()
     if (!isCurrent() || !canWrite.value) return
-    if (!token) throw new Error('Sign in before updating the flagship Dish.')
-    await $fetch(`/api/workspace/kitchen/dishes/${requestedDishId}/flagship`, {
+    if (!token) throw new Error('Sign in before updating the flagship Item.')
+    await $fetch(`/api/workspace/kitchen/dishes/${requestedItemId}/flagship`, {
       onResponse: async ({ options, response }) => {
         if (
           response.ok &&
@@ -267,14 +250,14 @@ const handleFlagship = async (value: boolean) => {
     })
     if (!isCurrent()) return
     toast.add({
-      title: value ? 'Flagship Dish selected' : 'Flagship Dish cleared',
+      title: value ? 'Flagship Item selected' : 'Flagship Item cleared',
       color: 'success',
       icon: 'i-lucide-star',
     })
   } catch (error) {
     if (!isCurrent()) return
     toast.add({
-      title: 'Could not update flagship Dish',
+      title: 'Could not update flagship Item',
       description: (error as any)?.data?.statusMessage || 'Please try again.',
       color: 'error',
       icon: 'i-lucide-alert-triangle',
@@ -287,13 +270,13 @@ const handleFlagship = async (value: boolean) => {
 
 const handleImageUpload = async (file: File) => {
   const isCurrent = captureScope()
-  const requestedDishId = dishId.value,
+  const requestedItemId = dishId.value,
     requestedKitchenId = kitchenId.value
   if (!canWrite.value || busy.value || !dishId.value || !kitchenId.value) return
   imageUploading.value = true
   try {
-    await uploadDishImage({
-      dishId: requestedDishId,
+    await uploadItemImage({
+      dishId: requestedItemId,
       kitchenId: requestedKitchenId,
       file,
     })
@@ -319,3 +302,27 @@ const handleImageUpload = async (file: File) => {
   }
 }
 </script>
+
+<style scoped>
+.item-details-identity {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  align-items: start;
+  gap: calc(var(--spacing) * 4);
+}
+.item-details-identity :deep(.item-details-photo),
+.item-details-photo {
+  border-radius: var(--ui-radius);
+}
+.item-details-organisation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: calc(var(--spacing) * 4);
+}
+@media (max-width: 640px) {
+  .item-details-identity,
+  .item-details-organisation {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+</style>

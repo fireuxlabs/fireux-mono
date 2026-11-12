@@ -1,14 +1,14 @@
 <template>
   <USlideover
     v-model:open="open"
-    :title="dish?.name || 'Dish quick look'"
+    :title="dish?.name || 'Item quick look'"
     :description="catalogue.title"
     @after:leave="emit('after-leave')"
   >
     <template #body>
       <div v-if="dish">
         <div>
-          <div class="dish-preview-image">
+          <div class="item-preview-image">
             <img
               v-if="dish.image"
               :src="dish.image"
@@ -37,9 +37,9 @@
 
         <section
           v-if="menuUsage.length"
-          aria-labelledby="dish-quick-look-menus"
+          aria-labelledby="item-quick-look-menus"
         >
-          <h3 id="dish-quick-look-menus">On menus</h3>
+          <h3 id="item-quick-look-menus">On menus</h3>
           <UPageGrid as="ul">
             <UCard
               as="li"
@@ -80,12 +80,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
-import type { Dish } from '../../../utils/dish.ts'
+import { useKitchenItemsContext } from '../../../composables/workspace/items/useKitchenItemsContext'
+import type { Item } from '../../../utils/item.ts'
 
 const props = withDefaults(
   defineProps<{
-    dish: Dish | null
+    dish: Item | null
     menuUsage?: Array<{
       menuId: string
       sectionId: string
@@ -106,7 +106,7 @@ const emit = defineEmits<{
 }>()
 
 const open = defineModel<boolean>('open', { required: true })
-const { catalogue } = useKitchenDishesContext()
+const { catalogue } = useKitchenItemsContext()
 const clean = (value: unknown) => String(value ?? '').trim()
 const kindLabel = computed(() =>
   props.dish?.item_kind === 'drink' ? 'Drink' : 'Food'
@@ -129,11 +129,11 @@ const menuPlacements = computed(() =>
 </script>
 
 <style scoped>
-.dish-preview-image {
+.item-preview-image {
   aspect-ratio: 4 / 3;
   width: 100%;
 }
-.dish-preview-image img {
+.item-preview-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;

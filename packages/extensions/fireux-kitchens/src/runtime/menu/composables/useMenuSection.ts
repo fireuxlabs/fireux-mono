@@ -1,13 +1,13 @@
 import type { KitchenPromotion } from '../../kitchen/models/promotion.model'
 import { useKitchenChildCollection } from '../../kitchen/composables/useKitchenChildCollection'
 import type {
-  DishPriceOption,
-  DishAddOnOption,
-} from '../../kitchen/models/dish.model'
+  ItemPriceOption,
+  ItemAddOnOption,
+} from '../../kitchen/models/item.model'
 import {
-  normalizeDishPriceOptions,
-  normalizeDishAddOns,
-} from '../../kitchen/utils/dish-pricing'
+  normalizeItemPriceOptions,
+  normalizeItemAddOns,
+} from '../../kitchen/utils/item-pricing'
 import {
   computed,
   toValue,
@@ -17,12 +17,12 @@ import {
   type InjectionKey,
   type Ref,
 } from 'vue'
-import type { Dish } from '../../kitchen/utils/dish.ts'
+import type { Item } from '../../kitchen/utils/item.ts'
 import { type MenuItem } from '../models/menu-item.model.ts'
 import type { MenuSection } from '../models/menu-section.model.ts'
-import { useKitchenDishCollection } from '../../kitchen/composables/useKitchenDishCollection'
+import { useKitchenItemCollection } from '../../kitchen/composables/useKitchenItemCollection'
 import type { Menu } from '../models/menu.model'
-import { useDishUpdate } from '../../kitchen/composables/dish/useDishUpdate'
+import { useItemUpdate } from '../../kitchen/composables/item/useItemUpdate'
 import { useMenuSectionItemCollection } from './useMenuSectionItemCollection'
 import { useMenuItemMutations } from './firestore/mutations/useMenuItemMutations'
 
@@ -35,13 +35,13 @@ const record = (value: unknown) =>
 export type MenuSectionItemRow = {
   id: string
   item: MenuItem
-  dish: Dish | null
+  dish: Item | null
   promotionId: string
   dishId: string
   label: string
   price: number | undefined
-  addOns: DishAddOnOption[]
-  priceOptions: DishPriceOption[]
+  addOns: ItemAddOnOption[]
+  priceOptions: ItemPriceOption[]
 }
 
 /** Explicit Menu input; this capability does not acquire Workspace state. */
@@ -84,7 +84,7 @@ function createMenuSectionState(
   menuState: MenuSectionSource,
   requestedSectionId: MaybeRefOrGetter<string>
 ) {
-  const dishState = useKitchenDishCollection(menuState.storageKitchenId, {
+  const catalogueState = useKitchenItemCollection(menuState.storageKitchenId, {
     kitchenCollectionPath: menuState.rootCollection,
     databaseId: menuState.databaseId,
   })
@@ -116,7 +116,7 @@ function createMenuSectionState(
     }
   )
   const itemMutations = useMenuItemMutations()
-  const dishMutations = useDishUpdate([
+  const catalogueCommands = useItemUpdate([
     menuState.storageKitchenId,
     menuState.menuId,
     sectionId,
@@ -126,8 +126,8 @@ function createMenuSectionState(
   const itemsPending = itemState.pending
   const itemsCollectionPath = itemState.collectionPath
   const dishesById = computed(() => {
-    const map = new Map<string, Dish>()
-    dishState.dishes.value.forEach((dish) => {
+    const map = new Map<string, Item>()
+    catalogueState.dishes.value.forEach((dish) => {
       const id = clean(dish.id)
       if (id) map.set(id, dish)
     })
@@ -152,14 +152,14 @@ function createMenuSectionState(
           clean(item.promotion_id) ||
           clean(item.dish_id),
         price: deal && 'price' in deal ? deal.price : dish?.price,
-        addOns: normalizeDishAddOns(record(dish).add_ons),
+        addOns: normalizeItemAddOns(record(dish).add_ons),
         priceOptions:
           dish?.choice_groups !== undefined
             ? (
                 dish.choice_groups.find((group) => group.pricing === 'full')
                   ?.options || []
               ).map((option) => ({ ...option, quantity: 0, unit: '' }))
-            : normalizeDishPriceOptions(record(dish).price_options),
+            : normalizeItemPriceOptions(record(dish).price_options),
       }
     })
   )
@@ -201,11 +201,11 @@ function createMenuSectionState(
     return itemMutations.moveItem(...args)
   }
 
-  async function updateDish(
-    ...args: Parameters<typeof dishMutations.updateDish>
+  async function updateCatalogueItem(
+    ...args: Parameters<typeof catalogueCommands.updateItem>
   ) {
     assertCanWrite()
-    return dishMutations.updateDish(...args)
+    return catalogueCommands.updateItem(...args)
   }
 
   return {
@@ -215,7 +215,7 @@ function createMenuSectionState(
     removeItem,
     archiveItem,
     moveItem,
-    updateDish,
+    updateCatalogueItem,
     sectionId,
     section,
     items,
@@ -228,8 +228,8 @@ function createMenuSectionState(
     itemsOutcome: itemState.outcome,
     itemsCollectionPath,
     promotions,
-    dishSource: dishState,
-    dishes: dishState.dishes,
+    itemSource: catalogueState,
+    dishes: catalogueState.dishes,
     dishesById,
     debug: computed(() => ({
       ...menuState.debug.value,

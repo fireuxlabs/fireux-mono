@@ -98,7 +98,7 @@ import {
   landingTemplates,
 } from 'fireux-misebox/runtime/content/template-one-fixtures'
 import type { TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/models/template-one'
-import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/kitchen/server/dishes/flagship-projection'
+import type { KitchenFlagshipItemResult } from 'fireux-kitchens/runtime/kitchen/server/items/flagship-projection'
 
 const route = useRoute()
 const kitchens = landingTemplateBrands
@@ -119,7 +119,7 @@ const { data: flagship } = await useAsyncData(
     const fetchRead = $fetch.create({ signal, cache: 'no-store' })
     return selectedKitchen.value.appProps &&
       selectedKitchen.value.id !== 'deanos'
-      ? fetchRead<KitchenFlagshipDishResult>(
+      ? fetchRead<KitchenFlagshipItemResult>(
           `/api/kitchens/${selectedKitchen.value.appProps.kitchenId}/flagship-dish`,
           { query: { appId: selectedKitchen.value.appProps.appId } }
         ).catch(() => null)
@@ -169,13 +169,13 @@ const readiness = computed(() => {
       ready: Boolean(kitchen.assetSources[role]),
     })),
     {
-      label: 'Exactly one flagship Dish',
+      label: 'Exactly one flagship Item',
       ready:
         kitchen.id === 'deanos' ||
         flagship.value?.contentReadiness.uniqueFlagship === true,
     },
     {
-      label: 'Flagship Dish image',
+      label: 'Flagship Item image',
       ready: kitchen.id === 'deanos' || flagship.value?.ready === true,
     },
   ]

@@ -157,7 +157,7 @@ function server() {
       plannedSections: [],
       sproochliCacheUnits: [],
     }),
-    serverKitchenDishesTarget: (kitchen) => `kitchens/${kitchen}/dishes`,
+    serverKitchenItemsTarget: (kitchen) => `kitchens/${kitchen}/dishes`,
   }).writeKitchenMenuDraft
   return {
     rows,
@@ -293,7 +293,7 @@ test('document preparation keeps shared Free naming policy and does not grant a 
   assert.equal(h.rows.get('kitchens/k/menus/source').name, 'Food')
 })
 
-test('structured import cannot overwrite a document Menu or create Dishes behind its document', async () => {
+test('structured import cannot overwrite a document Menu or create Items behind its document', async () => {
   const h = server()
   await h.prepare()
   const before = structuredClone(h.rows.get('kitchens/k/menus/source'))

@@ -406,9 +406,9 @@ storage scope. Counts and creation controls require settled collections, while
 an explicitly open specification editor preserves its same-record local buffer
 through its own live refresh.
 
-`kitchen/utils/dish-specification.ts` holds the pure input contract consumed by
+`kitchen/utils/item-specification.ts` holds the pure input contract consumed by
 the editor and trusted update. Direct actions live under
-`kitchen/server/dishes/{create,update,delete}.ts`, with shared envelope parsing in
+`kitchen/server/items/{create,update,delete}.ts`, with shared envelope parsing in
 `record-input.ts`. Client mutation and image adapters capture account, App,
 access, Kitchen, route and local intent; obsolete preparation cannot dispatch,
 and a completed server action remains a truthful result. Core's editable-field

@@ -1,15 +1,15 @@
 import type {
-  KitchenDemoDishIngredientComponent,
-  KitchenDemoDishPrepItemComponent,
-  KitchenDemoDishRecipeComponent,
+  KitchenDemoItemIngredientComponent,
+  KitchenDemoItemPrepItemComponent,
+  KitchenDemoItemRecipeComponent,
 } from './types'
 
 export const ingredientComponent = (
   id: string,
   ingredientId: string,
   quantity: number,
-  unit: KitchenDemoDishIngredientComponent['unit']
-): KitchenDemoDishIngredientComponent => ({
+  unit: KitchenDemoItemIngredientComponent['unit']
+): KitchenDemoItemIngredientComponent => ({
   id,
   source: 'ingredient',
   ingredientId,
@@ -21,8 +21,8 @@ export const prepItemComponent = (
   id: string,
   prepItemId: string,
   quantity: number,
-  unit: KitchenDemoDishPrepItemComponent['unit']
-): KitchenDemoDishPrepItemComponent => ({
+  unit: KitchenDemoItemPrepItemComponent['unit']
+): KitchenDemoItemPrepItemComponent => ({
   id,
   source: 'prep_item',
   prepItemId,
@@ -34,8 +34,8 @@ export const recipeComponent = (
   id: string,
   recipeId: string,
   quantity: number,
-  unit: KitchenDemoDishRecipeComponent['unit']
-): KitchenDemoDishRecipeComponent => ({
+  unit: KitchenDemoItemRecipeComponent['unit']
+): KitchenDemoItemRecipeComponent => ({
   id,
   source: 'recipe',
   recipeId,

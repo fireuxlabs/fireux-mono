@@ -61,12 +61,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
-import type { Dish } from '../../../models/dish.model'
-import { useKitchenItemPreparation } from '../../../composables/workspace/dishes/useKitchenItemPreparation'
-import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
-import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
+import type { Item } from '../../../models/item.model'
+import { useKitchenItemPreparation } from '../../../composables/workspace/items/useKitchenItemPreparation'
+import { useItemUpdate } from '../../../composables/item/useItemUpdate'
+import { useItemEditorScope } from '../../../composables/item/useItemEditorScope'
 const props = defineProps<{
-  dish: Dish
+  dish: Item
   kitchenId: string
   canWrite: boolean
 }>()
@@ -106,8 +106,8 @@ const sources = [
   () => props.canWrite,
   () => route.fullPath,
 ]
-const capture = useDishEditorScope(sources, reset)
-const { updateDish } = useDishUpdate([...sources, stationIds, mode])
+const capture = useItemEditorScope(sources, reset)
+const { updateItem } = useItemUpdate([...sources, stationIds, mode])
 async function save() {
   if (
     !props.canWrite ||
@@ -121,7 +121,7 @@ async function save() {
   error.value = ''
   saved.value = ''
   try {
-    await updateDish(
+    await updateItem(
       props.dish.id,
       {
         preparation_station_ids:

@@ -5,7 +5,7 @@ import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
 import * as Vue from 'vue'
 import * as choices from '../runtime/kitchen/utils/item-choices.ts'
-import { normalizeDishPricingPatch } from '../runtime/kitchen/utils/dish-pricing.ts'
+import { normalizeItemPricingPatch } from '../runtime/kitchen/utils/item-pricing.ts'
 function load(path, result, deps) {
   const source = readFileSync(
     new URL(
@@ -72,7 +72,7 @@ test('Price & choices reads legacy Items without writes, saves a detached explic
     load('Pricing.vue', '({groups,save,resetDraft,price,previewChoices})', {
       ...Vue,
       ...choices,
-      normalizeDishPricingPatch,
+      normalizeItemPricingPatch,
       useKitchenWorkspace: () => ({ data: Vue.ref({}) }),
       readPlaceCurrencyCode: () => 'CHF',
       useKitchenItemDetail: () => ({
@@ -81,9 +81,9 @@ test('Price & choices reads legacy Items without writes, saves a detached explic
         dishId: Vue.ref('i'),
         canWrite: Vue.ref(true),
       }),
-      useDishEditorScope: () => () => () => true,
-      useDishUpdate: () => ({
-        updateDish: (...args) => {
+      useItemEditorScope: () => () => () => true,
+      useItemUpdate: () => ({
+        updateItem: (...args) => {
           calls.push(args)
           return saving
         },
@@ -117,8 +117,8 @@ test('Items list shows legacy and explicit groups with starting prices including
     ...choices,
     defineEmits: () => () => {},
     readPlaceCurrencyCode: () => 'CHF',
-    useKitchenDishesContext: () => ({ selectedKitchen: Vue.ref({}) }),
-    useDishCatalogueContext: () => ({}),
+    useKitchenItemsContext: () => ({ selectedKitchen: Vue.ref({}) }),
+    useItemCatalogueContext: () => ({}),
   })
   assert.equal(
     state.priceLabel({ price: 21, price_options: [], add_ons: [] }),

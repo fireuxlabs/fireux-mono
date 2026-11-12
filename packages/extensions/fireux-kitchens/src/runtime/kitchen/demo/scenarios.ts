@@ -14,7 +14,7 @@ import {
   pizzaTheActionKitchenDemoIdentity,
 } from './core/fixtures'
 import { deanosKitchenDemoFinance } from './finance'
-import { deanosKitchenDemoDishFinance } from './operations/Dishes/finance'
+import { deanosKitchenDemoItemFinance } from './operations/Items/finance'
 import {
   deanosKitchenDemoIngredientLinks,
   deanosKitchenDemoSupplierIngredientLinks,
@@ -61,8 +61,8 @@ export const deanosKitchenDemoScenario = buildKitchenDemoScenario({
   menu: deanosKitchenDemoMenu,
   menuModes: deanosKitchenDemoMenuModes,
   additionalMenus: [deanosPartyDemoMenu, deanosXmasDemoMenu],
-  dishSpecs: deanosKitchenDemoSpecs,
-  dishFinance: deanosKitchenDemoDishFinance,
+  itemSpecs: deanosKitchenDemoSpecs,
+  itemFinance: deanosKitchenDemoItemFinance,
   finance: deanosKitchenDemoFinance,
   team: deanosKitchenDemoTeam,
   services: deanosKitchenDemoServices,

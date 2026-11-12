@@ -1,4 +1,4 @@
-import { useDishEditorScope } from '../../dish/useDishEditorScope'
+import { useItemEditorScope } from '../../item/useItemEditorScope'
 import { useMenuRecordNavigation } from './useMenuRecordNavigation'
 import { ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
@@ -30,7 +30,7 @@ export function useMenuSectionItemsEditor(embedded = false) {
   const moveError = ref('')
   const moving = ref('')
   const removing = ref('')
-  const captureDishScope = useDishEditorScope(
+  const captureItemScope = useItemEditorScope(
     [kitchenId, menuId, sectionId],
     () => {
       removing.value = ''
@@ -47,7 +47,7 @@ export function useMenuSectionItemsEditor(embedded = false) {
       )
     )
       return
-    const isCurrent = captureDishScope()
+    const isCurrent = captureItemScope()
     removing.value = row.id
     try {
       await removeItem(
@@ -84,7 +84,7 @@ export function useMenuSectionItemsEditor(embedded = false) {
   }
   async function move(row: MenuSectionItemRow, direction: 'up' | 'down') {
     if (!canMove(row, direction)) return
-    const isCurrent = captureDishScope()
+    const isCurrent = captureItemScope()
     moveError.value = ''
     moving.value = row.id
     try {

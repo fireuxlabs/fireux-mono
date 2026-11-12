@@ -9,7 +9,7 @@
         :tagline="projection.hero.tagline"
         :palette="projection.palette"
         :typography="projection.typography"
-        :flagship-dish="projection.flagshipDish"
+        :flagship-dish="projection.flagshipItem"
         :product-crop="projection.hero.productCrop"
         :requirements="projection.requirements"
         menu-to="#menu"

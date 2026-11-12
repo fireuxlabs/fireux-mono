@@ -69,7 +69,8 @@
         <UFormField
           label="Maximum choices"
           description="Leave blank for any number."
-          ><UInput
+          ><!-- @vue-generic {string | number, {}} -->
+          <UInput
             :model-value="group.max ?? ''"
             type="number"
             min="1"

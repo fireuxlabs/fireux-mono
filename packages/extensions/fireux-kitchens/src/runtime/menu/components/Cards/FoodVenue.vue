@@ -17,8 +17,8 @@
       <p v-for="description in venue.descriptions" :key="description">
         {{ description }}
       </p>
-      <ul v-if="venue.matchingDishes.length" aria-label="Matching food">
-        <li v-for="dish in venue.matchingDishes" :key="dish.id">
+      <ul v-if="venue.matchingItems.length" aria-label="Matching food">
+        <li v-for="dish in venue.matchingItems" :key="dish.id">
           {{ dish.name }}
         </li>
       </ul>

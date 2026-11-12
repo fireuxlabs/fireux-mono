@@ -7,7 +7,7 @@ import {
   normalizeIngredient,
 } from '../../../ingredient/server/normalize'
 import type { RecipePreparation } from '../../models/recipe-preparation'
-import { serverKitchenDishesTarget } from '../mutation-targets'
+import { serverKitchenItemsTarget } from '../mutation-targets'
 import { normalizeKitchenPrepItem } from '../../utils/prep-item'
 
 function childTarget(
@@ -105,23 +105,23 @@ export async function requireKitchenRecipeReference(
     })
 }
 
-/** Existing Dish specifications and recipe-backed Prep Items retain the Recipe id. */
+/** Existing Item specifications and recipe-backed Prep Items retain the Recipe id. */
 export async function requireUnusedKitchenRecipe(
   transaction: GuardedServerTransaction,
   kitchenId: string,
   recipeId: string
 ) {
-  for (const kind of ['Dish', 'Prep Item'] as const) {
+  for (const kind of ['Item', 'Prep Item'] as const) {
     const target =
-      kind === 'Dish'
-        ? serverKitchenDishesTarget(kitchenId)
+      kind === 'Item'
+        ? serverKitchenItemsTarget(kitchenId)
         : childTarget(kitchenId, 'prep-items')
     let afterId: string | undefined
     for (;;) {
       // Stored references remain readable after trimming, so exact queries can miss them.
       const rows = await transaction.readAll(target, 100, afterId)
       const usage = rows.find(({ data }) =>
-        kind === 'Dish'
+        kind === 'Item'
           ? Array.isArray(data.spec?.recipe_ids) &&
             data.spec.recipe_ids.some(
               (id: unknown) => String(id ?? '').trim() === recipeId

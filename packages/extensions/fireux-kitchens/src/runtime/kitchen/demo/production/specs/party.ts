@@ -3,9 +3,9 @@ import {
   prepItemComponent,
   recipeComponent,
 } from '../components'
-import type { KitchenDemoDishSpec } from '../types'
+import type { KitchenDemoItemSpec } from '../types'
 
-export const deanosKitchenDemoPartySpecs: KitchenDemoDishSpec[] = [
+export const deanosKitchenDemoPartySpecs: KitchenDemoItemSpec[] = [
   {
     id: 'classic-smash-slider-platter-spec',
     dishId: 'classic-smash-slider-platter',

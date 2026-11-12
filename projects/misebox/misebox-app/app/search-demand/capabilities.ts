@@ -258,7 +258,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
         'Menu placements, selling prices and publication state',
       ],
       uses: [
-        'Dish and Drink specifications',
+        'Item and Drink specifications',
         'Ingredient and Recipe information for supported disclosures',
       ],
       tools: [
@@ -268,7 +268,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
         'Publish or withdraw a menu',
       ],
       boundaries: [
-        'Menu placement does not own the canonical Dish or Recipe.',
+        'Menu placement does not own the canonical Item or Recipe.',
         'Ordering configuration, Orders and payment evidence have separate owners.',
       ],
       service_example:
@@ -334,8 +334,8 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
       purpose:
         'Define a sellable food item and the preparation specification behind it.',
       manages: [
-        'Dish specification, portions and composition',
-        'Dish-specific preparation links and supported cost assumptions',
+        'Item specification, portions and composition',
+        'Item-specific preparation links and supported cost assumptions',
       ],
       uses: [
         'Recipes, prep items and ingredients',
@@ -348,12 +348,12 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
       ],
       boundaries: [
         'Menu sections and publication belong to Menus.',
-        'Recipes retain their own yield and method; a Dish is not an Order.',
+        'Recipes retain their own yield and method; a Item is not an Order.',
       ],
       service_example:
-        'Menu setup can compose reviewed Dishes into an offer without copying their recipe ownership.',
+        'Menu setup can compose reviewed Items into an offer without copying their recipe ownership.',
     },
-    title: 'Dishes',
+    title: 'Items',
     decision: 'establish-now',
     source_cluster_ids: ['recipes-costing', 'menus'],
     source_tool_ids: [
@@ -363,7 +363,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
       'allergen-documentation',
     ],
     rationale:
-      'Dishes are the sellable Kitchen composition connecting recipes, menu placement, availability and operational evidence.',
+      'Items are the sellable Kitchen composition connecting recipes, menu placement, availability and operational evidence.',
     research_route: '/workspace/kitchen/menu/items/search-demand',
   },
   {
@@ -376,7 +376,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
         'Drink preparation links',
       ],
       uses: [
-        'Shared Dish record mechanics distinguished by item kind',
+        'Shared Item record mechanics distinguished by item kind',
         'Ingredients, Recipes and Menu placements',
       ],
       tools: [
@@ -413,7 +413,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
         'Station definitions and responsibilities',
         'Station-specific work context',
       ],
-      uses: ['Dish preparation requirements', 'Preparation tasks and Orders'],
+      uses: ['Item preparation requirements', 'Preparation tasks and Orders'],
       tools: [
         'Define a station',
         'Review station responsibilities',

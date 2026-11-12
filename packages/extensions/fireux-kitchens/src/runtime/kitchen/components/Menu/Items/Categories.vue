@@ -6,41 +6,29 @@
       placeholder="Find a dish"
       icon="i-lucide-search"
     />
-    <p>
-      Category describes the food. Menus decide where and when it is served.
-    </p>
     <FireCopyError v-if="error" :message="error" />
     <div>
       <div v-for="dish in rows" :key="dish.id">
-        <label :for="`category-${dish.id}`">{{ dish.name }}</label>
-        <select
-          :id="`category-${dish.id}`"
+        <p>{{ dish.name }}</p>
+        <FireFormsEditableSimpleField
+          label="Category"
           :value="dish.category || ''"
+          placeholder="Add category"
           :disabled="busy || readOnly"
-          @change="save(dish.id, ($event.target as HTMLSelectElement).value)"
-        >
-          <option value="" disabled>Uncategorised</option>
-          <option
-            v-for="category in dishCategories"
-            :key="category.value"
-            :value="category.value"
-          >
-            {{ category.label }}
-          </option>
-        </select>
+          :update="(value: string) => save(dish.id, value)"
+        />
       </div>
     </div>
     <p v-if="saved" role="status">{{ saved }}</p>
   </div>
 </template>
 <script setup lang="ts">
-import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
+import { useItemEditorScope } from '../../../composables/item/useItemEditorScope'
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
-import { dishCategories } from '../../../models/dish.model'
-import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
-import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
-const { dishes, kitchenId, readOnly, catalogue } = useKitchenDishesContext()
+import { useKitchenItemsContext } from '../../../composables/workspace/items/useKitchenItemsContext'
+import { useItemUpdate } from '../../../composables/item/useItemUpdate'
+const { dishes, kitchenId, readOnly, catalogue } = useKitchenItemsContext()
 const route = useRoute()
 const query = ref('')
 const busy = ref(false)
@@ -54,7 +42,7 @@ const rows = computed(() =>
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name))
 )
-const captureScope = useDishEditorScope(
+const captureScope = useItemEditorScope(
   [kitchenId, () => catalogue.itemKind, () => route.fullPath, query],
   () => {
     busy.value = false
@@ -62,7 +50,7 @@ const captureScope = useDishEditorScope(
     saved.value = ''
   }
 )
-const { updateDish } = useDishUpdate([
+const { updateItem } = useItemUpdate([
   kitchenId,
   () => catalogue.itemKind,
   () => route.fullPath,
@@ -76,11 +64,8 @@ async function save(id: string, value: string) {
   error.value = ''
   saved.value = ''
   try {
-    const category = dishCategories.find(
-      (entry) => entry.value === value
-    )?.value
-    if (!category) throw new Error('Choose a valid dish category.')
-    await updateDish(id, { category }, { kitchenId: kitchenId.value })
+    const category = value.trim()
+    await updateItem(id, { category }, { kitchenId: kitchenId.value })
     if (!isCurrent()) return
     saved.value = 'Category saved'
   } catch (cause) {

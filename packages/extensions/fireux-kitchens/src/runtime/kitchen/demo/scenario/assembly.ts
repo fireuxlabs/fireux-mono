@@ -15,9 +15,9 @@ export function assembleKitchenDemoScenario(input: KitchenDemoScenarioInput) {
 
   const supplierIngredientLinks = [...(input.supplierIngredientLinks ?? [])]
 
-  const dishSpecs = [...(input.dishSpecs ?? [])]
+  const itemSpecs = [...(input.itemSpecs ?? [])]
 
-  const dishFinance = [...(input.dishFinance ?? [])]
+  const itemFinance = [...(input.itemFinance ?? [])]
 
   const finance = input.finance ?? null
 
@@ -40,8 +40,8 @@ export function assembleKitchenDemoScenario(input: KitchenDemoScenarioInput) {
     menuModes,
     kitchenIngredients,
     supplierIngredientLinks,
-    dishSpecs,
-    dishFinance,
+    itemSpecs,
+    itemFinance,
     finance,
     services,
     completedOrders,

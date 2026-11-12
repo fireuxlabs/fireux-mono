@@ -4,7 +4,7 @@ import {
   serviceHoursPolicy,
   testKitchenHours,
 } from './offering-test-helpers.mjs'
-import { dishPricingHelpers } from './helpers/dish-pricing.mjs'
+import { itemPricingHelpers } from './helpers/item-pricing.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -12,7 +12,7 @@ import { compileFunction } from 'node:vm'
 import test from 'node:test'
 
 function load(relative, deps, names) {
-  deps = { readAppUserSubscription, ...dishPricingHelpers, ...deps }
+  deps = { readAppUserSubscription, ...itemPricingHelpers, ...deps }
 
   const source = readFileSync(new URL(relative, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -64,9 +64,9 @@ const { requireKitchenMutationAuthority } = load(
   },
   ['requireKitchenMutationAuthority']
 )
-const normalizers = load('../runtime/kitchen/utils/dish-pricing.ts', {}, [
-  'normalizeDishPriceOptions',
-  'normalizeDishAddOns',
+const normalizers = load('../runtime/kitchen/utils/item-pricing.ts', {}, [
+  'normalizeItemPriceOptions',
+  'normalizeItemAddOns',
 ])
 const { normalizeMenuItemPatch } = load(
   '../runtime/menu/utils/records/item-patch.ts',
@@ -396,12 +396,7 @@ test('trusted rename preserves public slug and record identity', async () => {
     })
     assert.deepEqual(
       h.calls.find((call) => call[0] === 'update'),
-      [
-        'update',
-        'pizza/menus',
-        'food',
-        { name, updated: { by: 'cook' } },
-      ]
+      ['update', 'pizza/menus', 'food', { name, updated: { by: 'cook' } }]
     )
     assert.equal(h.calls.filter((call) => call[0] === 'create').length, 0)
   }
@@ -491,7 +486,7 @@ test('placements reject pricing fields and retain organisation', async () => {
     const h = harness()
     await assert.rejects(
       () => h.updateKitchenMenuItem({}, { ...item, changes }),
-      /Edit pricing on the Dish/
+      /Edit pricing on the Item/
     )
     assert.deepEqual(h.calls, [])
   }

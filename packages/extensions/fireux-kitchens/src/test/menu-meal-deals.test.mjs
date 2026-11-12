@@ -5,7 +5,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { compile, createSSRApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { dishPricingHelpers } from './helpers/dish-pricing.mjs'
+import { itemPricingHelpers } from './helpers/item-pricing.mjs'
 const runtime = new URL('../runtime/', import.meta.url)
 function load(path, names, deps = {}) {
   const source = readFileSync(new URL(path, runtime), 'utf8')
@@ -90,13 +90,13 @@ function fixture() {
     'menu/server/manifest/sections.ts',
     'readKitchenMenuSections',
     {
-      ...dishPricingHelpers,
+      ...itemPricingHelpers,
       ...pricing,
-      serverKitchenDishesTarget: () => '',
+      serverKitchenItemsTarget: () => '',
       serverKitchenMenuSectionsTarget: () => '',
       serverKitchenMenuItemsTarget: () => '',
       kitchenPromotionsTarget: () => '',
-      readDishItemKind: (x) => x,
+      readLegacyItemKind: (x) => x,
       readRecord: (x) => x,
       readRecordString: (r, k) => String(r[k] || ''),
     }
@@ -113,7 +113,7 @@ function fixture() {
       }),
   }
 }
-test('public Menu joins meal-deal choices from Kitchen Dishes and preserves normal prices', async () => {
+test('public Menu joins meal-deal choices from Kitchen Items and preserves normal prices', async () => {
   const f = fixture(),
     before = structuredClone(f.records)
   const sections = await f.read()
@@ -129,7 +129,7 @@ test('public Menu joins meal-deal choices from Kitchen Dishes and preserves norm
   const { readMenuManifestSections } = load(
     'menu/server/payload/sections.ts',
     'readMenuManifestSections',
-    { readDishItemKind: (x) => x }
+    { readLegacyItemKind: (x) => x }
   )
   assert.deepEqual(
     readMenuManifestSections(sections)[0].items[1].mealDeal,
@@ -206,7 +206,7 @@ test('section parent provides one state to all editing controls without injectin
       useKitchenMenuRecordContext: () => {
         throw new Error('Parent must pass its own Menu state')
       },
-      useKitchenDishCollection: () => ({
+      useKitchenItemCollection: () => ({
         dishes: ref([]),
         pending: ref(false),
         error: ref(null),
@@ -221,8 +221,8 @@ test('section parent provides one state to all editing controls without injectin
         pending: ref(false),
       }),
       useMenuItemMutations: () => ({}),
-      useDishUpdate: () => ({}),
-      ...dishPricingHelpers,
+      useItemUpdate: () => ({}),
+      ...itemPricingHelpers,
     }
   )
   let parent
@@ -248,7 +248,7 @@ test('section parent provides one state to all editing controls without injectin
   )
 })
 
-test('meal-deal group and Dish copy use existing translation fields without translating prices', async () => {
+test('meal-deal group and Item copy use existing translation fields without translating prices', async () => {
   const { menuFields, translatedMenu } = load(
     'menu/server/sproochli/resolve.ts',
     'menuFields,translatedMenu'
@@ -356,7 +356,7 @@ test('section Add meal deal dispatches only a scoped reference and ignores obsol
   owner.stop()
 })
 
-test('ordering Menu presentation keeps meal deals read-only while retaining normal Dish buttons', async () => {
+test('ordering Menu presentation keeps meal deals read-only while retaining normal Item buttons', async () => {
   const source = readFileSync(
     new URL('menu/components/Order/MenuItems.vue', runtime),
     'utf8'
@@ -412,7 +412,7 @@ test('ordering Menu presentation keeps meal deals read-only while retaining norm
 })
 
 for (const state of ['missing', 'archived']) {
-  test(`unavailable ${state} Dish hides its entries and incomplete deals without breaking the Menu`, async () => {
+  test(`unavailable ${state} Item hides its entries and incomplete deals without breaking the Menu`, async () => {
     const f = fixture()
     if (state === 'missing') f.records.delete('kitchens/k/dishes/d')
     else f.records.get('kitchens/k/dishes/d').status = 'archived'

@@ -2,7 +2,7 @@
   <section :aria-label="`${catalogue.title} selector`">
     <UTabs
       v-if="state.dishes.length"
-      :model-value="state.selectedDishId"
+      :model-value="state.selectedItemId"
       :items="items"
       :content="false"
       variant="link"
@@ -31,9 +31,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
+import { useKitchenItemsContext } from '../../../composables/workspace/items/useKitchenItemsContext'
 
-const { state, derived, actions, catalogue } = useKitchenDishesContext()
+const { state, derived, actions, catalogue } = useKitchenItemsContext()
 const createOpen = ref(false)
 const subject = computed(() => derived.value.capability.subject)
 const items = computed(() =>

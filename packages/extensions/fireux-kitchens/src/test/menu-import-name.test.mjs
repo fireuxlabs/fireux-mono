@@ -135,7 +135,7 @@ test('new imports require a reviewed name; existing Menu identity stays stable',
         sproochliCacheUnits: [],
       }),
       serverKitchenMenusTarget: () => 'menus',
-      serverKitchenDishesTarget: () => 'dishes',
+      serverKitchenItemsTarget: () => 'dishes',
       requireMenuCreationCapacity: async () => ({ subscription: 'business' }),
       requireKitchenMutationAuthority: async () => ({}),
       requireAvailableMenuSlug: async () => {

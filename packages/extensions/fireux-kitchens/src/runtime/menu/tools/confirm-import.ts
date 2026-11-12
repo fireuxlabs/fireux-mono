@@ -6,7 +6,7 @@ export const kitchenMenuConfirmImportTool = defineFireuxDomainTool({
   family: 'kitchen.menus',
   name: 'Confirm a menu import',
   description:
-    'Create the reviewed Menu and Dish data at the explicit import commit point.',
+    'Create the reviewed Menu and Item data at the explicit import commit point.',
   problem:
     'An authorized operator needs to approve a reviewed menu draft before it changes Kitchen data.',
   searchIntents: [
@@ -27,7 +27,14 @@ export const kitchenMenuConfirmImportTool = defineFireuxDomainTool({
     },
   ],
   input: {
-    required: ['appId', 'kitchenId', 'menuId', 'uploadId', 'name', 'confirmDishes'],
+    required: [
+      'appId',
+      'kitchenId',
+      'menuId',
+      'uploadId',
+      'name',
+      'confirmItems',
+    ],
     extensible: false,
   },
   result: { kind: 'KitchenMenuImportCommit' },
@@ -47,7 +54,7 @@ export const kitchenMenuConfirmImportTool = defineFireuxDomainTool({
         'Do not commit without explicit human confirmation.',
         'Do not commit unresolved media decisions, duplicate options or destructive option loss.',
       ],
-      evidence: ['Return the created or updated Menu and Dish write outcome.'],
+      evidence: ['Return the created or updated Menu and Item write outcome.'],
     },
     runtime: {
       accepted: false,
@@ -68,6 +75,6 @@ export const kitchenMenuConfirmImportTool = defineFireuxDomainTool({
   documentation: {
     slug: 'confirm-menu-import',
     guide:
-      'Use only after reviewing the generated draft and its media decisions. This is the explicit commit point that writes Menu and Dish data.',
+      'Use only after reviewing the generated draft and its media decisions. This is the explicit commit point that writes Menu and Item data.',
   },
 })

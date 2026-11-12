@@ -57,7 +57,7 @@ function harness() {
     serverKitchenMenuSectionsTarget: (k, m) => `${k}/menus/${m}/sections`,
     serverKitchenMenuItemsTarget: (k, m, s) =>
       `${k}/menus/${m}/sections/${s}/items`,
-    serverKitchenDishesTarget: (k) => `${k}/dishes`,
+    serverKitchenItemsTarget: (k) => `${k}/dishes`,
     kitchenPromotionsTarget: (k) => `${k}/promotions`,
     normalizeMenuItemPatch: (x) => x,
     // Optimistic transaction simulation: overlapping commits retry against fresh data.
@@ -145,18 +145,18 @@ function harness() {
   }
 }
 for (const reference of [{ dishId: 'd' }, { promotionId: 'p' }]) {
-  const kind = reference.dishId ? 'Dish' : 'meal deal'
+  const kind = reference.dishId ? 'Item' : 'meal deal'
   const body = { kitchenId: 'k', menuId: 'm', sectionId: 's', ...reference }
   test(`${kind}: repeat Add returns the saved placement with no further writes`, async () => {
     const h = harness(),
-      beforeDish = structuredClone(h.records.get('k/dishes/d'))
+      beforeItem = structuredClone(h.records.get('k/dishes/d'))
     const first = await h.create({}, body),
       count = h.writes.length
     const saved = structuredClone(h.records)
     assert.deepEqual(await h.create({}, body), first)
     assert.equal(h.writes.length, count)
     assert.deepEqual(h.records, saved)
-    assert.deepEqual(h.records.get('k/dishes/d'), beforeDish)
+    assert.deepEqual(h.records.get('k/dishes/d'), beforeItem)
     h.deny()
     await assert.rejects(h.create({}, body), /Denied/)
   })

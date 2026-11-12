@@ -269,7 +269,7 @@ test('Recipe deletion suppresses stale navigation and notification', async () =>
         recipe: ref({ name: 'Dough' }),
         recipeId,
         kitchenId: h.selectedId,
-        dishUsage: ref([]),
+        itemUsage: ref([]),
         outcome: ref('ready'),
         storageKitchenId: ref('k'),
         pending: ref(false),

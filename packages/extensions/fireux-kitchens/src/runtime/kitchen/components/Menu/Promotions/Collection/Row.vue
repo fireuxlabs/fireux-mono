@@ -16,7 +16,7 @@
                   group.dishes
                     .map(
                       (dish) =>
-                        `${dishName(dish.dishId)} (${dish.supplement ? '+' + formatPrice(dish.supplement, promotion.currency) : 'included'})`
+                        `${itemName(dish.dishId)} (${dish.supplement ? '+' + formatPrice(dish.supplement, promotion.currency) : 'included'})`
                     )
                     .join(', ')
                 }}
@@ -24,7 +24,7 @@
             </li>
           </ul>
         </template>
-        <p v-else>Dish offer · {{ promotion.dishes.length }} dishes</p>
+        <p v-else>Item offer · {{ promotion.dishes.length }} dishes</p>
         <p>
           {{
             promotion.days
@@ -62,7 +62,7 @@ const canEdit = computed(
 )
 const formatPrice = (price: number, currency: string) =>
   new Intl.NumberFormat('en-CH', { style: 'currency', currency }).format(price)
-const dishName = (id: string) =>
+const itemName = (id: string) =>
   state.dishes.items.value.find((dish) => dish.id === id)?.name ||
   'Unavailable dish'
 </script>

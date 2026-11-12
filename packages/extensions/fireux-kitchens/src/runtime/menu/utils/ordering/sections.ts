@@ -6,7 +6,7 @@ import {
 } from '../../../kitchen/utils/promotions/pricing'
 import type {
   MenuManifest,
-  MenuManifestItem,
+  PublicMenuItem,
 } from '../../models/menu-detail.model.ts'
 import type { KitchenPublicOffering } from '../../../kitchen/models/public-offering.model.ts'
 
@@ -21,7 +21,7 @@ export type MenuServiceOffer = {
     menuSlug?: string
     sectionId: string
   }
-  item: MenuManifestItem
+  item: PublicMenuItem
   presentation: MenuManifest['presentation']
   offerings: KitchenPublicOffering[]
   label: string
@@ -87,7 +87,7 @@ const termsKey = (offer: MenuServiceOffer) =>
     offer.item.mealDeal?.groups,
   ])
 
-/** One Dish card retains distinct commercial offers; current/next serving time owns the displayed price. */
+/** One Item card retains distinct commercial offers; current/next serving time owns the displayed price. */
 export function serviceSections(
   sources: MenuServiceSource[],
   now = new Date()

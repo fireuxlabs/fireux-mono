@@ -39,7 +39,7 @@ const fieldSegment = (value: unknown) =>
   text(value).replace(/[^A-Za-z0-9_-]+/g, '-') || 'unknown'
 const menuFieldKey = (menu: MenuManifest) =>
   `menu:${fieldSegment(menu.content.id)}`
-const dishFieldKey = (sectionId: string, itemId: string) =>
+const itemFieldKey = (sectionId: string, itemId: string) =>
   `dish:${fieldSegment(sectionId)}__${fieldSegment(itemId)}`
 
 function menuFields(menu: MenuManifest): SproochliMenuTranslationField[] {
@@ -58,7 +58,7 @@ function menuFields(menu: MenuManifest): SproochliMenuTranslationField[] {
       sourceText: text(section.label),
     })
     section.items.forEach((item) => {
-      const itemKey = dishFieldKey(section.id, item.id)
+      const itemKey = itemFieldKey(section.id, item.id)
       fields.push(
         { id: `${itemKey}:name`, sourceText: text(item.name) },
         { id: `${itemKey}:description`, sourceText: text(item.description) }
@@ -114,7 +114,7 @@ function translatedMenu(
         ...section,
         label: translated(`section:${section.id}:label`, section.label),
         items: section.items.map((item) => {
-          const itemKey = dishFieldKey(section.id, item.id)
+          const itemKey = itemFieldKey(section.id, item.id)
           return {
             ...item,
             name: translated(`${itemKey}:name`, item.name),

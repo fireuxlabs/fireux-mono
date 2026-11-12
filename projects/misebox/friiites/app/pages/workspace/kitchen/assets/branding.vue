@@ -10,7 +10,7 @@
       <h1 class="fx-type-page-title">Friiites serving packaging</h1>
       <p class="fx-type-caption">
         Reusable branded objects owned by the Friiites App. These assets can be
-        combined with Dish photography without redrawing the packaging.
+        combined with Item photography without redrawing the packaging.
       </p>
     </div>
 
@@ -66,7 +66,7 @@
 
       <template #footer>
         <p class="fx-type-caption">
-          Brand objects remain separate from Dish photography and landing
+          Brand objects remain separate from Item photography and landing
           compositions.
         </p>
       </template>
@@ -97,7 +97,7 @@ const { data: asset } = await useFetch<BrandAsset>(
 const brandObjects = computed(() => [
   {
     name: 'Empty serving carton',
-    description: 'The shared base for Classic and future Friiites Dishes.',
+    description: 'The shared base for Classic and future Friiites Items.',
     role: 'packaging.serving_carton_empty',
     image: asset.value?.media.url || '/img/app/packaging/carton-empty.webp',
     alt: 'Empty black Friiites cardboard serving carton',
@@ -107,7 +107,7 @@ const brandObjects = computed(() => [
     objectPath:
       asset.value?.media.object_path ||
       'apps/friiites/brand-assets/serving-carton',
-    use: 'Dish composition',
+    use: 'Item composition',
   },
   {
     name: 'Takeaway bag',

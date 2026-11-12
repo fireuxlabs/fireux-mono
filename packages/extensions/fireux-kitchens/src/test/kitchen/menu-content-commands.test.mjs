@@ -1,5 +1,5 @@
 import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
-import { dishPricingHelpers } from '../helpers/dish-pricing.mjs'
+import { itemPricingHelpers } from '../helpers/item-pricing.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -7,7 +7,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ref, watch } from 'vue'
 function load(path, dependencies, name) {
-  dependencies = { ...dishPricingHelpers, ...dependencies }
+  dependencies = { ...itemPricingHelpers, ...dependencies }
 
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -52,9 +52,9 @@ const requireKitchenMutationAuthority = load(
 const target = (k, m, s) =>
   `kitchens/${k}/menus${m ? `/${m}/sections` : ''}${s ? `/${s}/items` : ''}`
 const utils = load(
-  '../../runtime/kitchen/utils/dish-pricing.ts',
+  '../../runtime/kitchen/utils/item-pricing.ts',
   {},
-  '({normalizeDishPriceOptions,normalizeDishAddOns})'
+  '({normalizeItemPriceOptions,normalizeItemAddOns})'
 )
 const normalizeMenuItemPatch = load(
   '../../runtime/menu/utils/records/item-patch.ts',
@@ -92,7 +92,7 @@ function harness() {
     ...load(
       '../../runtime/kitchen/utils/promotions/pricing.ts',
       {},
-      '({normalizeKitchenPromotion,promotionDishIds})'
+      '({normalizeKitchenPromotion,promotionItemIds})'
     ),
     requireFirestoreDocumentId,
     requireKitchenMutationAuthority,
@@ -101,7 +101,7 @@ function harness() {
     serverKitchenMenusTarget: (k) => target(k),
     serverKitchenMenuSectionsTarget: (k, m) => target(k, m),
     serverKitchenMenuItemsTarget: target,
-    serverKitchenDishesTarget: (k) => `kitchens/${k}/dishes`,
+    serverKitchenItemsTarget: (k) => `kitchens/${k}/dishes`,
     readKitchenMutationActor: async () => ({ uid: 'u', runtimeAppId: 'app' }),
     serverAuditStamp: (x) => ({ ...x, at: 'server-time' }),
     runGuardedServerTransaction: async (_, run) => {
@@ -242,7 +242,7 @@ test('Every content command rechecks membership and binding inside transaction',
       assert.equal(h.writes.length, 0)
     }
 })
-test('Content commands reject missing parent/foreign Dish and caller-owned fields', async () => {
+test('Content commands reject missing parent/foreign Item and caller-owned fields', async () => {
   for (const missing of [
     'kitchens/k/menus/m',
     'kitchens/k/menus/m/sections/s',
@@ -457,7 +457,7 @@ test('manual creation appends after stored gaps and serializes through the paren
   ])
 })
 
-test('Section archive and restore write only status/audit and retain Dish and placement terms', async () => {
+test('Section archive and restore write only status/audit and retain Item and placement terms', async () => {
   const h = harness()
   h.records.set('kitchens/k/dishes/d', { name: 'Pizza', price: 13 })
   h.records.set('kitchens/k/menus/m/sections/s/items/i', {

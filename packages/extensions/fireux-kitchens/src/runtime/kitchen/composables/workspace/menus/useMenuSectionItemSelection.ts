@@ -9,7 +9,7 @@ export function useMenuSectionItemSelection(
     | 'kitchenId'
     | 'menuId'
     | 'sectionId'
-    | 'dishSource'
+    | 'itemSource'
     | 'itemsOutcome'
     | 'itemsError'
     | 'activeItemRows'
@@ -21,7 +21,7 @@ export function useMenuSectionItemSelection(
     kitchenId,
     menuId,
     sectionId,
-    dishSource,
+    itemSource,
     activeItemRows,
     itemsOutcome,
     itemsError,
@@ -42,7 +42,7 @@ export function useMenuSectionItemSelection(
     { flush: 'sync' }
   )
   const catalogueReady = computed(() =>
-    ['ready', 'empty'].includes(dishSource.outcome.value)
+    ['ready', 'empty'].includes(itemSource.outcome.value)
   )
   const placed = computed(
     () =>
@@ -52,7 +52,7 @@ export function useMenuSectionItemSelection(
       ])
   )
   const available = computed(() =>
-    dishSource.dishes.value.filter((dish) => !placed.value.has(dish.id))
+    itemSource.dishes.value.filter((dish) => !placed.value.has(dish.id))
   )
   const visible = computed(() =>
     available.value
@@ -131,8 +131,8 @@ export function useMenuSectionItemSelection(
     selectedIds,
     canAdd,
     catalogueReady,
-    catalogueOutcome: dishSource.outcome,
-    catalogueError: dishSource.error,
+    catalogueOutcome: itemSource.outcome,
+    catalogueError: itemSource.error,
     itemsOutcome,
     itemsError,
     add,

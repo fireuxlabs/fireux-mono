@@ -30,7 +30,7 @@
       data-landing-reveal="up"
       style="--landing-reveal-delay: 80ms"
     >
-      <TemplateOneDishCard v-for="item in dishes" :key="item.id" :item="item" />
+      <TemplateOneItemCard v-for="item in dishes" :key="item.id" :item="item" />
     </div>
 
     <article
@@ -54,7 +54,7 @@ import type {
   AppTypography,
   TemplateOneMenuContent,
 } from '../../models/template-one'
-import TemplateOneDishCard from './DishCard.vue'
+import TemplateOneItemCard from './ItemCard.vue'
 
 const props = defineProps<{
   content: TemplateOneMenuContent

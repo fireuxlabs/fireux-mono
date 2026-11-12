@@ -1,4 +1,4 @@
-import { dishPricingHelpers } from './helpers/dish-pricing.mjs'
+import { itemPricingHelpers } from './helpers/item-pricing.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -10,7 +10,7 @@ const compileFunction = (source, args = []) =>
     : compileNative(source, ['setResponseHeader', ...args]).bind(null, () => {})
 
 function load(path, names, deps) {
-  deps = { ...dishPricingHelpers, ...deps }
+  deps = { ...itemPricingHelpers, ...deps }
 
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -63,9 +63,9 @@ test('the public section reader never acquires items from another calendar date'
     {
       readRecord: (value) => value,
       readRecordString: (value, key) => String(value?.[key] || ''),
-      readDishItemKind: () => 'food',
-      normalizeDishPriceOptions: () => [],
-      normalizeDishAddOns: () => [],
+      readLegacyItemKind: () => 'food',
+      normalizeItemPriceOptions: () => [],
+      normalizeItemAddOns: () => [],
     }
   )
   const result = await readKitchenMenuSections(db, {

@@ -24,26 +24,26 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 | Concept          | Identity       | Job                                                                            |
 | ---------------- | -------------- | ------------------------------------------------------------------------------ |
 | Menu             | Kitchen-scoped | One interactive or document Menu: name, slug, publication, audience and format |
-| MenuSection      | Menu-scoped    | Groups Dish and meal-deal placements                                           |
-| MenuItem         | Section-scoped | Dish or meal-deal reference, availability and display order                    |
-| Dish             | Kitchen-scoped | Food/drink identity, normal price, options, extras and preparation             |
-| Promotion        | Kitchen-scoped | Dish offers or meal deals with set price, choices and supplements              |
+| MenuSection      | Menu-scoped    | Groups Item and meal-deal placements                                           |
+| MenuItem         | Section-scoped | Item or meal-deal reference, availability and display order                    |
+| Item             | Kitchen-scoped | Reusable identity, normal price, choices and preparation             |
+| Promotion        | Kitchen-scoped | Item offers or meal deals with set price, choices and supplements              |
 | MenuSourceUpload | Kitchen-scoped | Source material awaiting review; not a published Menu                          |
 
 `menu/models/menu.model.ts` is the sole stored Menu model.
 `menu/models/menu-storage.model.ts` owns `kitchens/{kitchenId}/menus/{menuId}`.
 There is no root Menu record, standalone Menu upload, copied publication status,
-or directory synchronization command. Interactive content uses sections and Dish or meal-deal
+or directory synchronization command. Interactive content uses sections and Item or meal-deal
 references; document content uses the Menu's `doc` attachment. Both use the same
 creation, publication, audience and QR flow. Daily specials retain their separate
 per-date publication feature.
 
-Kitchen's combined Food & drinks catalogue filters the same Dish family by
-`item_kind`; Menu names do not classify Dishes. Its URL retains kind, search,
+Kitchen's combined Food & drinks catalogue filters the same Item family by
+`item_kind`; Menu names do not classify Items. Its URL retains kind, search,
 category, completeness filter, layout and page. Food and drink editors return to
-that combined catalogue through `kitchen/utils/dish-catalogue-route.ts`; loading
+that combined catalogue through `kitchen/utils/item-catalogue-route.ts`; loading
 does not reset a restored page, and settled results clamp an obsolete page.
-`dish-reader-internals.test.mjs` covers the round trip and delayed Kitchen/data
+`item-reader-internals.test.mjs` covers the round trip and delayed Kitchen/data
 resolution. Item detail has three views: Details combines identity and pricing; Preparation
 combines direct Station assignments, specification and disclosed requirements;
 Appears on shows Menu placements. Existing field editors and commands retain
@@ -78,9 +78,9 @@ Menu IDs and own eligibility and serving schedules.
   closed-by-default drawer and through an explicit return to the landing.
   The kiosk skin may own the catalogue background and keyed section-card
   artwork; without keyed artwork, a section card derives its representative
-  image from that section's canonical Dish media.
+  image from that section's canonical Item media.
 
-Dish writes, Menu content writes and publication refresh only the acquired
+Item writes, Menu content writes and publication refresh only the acquired
 `menu|` and `menu-collection|` Nuxt payload keys. They pass explicit key arrays
 to native `refreshNuxtData`; they do not refresh App/session data and interrupt
 multi-command editors. Native Firestore listeners retain their own records.
@@ -240,10 +240,10 @@ Cost acquisition also fences overlapping runs. Verify
 `menu-process-lifecycle.test.mjs`; server commands retain write authority.
 
 AI extraction produces reviewable candidate content. It does not become
-Menu, Dish media, or published Menu truth until the owning Kitchen flow
+Menu, Item media, or published Menu truth until the owning Kitchen flow
 validates and commits it.
 For a single saved PDF/image, `menu/server/source/document.ts` can instead create
-a draft document Menu without extraction or Dish creation. It reuses
+a draft document Menu without extraction or Item creation. It reuses
 `stageCreateKitchenMenu` for creation policy, capacity and the Menu write, and
 commits the source's `menu_id` link in that transaction. The attachment uses an
 immutable revision through existing upload helpers. The shared preparation view
@@ -252,10 +252,10 @@ publication and QR owners supply the resulting online Menu.
 Review completion replaces its saved process map without a nested delete marker;
 `menu-ai-review-save.test.mjs` validates that update with the real Firestore SDK
 without committing it. Import planning gives each Menu source its own deterministic
-Dish identities; matching names never reuse catalogue Dishes. Retrying the same
-source preserves its identities. Existing-Dish reuse belongs to the section's
+Item identities; matching names never reuse catalogue Items. Retrying the same
+source preserves its identities. Existing-Item reuse belongs to the section's
 catalogue picker. Import confirmation still blocks changed prices on a previously
-created import Dish. See `menu-draft-plan.test.mjs`.
+created import Item. See `menu-draft-plan.test.mjs`.
 The review presents Menu items and one confirmation area. Processing and technical
 reports stay in closed disclosures after extraction. Media decisions are required
 only for detected image candidates; no-image items need no separate approval.
@@ -283,7 +283,7 @@ allergy information. A visitor-selected `sproochli` language replaces that
 interface copy together with the translated Menu projection; the unselected
 default route never rewrites the original Menu content.
 
-Dish owns reusable food media. MenuItem may reference Dish but does not own a
+Item owns reusable food media. MenuItem may reference Item but does not own a
 second food-image field. Kitchen `services.item_images` supplies the customer
 text-only/image-enabled preference through the existing presentation projection.
 Missing and failed images never remove item text, prices or choices. Zero-priced
@@ -314,7 +314,7 @@ The selected Kitchen Menu record is composed once by
 `provideKitchenMenuRecordContext`; nested record tools consume its scoped
 instance. Menu-owned `useKitchenMenuRead` resolves the exact slug with a bounded
 live query, rejects duplicate matches and rebinds with account/App scope. The Menus collection controller retains selection and creation,
-while section items retain their focused item/Dish workflow. See the
+while section items retain their focused item/Item workflow. See the
 Misebox context and `menu-record-controller.test.mjs` for this boundary.
 
 ## File responsibilities and input contracts
@@ -330,10 +330,10 @@ Pure `menu/utils/records/metadata.ts` validates and copies editable catalogue
 metadata. Generic creation and metadata updates accept authored catalogue fields.
 Document attachment belongs to the file/source commands. Creation validates the
 public slug through the trusted name owner. Rename validates display text and
-retains that slug, including for names written in non-Latin scripts. Placement writes reject commercial terms; Dish commands validate
+retains that slug, including for names written in non-Latin scripts. Placement writes reject commercial terms; Item commands validate
 normal prices, options and extras. Command
 inputs are detached before awaiting actor credentials. Publication, source
-review and Dish pricing retain their separate owners.
+review and Item pricing retain their separate owners.
 See `src/test/menu-record-input-internals.test.mjs` and the command, content,
 metadata and publication tests; these are controlled source checks.
 
@@ -344,7 +344,7 @@ their own outcome without hiding loaded Menus. Section/item and uploaded-source
 pages render failure and loading before missing/empty copy or counts.
 `src/test/menu-reader-internals.test.mjs` checks these owners and full templates.
 
-Menu creation, URL import and Dish pricing editors capture
+Menu creation, URL import and Item pricing editors capture
 their account/App/membership, destination and local editing lifetime. Completed
 writes stay truthful, while obsolete navigation, draft resets and feedback are
 discarded. Upload credentials are cleared immediately on scope change and an
@@ -369,7 +369,7 @@ Start with:
 - Menu declaration and storage: `runtime/menu/models/menu.model.ts` and
   `runtime/menu/models/menu-storage.model.ts`.
 - Normal commercial terms: `runtime/kitchen/models/dish.model.ts` and
-  `runtime/kitchen/utils/dish-pricing.ts`.
+  `runtime/kitchen/utils/item-pricing.ts`.
 - Direct discovery: `runtime/menu/server/index/read.ts` and
   `src/test/menu-canonical-discovery.test.mjs`.
 - Route grammar: `runtime/menu/utils/navigation/route.ts`.
@@ -464,9 +464,9 @@ live operator publication or provider/deployment acceptance.
 
 ## Meal-deal entries
 
-Regular interactive Menu placements reference one Kitchen Dish (`dish_id`) or
+Regular interactive Menu placements reference one Kitchen Item (`dish_id`) or
 Kitchen meal-deal Promotion (`promotion_id`). The Menu owns organisation and
-availability; Dish owns normal terms, Promotion owns its set price and choices.
+availability; Item owns normal terms, Promotion owns its set price and choices.
 Daily specials do not accept meal-deal placements. Section editing exposes both
 entry kinds, and public Menu cards display read-only deal choices/supplements.
 Venue-local weekdays and service serving windows control deal visibility.
@@ -476,7 +476,7 @@ transactional Order pricing have separate owners and checks below.
 
 ## Catalogue and Order dependency direction
 
-Dish and Promotion definitions do not depend on Orders. Menu catalogue resolution
+Item and Promotion definitions do not depend on Orders. Menu catalogue resolution
 reads venue presentation, language and service eligibility/serving schedules; it
 does not load Kitchen delivery zones or payment methods. The dedicated fulfilment
 endpoint and Order adapters retain their own policy reads. Order selection, cart
@@ -490,7 +490,7 @@ catalogue refreshes and errors and composes a focused checkout. The existing
 Menu-submit adapter delegates to the Kitchen submission command; no second Order
 store or submission authority is introduced. `menu/server/ordering.ts` coordinates
 canonical reads across Menu sources. Its focused `ordering/selections.ts` parser
-and `ordering/items.ts` transaction reader reuse Dish pricing, Promotion policy
+and `ordering/items.ts` transaction reader reuse Item pricing, Promotion policy
 and `serviceBasketLine` choice calculations. Kitchen, service and Menu hours all
 constrain ordering. Options, extras, meal groups/supplements and bottle choices
 remain in structured saved selections; canonical Order line notes carry the
@@ -528,46 +528,46 @@ between customers; unresolved submissions retain their retry reference. Payment
 at the counter is separate from Order state. See the
 [Ordering boundary](order-processing-kitchen-fulfilment.md).
 
-## Safe Dish removal
+## Safe Item removal
 
-Dish's removal control reads its live Menu-section and Promotion usages. Saved
+Item's removal control reads its live Menu-section and Promotion usages. Saved
 references count even in archived placements or paused Promotions. The trusted
-Dish delete command repeats the same scoped check inside its writing transaction
+Item delete command repeats the same scoped check inside its writing transaction
 and refuses deletion until references are removed; it never cascades or reprices.
 Section editing exposes an explicit confirmed placement removal action. It deletes one placement through the Menu command and
-keeps the referenced Dish or Promotion intact. Usage links can open archived
+keeps the referenced Item or Promotion intact. Usage links can open archived
 sections for this cleanup using the already acquired section rows; ordinary
 section navigation still lists active sections.
 The protected usage reader observes current membership and Kitchen access as well
 as the referenced collections. Public Menu projection omits missing/archived
-Dishes and hides an entire meal deal when any included choice is unavailable,
+Items and hides an entire meal deal when any included choice is unavailable,
 keeping other entries readable. Malformed prices and currency still fail validation.
-See `kitchen/dish-commands.test.mjs`, `kitchen/dish-ui-scope.test.mjs` and
+See `kitchen/item-commands.test.mjs`, `kitchen/item-ui-scope.test.mjs` and
 `menu-meal-deals.test.mjs`.
 
 ## Focused section editing
 
 Menu section detail composes one item list and one Add items entrance. The add
-modal selects catalogue food/drinks, new Dish names or meal deals, mounting only
+modal selects catalogue food/drinks, new Item names or meal deals, mounting only
 the selected workflow against the parent's existing scoped section state.
-Item rows use simple dividers, show name and Dish-owned price, and expose a
+Item rows use simple dividers, show name and Item-owned price, and expose a
 labelled Remove from section action in the vertical three-dot menu, with
-confirmation. The same menu contains secondary editing actions. Adding a removed Dish back uses the catalogue in Add items;
+confirmation. The same menu contains secondary editing actions. Adding a removed Item back uses the catalogue in Add items;
 there is no availability toggle in this editor. Daily specials retain their own date
 flow and do not expose meal-deal entry. Source checks live in
 `menu-editor-composition.test.mjs` and `kitchen/menu-tool-completion.test.mjs`.
 
-Menu editing rows show a single normal price directly. When a Dish has variants,
+Menu editing rows show a single normal price directly. When a Item has variants,
 the row says “Multiple prices”; names and prices are tucked into its vertical
 three-dot menu. These editing surfaces omit repeated currency codes because the
 linked Place owns the currency. The Menu/section editing header shows that
-Place currency once; public currency formatting remains with its existing owner. Full editing stays with Dish pricing; stored terms are unchanged.
+Place currency once; public currency formatting remains with its existing owner. Full editing stays with Item pricing; stored terms are unchanged.
 
 ## Display ordering
 
 Manual Menu section and entry creation assigns the next position from the highest
 saved position inside the writing transaction, including retained archived rows.
-The parent audit update serializes concurrent appends. Catalogue/Dish prices are
+The parent audit update serializes concurrent appends. Catalogue/Item prices are
 not part of the position write. Reviewed imports retain their own replacement
 plan ordering.
 
@@ -578,12 +578,12 @@ one guarded transaction. Boundary moves do nothing. Daily section moves stay
 within the selected date and retain Plus authority. Section rows use dividers.
 The former multi-request reorder helpers are removed. Check
 `menu-display-order.test.mjs`, `kitchen/menu-content-commands.test.mjs` and
-`kitchen/dish-ui-scope.test.mjs` for append gaps, tied ranks, atomic failure,
+`kitchen/item-ui-scope.test.mjs` for append gaps, tied ranks, atomic failure,
 price preservation, exact scope and obsolete client completion.
 
 Section rows expose Archive section and Restore section in the same vertical
 action menu. The existing section status command preserves the section’s entries
-and catalogue Dishes. Archived sections are available through a quiet collection
+and catalogue Items. Archived sections are available through a quiet collection
 control, scoped to the selected date for Daily specials, and remain excluded from
 public manifests. Confirmation and pending completion retain Menu/account scope;
 no additional reader or deletion command is introduced. Publishing’s public Menu
@@ -599,9 +599,9 @@ not be unique; slug uniqueness remains a creation responsibility. Verify
 ## Publication readiness
 
 `menu/utils/publication-readiness.ts` evaluates active placements against current
-Dish and meal-deal definitions. The trusted regular publication validator uses
+Item and meal-deal definitions. The trusted regular publication validator uses
 that report to reject empty content and unavailable entries, with section/name
-reasons. It reads only Menu content, Dishes and Promotions and writes no terms.
+reasons. It reads only Menu content, Items and Promotions and writes no terms.
 Document and per-date Daily validation remain separate.
 `Menu/Menus/Publication/Readiness.vue` owns the live content warning and its
 focused section diagnostic children. The record reuses its section list; section
@@ -611,26 +611,26 @@ reader. Loading/failure never imply an empty Menu; a genuinely empty published
 Menu warns without automatically changing publication. Scheduled meal-deal
 weekdays do not make structurally valid future content incomplete.
 Verify `menu-publication.test.mjs` and `menu-publication-readiness.test.mjs`,
-including archived Dishes, paused deals, grouped diagnostics, disappearing last
+including archived Items, paused deals, grouped diagnostics, disappearing last
 items and explicit read-state outcomes. Live checks remain read-only.
 
-Menu item Add is idempotent for the same Dish or meal-deal reference within one
+Menu item Add is idempotent for the same Item or meal-deal reference within one
 section. `menu/server/items/write.ts` checks that reference in its existing
 transaction after authority and reference validation. Active matches return their
 saved ID without writes; archived matches restore in place, retaining position
 and provenance. New additions still update the read parent section, so competing
 transactions retry and converge on one placement. Other sections and Menus may
-use the same reference independently. No Dish, Promotion or Order data is written.
+use the same reference independently. No Item, Promotion or Order data is written.
 Verify repeat requests, optimistic transaction conflicts, archived matches and
 scope separation in `menu-item-idempotency.test.mjs`; this simulated conflict
 coverage is not a claim of a live concurrent Firestore test.
 
 `useMenuSection` derives active placements from its already acquired rows.
 The three Add workflows use that projection so a retained archived placement
-can return through the same idempotent command. New-Dish entry waits for the
+can return through the same idempotent command. New-Item entry waits for the
 catalogue's settled read, matches repeated names case-insensitively, and retains
-a confirmed created Dish ID until the catalogue acknowledges it. A placement
-retry therefore reuses that Dish. Kitchen, actor and section changes clear this
+a confirmed created Item ID until the catalogue acknowledges it. A placement
+retry therefore reuses that Item. Kitchen, actor and section changes clear this
 local recovery state. Verify these flows in `kitchen/menu-content-scope.test.mjs`.
 
 Section item editing aligns a single currency label with the amount column and
@@ -639,7 +639,7 @@ Add items lives in the navigation toolbar above the divider list. Header and row
 share their column sizing so the layout remains aligned on narrow screens.
 
 Item removal is a labelled Remove from section action inside the vertical menu,
-reusing the existing confirmation and preserving catalogue Dishes.
+reusing the existing confirmation and preserving catalogue Items.
 
 Menu items, their column header and editable section rows reuse Core
 `FireCollectionRow` for the plain content/value/actions layout. Their actions,
@@ -702,7 +702,7 @@ loaded eligible menus, not an independently stored venue catalogue.
 
 The directory accepts a bounded `search` string alongside its service filter.
 `menu/server/index/food-search.ts` reads active section placements of eligible
-public published Menus and joins their current non-archived Dishes. Case and
+public published Menus and joins their current non-archived Items. Case and
 accent-insensitive name matches are returned as `matching_dishes`, containing
 only IDs and names. Menu/venue metadata remains searchable; document Menus have
 no inferred dish contents. Prices, options and Orders are not part of search.
@@ -852,14 +852,14 @@ stops subsequent commands and feedback. Verify `menu-item-selection.test.mjs`,
 
 The Section route provides one Menu record state and one `useMenuSection` state.
 The lower Section capability accepts the explicit `MenuSectionSource` contract;
-it imports no Workspace owner. It owns the Dish/promotion/item readers and
+it imports no Workspace owner. It owns the Item/promotion/item readers and
 guarded placement commands shared by every add/edit control.
 `useMenuSectionItemsEditor` and `useMenuSectionsEditor` own their respective
-editing lifecycle. `useMenuSectionDishCreation` composes existing Dish creation
+editing lifecycle. `useMenuSectionItemCreation` composes existing Item creation
 and Section placement, with captured target and stale-completion protection.
 The visible add, row, create and schedule controls consume these owners.
 
-Daily Section previews share the Sections editor’s single Dish catalogue source;
+Daily Section previews share the Sections editor’s single Item catalogue source;
 each preview owns only its Section-item read. Catalogue pending/error state is
 passed with the records rather than silently showing unresolved names.
 The Items/Sections controls use native Nuxt UI inputs and semantic styles.

@@ -627,10 +627,27 @@ the creation disclosure, clearing it on Kitchen changes. Controls
 and Results emit actions without owning commands or dialog state.
 Kind-specific detail contexts retain their filtering and authority. Catalogue
 URLs and editor return links retain kind, search, category, completeness filter,
-layout and page using `kitchen/utils/dish-catalogue-route.ts`. Both editors return
+layout and page using `kitchen/utils/item-catalogue-route.ts`. Both editors return
 to the combined catalogue; initial loading preserves the requested page, while
-settled shorter results clamp it. See `dish-reader-internals.test.mjs`.
+settled shorter results clamp it. See `item-reader-internals.test.mjs`.
 
+The Item detail route declares a content-owned shared child page header, with
+the Item name and return/actions aligned to the Workspace frame. It adds no
+centred domain width cap or repeated thumbnail heading. Details and Price & choices
+use the shared responsive two-column grid, stacking on smaller screens. Preparation
+and Appears on retain their focused views and existing reader lifetimes.
+The canonical Kitchen Item type is `Item` in `kitchen/models/item.model.ts`.
+`MenuItem` owns a section placement; `PublicMenuItem` in
+`menu/models/menu-detail.model.ts` is the resolved guest-facing projection.
+Reusable Item readers, editors and commands live under the Kitchen Item spine;
+`useKitchenItemRecord` acquires the record and `useKitchenItemDetailContext` shares
+that exact read with its children. Historical `dishes`, `dish_id` and `dishId`
+remain storage/API contracts, not competing domain models.
+Item categories are optional operator-authored text, with no system vocabulary or
+Food-only restriction. Catalogue filters use the selected Kitchen’s current Item values.
+The Item model has no closed Food/Drink type. Historical `item_kind` remains
+readable; missing values are not classified as Food by the Item reader.
+Stored `dishes` collection paths and protected command names retain their current contracts.
 The Item detail parent provides one live Item reader through
 `useKitchenItemDetailContext`; its field editors and relationship readers consume
 that strict context. Details combines identity and pricing, Preparation combines
@@ -1955,9 +1972,9 @@ card components. The catalogue defaults to a compact list with category and
 completion filters; cards open the specification directly. Kitchen AI is an explicit
 side-panel action. Optional Dish `category` describes culinary role independently
 of Menu sections or breakfast/service context. `Categories.vue` and the identity
-editor use the existing scoped Dish update command; unknown categories remain
-unclassified rather than inferred at read time. Menu item selection reuses this
-category list and excludes dishes already in that section. Creation visibility uses selected-Kitchen
+editor use the existing scoped Item update command; categories are operator-authored
+text and stored values remain readable without a system whitelist. Menu item selection reuses the Kitchen’s current
+category values and excludes dishes already in that section. Creation visibility uses selected-Kitchen
 membership, matching Ingredients; command authorization remains authoritative.
 
 The all-Workspace contract is `docs/concepts/components.md`; verify moved
@@ -1968,7 +1985,7 @@ consumers against Nuxt registration, Vue compilation and App typechecking.
 Kitchen Dish may hold an optional `spec` with its portion basis, station text,
 purchased ingredient quantities, Kitchen Prep Item quantities, recipe references,
 assembly steps and source notes. `models/dish.model.ts` owns this bounded contract;
-`kitchen/utils/dish-specification.ts` owns pure authored-input validation, shared
+`kitchen/utils/item-specification.ts` owns pure authored-input validation, shared
 by the editor and the trusted update action. `useDishUpdate.ts` transports that
 validated intent; the server remains authoritative. `Menu/Items/Spec.vue` reads linked records live and edits the
 specification independently of public identity copy. Prep definitions created
@@ -2013,9 +2030,9 @@ committing transaction. Dish identity comes from the exact document path and
 stored `kitchen_id`, without a duplicate stored `id` requirement. Image conflicts
 clean up only the new unreferenced upload; uncertain commit outcomes retain it
 for recovery. Provider normalization and Storage ownership remain with
-`kitchen/server/dishes/image.ts`. These contracts are covered by
-`test/kitchen/dish-commands.test.mjs`, `test/kitchen/dish-media-internals.test.mjs`,
-`test/dish-reader-internals.test.mjs` and the Dish tool lifecycle tests; fixtures
+`kitchen/server/items/image.ts`. These contracts are covered by
+`test/kitchen/item-commands.test.mjs`, `test/kitchen/item-media-internals.test.mjs`,
+`test/item-reader-internals.test.mjs` and the Dish tool lifecycle tests; fixtures
 remain separate from signed-in browser and live-provider acceptance.
 
 Dish usage verification shares one owner between preview and Delete. Exact item
@@ -2263,7 +2280,7 @@ Paths below are relative to `packages/extensions/fireux-kitchens/src/`.
 
 | Responsibility                    | Owning source                                                                    | Focused evidence and preserved limits                                                                                                                                                                                                                                                                                                                                                                  |
 | --------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Dish/Drink create, update, delete | `runtime/kitchen/server/dishes/{create,update,delete}.ts`                        | `test/kitchen/dish-commands.test.mjs`, `test/kitchen/dish-ui-scope.test.mjs`, `test/kitchen/dish-image-scope.test.mjs`. Delete is document-only and refuses saved Menu/Promotion references. Media and Dish → Menu placement are separate effects with explicit partial-success recovery; dispatched media cannot be rolled back by client invalidation.                                               |
+| Dish/Drink create, update, delete | `runtime/kitchen/server/items/{create,update,delete}.ts`                        | `test/kitchen/item-commands.test.mjs`, `test/kitchen/item-ui-scope.test.mjs`, `test/kitchen/item-image-scope.test.mjs`. Delete is document-only and refuses saved Menu/Promotion references. Media and Dish → Menu placement are separate effects with explicit partial-success recovery; dispatched media cannot be rolled back by client invalidation.                                               |
 | Recipe create, update, delete     | `runtime/kitchen/server/recipes/{create,update,delete}.ts`                       | `test/kitchen/recipe-commands.test.mjs`, `test/recipe-command-internals.test.mjs`, `test/kitchen/recipe-scope.test.mjs`. Direct route adapters consume each action. Delete removes an unused document after checking Dish and Prep Item references. Edited-language deltas merge with stored translations; blank clears only that language. Forms use `translate: false`; pure seeding/results remain. |
 | Prep creation                     | `runtime/kitchen/server/prep-items/create.ts`                                    | `test/kitchen/prep-create.test.mjs`, `test/kitchen/prep-scope.test.mjs`. Create-only; separate from Recipe Save. Its reference remains an unsaved Recipe edit until Save. Unused Prep Update/Delete adapters have been retired; no write capability is claimed.                                                                                                                                        |
 | Waste observation                 | `runtime/kitchen/server/waste/record.ts`                                         | `test/kitchen/waste-command.test.mjs`, `test/kitchen/waste-scope.test.mjs`. Identity, time and audit are server-owned; this does not claim immutable storage under development-open Rules.                                                                                                                                                                                                             |
@@ -2479,7 +2496,7 @@ per drink; exchanges add zero. Basket lines retain the choice, show the drink
 subtotal and separate deposit, and distinguish otherwise identical selections.
 Deposit changes invalidate existing local selections. This is display/selection
 behaviour only; existing Order submission and pricing remain outside the slice.
-Verify `dish-bottle-deposit.test.mjs` and `menu-service-basket.test.mjs`.
+Verify `item-bottle-deposit.test.mjs` and `menu-service-basket.test.mjs`.
 
 `/kitchens/<slug>/menu.collection` and `/kitchens/<slug>/menu.delivery` are
 public service surfaces, not named Menus.
@@ -2628,7 +2645,7 @@ Dish normal price is optional while a catalogue item is incomplete. Missing
 is a valid free price. Both item creation and Menu add-by-name ask for a normal
 price. Menu readiness and trusted publication reject unpriced placements; public
 Menu manifests omit them without hiding unrelated items. Existing saved amounts
-are not rewritten. Verify `dish-commands.test.mjs`, `dish-reader-internals.test.mjs`,
+are not rewritten. Verify `dish-commands.test.mjs`, `item-reader-internals.test.mjs`,
 `dish-ui-scope.test.mjs`, `menu-publication.test.mjs` and `menu-meal-deals.test.mjs`.
 
 ## Dish removal boundary

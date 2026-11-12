@@ -5,14 +5,14 @@ export type KitchenDemoStationId =
   | 'drinks'
   | 'pass'
 
-export type KitchenDemoDishSpec = {
+export type KitchenDemoItemSpec = {
   id: string
   dishId: string
   station: KitchenDemoStationId
   portion?: string
   summary: string
   assembly: string[]
-  components: KitchenDemoDishComponent[]
+  components: KitchenDemoItemComponent[]
 }
 
 export type KitchenDemoProductionUnit = 'g' | 'ml' | 'each' | 'portion'
@@ -22,30 +22,30 @@ export type KitchenDemoProductionAmount = {
   unit: KitchenDemoProductionUnit
 }
 
-type KitchenDemoDishComponentBase = KitchenDemoProductionAmount & {
+type KitchenDemoItemComponentBase = KitchenDemoProductionAmount & {
   id: string
 }
 
-export type KitchenDemoDishIngredientComponent =
-  KitchenDemoDishComponentBase & {
+export type KitchenDemoItemIngredientComponent =
+  KitchenDemoItemComponentBase & {
     source: 'ingredient'
     ingredientId: string
   }
 
-export type KitchenDemoDishPrepItemComponent = KitchenDemoDishComponentBase & {
+export type KitchenDemoItemPrepItemComponent = KitchenDemoItemComponentBase & {
   source: 'prep_item'
   prepItemId: string
 }
 
-export type KitchenDemoDishRecipeComponent = KitchenDemoDishComponentBase & {
+export type KitchenDemoItemRecipeComponent = KitchenDemoItemComponentBase & {
   source: 'recipe'
   recipeId: string
 }
 
-export type KitchenDemoDishComponent =
-  | KitchenDemoDishIngredientComponent
-  | KitchenDemoDishPrepItemComponent
-  | KitchenDemoDishRecipeComponent
+export type KitchenDemoItemComponent =
+  | KitchenDemoItemIngredientComponent
+  | KitchenDemoItemPrepItemComponent
+  | KitchenDemoItemRecipeComponent
 
 export type KitchenDemoMenuItemComponentDelta = {
   id: string
@@ -63,7 +63,7 @@ export type KitchenDemoMenuItemComponentDelta = {
         id: string
         label?: never
       }
-  components: KitchenDemoDishComponent[]
+  components: KitchenDemoItemComponent[]
   componentMultiplier?: number
 }
 

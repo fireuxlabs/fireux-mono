@@ -2,28 +2,28 @@
   <FireActionSurface
     :to="link && to ? to : undefined"
     :action="action"
-    class="card card--cell dish-card"
-    :class="{ 'dish-card--list': list }"
+    class="card card--cell item-card"
+    :class="{ 'item-card--list': list }"
     @activate="emit('action')"
   >
     <KitchenMenuItemsPhoto
       :src="imageUrl"
       :alt="title || 'Item'"
-      class="dish-card__image"
+      class="item-card__image"
     />
-    <div class="dish-card__content">
-      <h3 class="dish-card__title">{{ title || 'Untitled item' }}</h3>
-      <p v-if="expanded && description" class="dish-card__description">
+    <div class="item-card__content">
+      <h3 class="item-card__title">{{ title || 'Untitled item' }}</h3>
+      <p v-if="expanded && description" class="item-card__description">
         {{ description }}
       </p>
-      <p v-if="meta" class="dish-card__meta">{{ meta }}</p>
-      <div v-if="priceLabel || choicesLabel" class="dish-card__footer">
-        <strong v-if="priceLabel" class="dish-card__price">{{
+      <p v-if="meta" class="item-card__meta">{{ meta }}</p>
+      <div v-if="priceLabel || choicesLabel" class="item-card__footer">
+        <strong v-if="priceLabel" class="item-card__price">{{
           priceLabel
         }}</strong>
         <span
           v-if="choicesLabel"
-          class="dish-card__choices"
+          class="item-card__choices"
           role="img"
           :aria-label="choicesLabel"
           :title="choicesLabel"
@@ -69,20 +69,20 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <style scoped>
-.dish-card {
+.item-card {
   display: flex;
   flex-direction: column;
   height: 100%;
   min-width: 0;
   padding: 0;
 }
-.dish-card__image {
+.item-card__image {
   inline-size: 100%;
   aspect-ratio: 1;
   flex: none;
   border-radius: 0;
 }
-.dish-card__content {
+.item-card__content {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -90,7 +90,7 @@ withDefaults(defineProps<Props>(), {
   gap: calc(var(--spacing) * 2);
   padding: calc(var(--spacing) * 3);
 }
-.dish-card__title {
+.item-card__title {
   margin: 0;
   color: var(--ui-text-highlighted);
   font-size: var(--text-base);
@@ -98,7 +98,7 @@ withDefaults(defineProps<Props>(), {
   line-height: var(--leading-snug);
   overflow-wrap: anywhere;
 }
-.dish-card__description {
+.item-card__description {
   display: -webkit-box;
   margin: 0;
   overflow: hidden;
@@ -108,13 +108,13 @@ withDefaults(defineProps<Props>(), {
   font-size: var(--text-sm);
   line-height: var(--leading-snug);
 }
-.dish-card__meta {
+.item-card__meta {
   margin: 0;
   color: var(--ui-text-muted);
   font-size: var(--text-xs);
   overflow-wrap: anywhere;
 }
-.dish-card__footer {
+.item-card__footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -122,23 +122,23 @@ withDefaults(defineProps<Props>(), {
   margin-top: auto;
   padding-top: var(--spacing);
 }
-.dish-card__choices {
+.item-card__choices {
   display: inline-flex;
   flex: none;
   color: var(--ui-text-muted);
   margin-inline-start: auto;
 }
-.dish-card__price {
+.item-card__price {
   color: var(--ui-text-highlighted);
   font-size: var(--text-sm);
   font-weight: var(--font-weight-semibold);
   font-variant-numeric: tabular-nums;
 }
-.dish-card--list {
+.item-card--list {
   flex-direction: row;
   align-items: center;
 }
-.dish-card--list .dish-card__image {
+.item-card--list .item-card__image {
   inline-size: calc(var(--spacing) * 16);
   block-size: calc(var(--spacing) * 16);
 }

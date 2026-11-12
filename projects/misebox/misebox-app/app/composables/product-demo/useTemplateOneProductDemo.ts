@@ -1,5 +1,5 @@
 import type {
-  TemplateOneFlagshipDish,
+  TemplateOneFlagshipItem,
   TemplateOneMenuContent,
 } from 'fireux-misebox/runtime/models/template-one'
 
@@ -9,12 +9,12 @@ const money = (value: number) => `CHF ${value.toFixed(2)}`
 
 export async function useTemplateOneProductDemo(): Promise<{
   menu: TemplateOneMenuContent
-  flagshipDish: TemplateOneFlagshipDish
+  flagshipItem: TemplateOneFlagshipItem
 }> {
   const { deanosKitchenDemoMenu } = await import(
     'fireux-kitchens/runtime/kitchen/demo/operations/Menus/deanos-main'
   )
-  const dishById = new Map(
+  const itemById = new Map(
     deanosKitchenDemoMenu.dishes.map((dish) => [dish.id, dish])
   )
   const menu: TemplateOneMenuContent = {
@@ -27,30 +27,37 @@ export async function useTemplateOneProductDemo(): Promise<{
           id: section.id,
           label: section.label,
           items: items.flatMap((item) => {
-            const dish = dishById.get(item.dish_id || '')
-            if (!dish || typeof dish.price !== 'number' || !Number.isFinite(dish.price) || dish.price < 0)
+            const dish = itemById.get(item.dish_id || '')
+            if (
+              !dish ||
+              typeof dish.price !== 'number' ||
+              !Number.isFinite(dish.price) ||
+              dish.price < 0
+            )
               return []
-            return [{
-              id: item.id,
-              dishId: dish.id,
-              itemKind: dish.item_kind,
-              name: dish.name,
-              description: dish.description,
-              imageUrl: dish.image,
-              price: dish.price,
-              priceLabel: money(dish.price),
-              priceOptions: dish.price_options.map((option, index) => ({
-                ...option,
-                id:
-                  option.label.toLowerCase().replace(/[^a-z0-9]+/g, '-') ||
-                  `option-${index + 1}`,
-                priceLabel: money(option.price),
-              })),
-              addOns: dish.add_ons.map((addOn) => ({
-                ...addOn,
-                priceLabel: money(addOn.price),
-              })),
-            }]
+            return [
+              {
+                id: item.id,
+                dishId: dish.id,
+                itemKind: dish.item_kind,
+                name: dish.name,
+                description: dish.description,
+                imageUrl: dish.image,
+                price: dish.price,
+                priceLabel: money(dish.price),
+                priceOptions: dish.price_options.map((option, index) => ({
+                  ...option,
+                  id:
+                    option.label.toLowerCase().replace(/[^a-z0-9]+/g, '-') ||
+                    `option-${index + 1}`,
+                  priceLabel: money(option.price),
+                })),
+                addOns: dish.add_ons.map((addOn) => ({
+                  ...addOn,
+                  priceLabel: money(addOn.price),
+                })),
+              },
+            ]
           }),
         })
       ),
@@ -61,7 +68,7 @@ export async function useTemplateOneProductDemo(): Promise<{
   const dish = deanosKitchenDemoMenu.dishes[0]!
   return {
     menu,
-    flagshipDish: {
+    flagshipItem: {
       id: dish.id,
       name: dish.name,
       description: dish.description,

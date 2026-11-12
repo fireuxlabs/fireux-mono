@@ -21,12 +21,12 @@
       <p v-if="section.description" class="fx-type-caption">
         {{ section.description }}
       </p>
-      <KitchenMenuMenusSectionsDishes
+      <KitchenMenuMenusSectionsItems
         v-if="editor.daily"
         :section-id="section.id"
-        :dishes="editor.previewDishes.dishes"
-        :dishes-pending="editor.previewDishes.pending"
-        :dishes-error="editor.previewDishes.error"
+        :dishes="editor.previewItems.dishes"
+        :dishes-pending="editor.previewItems.pending"
+        :dishes-error="editor.previewItems.error"
       />
     </div>
     <template #actions>

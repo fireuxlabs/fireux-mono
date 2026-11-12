@@ -1,4 +1,4 @@
-import { dishPricingHelpers } from './helpers/dish-pricing.mjs'
+import { itemPricingHelpers } from './helpers/item-pricing.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -7,7 +7,7 @@ import { compileFunction } from 'node:vm'
 
 const root = new URL('../', import.meta.url)
 function load(path, dependencies, names) {
-  dependencies = { ...dishPricingHelpers, ...dependencies }
+  dependencies = { ...itemPricingHelpers, ...dependencies }
 
   const source = readFileSync(new URL(path, root), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -29,12 +29,12 @@ const creation = load(
   'normalizeMenuCreateInput, buildMenuPayload'
 )
 const optionReaders = load(
-  'runtime/kitchen/utils/dish-pricing.ts',
+  'runtime/kitchen/utils/item-pricing.ts',
   {},
-  'normalizeDishPriceOptions, normalizeDishAddOns'
+  'normalizeItemPriceOptions, normalizeItemAddOns'
 )
-const { normalizeDishPricingPatch } = load(
-  'runtime/kitchen/utils/dish-pricing.ts',
+const { normalizeItemPricingPatch } = load(
+  'runtime/kitchen/utils/item-pricing.ts',
   {
     ...optionReaders,
     normalizeSlug: (value) =>
@@ -42,7 +42,7 @@ const { normalizeDishPricingPatch } = load(
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-'),
   },
-  'normalizeDishPricingPatch'
+  'normalizeItemPricingPatch'
 )
 const { normalizeMenuItemPatch } = load(
   'runtime/menu/utils/records/item-patch.ts',
@@ -177,23 +177,23 @@ test('explicit add-on and variant writes reject coercion into zero or incomplete
     -1,
   ])
     assert.throws(() =>
-      normalizeDishPricingPatch({ add_ons: [{ label: 'Extra cheese', price }] })
+      normalizeItemPricingPatch({ add_ons: [{ label: 'Extra cheese', price }] })
     )
   for (const quantity of ['2', null, {}, -1, Infinity, NaN])
     assert.throws(() =>
-      normalizeDishPricingPatch({
+      normalizeItemPricingPatch({
         price_options: [{ label: 'Large', price: 15, quantity }],
       })
     )
   for (const price of [null, '15', {}, false, NaN, Infinity, 0, -1])
     assert.throws(() =>
-      normalizeDishPricingPatch({ price_options: [{ label: 'Large', price }] })
+      normalizeItemPricingPatch({ price_options: [{ label: 'Large', price }] })
     )
   assert.throws(() =>
-    normalizeDishPricingPatch({ add_ons: [{ label: 3, price: 1 }] })
+    normalizeItemPricingPatch({ add_ons: [{ label: 3, price: 1 }] })
   )
   assert.throws(() =>
-    normalizeDishPricingPatch({
+    normalizeItemPricingPatch({
       price_options: [{ label: 'Large', price: 15, serverOwned: true }],
     })
   )
@@ -203,7 +203,7 @@ test('explicit add-on and variant writes reject coercion into zero or incomplete
       { label: 'Large', quantity: 1, unit: 'portion', price: 15 },
     ],
   }
-  const value = normalizeDishPricingPatch(input)
+  const value = normalizeItemPricingPatch(input)
   input.add_ons[0].price = 99
   assert.equal(value.add_ons[0].price, 0)
   assert.equal(value.price_options[0].price, 15)

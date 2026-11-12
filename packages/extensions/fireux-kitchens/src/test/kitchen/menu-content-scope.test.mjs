@@ -177,12 +177,12 @@ test('Section Create/label editor suppress obsolete success/error and keep new p
             ref,
             computed,
             useState: () => selectedDate,
-            useKitchenDishCollection: () => ({
+            useKitchenItemCollection: () => ({
               dishes: ref([]),
               pending: ref(false),
               error: ref(null),
             }),
-            useKitchenDishCollection: () => ({
+            useKitchenItemCollection: () => ({
               dishes: ref([]),
               pending: ref(false),
               error: ref(null),
@@ -254,8 +254,8 @@ test('Item selection snapshots targets and drops stale account or section comple
         canWrite: ref(true),
         activeItemRows: ref([]),
         itemsOutcome: ref('ready'),
-        dishSource: {
-          dishes: ref([{ id: 'd', name: 'Dish' }]),
+        itemSource: {
+          dishes: ref([{ id: 'd', name: 'Item' }]),
           outcome: ref('ready'),
           error: ref(null),
         },
@@ -305,12 +305,12 @@ test('section movement is bounded to the visible date and rejects obsolete date 
       ref,
       computed,
       useState: () => selectedDate,
-      useKitchenDishCollection: () => ({
+      useKitchenItemCollection: () => ({
         dishes: ref([]),
         pending: ref(false),
         error: ref(null),
       }),
-      useKitchenDishCollection: () => ({
+      useKitchenItemCollection: () => ({
         dishes: ref([]),
         pending: ref(false),
         error: ref(null),
@@ -373,7 +373,7 @@ test('Section archive/restore preserves content, filters dates and discards obso
         ref,
         computed,
         useState: () => ref('2026-10-16'),
-        useKitchenDishCollection: () => ({
+        useKitchenItemCollection: () => ({
           dishes: ref([]),
           pending: ref(false),
           error: ref(null),
@@ -438,7 +438,7 @@ test('Section archive/restore preserves content, filters dates and discards obso
   }
 })
 
-test('new Dish placement reuses catalogue owners and never attaches an obsolete creation', async () => {
+test('new Item placement reuses catalogue owners and never attaches an obsolete creation', async () => {
   for (const changed of [false, true]) {
     const currentUser = ref({ uid: 'user' }),
       sectionId = ref('section-a')
@@ -449,7 +449,7 @@ test('new Dish placement reuses catalogue owners and never attaches an obsolete 
       kitchenId: ref('kitchen'),
       menuId: ref('menu'),
       sectionId,
-      dishSource: {
+      itemSource: {
         dishes: ref([{ id: 'known', name: 'Soup' }]),
         outcome: ref('ready'),
         error: ref(null),
@@ -459,20 +459,20 @@ test('new Dish placement reuses catalogue owners and never attaches an obsolete 
       createItem: async (input) => placements.push(input),
     }
     const state = load(
-      '../../runtime/kitchen/composables/workspace/menus/useMenuSectionDishCreation.ts',
+      '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemCreation.ts',
       {
         computed,
         ref,
         watch,
-        useDishEditorScope: scope(currentUser),
-        useDishCreate: () => ({
-          createDish: async (...args) => {
+        useItemEditorScope: scope(currentUser),
+        useItemCreate: () => ({
+          createItem: async (...args) => {
             calls.push(args)
             return created.promise
           },
         }),
       },
-      'useMenuSectionDishCreation'
+      'useMenuSectionItemCreation'
     )(context, () => '/menu/section-a')
     state.names.value = 'Soup\nSalad'
     state.prices.value = { Salad: 11 }
@@ -522,8 +522,8 @@ test('all Add workflows can restore retained placements and exclude already acti
           commands.push(input)
         },
       }),
-      useDishUpdate: () => ({}),
-      useKitchenDishCollection: () => ({
+      useItemUpdate: () => ({}),
+      useKitchenItemCollection: () => ({
         dishes,
         outcome: ref('ready'),
         error: ref(null),
@@ -533,8 +533,8 @@ test('all Add workflows can restore retained placements and exclude already acti
         items: placements,
         outcome: ref('ready'),
       }),
-      normalizeDishAddOns: () => [],
-      normalizeDishPriceOptions: () => [],
+      normalizeItemAddOns: () => [],
+      normalizeItemPriceOptions: () => [],
     },
     'createMenuSectionState'
   )(
@@ -554,9 +554,9 @@ test('all Add workflows can restore retained placements and exclude already acti
     watch,
     useMenuSection: () => context,
     useMenuEditorScope: scope(currentUser),
-    useDishEditorScope: scope(currentUser),
+    useItemEditorScope: scope(currentUser),
     useToastify: () => ({ add() {} }),
-    useDishCreate: () => ({ createDish: assert.fail }),
+    useItemCreate: () => ({ createItem: assert.fail }),
   }
   const dish = load(
     '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemSelection.ts',
@@ -570,9 +570,9 @@ test('all Add workflows can restore retained placements and exclude already acti
     true
   )
   const names = load(
-    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionDishCreation.ts',
+    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemCreation.ts',
     deps,
-    'useMenuSectionDishCreation'
+    'useMenuSectionItemCreation'
   )(context, () => '/menus/m/s')
 
   assert.equal(context.itemRows.value.length, 5)
@@ -598,7 +598,7 @@ test('all Add workflows can restore retained placements and exclude already acti
   ])
 })
 
-test('a Menu placement retry reuses its saved Dish before the catalogue listener catches up', async () => {
+test('a Menu placement retry reuses its saved Item before the catalogue listener catches up', async () => {
   const currentUser = ref({ uid: 'u' })
   const dishes = ref([])
   const catalogueOutcome = ref('pending')
@@ -607,20 +607,20 @@ test('a Menu placement retry reuses its saved Dish before the catalogue listener
   const placed = []
   let failPlacement = true
   const api = load(
-    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionDishCreation.ts',
+    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemCreation.ts',
     {
       ref,
       computed,
       watch,
-      useDishEditorScope: scope(currentUser),
-      useDishCreate: () => ({
-        createDish: async (draft) => {
+      useItemEditorScope: scope(currentUser),
+      useItemCreate: () => ({
+        createItem: async (draft) => {
           created.push(draft)
           return { id: 'dish-' + created.length }
         },
       }),
     },
-    'useMenuSectionDishCreation'
+    'useMenuSectionItemCreation'
   )(
     {
       kitchenId: ref('k'),
@@ -628,7 +628,7 @@ test('a Menu placement retry reuses its saved Dish before the catalogue listener
       sectionId,
       canWrite: ref(true),
       activeItemRows: ref([]),
-      dishSource: { dishes, outcome: catalogueOutcome, error: ref(null) },
+      itemSource: { dishes, outcome: catalogueOutcome, error: ref(null) },
       createItem: async (input) => {
         placed.push(input.dishId)
         if (failPlacement) throw new Error('Placement failed')
@@ -658,12 +658,12 @@ test('a Menu placement retry reuses its saved Dish before the catalogue listener
   assert.equal(api.names.value, '')
   assert.equal(api.error.value, '')
 
-  // Once the catalogue acknowledges a Dish, subsequent renames are authoritative.
+  // Once the catalogue acknowledges a Item, subsequent renames are authoritative.
   dishes.value = [{ id: 'dish-1', name: 'Soup' }]
   dishes.value = [{ id: 'dish-1', name: 'Gazpacho' }]
   api.names.value = 'Soup'
   assert.deepEqual(api.newNames.value, ['Soup'])
-  // A partial success in a departed scope cannot select a Dish for the next one.
+  // A partial success in a departed scope cannot select a Item for the next one.
   failPlacement = true
   api.prices.value = { Soup: 4 }
   await api.addNames()

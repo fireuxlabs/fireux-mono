@@ -1,4 +1,4 @@
-import type { Dish } from '../models/dish.model'
+import type { Item } from '../models/item.model'
 import type { Menu } from '../../menu/models/menu.model'
 import type { KitchenPromotion } from '../models/promotion.model'
 
@@ -9,16 +9,13 @@ const missingName = (row: { name?: string }) => !row.name?.trim()
 const countFlag = (count: number, message: string) =>
   count ? [`${count} ${message}`] : []
 
-export function foodItemSummary(items: Partial<Dish>[]): FoodSummary {
+export function foodItemSummary(items: Partial<Item>[]): FoodSummary {
   return {
     status: items.length ? `${items.length} items` : 'No items yet',
     flags: [
       ...countFlag(items.filter(missingName).length, 'missing a name'),
       ...countFlag(
-        items.filter(
-          (item) =>
-            !validPrice(item.price)
-        ).length,
+        items.filter((item) => !validPrice(item.price)).length,
         'need a price'
       ),
     ],
@@ -48,12 +45,12 @@ export function foodMenuSummary(menus: Menu[]): FoodSummary {
 
 export function foodPromotionSummary(
   promotions: KitchenPromotion[],
-  dishes: Partial<Dish>[]
+  dishes: Partial<Item>[]
 ): FoodSummary {
   const active = promotions.filter(
     (promotion) => promotion.status === 'active'
   ).length
-  const dishIds = new Set(dishes.map((dish) => dish.id))
+  const itemIds = new Set(dishes.map((dish) => dish.id))
   const incomplete = promotions.filter((promotion) => {
     if (missingName(promotion) || !promotion.days?.length) return true
     if ('groups' in promotion)
@@ -68,14 +65,14 @@ export function foodPromotionSummary(
             group.dishes.length < group.choose ||
             group.dishes.some(
               (choice) =>
-                !dishIds.has(choice.dishId) || !validPrice(choice.supplement)
+                !itemIds.has(choice.dishId) || !validPrice(choice.supplement)
             )
         )
       )
     return (
       !promotion.dishes?.length ||
       promotion.dishes.some(
-        (dish) => !dishIds.has(dish.dishId) || !validPrice(dish.price)
+        (dish) => !itemIds.has(dish.dishId) || !validPrice(dish.price)
       )
     )
   }).length

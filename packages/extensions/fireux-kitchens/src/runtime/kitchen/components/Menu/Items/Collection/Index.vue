@@ -21,11 +21,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useKitchenDishesContext } from '../../../../composables/workspace/dishes/useKitchenDishesContext'
-import { provideDishCatalogue } from '../../../../composables/workspace/dishes/useDishCatalogue'
+import { useKitchenItemsContext } from '../../../../composables/workspace/items/useKitchenItemsContext'
+import { provideItemCatalogue } from '../../../../composables/workspace/items/useItemCatalogue'
 
-const { catalogue, dishes, debug, outcome } = useKitchenDishesContext()
-provideDishCatalogue()
+const { catalogue, dishes, debug, outcome } = useKitchenItemsContext()
+provideItemCatalogue()
 const dialogs = ref<{
   openCreate: (kind: 'food' | 'drink') => void
 } | null>(null)

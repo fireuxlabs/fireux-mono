@@ -10,7 +10,7 @@
         <USelect
           v-model="form"
           :items="[
-            { label: 'Dish offer', value: 'dish_offer' },
+            { label: 'Item offer', value: 'dish_offer' },
             { label: 'Meal deal', value: 'meal_deal' },
           ]"
           :disabled="disabled"
@@ -29,10 +29,10 @@
         title="This promotion is no longer available"
         description="Your changes are kept. Cancel to return to Promotions."
       />
-      <KitchenMenuPromotionsDishOffer
+      <KitchenMenuPromotionsItemOffer
         v-if="form === 'dish_offer'"
         v-model="rows"
-        :dish-options="dishOptions"
+        :item-options="itemOptions"
         :currency="currency"
         :disabled="disabled"
       />
@@ -40,7 +40,7 @@
         v-else
         v-model:price="setPrice"
         v-model:groups="groups"
-        :dish-options="dishOptions"
+        :item-options="itemOptions"
         :currency="currency"
         :disabled="disabled"
       />
@@ -59,7 +59,7 @@
             ? 'Set the meal-deal price, included choices and any supplements.'
             : 'Active dish offers appear on published Menus during these days, using the venue’s time and serving hours.'
         }}
-        Normal Dish prices stay unchanged.
+        Normal Item prices stay unchanged.
       </p>
       <div class="fx-card__actions">
         <UButton
@@ -98,7 +98,7 @@ const {
   active,
   busy,
   error,
-  dishOptions,
+  itemOptions,
   disabled,
   dayOptions,
   readError,

@@ -3,7 +3,8 @@ export const sourceMeta = {
   workspace: {
     seo: {
       title: 'Restaurant Kitchen Management Workspace | Misebox',
-      description: 'Create your Kitchen workspace, publish Menus, and connect dishes, recipes, preparation and orders.',
+      description:
+        'Create your Kitchen workspace, publish Menus, and connect dishes, recipes, preparation and orders.',
     },
   },
   landing: {
@@ -12,13 +13,19 @@ export const sourceMeta = {
       bigPersonality: 'Manage your menu and kitchen<br>in one place.',
       headline: 'Menu and kitchen management',
     },
-    heroPrimaryLine: 'Publish <strong>menus</strong>, organise prep and manage orders with Misebox.',
+    heroPrimaryLine:
+      'Publish <strong>menus</strong>, organise prep and manage orders with Misebox.',
     primaryCtaLabel: 'Try the interactive demo',
     primaryCtaTo: '/demo',
     secondaryCtaLabel: 'See what works today',
     secondaryCtaTo: '/operations',
-    workspaceBridgeLine: 'Follow one <strong>connected workflow</strong> from guest menu to Kitchen handoff.',
-    heroBullets: ['No signup required', 'Sample restaurant data', 'No live order is created'],
+    workspaceBridgeLine:
+      'Follow one <strong>connected workflow</strong> from guest menu to Kitchen handoff.',
+    heroBullets: [
+      'No signup required',
+      'Sample restaurant data',
+      'No live order is created',
+    ],
     rightPanelItems: [
       {
         title: 'Publish',
@@ -27,7 +34,7 @@ export const sourceMeta = {
       },
       {
         title: 'Prepare',
-        description: 'Dishes, recipes, ingredients, Mise, and stations.',
+        description: 'Items, recipes, ingredients, Mise, and stations.',
         icon: 'i-lucide-list-checks',
       },
       {
@@ -38,13 +45,15 @@ export const sourceMeta = {
     ],
     seo: {
       title: 'Restaurant Menu and Kitchen Management | Misebox',
-      description: 'Publish restaurant Menus and connect dishes, recipes, preparation, orders and service with Misebox.',
+      description:
+        'Publish restaurant Menus and connect dishes, recipes, preparation, orders and service with Misebox.',
     },
   },
   about: {
     hero: {
       label: 'About Misebox',
-      supportingCopy: 'Misebox connects menus, recipes, dishes, prep tasks, orders, and service handoff so restaurant teams can work from the same Kitchen information.',
+      supportingCopy:
+        'Misebox connects menus, recipes, dishes, prep tasks, orders, and service handoff so restaurant teams can work from the same Kitchen information.',
       primaryAction: {
         label: 'Open kitchens',
         to: '/kitchens',
@@ -57,13 +66,19 @@ export const sourceMeta = {
     panel: {
       title: 'What this page covers',
       subtitle: '',
-      ticks: ['How the core Misebox modules fit together', 'The key entities and how they connect', 'Small realistic sample objects for context', 'Quick links to public and workspace routes'],
+      ticks: [
+        'How the core Misebox modules fit together',
+        'The key entities and how they connect',
+        'Small realistic sample objects for context',
+        'Quick links to public and workspace routes',
+      ],
     },
     sections: {
       keyConceptsTitle: 'Misebox - Key Concepts (Priority Order)',
       modulesEyebrow: 'Modules',
       modulesTitle: 'How we organize the app',
-      modulesDescription: 'Each module owns a clear part of operations, and together they power one kitchen workflow.',
+      modulesDescription:
+        'Each module owns a clear part of operations, and together they power one kitchen workflow.',
       entitiesEyebrow: 'Entities',
       entitiesTitle: 'The records we work with every day',
       structureEyebrow: 'Structure',
@@ -73,31 +88,38 @@ export const sourceMeta = {
     keyConcepts: [
       {
         title: 'Ecosystem',
-        description: 'A family of focused hospitality products that can share trusted identity without sharing one acquisition promise.',
+        description:
+          'A family of focused hospitality products that can share trusted identity without sharing one acquisition promise.',
       },
       {
         title: 'Kitchen Operations',
-        description: 'The systems kitchens use to organise menus, prep, service, and team.',
+        description:
+          'The systems kitchens use to organise menus, prep, service, and team.',
       },
       {
         title: 'Kitchens',
-        description: 'Each kitchen has its own workspace to run operations and organise its team.',
+        description:
+          'Each kitchen has its own workspace to run operations and organise its team.',
       },
       {
         title: 'Professionals',
-        description: 'Misebox Jobs uses a shared Professional profile for hospitality work discovery.',
+        description:
+          'Misebox Jobs uses a shared Professional profile for hospitality work discovery.',
       },
       {
         title: 'Jobs',
-        description: 'A focused hospitality work doorway built on Company, Place, Agent, and Professional authority—not Kitchen identity.',
+        description:
+          'A focused hospitality work doorway built on Company, Place, Agent, and Professional authority—not Kitchen identity.',
       },
       {
-        title: 'Menus & Dishes',
-        description: 'Menus, dishes, and recipes live in one structured system.',
+        title: 'Menus & Items',
+        description:
+          'Menus, dishes, and recipes live in one structured system.',
       },
       {
         title: 'Prep & Service',
-        description: 'Prep tasks and service coordination keep the kitchen organised.',
+        description:
+          'Prep tasks and service coordination keep the kitchen organised.',
       },
       {
         title: 'Team',
@@ -105,7 +127,8 @@ export const sourceMeta = {
       },
       {
         title: 'Suppliers',
-        description: 'Supplier records support Kitchen sourcing workflows without becoming a second main-product audience.',
+        description:
+          'Supplier records support Kitchen sourcing workflows without becoming a second main-product audience.',
       },
       {
         title: 'Apps',
@@ -115,21 +138,31 @@ export const sourceMeta = {
     appSpec: {
       name: 'Misebox',
       tagline: 'Restaurant Menu and Kitchen Workflow',
-      description: 'Misebox connects published menus with the dishes, orders, and service handoff behind them.',
+      description:
+        'Misebox connects published menus with the dishes, orders, and service handoff behind them.',
       modules: [
         {
           name: 'fireux-kitchens',
           summary: 'Kitchen operations module for day-to-day execution.',
-          entities: ['Kitchen', 'Menu', 'Dish', 'Ingredient', 'KitchenRecipe', 'KitchenTeamMember'],
+          entities: [
+            'Kitchen',
+            'Menu',
+            'Item',
+            'Ingredient',
+            'KitchenRecipe',
+            'KitchenTeamMember',
+          ],
         },
         {
           name: 'fireux-jobs',
-          summary: 'Adjacent Jobs doorway for published roles and professional profiles.',
+          summary:
+            'Adjacent Jobs doorway for published roles and professional profiles.',
           entities: ['Job', 'Professional', 'Agent'],
         },
         {
           name: 'fireux-suppliers',
-          summary: 'Supplier profile module for sourcing and catalog coordination.',
+          summary:
+            'Supplier profile module for sourcing and catalog coordination.',
           entities: ['Supplier', 'Company'],
         },
         {
@@ -139,56 +172,81 @@ export const sourceMeta = {
         },
         {
           name: 'Chef profile',
-          summary: 'Kitchen-side professional profile used in Misebox operations.',
+          summary:
+            'Kitchen-side professional profile used in Misebox operations.',
           entities: ['Chef'],
         },
       ],
       entities: [
         {
           name: 'Place',
-          purpose: 'Canonical location identity used by multiple domain records.',
+          purpose:
+            'Canonical location identity used by multiple domain records.',
           keyFields: ['id', 'name', 'formatted_address', 'lat', 'lng'],
           linksTo: ['Kitchen', 'Company'],
         },
         {
           name: 'Kitchen',
           purpose: 'Operational kitchen identity and runtime context.',
-          keyFields: ['id', 'name', 'short_address', 'image_url', 'is_test_kitchen'],
-          linksTo: ['Menu', 'Dish', 'Ingredient', 'KitchenRecipe', 'KitchenTeamMember', 'Order'],
+          keyFields: [
+            'id',
+            'name',
+            'short_address',
+            'image_url',
+            'is_test_kitchen',
+          ],
+          linksTo: [
+            'Menu',
+            'Item',
+            'Ingredient',
+            'KitchenRecipe',
+            'KitchenTeamMember',
+            'Order',
+          ],
         },
         {
           name: 'Menu',
-          purpose: 'Kitchen-owned menu identity. Sections and items live in child collections.',
+          purpose:
+            'Kitchen-owned menu identity. Sections and items live in child collections.',
           keyFields: ['id', 'kitchen_id', 'name', 'description', 'status'],
-          linksTo: ['Dish'],
+          linksTo: ['Item'],
         },
         {
-          name: 'Dish',
+          name: 'Item',
           purpose: 'Individual food item with recipe and ingredient links.',
-          keyFields: ['id', 'kitchen_id', 'name', 'ingredient_ids', 'recipe_ids'],
+          keyFields: [
+            'id',
+            'kitchen_id',
+            'name',
+            'ingredient_ids',
+            'recipe_ids',
+          ],
           linksTo: ['Ingredient', 'KitchenRecipe'],
         },
         {
           name: 'Ingredient',
-          purpose: 'Stock and costing ingredient identity for dishes and purchasing.',
+          purpose:
+            'Stock and costing ingredient identity for dishes and purchasing.',
           keyFields: ['id', 'name', 'default_unit', 'allergens', 'active'],
-          linksTo: ['Dish', 'KitchenRecipe', 'Supplier'],
+          linksTo: ['Item', 'KitchenRecipe', 'Supplier'],
         },
         {
           name: 'KitchenRecipe',
           purpose: 'Standardized prep/cook instructions for consistent output.',
           keyFields: ['id', 'name', 'yield_qty', 'ingredient_lines', 'steps'],
-          linksTo: ['Dish', 'Ingredient'],
+          linksTo: ['Item', 'Ingredient'],
         },
         {
           name: 'KitchenTeamMember',
-          purpose: 'Team assignment record for stations, roles, and capability tags.',
+          purpose:
+            'Team assignment record for stations, roles, and capability tags.',
           keyFields: ['id', 'kitchen_id', 'name', 'role', 'station'],
           linksTo: [],
         },
         {
           name: 'Order',
-          purpose: 'Customer/service order with scope, lines, totals, and status.',
+          purpose:
+            'Customer/service order with scope, lines, totals, and status.',
           keyFields: ['id', 'scope_type', 'scope_id', 'status', 'totals'],
           linksTo: ['Kitchen', 'Menu'],
         },
@@ -224,7 +282,8 @@ export const sourceMeta = {
         },
         {
           name: 'Company',
-          purpose: 'Business identity tied to places and supplier/client structures.',
+          purpose:
+            'Business identity tied to places and supplier/client structures.',
           keyFields: ['id', 'name', 'place_id', 'short_name'],
           linksTo: ['Place', 'Supplier', 'Job'],
         },
@@ -241,7 +300,7 @@ export const sourceMeta = {
     relationshipMap: `
 Place
   -> Kitchen
-       -> Menu -> Dish -> Ingredient
+       -> Menu -> Item -> Ingredient
        -> KitchenRecipe
        -> KitchenTeamMember
        -> Order
@@ -256,7 +315,8 @@ User
 `,
     seo: {
       title: 'About Misebox',
-      description: 'Misebox connects menus, dishes, recipes, prep work, orders, and service handoff for restaurant teams.',
+      description:
+        'Misebox connects menus, dishes, recipes, prep work, orders, and service handoff for restaurant teams.',
     },
   },
   getStarted: {
@@ -284,26 +344,39 @@ User
     stepsHeading: {
       eyebrow: 'Three steps',
       title: 'A practical rollout in three steps',
-      description: 'Start with Kitchen truth, connect the work behind the menu, then run a service flow your team can inspect and improve.',
+      description:
+        'Start with Kitchen truth, connect the work behind the menu, then run a service flow your team can inspect and improve.',
     },
     steps: [
       {
         badge: 'Step 1',
         title: 'Establish the Kitchen',
         copy: 'Create the Kitchen identity, attach the right operators, and decide which existing information is worth carrying forward.',
-        items: ['Kitchen identity', 'Operator access', 'Current menu and source inventory'],
+        items: [
+          'Kitchen identity',
+          'Operator access',
+          'Current menu and source inventory',
+        ],
       },
       {
         badge: 'Step 2',
         title: 'Connect the menu to prep',
         copy: 'Structure menus, dishes, recipes, ingredients, and station work so one change does not have to be copied between tools.',
-        items: ['Menu and dish structure', 'Recipes and ingredient relationships', 'Prep and station workflow'],
+        items: [
+          'Menu and dish structure',
+          'Recipes and ingredient relationships',
+          'Prep and station workflow',
+        ],
       },
       {
         badge: 'Step 3',
         title: 'Run and review service',
         copy: 'Carry guest choices into the Kitchen queue, move tickets toward handoff, and keep the underlying menu information current.',
-        items: ['Order flow check', 'Kitchen handoff review', 'Next-service improvement list'],
+        items: [
+          'Order flow check',
+          'Kitchen handoff review',
+          'Next-service improvement list',
+        ],
       },
     ],
     afterSetup: {
@@ -328,8 +401,13 @@ User
       ],
       card: {
         eyebrow: 'Need a faster launch?',
-        title: 'Use express rollout when you need one operating model across multiple kitchens with minimal drift.',
-        bullets: ['Daily implementation checkpoints.', 'Menu and workflow mapping in parallel.', 'Team enablement for prep and service.'],
+        title:
+          'Use express rollout when you need one operating model across multiple kitchens with minimal drift.',
+        bullets: [
+          'Daily implementation checkpoints.',
+          'Menu and workflow mapping in parallel.',
+          'Team enablement for prep and service.',
+        ],
         action: {
           label: 'See what works today',
           to: '/operations',
@@ -338,11 +416,13 @@ User
     },
     seo: {
       title: 'Get Started · Misebox',
-      description: 'Create a Kitchen workspace and connect menus, dishes, recipes, prep work, orders, and service handoff.',
+      description:
+        'Create a Kitchen workspace and connect menus, dishes, recipes, prep work, orders, and service handoff.',
     },
   },
   roadmap: {
     title: 'Misebox Road Map',
-    summary: 'Misebox is evolving from public Kitchen tools into deeper menu, prep, order, service, and multi-location coordination.',
+    summary:
+      'Misebox is evolving from public Kitchen tools into deeper menu, prep, order, service, and multi-location coordination.',
   },
 } as const

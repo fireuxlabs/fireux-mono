@@ -1,20 +1,19 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <section class="workspace-surface workspace-surface--compact">
-    <KitchenMenuItemsDetail />
-  </section>
+  <KitchenMenuItemsDetail />
 </template>
 
 <script setup lang="ts">
-import { provideKitchenDishesContext } from '../../../../../kitchen/composables/workspace/dishes/useKitchenDishesContext'
-import { provideKitchenItemPreparation } from '../../../../../kitchen/composables/workspace/dishes/useKitchenItemPreparation'
+import { provideKitchenItemsContext } from '../../../../../kitchen/composables/workspace/items/useKitchenItemsContext'
+import { provideKitchenItemPreparation } from '../../../../../kitchen/composables/workspace/items/useKitchenItemPreparation'
 
-const context = provideKitchenDishesContext('all')
+const context = provideKitchenItemsContext('all')
 provideKitchenItemPreparation(context)
 
 definePageMeta({
   layout: false,
   workspacePage: true,
+  workspaceHeader: 'content',
   workspaceSurface: 'detail',
   visibility: { modules: ['fireux-kitchens'] },
   requiresAuth: true,

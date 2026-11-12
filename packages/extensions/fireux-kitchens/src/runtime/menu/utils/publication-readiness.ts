@@ -1,7 +1,7 @@
-import { readDishPricing } from '../../kitchen/utils/dish-pricing'
+import { readItemPricing } from '../../kitchen/utils/item-pricing'
 import {
   normalizeKitchenPromotion,
-  promotionDishIds,
+  promotionItemIds,
 } from '../../kitchen/utils/promotions/pricing'
 
 type RecordData = Record<string, unknown>
@@ -43,7 +43,7 @@ export function menuPublicationReadiness(
       )
       if (item.promotion_id) {
         if (item.dish_id)
-          reason = 'Entry references both a Dish and a meal deal.'
+          reason = 'Entry references both a Item and a meal deal.'
         else if (!stored || !Array.isArray(stored.groups))
           reason = 'Meal deal is missing.'
         else if (stored.status !== 'active') reason = 'Meal deal is paused.'
@@ -61,23 +61,23 @@ export function menuPublicationReadiness(
             if (currency && deal.currency !== currency)
               reason = 'Meal-deal currency does not match the Kitchen.'
             else if (
-              promotionDishIds(deal).some(
+              promotionItemIds(deal).some(
                 (id) => !dishes.has(id) || dishes.get(id)?.status === 'archived'
               )
             )
-              reason = 'Meal deal includes an unavailable Dish.'
+              reason = 'Meal deal includes an unavailable Item.'
           } catch {
             reason = 'Meal deal is incomplete.'
           }
         }
-      } else if (!dish) reason = 'Dish is missing.'
-      else if (dish.status === 'archived') reason = 'Dish is archived.'
-      else if (!Object.hasOwn(dish, 'price')) reason = 'Dish price is not set.'
+      } else if (!dish) reason = 'Item is missing.'
+      else if (dish.status === 'archived') reason = 'Item is archived.'
+      else if (!Object.hasOwn(dish, 'price')) reason = 'Item price is not set.'
       else {
         try {
-          readDishPricing(dish)
+          readItemPricing(dish)
         } catch {
-          reason = 'Dish pricing is incomplete.'
+          reason = 'Item pricing is incomplete.'
         }
       }
       if (reason)

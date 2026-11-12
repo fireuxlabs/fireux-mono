@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
-import { deleteDish } from '../../../../../kitchen/server/dishes/delete'
+import { deleteItem } from '../../../../../kitchen/server/items/delete'
 export default defineEventHandler(async (event) =>
-  deleteDish(event, await readBody(event))
+  deleteItem(event, await readBody(event))
 )

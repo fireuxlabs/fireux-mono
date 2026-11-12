@@ -38,12 +38,12 @@ export const featuredAppMedia = {
 
 export const workspaceSurfaceCopy = {
   'kitchen.dishes': {
-    eyebrow: 'Kitchen Workspace · Dishes',
+    eyebrow: 'Kitchen Workspace · Items',
     title: 'Develop your dishes.',
     description:
       'Set each dish’s specification and selling price, and connect its recipes and prep items.',
     items: ['Specification', 'Selling price', 'Prep items', 'Recipes'],
-    action: 'Open Dishes',
+    action: 'Open Items',
     to: '/workspace/kitchen/menu/items',
   },
   'kitchen.ingredients': {
@@ -53,7 +53,7 @@ export const workspaceSurfaceCopy = {
       'Connect the ingredients a Kitchen uses to dishes, recipes, prep items, and available supplier offers.',
     items: [
       'Kitchen ingredients',
-      'Dishes and recipes',
+      'Items and recipes',
       'Prep items',
       'Supplier offers',
     ],
@@ -65,7 +65,7 @@ export const workspaceSurfaceCopy = {
     title: 'Create your menus.',
     description:
       'Arrange dishes into ordering sections, choose how each menu is used, and publish QR codes for guests.',
-    items: ['Ordering sections', 'Dishes', 'Ordering formats', 'QR codes'],
+    items: ['Ordering sections', 'Items', 'Ordering formats', 'QR codes'],
     action: 'Open Menus',
     to: '/workspace/kitchen/menu/menus',
   },
@@ -97,7 +97,7 @@ export const workspaceSurfaceCopy = {
     title: 'Review your stations.',
     description:
       'See the selected Kitchen’s stations and the station assigned to each dish.',
-    items: ['Kitchen stations', 'Dish assignments'],
+    items: ['Kitchen stations', 'Item assignments'],
     action: 'Open Stations',
     to: '/workspace/kitchen/stations',
   },

@@ -119,7 +119,7 @@ export function validateSale(input: {
       ),
       dish_id: requiredId(
         line.dish_id,
-        `Kitchen Sale line ${index + 1} Dish id`
+        `Kitchen Sale line ${index + 1} Item id`
       ),
       label: requiredText(
         line.label,

@@ -1,4 +1,4 @@
-import type { KitchenDemoDishComponent } from '../demo/production'
+import type { KitchenDemoItemComponent } from '../demo/production'
 import type { KitchenDemoScenario } from '../demo/core/types'
 
 export const KITCHEN_DEMO_MENU_MODES = ['on', 'order_led', 'off'] as const
@@ -8,7 +8,7 @@ export type KitchenDemoMenuMode = (typeof KITCHEN_DEMO_MENU_MODES)[number]
 type KitchenDemoMenuCascadeScenario = Pick<
   KitchenDemoScenario,
   | 'menus'
-  | 'dishSpecs'
+  | 'itemSpecs'
   | 'menuItemComponentDeltas'
   | 'prepItems'
   | 'recipes'
@@ -129,12 +129,12 @@ export function projectKitchenDemoMenuCascade(
     menus.filter((menu) => menu.inService).map((menu) => menu.id)
   )
 
-  const dishUsage = new Map<string, Set<string>>()
+  const itemUsage = new Map<string, Set<string>>()
   const prepItemUsage = new Map<string, Set<string>>()
   const recipeUsage = new Map<string, Set<string>>()
   const ingredientUsage = new Map<string, Set<string>>()
-  const specByDishId = new Map(
-    input.scenario.dishSpecs.map((spec) => [cleanId(spec.dishId), spec])
+  const specByItemId = new Map(
+    input.scenario.itemSpecs.map((spec) => [cleanId(spec.dishId), spec])
   )
   const prepItemById = new Map(
     input.scenario.prepItems.map((prepItem) => [cleanId(prepItem.id), prepItem])
@@ -144,7 +144,7 @@ export function projectKitchenDemoMenuCascade(
   )
 
   const addComponentUse = (
-    component: KitchenDemoDishComponent,
+    component: KitchenDemoItemComponent,
     menuId: string
   ) => {
     if (component.source === 'ingredient') {
@@ -176,8 +176,8 @@ export function projectKitchenDemoMenuCascade(
 
     for (const item of activeItems) {
       const dishId = cleanId(item.dish_id)
-      addMenuUse(dishUsage, dishId, menuId)
-      for (const component of specByDishId.get(dishId)?.components ?? []) {
+      addMenuUse(itemUsage, dishId, menuId)
+      for (const component of specByItemId.get(dishId)?.components ?? []) {
         addComponentUse(component, menuId)
       }
 
@@ -208,7 +208,7 @@ export function projectKitchenDemoMenuCascade(
     input.scenario.menus.flatMap((menu) =>
       menu.dishes.map((dish) => cleanId(dish.id))
     ),
-    dishUsage
+    itemUsage
   )
   const prepItems = project(
     input.scenario.prepItems.map((prepItem) => cleanId(prepItem.id)),

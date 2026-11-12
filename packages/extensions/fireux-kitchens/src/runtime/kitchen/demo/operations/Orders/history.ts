@@ -69,7 +69,7 @@ const menuItemById = new Map(
     items.map((item) => [item.id, item] as const)
   )
 )
-const dishById = new Map(
+const itemById = new Map(
   deanosKitchenDemoMenu.dishes.map((dish) => [dish.id, dish] as const)
 )
 
@@ -78,7 +78,7 @@ function catalogItem(
   variantLabel?: string
 ): CompletedOrderItemMix {
   const menuItem = menuItemById.get(sourceItemId)
-  const dish = menuItem ? dishById.get(menuItem.dish_id || '') : undefined
+  const dish = menuItem ? itemById.get(menuItem.dish_id || '') : undefined
   const priceOption = variantLabel
     ? dish?.price_options.find((option) => option.label === variantLabel)
     : undefined

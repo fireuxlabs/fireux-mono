@@ -45,11 +45,11 @@
         />
 
         <FireFormsEditableArrayOfStrings
-          label="Signature Dishes"
-          :value="signatureDishes"
+          label="Signature Items"
+          :value="signatureItems"
           item-placeholder="Signature dish"
           new-item-placeholder="Add signature dish"
-          :update="handleSignatureDishes"
+          :update="handleSignatureItems"
         />
       </div>
     </UPageCard>
@@ -73,7 +73,7 @@ const {
   updateSummary,
   updateBio,
   updateImage,
-  updateSignatureDishes,
+  updateSignatureItems,
 } = useChefUpdate()
 
 const toast = useToastify()
@@ -83,7 +83,7 @@ const summary = computed(() => chef.value?.summary ?? '')
 const bio = computed(() => chef.value?.chef_bio ?? '')
 const imageUrl = computed(() => chef.value?.chef_image ?? '')
 
-const signatureDishes = computed(() => {
+const signatureItems = computed(() => {
   const list = chef.value?.chef_signature_dishes ?? []
   return Array.isArray(list) ? list : []
 })
@@ -130,9 +130,9 @@ const handleImage = async (value: string) =>
     'Failed to update chef image'
   )
 
-const handleSignatureDishes = async (value: string[]) =>
+const handleSignatureItems = async (value: string[]) =>
   wrap(
-    () => updateSignatureDishes(value),
+    () => updateSignatureItems(value),
     'Signature dishes updated',
     'Failed to update signature dishes'
   )

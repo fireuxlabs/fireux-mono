@@ -10,10 +10,16 @@ import type { EntityAssetSourceMap } from 'fireux-core/runtime/models/operations
 import type { AppTypography } from 'fireux-core/types/theme'
 import type {
   MenuManifestContent,
-  MenuManifestItem,
+  PublicMenuItem,
 } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 
-export type { AppPalette, AppPaletteLayer, AppTypography, BrandPalette, WorkspacePalette }
+export type {
+  AppPalette,
+  AppPaletteLayer,
+  AppTypography,
+  BrandPalette,
+  WorkspacePalette,
+}
 
 export type TemplateOneKitchenTier = FireuxEntityManagement['mode']
 
@@ -24,7 +30,7 @@ export const templateOneOrderingCopy = {
   description: 'Choose the service that fits where you are and what you need.',
 } as const
 
-export type TemplateOneFlagshipDish = {
+export type TemplateOneFlagshipItem = {
   id: string
   name: string
   description: string
@@ -35,13 +41,13 @@ export type TemplateOneSceneOneRequirements = {
   wordmark: boolean
   palette: boolean
   typography: boolean
-  flagshipDish: boolean
+  flagshipItem: boolean
   pattern: 'approved' | 'unapproved' | 'missing'
 }
 
 export type TemplateOneMenuContent = {
   menu: MenuManifestContent
-  makeItYours?: MenuManifestItem | null
+  makeItYours?: PublicMenuItem | null
   menuHref?: string
   menuActionLabel?: string
 }
@@ -66,12 +72,17 @@ export type TemplateOneKitchenProjection = {
   wordmarkSrc: string
   palette: AppPalette
   typography: AppTypography
-  flagshipDish: TemplateOneFlagshipDish | null
+  flagshipItem: TemplateOneFlagshipItem | null
   requirements: TemplateOneSceneOneRequirements
   hero: {
     identityAlignment: 'left' | 'center'
     tagline: readonly string[]
-    productCrop?: { visibleAspect: number; scale: number; offsetX: number; offsetY: number }
+    productCrop?: {
+      visibleAspect: number
+      scale: number
+      offsetX: number
+      offsetY: number
+    }
   }
   menu: TemplateOneMenuContent
   ordering: {
@@ -115,8 +126,10 @@ export const projectTemplateOneKitchen = (
   requirements: {
     wordmark: Boolean(input.wordmarkSrc),
     palette: Boolean(input.palette),
-    typography: Boolean(input.typography.display_family && input.typography.body_family),
-    flagshipDish: Boolean(input.flagshipDish?.image),
+    typography: Boolean(
+      input.typography.display_family && input.typography.body_family
+    ),
+    flagshipItem: Boolean(input.flagshipItem?.image),
     pattern: 'unapproved',
     ...input.requirements,
   },

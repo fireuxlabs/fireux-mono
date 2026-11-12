@@ -1,4 +1,4 @@
-import { readDishPricing } from '../../../kitchen/utils/dish-pricing'
+import { readItemPricing } from '../../../kitchen/utils/item-pricing'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
 
@@ -34,10 +34,10 @@ const itemRow = (
 ) => {
   if (item.promotion_id)
     throw new Error(
-      'Import comparison supports Dish entries only. Manage meal deals in Promotions.'
+      'Import comparison supports Item entries only. Manage meal deals in Promotions.'
     )
-  if (!dish) throw new Error('A Menu Dish is missing.')
-  const pricing = readDishPricing(dish)
+  if (!dish) throw new Error('A Menu Item is missing.')
+  const pricing = readItemPricing(dish)
   if (pricing.choice_groups?.length)
     throw new Error(
       'Import comparison cannot represent Item choice groups. Review choices in the Item editor.'

@@ -45,11 +45,11 @@
       <UFormField label="Food and drinks">
         <USelectMenu
           :model-value="group.dishes.map((dish) => dish.dishId)"
-          @update:model-value="(ids) => selectDishes(group, ids)"
+          @update:model-value="(ids) => selectItems(group, ids)"
           :aria-label="`Choose dishes for group ${index + 1}`"
           multiple
           value-key="value"
-          :items="dishOptions"
+          :items="itemOptions"
           placeholder="Choose dishes"
           :disabled="disabled"
         />
@@ -60,7 +60,7 @@
         class="promotion-choice"
       >
         <label :for="`supplement-${group.id}-${dish.dishId}`">{{
-          dishOptions.find((option) => option.value === dish.dishId)?.label ||
+          itemOptions.find((option) => option.value === dish.dishId)?.label ||
           'Unavailable dish'
         }}</label>
         <UFormField :label="`Supplement (${currency})`">
@@ -91,11 +91,11 @@
 <script setup lang="ts">
 import type {
   MealDealGroupDraft,
-  PromotionDishOption,
+  PromotionItemOption,
 } from '../../../models/promotion-draft.model'
 defineProps<{
   currency: string
-  dishOptions: PromotionDishOption[]
+  itemOptions: PromotionItemOption[]
   disabled: boolean
 }>()
 const price = defineModel<string | number>('price', { required: true })
@@ -108,7 +108,7 @@ function addGroup() {
     dishes: [],
   })
 }
-function selectDishes(group: MealDealGroupDraft, ids: string[]) {
+function selectItems(group: MealDealGroupDraft, ids: string[]) {
   group.dishes = ids.map(
     (dishId) =>
       group.dishes.find((dish) => dish.dishId === dishId) || {

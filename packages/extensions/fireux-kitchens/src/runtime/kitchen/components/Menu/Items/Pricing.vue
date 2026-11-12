@@ -2,10 +2,6 @@
   <UCard id="item-price-choices">
     <template #header><h2>Price & choices</h2></template>
     <form class="fx-card-body-stack" @submit.prevent="save">
-      <p>
-        Shared across all Menus using this Item. Choose full Item prices for
-        sizes, or additional charges for included choices and extras.
-      </p>
       <UFormField
         v-if="!groups.some((group) => group.pricing === 'full')"
         :label="`Normal price (${currency})`"
@@ -34,19 +30,21 @@
         </template>
         <p v-else>Complete the group names, choices and limits to preview.</p>
       </FireDisclosurePanel>
-      <UButton
-        type="submit"
-        label="Save changes"
-        :loading="busy"
-        :disabled="!canWrite || busy"
-      />
-      <UButton
-        label="Cancel changes"
-        color="neutral"
-        variant="ghost"
-        :disabled="busy"
-        @click="resetDraft"
-      />
+      <div class="fx-card__actions">
+        <UButton
+          type="submit"
+          label="Save changes"
+          :loading="busy"
+          :disabled="!canWrite || busy"
+        />
+        <UButton
+          label="Cancel changes"
+          color="neutral"
+          variant="ghost"
+          :disabled="busy"
+          @click="resetDraft"
+        />
+      </div>
       <p v-if="message" role="status">{{ message }}</p>
       <div v-if="error" role="alert">
         <p>{{ error }}</p>
@@ -68,9 +66,9 @@ import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWo
 const workspace = useKitchenWorkspace()
 const selectedKitchen = workspace.data
 import { computed, ref, watch } from 'vue'
-import { useKitchenItemDetail } from '../../../composables/dish/useKitchenItemDetailContext'
-import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
-import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
+import { useKitchenItemDetail } from '../../../composables/item/useKitchenItemDetailContext'
+import { useItemUpdate } from '../../../composables/item/useItemUpdate'
+import { useItemEditorScope } from '../../../composables/item/useItemEditorScope'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import type {
   ItemChoiceGroup,
@@ -81,7 +79,7 @@ import {
   normalizeItemChoiceGroups,
   priceItemChoices,
 } from '../../../utils/item-choices'
-import { normalizeDishPricingPatch } from '../../../utils/dish-pricing'
+import { normalizeItemPricingPatch } from '../../../utils/item-pricing'
 const { dish, dishId, kitchenId, canWrite } = useKitchenItemDetail()
 const currency = computed(() => readPlaceCurrencyCode(selectedKitchen.value))
 const price = ref<string | number>('')
@@ -131,16 +129,16 @@ function resetDraft() {
   previewChoices.value = {}
 }
 watch(sourceKey, resetDraft, { immediate: true })
-const captureIntent = useDishEditorScope([kitchenId, dishId, canWrite], () => {
+const captureIntent = useItemEditorScope([kitchenId, dishId, canWrite], () => {
   busy.value = false
   error.value = ''
   message.value = ''
 })
-const { updateDish } = useDishUpdate([kitchenId, dishId, canWrite])
+const { updateItem } = useItemUpdate([kitchenId, dishId, canWrite])
 async function updateDeposit(value: string) {
   const current = captureIntent()
-  const changes = normalizeDishPricingPatch({ bottle_deposit: Number(value) })
-  await updateDish(dishId.value, changes, {
+  const changes = normalizeItemPricingPatch({ bottle_deposit: Number(value) })
+  await updateItem(dishId.value, changes, {
     kitchenId: kitchenId.value,
     isCurrent: current,
   })
@@ -157,7 +155,7 @@ async function save() {
   error.value = ''
   message.value = ''
   try {
-    const changes = normalizeDishPricingPatch({
+    const changes = normalizeItemPricingPatch({
       price: groups.value.some((group) => group.pricing === 'full')
         ? 0
         : amount(price.value),
@@ -165,7 +163,7 @@ async function save() {
       price_options: [],
       add_ons: [],
     })
-    await updateDish(dishId.value, changes, {
+    await updateItem(dishId.value, changes, {
       kitchenId: kitchenId.value,
       isCurrent: current,
     })

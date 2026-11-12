@@ -58,12 +58,12 @@ for (const [name, change, message] of [
   [
     'dish id',
     (h) => h.records.set(`${menuPath}/sections/s/items/i`, {}),
-    's: Unavailable entry — Dish is missing.',
+    's: Unavailable entry — Item is missing.',
   ],
   [
     'dish',
     (h) => h.records.delete('kitchens/k/dishes/dish'),
-    's: dish — Dish is missing.',
+    's: dish — Item is missing.',
   ],
 ])
   test(`missing ${name} rejects publication without writes`, async () => {
@@ -139,7 +139,7 @@ for (const operation of ['publish', 'unpublish', 'archive']) {
 test('transaction retry validates changed content before committing publication', async () => {
   const h = harness()
   h.state.retry = (records) => records.delete('kitchens/k/dishes/dish')
-  await assert.rejects(h.publish(), /Dish is missing/)
+  await assert.rejects(h.publish(), /Item is missing/)
   assert.equal(h.records.get(menuPath).status, 'draft')
   assert.equal(h.records.has(rootPath), false)
 })
@@ -231,7 +231,7 @@ const meal = () => ({
     },
   ],
 })
-test('publication validates meal-deal placements and every choice without changing Dish prices', async () => {
+test('publication validates meal-deal placements and every choice without changing Item prices', async () => {
   const h = harness()
   h.records.set(`${menuPath}/sections/s/items/i`, {
     status: 'active',
@@ -272,7 +272,7 @@ test('archived Menu cannot be republished before explicit restoration', async ()
   assert.equal(h.records.get(menuPath).status, 'archived')
 })
 
-test('ordinary Menu with only archived Dishes cannot publish or change prices', async () => {
+test('ordinary Menu with only archived Items cannot publish or change prices', async () => {
   const h = harness()
   h.records.get(`${menuPath}/sections/s`).label = 'Pizzas'
   Object.assign(h.records.get('kitchens/k/dishes/dish'), {
@@ -288,7 +288,7 @@ test('ordinary Menu with only archived Dishes cannot publish or change prices', 
         issue.name,
         issue.reason,
       ]),
-      [['Pizzas', 'Margherita', 'Dish is archived.']]
+      [['Pizzas', 'Margherita', 'Item is archived.']]
     )
     return true
   })
@@ -325,13 +325,12 @@ test('publication reports unavailable entries in every section', async () => {
   assert.equal(h.records.get(menuPath).status, 'draft')
 })
 
-
 test('publication rejects an unset normal price but preserves explicit zero and existing prices', async () => {
   const unpriced = harness()
   delete unpriced.records.get('kitchens/k/dishes/dish').price
   const before = structuredClone(unpriced.records)
-  await assert.rejects(unpriced.publish(), error => {
-    assert.match(JSON.stringify(error.data), /Dish price is not set/)
+  await assert.rejects(unpriced.publish(), (error) => {
+    assert.match(JSON.stringify(error.data), /Item price is not set/)
     return true
   })
   assert.deepEqual(unpriced.records, before)

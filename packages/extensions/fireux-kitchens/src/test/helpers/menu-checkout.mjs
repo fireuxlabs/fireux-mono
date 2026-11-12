@@ -5,7 +5,7 @@ import {
   weekdayHoursConstraints,
   testKitchenHours,
 } from '../offering-test-helpers.mjs'
-import { dishPricingHelpers } from './dish-pricing.mjs'
+import { itemPricingHelpers } from './item-pricing.mjs'
 const createError = (value) =>
   Object.assign(new Error(value.statusMessage), value)
 const requireFirestoreDocumentId = (value) => {
@@ -36,7 +36,7 @@ export function makeMenuOrdering(deps) {
   const common = {
     createError,
     requireFirestoreDocumentId,
-    ...dishPricingHelpers,
+    ...itemPricingHelpers,
     ...checkoutPricing,
     ...checkoutBasket,
     ...checkoutSelections,

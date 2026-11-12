@@ -1,13 +1,17 @@
 import { createError, type H3Event } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverKitchenMenusTarget, serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget } from '../../../kitchen/server/mutation-targets'
+import {
+  serverKitchenMenusTarget,
+  serverKitchenMenuSectionsTarget,
+  serverKitchenMenuItemsTarget,
+} from '../../../kitchen/server/mutation-targets'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../../../kitchen/server/core/mutation-authority'
 
-/** Remove one placement; the Dish or Promotion and its prices remain untouched. */
+/** Remove one placement; the Item or Promotion and its prices remain untouched. */
 export async function removeKitchenMenuItem(event: H3Event, input: unknown) {
   if (
     !input ||

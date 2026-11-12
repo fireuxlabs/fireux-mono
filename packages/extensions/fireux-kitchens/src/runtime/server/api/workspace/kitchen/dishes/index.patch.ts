@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
-import { updateDish } from '../../../../../kitchen/server/dishes/update'
+import { updateItem } from '../../../../../kitchen/server/items/update'
 export default defineEventHandler(async (event) =>
-  updateDish(event, await readBody(event))
+  updateItem(event, await readBody(event))
 )

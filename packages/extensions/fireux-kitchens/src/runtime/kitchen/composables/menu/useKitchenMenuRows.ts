@@ -1,10 +1,10 @@
 import {
-  normalizeDishPriceOptions,
-  normalizeDishAddOns,
-} from '../../utils/dish-pricing'
-// Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: derive row media only from its Dish.
+  normalizeItemPriceOptions,
+  normalizeItemAddOns,
+} from '../../utils/item-pricing'
+// Concurrent edit — 2026-07-22 01:58 CEST — Item/MenuItem boundary: derive row media only from its Item.
 import { computed, type Ref } from 'vue'
-import type { Dish } from '../../utils/dish.ts'
+import type { Item } from '../../utils/item.ts'
 import { type MenuItem } from '../../../menu/models/menu-item.model.ts'
 import type { MenuSection } from '../../../menu/models/menu-section.model.ts'
 import type { KitchenMenuSectionRow } from '../../models/kitchen-menu-rows.model'
@@ -12,7 +12,7 @@ import type { KitchenMenuSectionRow } from '../../models/kitchen-menu-rows.model
 type MenuRowOptions = {
   sections: Ref<MenuSection[]>
   items: Ref<MenuItem[]>
-  dishesById: Ref<Map<string, Dish>>
+  dishesById: Ref<Map<string, Item>>
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -57,8 +57,8 @@ export function useKitchenMenuRows(options: MenuRowOptions) {
             ...(dish?.price === undefined
               ? { priceLabel: 'Price not set' }
               : {}),
-            addOns: normalizeDishAddOns(record(dish).add_ons),
-            priceOptions: normalizeDishPriceOptions(record(dish).price_options),
+            addOns: normalizeItemAddOns(record(dish).add_ons),
+            priceOptions: normalizeItemPriceOptions(record(dish).price_options),
           }
         }),
       }

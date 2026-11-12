@@ -18,7 +18,7 @@
       :description="
         menu?.status === 'published'
           ? 'Guests currently have no food or drinks to view. Add or restore content, or unpublish this Menu.'
-          : 'Add a Dish or active meal deal to a section.'
+          : 'Add a Item or active meal deal to a section.'
       "
     />
     <div class="workspace-surface workspace-surface--compact">
@@ -65,8 +65,8 @@ const dishes = props.sectionContext
       items: computed(() =>
         props.sectionContext!.dishes.value.map((dish) => ({ ...dish }))
       ),
-      pending: props.sectionContext.dishSource.pending,
-      error: props.sectionContext.dishSource.error,
+      pending: props.sectionContext.itemSource.pending,
+      error: props.sectionContext.itemSource.error,
     }
   : useKitchenChildCollection<Record<string, unknown>>(
       'dishes',

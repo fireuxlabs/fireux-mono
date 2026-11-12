@@ -368,7 +368,7 @@ allowed modes, cycling and filtering. Kitchens' `src/test/menu-presentation.test
 checks Menu's default Preview, view controls, live filtering and service states;
 `src/test/menu-public-slug.test.mjs` covers scoped entrances and ordering links.
 Kitchens' `src/test/item-presentation.test.mjs` covers Dish Cell imagery,
-identity fallbacks and supplied price presentation; `dish-reader-internals.test.mjs`
+identity fallbacks and supplied price presentation; `item-reader-internals.test.mjs`
 covers catalogue state and navigation.
 Kitchens' `src/test/recipe-reader-internals.test.mjs` covers Recipe/Prep read
 outcomes, linked-data failures and retained editor state. The Recipe and Prep

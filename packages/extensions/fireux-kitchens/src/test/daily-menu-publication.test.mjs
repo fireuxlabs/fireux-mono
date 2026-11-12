@@ -71,9 +71,9 @@ for (const [label, change] of [
     'invalid price',
     (h) => (h.records.get('kitchens/k/dishes/dish').price = '12'),
   ],
-  ['missing Dish', (h) => h.records.delete('kitchens/k/dishes/dish')],
+  ['missing Item', (h) => h.records.delete('kitchens/k/dishes/dish')],
   [
-    'archived Dish',
+    'archived Item',
     (h) => (h.records.get('kitchens/k/dishes/dish').status = 'archived'),
   ],
   [

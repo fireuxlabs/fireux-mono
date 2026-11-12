@@ -82,7 +82,7 @@ import { reactive } from 'vue'
 import { priceItemChoices } from '../../../kitchen/utils/item-choices'
 import type { ItemChoiceSelection } from '../../../kitchen/models/item-choice.model'
 const selections = reactive<Record<string, ItemChoiceSelection>>({})
-function groupPrice(item: MenuManifestItem) {
+function groupPrice(item: PublicMenuItem) {
   try {
     return {
       minor: priceItemChoices(
@@ -102,7 +102,7 @@ function groupPrice(item: MenuManifestItem) {
 
 import type {
   MenuManifestSection,
-  MenuManifestItem,
+  PublicMenuItem,
   MenuManifestPriceOption,
 } from '../../models/menu-detail.model'
 defineProps<{
@@ -113,12 +113,12 @@ defineProps<{
 const emit = defineEmits<{
   addChoices: [
     sectionId: string,
-    item: MenuManifestItem,
+    item: PublicMenuItem,
     selections: ItemChoiceSelection,
   ]
   add: [
     sectionId: string,
-    item: MenuManifestItem,
+    item: PublicMenuItem,
     option?: MenuManifestPriceOption,
   ]
 }>()

@@ -7,14 +7,8 @@ import { KitchenIngredientStorage } from '../../utils/kitchen-ingredient'
 import { normalizeIngredient } from '../../../ingredient/server/normalize'
 import type { Ingredient } from '../../../ingredient/models/ingredient.model'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import {
-  normalizeDish,
-  type Dish,
-} from '../../utils/dish'
-import {
-  normalizeRecipe,
-  type Recipe,
-} from '../../utils/recipe'
+import { normalizeItem, type Item } from '../../utils/item'
+import { normalizeRecipe, type Recipe } from '../../utils/recipe'
 import {
   normalizeKitchenStation,
   type KitchenStation,
@@ -101,10 +95,10 @@ async function readMenuManifest(
   )
 }
 
-async function readDishes(
+async function readItems(
   access: KitchenAgentAccess,
   request: KitchenAgentRequest
-): Promise<Dish[]> {
+): Promise<Item[]> {
   if (request.operation !== 'dishes' && request.operation !== 'drinks') {
     return []
   }
@@ -116,7 +110,7 @@ async function readDishes(
 
   return snapshot.docs
     .map((document) => ({
-      ...normalizeDish({ id: document.id, ...(document.data() || {}) }),
+      ...normalizeItem({ id: document.id, ...(document.data() || {}) }),
       context: readRecordString(document.data() || {}, 'context'),
     }))
     .filter((dish) =>
@@ -274,7 +268,7 @@ export async function readKitchenAgentContext(
       access.rootKitchen
     ),
     readMenuManifest(access, request),
-    readDishes(access, request),
+    readItems(access, request),
     readRecipes(access, request),
     readIngredients(access, request),
     readStations(access, request),

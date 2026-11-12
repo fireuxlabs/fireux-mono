@@ -64,7 +64,7 @@ export function useChefUpdate(profile?: ProfileRefs<Chef> | null) {
     })
   }
 
-  const updateSignatureDishes = async (value: string | string[]) => {
+  const updateSignatureItems = async (value: string | string[]) => {
     await updateProfile({ chef_signature_dishes: boundedStringList(value) })
   }
 
@@ -81,7 +81,7 @@ export function useChefUpdate(profile?: ProfileRefs<Chef> | null) {
     updateSummary,
     updateBio,
     updateImage,
-    updateSignatureDishes,
+    updateSignatureItems,
     updateOrganizationName,
   }
 }

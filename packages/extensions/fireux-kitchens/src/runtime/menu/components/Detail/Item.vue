@@ -56,7 +56,7 @@ import {
 import type { ItemChoiceSelection } from '../../../kitchen/models/item-choice.model'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import { formatCurrencyAmount } from '../../../utils/currency-display'
-import type { MenuManifestItem } from '../../models/menu-detail.model.ts'
+import type { PublicMenuItem } from '../../models/menu-detail.model.ts'
 
 const props = defineProps<{
   accessibilityId: string
@@ -65,7 +65,7 @@ const props = defineProps<{
   currencyFormat: CurrencyDisplayFormat
   showCurrency: boolean
   showItemImages?: boolean
-  item: MenuManifestItem
+  item: PublicMenuItem
   optionalExtrasLabel: string
 }>()
 

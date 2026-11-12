@@ -1,12 +1,12 @@
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverKitchenDishesTarget } from '../../../kitchen/server/mutation-targets'
+import { serverKitchenItemsTarget } from '../../../kitchen/server/mutation-targets'
 import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
-import { readDishPricing } from '../../../kitchen/utils/dish-pricing'
+import { readItemPricing } from '../../../kitchen/utils/item-pricing'
 import {
   normalizeKitchenPromotion,
   promotionPricedItem,
 } from '../../../kitchen/utils/promotions/pricing'
-import type { MenuManifestItem } from '../../models/menu-detail.model'
+import type { PublicMenuItem } from '../../models/menu-detail.model'
 import type { PublicKitchenPromotion } from '../../../kitchen/models/promotion.model'
 
 /** Canonical commercial terms, acquired inside the existing submission transaction. */
@@ -21,7 +21,7 @@ export function orderItemReader(
     if (!dishes.has(id))
       dishes.set(
         id,
-        tx.read(serverKitchenDishesTarget(kitchenId), id).then((row) => {
+        tx.read(serverKitchenItemsTarget(kitchenId), id).then((row) => {
           if (
             !row.exists ||
             row.data?.status === 'archived' ||
@@ -68,8 +68,8 @@ export function orderItemReader(
     entry: Record<string, unknown>,
     id: string,
     day: string
-  ): Promise<MenuManifestItem> => {
-    const item: MenuManifestItem = {
+  ): Promise<PublicMenuItem> => {
+    const item: PublicMenuItem = {
       id,
       dishId: '',
       itemKind: 'food',
@@ -133,8 +133,8 @@ export function orderItemReader(
     if (typeof entry.dish_id !== 'string' || entry.promotion_id)
       throw new Error('A selected item is unavailable.')
     const data = await dish(entry.dish_id)
-    const terms = readDishPricing(data)
-    const canonical: MenuManifestItem = {
+    const terms = readItemPricing(data)
+    const canonical: PublicMenuItem = {
       ...item,
       dishId: entry.dish_id,
       itemKind:

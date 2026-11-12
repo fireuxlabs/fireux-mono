@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import type { Dish } from '../../utils/dish.ts'
-import { useKitchenDishCollection } from '../useKitchenDishCollection'
+import type { Item } from '../../utils/item.ts'
+import { useKitchenItemCollection } from '../useKitchenItemCollection'
 import { useMenuSectionCollection } from '../../../menu/composables/useMenuSectionCollection'
 import { useKitchenMenuItems } from './useKitchenMenuItems'
 import { useKitchenMenuRows } from './useKitchenMenuRows'
@@ -25,10 +25,10 @@ function useKitchenMenuDetailFromScope(
     sectionState.collectionPath,
     sectionState.sections
   )
-  const dishState = useKitchenDishCollection(kitchenId, collectionOptions)
+  const catalogueState = useKitchenItemCollection(kitchenId, collectionOptions)
   const dishesById = computed(() => {
-    const map = new Map<string, Dish>()
-    for (const dish of dishState.dishes.value) {
+    const map = new Map<string, Item>()
+    for (const dish of catalogueState.dishes.value) {
       const id = text(dish.id)
       if (id) map.set(id, dish)
     }
@@ -39,7 +39,7 @@ function useKitchenMenuDetailFromScope(
       state.pending.value ||
       sectionState.pending.value ||
       itemState.pending.value ||
-      dishState.pending.value
+      catalogueState.pending.value
   )
   const rows = useKitchenMenuRows({
     sections: sectionState.sections,
@@ -60,10 +60,10 @@ function useKitchenMenuDetailFromScope(
       kitchenCollectionPath: state.kitchenCollectionPath.value,
       menuId: resolvedMenuId.value,
       sectionsPath: sectionState.collectionPath.value,
-      dishesPath: dishState.collectionPath.value,
+      dishesPath: catalogueState.collectionPath.value,
       sectionsCount: sectionState.sections.value.length,
       itemsCount: itemState.items.value.length,
-      dishesCount: dishState.dishes.value.length,
+      dishesCount: catalogueState.dishes.value.length,
       sectionRowsCount: rows.sectionRows.value.length,
       structuredItemsCount: structuredItemsCount.value,
       pending: detailPending.value,
@@ -74,7 +74,7 @@ function useKitchenMenuDetailFromScope(
     ...state,
     sections: sectionState.sections,
     items: itemState.items,
-    dishes: dishState.dishes,
+    dishes: catalogueState.dishes,
     sectionRows: rows.sectionRows,
     detailPending,
     debug,

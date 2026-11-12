@@ -49,7 +49,7 @@ export async function answerKitchenAgent(
     )
   } else if (operation === 'dishes') {
     operationContext = {
-      operation: 'Dishes',
+      operation: 'Items',
       authority: 'advisory',
       dishes: context.dishes.map((dish) => ({
         id: dish.id,
@@ -60,7 +60,7 @@ export async function answerKitchenAgent(
       })),
       tool_catalogue: toolCatalogue,
       instruction:
-        'Inspect only the supplied canonical Dish records. An empty image is direct evidence that an image is missing. Do not infer Recipe, Ingredient, cost, price, sales, allergen, stock or profitability facts that are not supplied. Use the Tool catalogue as capability language, preserve every status, and never present a requested Tool as executable.',
+        'Inspect only the supplied canonical Item records. An empty image is direct evidence that an image is missing. Do not infer Recipe, Ingredient, cost, price, sales, allergen, stock or profitability facts that are not supplied. Use the Tool catalogue as capability language, preserve every status, and never present a requested Tool as executable.',
     }
   } else if (operation === 'drinks') {
     operationContext = buildDrinksAgentContext(context.dishes, toolCatalogue)
@@ -112,7 +112,7 @@ export async function answerKitchenAgent(
       })),
       tool_catalogue: toolCatalogue,
       instruction:
-        'Inspect only the supplied canonical Kitchen Station records. Name, description, active state and display order are direct stored evidence. An empty collection proves only that no Station record was supplied. Do not infer Dish routing, devices, readiness, completed checks, Team assignment or competency, Prep workload, Orders, performance, capacity or service state. Use the Tool catalogue as capability language, preserve every status, and never present a requested Tool as executable.',
+        'Inspect only the supplied canonical Kitchen Station records. Name, description, active state and display order are direct stored evidence. An empty collection proves only that no Station record was supplied. Do not infer Item routing, devices, readiness, completed checks, Team assignment or competency, Prep workload, Orders, performance, capacity or service state. Use the Tool catalogue as capability language, preserve every status, and never present a requested Tool as executable.',
     }
   } else if (operation === 'orders') {
     operationContext = {
@@ -128,7 +128,7 @@ export async function answerKitchenAgent(
       orders: context.orders,
       tool_catalogue: toolCatalogue,
       instruction:
-        'Inspect only the supplied privacy-bounded canonical Kitchen Order fields. Order identity, stored lifecycle status, type, channel, requested and estimated timing, service references, non-customer fulfilment labels, item labels, quantities, checked state, and audit timestamps are direct evidence. The bounded record window is not proof of the complete historical collection, so do not make exhaustive totals. Do not infer payment, customer identity, allergens, preparation completion beyond stored status, delivery or handoff, Dish or Station routing, Recipe work, stock, cost, profitability, urgency, delay, performance, or causation. Preserve every Tool status, never present a requested Tool as executable, and never claim to have changed an Order.',
+        'Inspect only the supplied privacy-bounded canonical Kitchen Order fields. Order identity, stored lifecycle status, type, channel, requested and estimated timing, service references, non-customer fulfilment labels, item labels, quantities, checked state, and audit timestamps are direct evidence. The bounded record window is not proof of the complete historical collection, so do not make exhaustive totals. Do not infer payment, customer identity, allergens, preparation completion beyond stored status, delivery or handoff, Item or Station routing, Recipe work, stock, cost, profitability, urgency, delay, performance, or causation. Preserve every Tool status, never present a requested Tool as executable, and never claim to have changed an Order.',
     }
   } else if (operation === 'inventory') {
     operationContext = {

@@ -97,7 +97,7 @@ const references = load(
     createError,
     defineFirestoreMutationTarget: (x) => x.collectionPath,
     INGREDIENT_MUTATION_TARGETS: { ingredients: 'ingredients' },
-    serverKitchenDishesTarget: (kitchen) => `kitchens/${kitchen}/dishes`,
+    serverKitchenItemsTarget: (kitchen) => `kitchens/${kitchen}/dishes`,
     normalizeKitchenPrepItem,
   }
 )
@@ -436,7 +436,7 @@ test('Identity-only Recipe update does not revalidate untouched preparation; del
   )
   assert.deepEqual(h.writes[1], ['delete', 'kitchens/k/recipes', 'existing'])
 })
-test('Recipe deletion reports exact-Kitchen Dish and Prep Item references without changing them', async () => {
+test('Recipe deletion reports exact-Kitchen Item and Prep Item references without changing them', async () => {
   const dish = { name: 'Poulet rôti', spec: { recipe_ids: ['existing'] } }
   const prep = { name: 'Sauce fraîche', recipe_id: 'existing' }
   const command = { kitchenId: 'k', recipeId: 'existing' }
@@ -474,7 +474,7 @@ test('Recipe usage reads later pages and the reference identities displayed by e
     [
       'dishes',
       'existing',
-      { name: 'Later Dish', spec: { recipe_ids: [' existing '] } },
+      { name: 'Later Item', spec: { recipe_ids: [' existing '] } },
     ],
     ['prep-items', 'existing', { name: 'Later Prep', recipe_id: ' existing ' }],
     ['prep-items', '123', { name: 'Numbered Prep', recipe_id: 123 }],

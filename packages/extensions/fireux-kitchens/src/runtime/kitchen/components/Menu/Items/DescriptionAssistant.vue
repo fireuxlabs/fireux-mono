@@ -64,16 +64,16 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
-const { catalogue } = useKitchenDishesContext()
-import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
+import { useKitchenItemsContext } from '../../../composables/workspace/items/useKitchenItemsContext'
+const { catalogue } = useKitchenItemsContext()
+import { useItemEditorScope } from '../../../composables/item/useItemEditorScope'
 import { ref } from 'vue'
 import { useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
-import { useKitchenItemDetail } from '../../../composables/dish/useKitchenItemDetailContext'
+import { useItemUpdate } from '../../../composables/item/useItemUpdate'
+import { useKitchenItemDetail } from '../../../composables/item/useKitchenItemDetailContext'
 
 const { appId } = useFireUXConfig()
 const { currentUser } = useAuth()
@@ -85,7 +85,7 @@ const proposal = ref('')
 const proposing = ref(false)
 const saving = ref(false)
 
-useDishEditorScope([kitchenId, dishId, () => route.fullPath], () => {
+useItemEditorScope([kitchenId, dishId, () => route.fullPath], () => {
   notes.value = ''
   proposal.value = ''
   proposing.value = false
@@ -93,14 +93,14 @@ useDishEditorScope([kitchenId, dishId, () => route.fullPath], () => {
 })
 
 const ownerSources = [kitchenId, dishId, () => route.fullPath]
-const captureScope = useDishEditorScope(
+const captureScope = useItemEditorScope(
   [...ownerSources, notes, proposal],
   () => {
     proposing.value = false
     saving.value = false
   }
 )
-const { updateDish } = useDishUpdate([
+const { updateItem } = useItemUpdate([
   ...ownerSources,
   notes,
   proposal,
@@ -110,7 +110,7 @@ const { updateDish } = useDishUpdate([
 async function proposeDescription() {
   const isCurrent = captureScope()
   const requestedKitchenId = kitchenId.value,
-    requestedDishId = dishId.value,
+    requestedItemId = dishId.value,
     requestedNotes = notes.value.trim()
   if (
     !canWrite.value ||
@@ -134,7 +134,7 @@ async function proposeDescription() {
         body: {
           appId,
           kitchenId: requestedKitchenId,
-          drinkId: requestedDishId,
+          drinkId: requestedItemId,
           notes: requestedNotes,
         },
       }
@@ -167,7 +167,7 @@ async function approveDescription() {
     return
   saving.value = true
   try {
-    await updateDish(
+    await updateItem(
       dishId.value,
       { description: proposal.value.trim() },
       { kitchenId: kitchenId.value }

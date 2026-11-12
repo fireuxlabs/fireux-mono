@@ -11,6 +11,6 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
-const { catalogue } = useKitchenDishesContext()
+import { useKitchenItemsContext } from '../../../composables/workspace/items/useKitchenItemsContext'
+const { catalogue } = useKitchenItemsContext()
 </script>

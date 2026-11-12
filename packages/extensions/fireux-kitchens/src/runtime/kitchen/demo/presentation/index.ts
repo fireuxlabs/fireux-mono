@@ -6,7 +6,7 @@ import { kitchenMenuOrdering } from '../../../menu/utils/ordering/availability'
 import { formatCurrencyAmount } from '../../../utils/currency-display'
 import type {
   MenuManifest,
-  MenuManifestItem,
+  PublicMenuItem,
   MenuManifestSection,
 } from '../../../menu/models/menu-detail.model.ts'
 import type { MenuItem } from '../../../menu/models/menu-item.model.ts'
@@ -81,7 +81,7 @@ export function kitchenDemoManifestSections(
       items: [...items]
         .filter((item) => item.status === 'active')
         .sort((left, right) => left.sort_order - right.sort_order)
-        .flatMap<MenuManifestItem>((item) => {
+        .flatMap<PublicMenuItem>((item) => {
           const dish = dishesById.get(clean(item.dish_id))
           if (
             !dish ||

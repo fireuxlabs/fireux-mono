@@ -1,12 +1,12 @@
 import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
-import { dishPricingHelpers } from './dish-pricing.mjs'
+import { itemPricingHelpers } from './item-pricing.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 
 function load(path, name, dependencies) {
-  dependencies = { ...dishPricingHelpers, ...dependencies }
+  dependencies = { ...itemPricingHelpers, ...dependencies }
 
   const source = readFileSync(
     new URL(path, new URL('../', import.meta.url)),
@@ -48,7 +48,7 @@ const targets = {
   serverAppUsersTarget: (app) => target(`apps/${app}/users`),
   serverKitchenAccessTarget: (app) => target('kitchen_access'),
   serverKitchenMenusTarget: (kitchen) => target(`kitchens/${kitchen}/menus`),
-  serverKitchenDishesTarget: (kitchen) => target(`kitchens/${kitchen}/dishes`),
+  serverKitchenItemsTarget: (kitchen) => target(`kitchens/${kitchen}/dishes`),
   serverKitchenMenuSectionsTarget: (kitchen, menu) =>
     target(`kitchens/${kitchen}/menus/${menu}/sections`),
   serverKitchenMenuItemsTarget: (kitchen, menu, section) =>
@@ -257,8 +257,8 @@ export function harness({ document = false, status = 'draft' } = {}) {
   Object.assign(
     dependencies,
     load(
-      '../runtime/kitchen/utils/dish-pricing.ts',
-      '{ normalizeDishPriceOptions, normalizeDishAddOns, normalizeDishPricingPatch, readDishPricing }',
+      '../runtime/kitchen/utils/item-pricing.ts',
+      '{ normalizeItemPriceOptions, normalizeItemAddOns, normalizeItemPricingPatch, readItemPricing }',
       dependencies
     )
   )
@@ -273,7 +273,7 @@ export function harness({ document = false, status = 'draft' } = {}) {
     dependencies,
     load(
       '../runtime/kitchen/utils/promotions/pricing.ts',
-      '{normalizeKitchenPromotion,promotionDishIds}',
+      '{normalizeKitchenPromotion,promotionItemIds}',
       dependencies
     )
   )

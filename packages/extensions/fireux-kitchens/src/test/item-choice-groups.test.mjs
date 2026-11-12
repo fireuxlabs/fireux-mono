@@ -7,7 +7,7 @@ import {
   priceItemChoices,
   toggleItemChoice,
 } from '../runtime/kitchen/utils/item-choices.ts'
-import { normalizeDishPricingPatch } from '../runtime/kitchen/utils/dish-pricing.ts'
+import { normalizeItemPricingPatch } from '../runtime/kitchen/utils/item-pricing.ts'
 import { serviceBasketLine } from '../runtime/menu/utils/ordering/basket.ts'
 import { serviceSelections } from '../runtime/menu/utils/ordering/checkout.ts'
 import { readMenuOrderSelections } from '../runtime/menu/server/ordering/selections.ts'
@@ -89,7 +89,7 @@ test('historical flat records project without writes; explicit groups win and id
   explicit[0].name = 'Portions'
   explicit[0].options[1].label = 'Medium'
   assert.equal(normalizeItemChoiceGroups(explicit)[0].options[1].id, 'b')
-  const patch = normalizeDishPricingPatch({
+  const patch = normalizeItemPricingPatch({
     price: 0,
     choice_groups: explicit,
     price_options: [],

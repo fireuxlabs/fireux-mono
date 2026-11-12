@@ -32,7 +32,7 @@ test('import confirmation needs a media decision only for a detected image', asy
       kitchenId: 'k',
       menuId: 'm',
       name: 'Test',
-      confirmDishes: true,
+      confirmItems: true,
     }),
     readKitchenMutationActor: async () => ({ runtimeAppId: 'app' }),
     requirePathSegment: (value) => value,
@@ -91,7 +91,7 @@ test('import confirmation needs a media decision only for a detected image', asy
   imageUrl = 'https://example.com/toast.jpg'
   await assert.rejects(
     confirm({}),
-    /Review Dish media before confirming: Toast/
+    /Review Item media before confirming: Toast/
   )
   assert.equal(writes, 1)
 })

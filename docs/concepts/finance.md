@@ -231,9 +231,9 @@ reports into one generic Finance workspace.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Orders/history.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/team.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-finance.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/dish-finance.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-dishes.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Dishes/finance.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/item-finance.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-items.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Items/finance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Finance/Summary.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue`

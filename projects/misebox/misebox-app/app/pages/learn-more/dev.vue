@@ -31,7 +31,7 @@
           </template>
           <ul class="fx-list-stack">
             <li>
-              Kitchen, Menu, Dish, Ingredient, KitchenRecipe, KitchenTeamMember
+              Kitchen, Menu, Item, Ingredient, KitchenRecipe, KitchenTeamMember
             </li>
             <li>Job, Chef, Professional, Agent</li>
             <li>Supplier and Company links</li>

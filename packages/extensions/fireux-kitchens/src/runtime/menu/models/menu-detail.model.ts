@@ -10,7 +10,6 @@ import type {
 } from 'fireux-sproochli/runtime/sproochli'
 import type { MenuBrowseSurfaceCopy } from '../utils/catalogue/surface-copy'
 import type { KitchenImageShade } from '../../kitchen/models/kitchen-configuration.model.ts'
-import type { DishItemKind } from '../../kitchen/utils/dish.ts'
 import type { MenuOfferingProfile } from './menu-ordering.model'
 
 export type MenuManifestPriceOption = {
@@ -27,7 +26,7 @@ export type MenuManifestAddOn = {
   priceLabel: string
 }
 
-export type MenuManifestItem = {
+export type PublicMenuItem = {
   choiceGroups?: ItemChoiceGroup[]
   bottleDeposit?: number
   mealDeal?: {
@@ -44,7 +43,7 @@ export type MenuManifestItem = {
   promotionLabel?: string
   id: string
   dishId: string
-  itemKind?: DishItemKind | null
+  itemKind?: string | null
   name: string
   description: string
   imageUrl: string
@@ -57,7 +56,7 @@ export type MenuManifestItem = {
 export type MenuManifestSection = {
   id: string
   label: string
-  items: MenuManifestItem[]
+  items: PublicMenuItem[]
 }
 
 export type MenuManifestContent = {

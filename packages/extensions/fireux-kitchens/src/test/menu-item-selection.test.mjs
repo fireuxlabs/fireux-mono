@@ -23,7 +23,7 @@ function fixture(createItem = async () => {}) {
     canWrite: ref(true),
     activeItemRows: ref([{ dishId: 'placed' }]),
     itemsOutcome: ref('ready'),
-    dishSource: {
+    itemSource: {
       outcome: ref('ready'),
       error: ref(null),
       dishes: ref([

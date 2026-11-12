@@ -39,7 +39,7 @@ test('priced row renders caller-owned value without adding card or navigation se
         h(
           Row,
           {},
-          { default: () => h('h3', 'Dish'), value: () => h('span', '13.00') }
+          { default: () => h('h3', 'Item'), value: () => h('span', '13.00') }
         ),
     })
   )

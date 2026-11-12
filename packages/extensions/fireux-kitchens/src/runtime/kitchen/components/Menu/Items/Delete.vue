@@ -40,7 +40,7 @@
       size="sm"
       :loading="deleting"
       :disabled="deleting || !usageReady || usages.length > 0"
-      @click="deleteSelectedDish"
+      @click="deleteSelectedItem"
     >
       Delete
     </UButton>
@@ -48,14 +48,14 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
-const { catalogue } = useKitchenDishesContext()
-import { useDishUsage } from '../../../composables/dish/useDishUsage'
-import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
+import { useKitchenItemsContext } from '../../../composables/workspace/items/useKitchenItemsContext'
+const { catalogue } = useKitchenItemsContext()
+import { useItemUsage } from '../../../composables/item/useItemUsage'
+import { useItemEditorScope } from '../../../composables/item/useItemEditorScope'
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenItemDetail } from '../../../composables/dish/useKitchenItemDetailContext'
+import { useKitchenItemDetail } from '../../../composables/item/useKitchenItemDetailContext'
 
 const { dish, dishId, kitchenId, canWrite } = useKitchenItemDetail()
 
@@ -63,7 +63,7 @@ const {
   usages,
   ready: usageReady,
   error: usageError,
-} = useDishUsage(kitchenId, dishId)
+} = useItemUsage(kitchenId, dishId)
 const toast = useToastify()
 const route = useRoute()
 const props = defineProps<{ remove: () => Promise<void> }>()
@@ -74,13 +74,13 @@ const singularTitle = computed(
     `${catalogue.singular.charAt(0).toUpperCase()}${catalogue.singular.slice(1)}`
 )
 
-const captureScope = useDishEditorScope(
+const captureScope = useItemEditorScope(
   [kitchenId, dishId, () => route.fullPath, () => props.remove],
   () => {
     deleting.value = false
   }
 )
-const deleteSelectedDish = async () => {
+const deleteSelectedItem = async () => {
   const isCurrent = captureScope()
   if (
     !canWrite.value ||

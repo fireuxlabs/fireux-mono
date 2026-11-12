@@ -9,7 +9,7 @@ import { useOrderExchange } from '../../kitchen/composables/useOrderExchange'
 import { publicMenuServiceOpen } from '../utils/ordering/availability'
 import { orderSubmissionIssues } from '../../kitchen/utils/order-submission'
 import type {
-  MenuManifestItem,
+  PublicMenuItem,
   MenuManifestPriceOption,
 } from '../models/menu-detail.model'
 import type { Order } from '../../kitchen/models/order.model'
@@ -71,7 +71,7 @@ export function useMenuOrderFlow(props: MenuOrderInput) {
   )
   function add(
     sectionId: string,
-    item: MenuManifestItem,
+    item: PublicMenuItem,
     option?: MenuManifestPriceOption
   ) {
     const key = JSON.stringify([sectionId, item.id, option?.id]),
@@ -93,7 +93,7 @@ export function useMenuOrderFlow(props: MenuOrderInput) {
   }
   function addChoices(
     sectionId: string,
-    item: MenuManifestItem,
+    item: PublicMenuItem,
     selections: ItemChoiceSelection
   ) {
     if (!item.choiceGroups) return

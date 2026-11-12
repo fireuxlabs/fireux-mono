@@ -128,14 +128,14 @@ test('readiness never mistakes pending, failed, or removed section results for e
 })
 
 test('section editing reuses its existing catalogue and promotion readers', () => {
-  const dishSource = { pending: ref(false), error: ref(null) }
+  const itemSource = { pending: ref(false), error: ref(null) }
   const sectionContext = {
     dishes: ref([{ id: 'dish', name: 'Pizza', price: 13 }]),
-    dishSource,
+    itemSource,
     promotions: { items: ref([]), pending: ref(false), error: ref(null) },
   }
   const { api } = readiness({ sectionContext })
-  assert.equal(api.dishes.pending, dishSource.pending)
+  assert.equal(api.dishes.pending, itemSource.pending)
   assert.equal(api.promotions.pending, sectionContext.promotions.pending)
   assert.equal(api.dishes.items.value[0].name, 'Pizza')
 })

@@ -5,12 +5,12 @@ import {
   getQuery,
 } from 'h3'
 
-import { readKitchenFlagshipDish } from '../../../../kitchen/server/dishes/flagship-projection'
+import { readKitchenFlagshipItem } from '../../../../kitchen/server/items/flagship-projection'
 
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Cache-Control', 'no-store')
 
-  return readKitchenFlagshipDish(
+  return readKitchenFlagshipItem(
     getQuery(event).appId,
     getRouterParam(event, 'kitchen')
   )

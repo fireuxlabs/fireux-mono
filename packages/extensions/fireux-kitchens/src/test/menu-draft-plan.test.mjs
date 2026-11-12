@@ -16,8 +16,8 @@ const planKitchenMenuDraft = compileFunction(
   [
     'createHash',
     'normalizeSlug',
-    'normalizeDishAddOns',
-    'normalizeDishPriceOptions',
+    'normalizeItemAddOns',
+    'normalizeItemPriceOptions',
     'appendKitchenMenuCacheUnits',
   ]
 )(
@@ -44,7 +44,7 @@ const item = {
 const section = { label: 'Lunch', label_translations: [], items: [item, item] }
 const stamp = { by: 'operator', at: 'unchanged' }
 
-test('draft planner preserves distinct identities, prices, stamps and Dish ownership', () => {
+test('draft planner preserves distinct identities, prices, stamps and Item ownership', () => {
   const { plannedSections } = planKitchenMenuDraft(
     { kitchenId: 'k', menuId: 'm', sections: [section, section] },
     stamp
@@ -56,15 +56,15 @@ test('draft planner preserves distinct identities, prices, stamps and Dish owner
   const items = plannedSections.flatMap((row) => row.items)
   assert.equal(new Set(items.map((row) => row.dishId)).size, 4)
   for (const row of items) {
-    assert.equal(row.dishData.price, 5)
+    assert.equal(row.catalogueItemData.price, 5)
     assert.equal(Object.hasOwn(row.itemData, 'price'), false)
     assert.equal(row.itemData.dish_id, row.dishId)
-    assert.equal(row.dishData.item_kind, 'food')
-    assert.equal(row.itemData.created, stamp)
-    assert.equal(row.dishData.updated, stamp)
+    assert.equal(row.catalogueItemData.item_kind, 'food')
+    assert.equal(row.catalogueItemData.created, stamp)
+    assert.equal(row.catalogueItemData.updated, stamp)
     assert.equal(Object.hasOwn(row.itemData, 'name'), false)
     assert.equal(Object.hasOwn(row.itemData, 'image_url'), false)
-    assert.equal(Object.hasOwn(row.dishData, 'image_url'), false)
+    assert.equal(Object.hasOwn(row.itemData, 'image_url'), false)
   }
 })
 
@@ -92,7 +92,7 @@ test('content replacement removes stale children and preserves create/update dec
   const replace = compileFunction(
     `${stripTypeScriptTypes(contentSource)}; return replaceKitchenMenuDraftContent`,
     [
-      'serverKitchenDishesTarget',
+      'serverKitchenItemsTarget',
       'serverKitchenMenuItemsTarget',
       'serverKitchenMenuSectionsTarget',
     ]
@@ -121,7 +121,7 @@ test('content replacement removes stale children and preserves create/update dec
       ['removed-section', new Set(['removed-item'])],
       ['lunch', new Set([first.itemId, 'stale-item'])],
     ]),
-    existingDishIds: new Set([first.dishId]),
+    existingItemIds: new Set([first.dishId]),
   })
   for (const expected of [
     [
@@ -144,7 +144,7 @@ test('content replacement removes stale children and preserves create/update dec
   assert.equal(calls.filter((call) => call[0] === 'delete').length, 3)
 })
 
-test('separate imports never infer Dish identity from a shared name, while retries keep their identities', () => {
+test('separate imports never infer Item identity from a shared name, while retries keep their identities', () => {
   const plan = (menuId) =>
     planKitchenMenuDraft({ kitchenId: 'k', menuId, sections: [section] }, stamp)
       .plannedSections[0].items

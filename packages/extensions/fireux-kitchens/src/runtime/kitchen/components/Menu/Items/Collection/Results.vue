@@ -6,7 +6,7 @@
     :description="String(error)"
   />
   <FireState v-else-if="pending" outcome="pending" :entity="catalogue.plural" />
-  <div v-else-if="!visibleDishes.length" class="catalogue-empty">
+  <div v-else-if="!visibleItems.length" class="catalogue-empty">
     <UIcon :name="catalogue.icon" />
     <h2>{{ dishes.length ? 'No matches' : `No ${catalogue.plural} yet` }}</h2>
     <UButton
@@ -31,9 +31,9 @@
     <div class="item-work-row item-work-head" aria-hidden="true">
       <span>Item</span><span>Price</span>
     </div>
-    <article v-for="dish in pageDishes" :key="dish.id" class="item-work-row">
+    <article v-for="dish in pageItems" :key="dish.id" class="item-work-row">
       <div class="item-work-main">
-        <NuxtLink :to="dishLink(dish.id)" class="item-work-identity">
+        <NuxtLink :to="itemLink(dish.id)" class="item-work-identity">
           <KitchenMenuItemsPhoto
             :src="dish.image"
             :alt="dish.name"
@@ -46,7 +46,7 @@
         </NuxtLink>
         <NuxtLink
           v-if="choiceSummary(dish)"
-          :to="`${dishLink(dish.id)}&view=details#item-price-choices`"
+          :to="`${itemLink(dish.id)}&view=details#item-price-choices`"
           class="item-work-choices"
           :aria-label="`Configure ${dish.name} choices`"
         >
@@ -66,7 +66,7 @@
     :class="view === 'grid' ? 'dish-grid' : 'dish-list'"
   >
     <KitchenMenuItemsCardsCell
-      v-for="dish in pageDishes"
+      v-for="dish in pageItems"
       :id="dish.id"
       :key="dish.id"
       :title="dish.name || dish.id"
@@ -78,14 +78,14 @@
       :list="false"
       expanded
       link
-      :to="dishLink(dish.id)"
+      :to="itemLink(dish.id)"
     />
   </div>
 
   <UPagination
-    v-if="!pending && !error && visibleDishes.length > pageSize"
+    v-if="!pending && !error && visibleItems.length > pageSize"
     v-model:page="page"
-    :total="visibleDishes.length"
+    :total="visibleItems.length"
     :items-per-page="pageSize"
     :sibling-count="1"
   />
@@ -99,10 +99,9 @@ import {
   priceItemChoices,
 } from '../../../../utils/item-choices'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
-import type { Dish } from '../../../../models/dish.model'
-import { useKitchenDishesContext } from '../../../../composables/workspace/dishes/useKitchenDishesContext'
-import { useDishCatalogueContext } from '../../../../composables/workspace/dishes/useDishCatalogue'
-import { dishCategoryLabel } from '../../../../models/dish.model'
+import type { Item } from '../../../../models/item.model'
+import { useKitchenItemsContext } from '../../../../composables/workspace/items/useKitchenItemsContext'
+import { useItemCatalogueContext } from '../../../../composables/workspace/items/useItemCatalogue'
 const {
   catalogue,
   dishes,
@@ -111,19 +110,19 @@ const {
   readOnly,
   outcome,
   selectedKitchen,
-} = useKitchenDishesContext()
+} = useKitchenItemsContext()
 const {
-  visibleDishes,
-  pageDishes,
+  visibleItems,
+  pageItems,
   view,
-  dishLink,
+  itemLink,
   clearFilters,
   page,
   pageSize,
-} = useDishCatalogueContext()
+} = useItemCatalogueContext()
 const emit = defineEmits<{ create: [kind: 'food' | 'drink'] }>()
 const currency = computed(() => readPlaceCurrencyCode(selectedKitchen.value))
-function choiceSummary(dish: Dish) {
+function choiceSummary(dish: Item) {
   return readItemChoiceGroups(dish)
     .map(
       (group) =>
@@ -131,11 +130,10 @@ function choiceSummary(dish: Dish) {
     )
     .join(' / ')
 }
-function tileMeta(dish: Dish) {
-  const category = dish.category ? dishCategoryLabel(dish.category) : ''
-  return category === 'Uncategorised' ? '' : category
+function tileMeta(dish: Item) {
+  return dish.category || ''
 }
-function priceLabel(dish: Dish) {
+function priceLabel(dish: Item) {
   const groups = readItemChoiceGroups(dish)
   if (
     dish.price === undefined &&

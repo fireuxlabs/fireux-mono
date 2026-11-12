@@ -1,5 +1,5 @@
 import { kitchenDrinksSearchDemand } from '../../../models/drinks-search-demand'
-import type { Dish } from '../../../utils/dish'
+import type { Item } from '../../../utils/item'
 
 type ToolSummary = {
   id: string
@@ -11,7 +11,7 @@ type ToolSummary = {
 }
 
 export function buildDrinksAgentContext(
-  drinks: readonly Dish[],
+  drinks: readonly Item[],
   toolCatalogue: readonly ToolSummary[]
 ): Record<string, unknown> {
   return {

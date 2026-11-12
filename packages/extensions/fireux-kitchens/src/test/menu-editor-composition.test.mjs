@@ -51,7 +51,7 @@ async function render(relative, props) {
     'KitchenMenuMenusItemsSharedTerms',
     'KitchenMenuMenusItemsAdoptSharedTerms',
     'KitchenMenuMenusItemsOptions',
-    'KitchenMenuMenusSectionsDishes',
+    'KitchenMenuMenusSectionsItems',
   ]) {
     app.component(name, {
       inheritAttrs: false,

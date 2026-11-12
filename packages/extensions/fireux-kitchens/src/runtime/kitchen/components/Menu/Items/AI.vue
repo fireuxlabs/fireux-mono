@@ -10,17 +10,17 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
+import { useKitchenItemsContext } from '../../../composables/workspace/items/useKitchenItemsContext'
 import {
-  buildMissingDishImageSuggestions,
+  buildMissingItemImageSuggestions,
   buildMissingDrinkImageSuggestions,
 } from '../../../models/capability-suggestions'
 
-const { catalogue, dishes } = useKitchenDishesContext()
+const { catalogue, dishes } = useKitchenItemsContext()
 const suggestions = computed(() =>
   catalogue.itemKind === 'drink'
     ? buildMissingDrinkImageSuggestions(dishes.value)
-    : buildMissingDishImageSuggestions(
+    : buildMissingItemImageSuggestions(
         dishes.value.filter((dish) => dish.item_kind === 'food')
       )
 )

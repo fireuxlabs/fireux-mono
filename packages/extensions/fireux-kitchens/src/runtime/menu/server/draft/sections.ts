@@ -1,9 +1,9 @@
 import {
-  normalizeDishPriceOptions,
-  normalizeDishAddOns,
-} from '../../../kitchen/utils/dish-pricing'
+  normalizeItemPriceOptions,
+  normalizeItemAddOns,
+} from '../../../kitchen/utils/item-pricing'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
-import { normalizeDishItemKind } from '../../../kitchen/utils/dish.ts'
+import { normalizeLegacyItemKind } from '../../../kitchen/utils/item.ts'
 import { defaultMenuLanguageText } from '../language/default-text'
 import {
   normalizeSproochliLanguage,
@@ -20,8 +20,8 @@ export type KitchenMenuDraftItem = {
   name_translations: KitchenMenuDraftTranslation[]
   description: string
   description_translations: KitchenMenuDraftTranslation[]
-  item_kind: ReturnType<typeof normalizeDishItemKind>
-  /** Untrusted source candidate for the Dish image review/ingestion flow. */
+  item_kind: ReturnType<typeof normalizeLegacyItemKind>
+  /** Untrusted source candidate for the Item image review/ingestion flow. */
   image_url: string
   price: number
   add_ons: unknown[]
@@ -77,7 +77,7 @@ const cleanAddOns = (value: unknown) =>
   (Array.isArray(value) ? value : [])
     .map((entry) => {
       const source = asRecord(entry)
-      const option = normalizeDishAddOns([source])[0]
+      const option = normalizeItemAddOns([source])[0]
       return option
         ? {
             ...option,
@@ -93,7 +93,7 @@ const cleanPriceOptions = (value: unknown) =>
   (Array.isArray(value) ? value : [])
     .map((entry) => {
       const source = asRecord(entry)
-      const option = normalizeDishPriceOptions([source])[0]
+      const option = normalizeItemPriceOptions([source])[0]
       return option
         ? {
             ...option,
@@ -129,7 +129,7 @@ export function normalizeKitchenMenuDraftSections(
               description_translations: cleanTranslations(
                 row.description_translations
               ),
-              item_kind: normalizeDishItemKind(row.item_kind),
+              item_kind: normalizeLegacyItemKind(row.item_kind),
               image_url: readString(row.image_url),
               price: money(row.price),
               add_ons: Array.isArray(row.add_ons)

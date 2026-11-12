@@ -47,7 +47,7 @@
 <script setup lang="ts">
 import { useRoute } from '#imports'
 import { useMenuSection } from '../../../../../../menu/composables/useMenuSection'
-import { useMenuSectionDishCreation } from '../../../../../composables/workspace/menus/useMenuSectionDishCreation'
+import { useMenuSectionItemCreation } from '../../../../../composables/workspace/menus/useMenuSectionItemCreation'
 const route = useRoute()
 const {
   names,
@@ -60,5 +60,5 @@ const {
   catalogueOutcome,
   catalogueError,
   addNames,
-} = useMenuSectionDishCreation(useMenuSection(), () => route.fullPath)
+} = useMenuSectionItemCreation(useMenuSection(), () => route.fullPath)
 </script>

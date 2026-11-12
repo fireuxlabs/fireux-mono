@@ -22,7 +22,7 @@
     v-model="query"
     :label="catalogue.plural"
     :singular="catalogue.singular"
-    :count="visibleDishes.length"
+    :count="visibleItems.length"
   >
     <template #controls>
       <UTooltip :text="view === 'grid' ? 'Show list' : 'Show image grid'">
@@ -40,10 +40,10 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenDishesContext } from '../../../../composables/workspace/dishes/useKitchenDishesContext'
-import { useDishCatalogueContext } from '../../../../composables/workspace/dishes/useDishCatalogue'
-const { catalogue, readOnly, outcome } = useKitchenDishesContext()
-const { query, view, visibleDishes } = useDishCatalogueContext()
+import { useKitchenItemsContext } from '../../../../composables/workspace/items/useKitchenItemsContext'
+import { useItemCatalogueContext } from '../../../../composables/workspace/items/useItemCatalogue'
+const { catalogue, readOnly, outcome } = useKitchenItemsContext()
+const { query, view, visibleItems } = useItemCatalogueContext()
 const emit = defineEmits<{
   create: [kind: 'food' | 'drink']
 }>()

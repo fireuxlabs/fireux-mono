@@ -1,5 +1,5 @@
 import { normalizeItemChoiceGroups } from '../../../kitchen/utils/item-choices'
-import { readDishItemKind } from '../../../kitchen/utils/dish.ts'
+import { readLegacyItemKind } from '../../../kitchen/utils/item.ts'
 import type {
   MenuManifestAddOn,
   MenuManifestPriceOption,
@@ -107,15 +107,15 @@ export const readMenuManifestSections = (
           ...(itemRecord.mealDeal
             ? {
                 mealDeal: itemRecord.mealDeal as NonNullable<
-                  import('../../models/menu-detail.model').MenuManifestItem['mealDeal']
+                  import('../../models/menu-detail.model').PublicMenuItem['mealDeal']
                 >,
               }
             : {}),
           itemKind:
             itemRecord.item_kind === null || itemRecord.itemKind === null
               ? null
-              : readDishItemKind(itemRecord.itemKind) ||
-                readDishItemKind(itemRecord.item_kind) ||
+              : readLegacyItemKind(itemRecord.itemKind) ||
+                readLegacyItemKind(itemRecord.item_kind) ||
                 'food',
           name,
           description: itemDescription(itemRecord),

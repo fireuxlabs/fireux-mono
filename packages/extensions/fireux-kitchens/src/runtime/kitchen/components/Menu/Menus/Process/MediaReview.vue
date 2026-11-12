@@ -1,12 +1,12 @@
 <template>
   <FireDisclosurePanel
     v-if="items.some((item) => item.candidateUrl)"
-    title="Dish media review"
+    title="Item media review"
     :default-open="false"
   >
     <div class="workspace-surface workspace-surface--compact">
       <p class="fx-type-caption">
-        Review each detected image before it can become Dish media. AI work is
+        Review each detected image before it can become Item media. AI work is
         queued only where selected.
       </p>
       <div class="workspace-surface__grid workspace-surface__grid--2">

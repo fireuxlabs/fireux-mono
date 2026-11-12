@@ -1,4 +1,4 @@
-import { DishDefaults, type Dish } from '../../../utils/dish.ts'
+import { ItemDefaults, type Item } from '../../../utils/item.ts'
 import {
   MenuDefaults,
   type Menu,
@@ -14,8 +14,8 @@ import {
 import { kitchenDemoCreated, kitchenDemoUpdated } from '../../core/fixtures'
 import type { KitchenDemoIdentity } from '../../core/types'
 
-type DishDefinition = Pick<
-  Dish,
+type ItemDefinition = Pick<
+  Item,
   | 'id'
   | 'name'
   | 'description'
@@ -35,10 +35,10 @@ type MenuItemInput = {
 
 export const dishes = (
   identity: KitchenDemoIdentity,
-  definitions: DishDefinition[]
-): Dish[] =>
+  definitions: ItemDefinition[]
+): Item[] =>
   definitions.map((definition) => ({
-    ...DishDefaults,
+    ...ItemDefaults,
     ...definition,
     slug: definition.id,
     kitchen_id: identity.kitchenId,

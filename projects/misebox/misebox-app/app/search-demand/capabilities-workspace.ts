@@ -42,7 +42,7 @@ export const workspaceProposal: NonNullable<
           capability_id: 'menus',
         },
         {
-          label: 'Dishes',
+          label: 'Items',
           icon: 'i-lucide-utensils',
           capability_id: 'dishes',
         },

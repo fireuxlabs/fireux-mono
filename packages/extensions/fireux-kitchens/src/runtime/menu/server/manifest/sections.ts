@@ -1,10 +1,10 @@
 import { normalizeKitchenPromotion } from '../../../kitchen/utils/promotions/pricing'
 import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
-import { readDishPricing } from '../../../kitchen/utils/dish-pricing'
+import { readItemPricing } from '../../../kitchen/utils/item-pricing'
 import {
-  normalizeDishPriceOptions,
-  normalizeDishAddOns,
-} from '../../../kitchen/utils/dish-pricing'
+  normalizeItemPriceOptions,
+  normalizeItemAddOns,
+} from '../../../kitchen/utils/item-pricing'
 type MenuReadObserver = {
   document: (
     target: any,
@@ -17,13 +17,13 @@ type MenuReadObserver = {
   ) => void
 }
 import {
-  serverKitchenDishesTarget,
+  serverKitchenItemsTarget,
   serverKitchenMenuSectionsTarget,
   serverKitchenMenuItemsTarget,
 } from '../../../kitchen/server/mutation-targets'
-// Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: project menu images only from Dish food truth.
+// Concurrent edit — 2026-07-22 01:58 CEST — Item/MenuItem boundary: project menu images only from Item food truth.
 import type { Firestore } from 'firebase-admin/firestore'
-import { readDishItemKind } from '../../../kitchen/utils/dish.ts'
+import { readLegacyItemKind } from '../../../kitchen/utils/item.ts'
 import {
   readRecord,
   readRecordString,
@@ -52,7 +52,7 @@ export async function readKitchenMenuSections(
   const basePath = `kitchens/${input.kitchenId}`
   const dishesSnap = await db.collection(`${basePath}/dishes`).get()
   input.observe?.collection(
-    serverKitchenDishesTarget(input.kitchenId),
+    serverKitchenItemsTarget(input.kitchenId),
     dishesSnap.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
   )
   const dishesById = new Map(
@@ -173,7 +173,7 @@ export async function readKitchenMenuSections(
               // An incomplete catalogue item must not break an already published Menu.
               let pricing
               try {
-                pricing = readDishPricing(dish)
+                pricing = readItemPricing(dish)
               } catch {
                 return null
               }
@@ -182,7 +182,7 @@ export async function readKitchenMenuSections(
                 id: text(item.id),
                 dish_id: dishId,
                 item_kind:
-                  readDishItemKind(dish?.item_kind) ||
+                  readLegacyItemKind(dish?.item_kind) ||
                   (dish.item_kind === null ? null : 'food'),
                 name: readRecordString(dish || {}, 'name') || dishId,
                 description: readRecordString(dish || {}, 'description'),
@@ -194,8 +194,8 @@ export async function readKitchenMenuSections(
                 ...(pricing.choice_groups !== undefined
                   ? { choiceGroups: pricing.choice_groups }
                   : {}),
-                priceOptions: normalizeDishPriceOptions(pricing.price_options),
-                addOns: normalizeDishAddOns(pricing.add_ons),
+                priceOptions: normalizeItemPriceOptions(pricing.price_options),
+                addOns: normalizeItemAddOns(pricing.add_ons),
               }
             })
         )

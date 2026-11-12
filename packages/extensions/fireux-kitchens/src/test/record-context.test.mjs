@@ -59,9 +59,9 @@ function fixture() {
       },
       serverAuditStamp: () => ({ by: 'actor' }),
       KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
-PLACE_MUTATION_TARGETS: { places: target('places') },
+      PLACE_MUTATION_TARGETS: { places: target('places') },
       recipeTarget: (k) => target(`kitchens/${k}/recipes`),
-      serverKitchenDishesTarget: (k) => target(`kitchens/${k}/dishes`),
+      serverKitchenItemsTarget: (k) => target(`kitchens/${k}/dishes`),
       serverKitchenMenusTarget: (k) => target(`kitchens/${k}/menus`),
       readKitchenMutationActor: async () => ({
         uid: 'actor',
@@ -102,9 +102,11 @@ for (const subject of ['kitchen', 'venue', 'menu', 'recipe', 'dish']) {
         ? 'places/baren'
         : subject === 'menu'
           ? 'kitchens/baren/menus/breakfast'
-          : subject === 'recipe' ? 'kitchens/baren/recipes/soup'
-          : subject === 'dish' ? 'kitchens/baren/dishes/plate'
-          : 'kitchens/baren'
+          : subject === 'recipe'
+            ? 'kitchens/baren/recipes/soup'
+            : subject === 'dish'
+              ? 'kitchens/baren/dishes/plate'
+              : 'kitchens/baren'
     assert.deepEqual(f.writes[0], {
       path,
       patch: { context: note, updated: { by: 'actor' } },
@@ -188,7 +190,9 @@ test('empty context loads, failed text is retained, and old credentials cannot d
       },
     }
   )
-  const state = owner.run(() => useContext('/api/workspace/kitchen/context', selected))
+  const state = owner.run(() =>
+    useContext('/api/workspace/kitchen/context', selected)
+  )
   await settle()
   assert.equal(state.ready.value, true)
   assert.equal(state.context.value, '')

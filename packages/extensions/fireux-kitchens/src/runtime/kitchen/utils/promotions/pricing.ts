@@ -3,7 +3,7 @@ import type {
   PublicKitchenPromotion,
 } from '../../models/promotion.model'
 import type {
-  MenuManifestItem,
+  PublicMenuItem,
   MenuManifestSection,
 } from '../../../menu/models/menu-detail.model'
 export const promotionDays = [
@@ -111,14 +111,14 @@ export function normalizeKitchenPromotion(
           ) ||
           !promotionId(dish.dishId)
         )
-          throw new Error('Each choice needs a Dish and a supplement.')
+          throw new Error('Each choice needs a Item and a supplement.')
         return {
           dishId: dish.dishId,
           supplement: promotionAmount(dish.supplement),
         }
       })
       if (new Set(dishes.map((dish) => dish.dishId)).size !== dishes.length)
-        throw new Error('Choose each Dish once within a group.')
+        throw new Error('Choose each Item once within a group.')
       return {
         id: group.id,
         name: group.name.trim(),
@@ -133,8 +133,8 @@ export function normalizeKitchenPromotion(
       price: promotionAmount(data.price),
       groups,
     } as KitchenPromotionInput
-    if (promotionDishIds(result).length > 100)
-      throw new Error('A promotion can reference at most 100 Dishes.')
+    if (promotionItemIds(result).length > 100)
+      throw new Error('A promotion can reference at most 100 Items.')
     return result
   }
   if (
@@ -159,7 +159,7 @@ export function normalizeKitchenPromotion(
   return { ...common, dishes } as KitchenPromotionInput
 }
 
-export function promotionDishIds(promotion: KitchenPromotionInput): string[] {
+export function promotionItemIds(promotion: KitchenPromotionInput): string[] {
   const dishes =
     'groups' in promotion
       ? promotion.groups.flatMap((group) => group.dishes)
@@ -182,10 +182,10 @@ export function promotionDay(timezone: string, now = new Date()): string {
 
 /** Promotional prices replace base/required-variant prices; extras retain their charges. */
 export function promotionPricedItem(
-  item: MenuManifestItem,
+  item: PublicMenuItem,
   promotions: PublicKitchenPromotion[] | undefined,
   day: string
-): { item: MenuManifestItem; promotion?: string } {
+): { item: PublicMenuItem; promotion?: string } {
   if (item.mealDeal) return { item }
   const offer = promotions?.find(
     (offer) =>

@@ -56,8 +56,8 @@
         data-landing-hero-part="preview"
       >
         <img
-          :src="flagshipDish?.image"
-          :alt="flagshipDish?.name || ''"
+          :src="flagshipItem?.image"
+          :alt="flagshipItem?.name || ''"
           loading="eager"
           decoding="async"
         />
@@ -69,8 +69,8 @@
           <li v-if="!requirements.wordmark">Canonical wordmark missing</li>
           <li v-if="!requirements.palette">Effective palette missing</li>
           <li v-if="!requirements.typography">Typography families missing</li>
-          <li v-if="!requirements.flagshipDish">
-            Unique flagship Dish missing
+          <li v-if="!requirements.flagshipItem">
+            Unique flagship Item missing
           </li>
         </ul>
       </div>
@@ -95,7 +95,7 @@ import { computed } from 'vue'
 import type {
   AppPalette,
   AppTypography,
-  TemplateOneFlagshipDish,
+  TemplateOneFlagshipItem,
   TemplateOneSceneOneRequirements,
 } from '../../models/template-one'
 
@@ -108,7 +108,7 @@ const props = withDefaults(
     identityAlignment?: 'left' | 'center'
     palette: AppPalette
     typography: AppTypography
-    flagshipDish?: TemplateOneFlagshipDish | null
+    flagshipItem?: TemplateOneFlagshipItem | null
     tagline?: readonly string[]
     requirements: TemplateOneSceneOneRequirements
     menuTo?: string
@@ -145,8 +145,8 @@ const ready = computed(
     props.requirements.wordmark &&
     props.requirements.palette &&
     props.requirements.typography &&
-    props.requirements.flagshipDish &&
-    Boolean(props.flagshipDish?.image)
+    props.requirements.flagshipItem &&
+    Boolean(props.flagshipItem?.image)
 )
 const themeStyle = computed(() => ({
   '--template-one-primary': props.placePrimaryColor,

@@ -46,7 +46,7 @@ export const kitchenMenuReviewImportDraftTool = defineFireuxDomainTool({
       ],
       constraints: [
         'Do not invent dishes, prices, images or translations.',
-        'Do not write Menu or Dish records; save only the review draft.',
+        'Do not write Menu or Item records; save only the review draft.',
         'Do not process without explicit billing confirmation.',
       ],
       evidence: [

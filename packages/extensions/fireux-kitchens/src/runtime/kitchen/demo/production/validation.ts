@@ -2,9 +2,9 @@ import { deanosKitchenDemoMenuItemComponentDeltas } from './deltas'
 import { deanosKitchenDemoPrepItems } from './prep-items'
 import { deanosKitchenDemoRecipes } from './recipes'
 import { deanosKitchenDemoSpecs } from './specs'
-import type { KitchenDemoDishComponent } from './types'
+import type { KitchenDemoItemComponent } from './types'
 
-const deanosKitchenDemoDishIds = [
+const deanosKitchenDemoItemIds = [
   'deanos-classic',
   'double-trouble',
   'swiss-melt',
@@ -41,7 +41,7 @@ const assertUniqueIds = (values: Array<{ id: string }>, label: string) => {
 }
 
 const validateComponentReferences = (
-  components: KitchenDemoDishComponent[],
+  components: KitchenDemoItemComponent[],
   prepItemIds: Set<string>,
   recipeIds: Set<string>,
   context: string
@@ -71,18 +71,18 @@ const validateComponentReferences = (
 export const validateDeanosKitchenDemoProduction = () => {
   assertUniqueIds(deanosKitchenDemoPrepItems, 'Prep item')
   assertUniqueIds(deanosKitchenDemoRecipes, 'Recipe')
-  assertUniqueIds(deanosKitchenDemoSpecs, 'Dish Spec')
+  assertUniqueIds(deanosKitchenDemoSpecs, 'Item Spec')
   assertUniqueIds(deanosKitchenDemoMenuItemComponentDeltas, 'Menu item delta')
 
-  const expectedDishIds = new Set<string>(deanosKitchenDemoDishIds)
-  const specDishIds = deanosKitchenDemoSpecs.map((spec) => spec.dishId)
+  const expectedItemIds = new Set<string>(deanosKitchenDemoItemIds)
+  const specItemIds = deanosKitchenDemoSpecs.map((spec) => spec.dishId)
   if (
-    specDishIds.length !== expectedDishIds.size ||
-    specDishIds.some((dishId) => !expectedDishIds.has(dishId)) ||
-    expectedDishIds.size !== new Set(specDishIds).size
+    specItemIds.length !== expectedItemIds.size ||
+    specItemIds.some((dishId) => !expectedItemIds.has(dishId)) ||
+    expectedItemIds.size !== new Set(specItemIds).size
   ) {
     throw new Error(
-      'Deanos Demo must have exactly one Dish Spec for each of its 26 Dishes.'
+      'Deanos Demo must have exactly one Item Spec for each of its 26 Items.'
     )
   }
 
@@ -94,7 +94,7 @@ export const validateDeanosKitchenDemoProduction = () => {
       spec.components,
       prepItemIds,
       recipeIds,
-      `Dish Spec ${spec.id}`
+      `Item Spec ${spec.id}`
     )
   }
   for (const delta of deanosKitchenDemoMenuItemComponentDeltas) {

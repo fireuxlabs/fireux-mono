@@ -128,7 +128,7 @@
         }
       "
       title="Archive section?"
-      :description="`Hide ${editor.archiveCandidate?.label || 'this section'} from this Menu. Its entries and Dishes stay saved, and you can restore it later.`"
+      :description="`Hide ${editor.archiveCandidate?.label || 'this section'} from this Menu. Its entries and Items stay saved, and you can restore it later.`"
     >
       <template #body>
         <FireCopyError

@@ -118,7 +118,7 @@ test('meal-deal editor detaches saved choices and submits one complete bundle fo
   assert.deepEqual(e.events, ['close'])
 })
 
-test('existing Dish offers retain their original command shape', async () => {
+test('existing Item offers retain their original command shape', async () => {
   const e = editor({
     id: 'sunday',
     name: 'Sunday pizzas',
@@ -156,7 +156,7 @@ test('blank prices, invalid choice counts and missing groups never dispatch', as
   }
 })
 
-test('new meal deals and form conversion do not submit hidden Dish-offer rows', async () => {
+test('new meal deals and form conversion do not submit hidden Item-offer rows', async () => {
   const e = editor({
     id: 'offer',
     name: 'Offer',

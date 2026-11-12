@@ -39,7 +39,7 @@ export const demandTools: AppSearchDemand['tools'] = {
       title: 'Allergen Documentation',
       source_cluster_ids: ['allergens-nutrition', 'food-safety-haccp', 'menus'],
       operator_job:
-        'Keep written allergen information current as Ingredients, Recipes, Dishes and Menus change.',
+        'Keep written allergen information current as Ingredients, Recipes, Items and Menus change.',
       outcome:
         'Jurisdiction-labelled documentation traces disclosed allergens to current Kitchen evidence without making medical or legal guarantees.',
       status: 'research-next',

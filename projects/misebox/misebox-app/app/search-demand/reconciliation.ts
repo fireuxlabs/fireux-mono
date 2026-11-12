@@ -188,11 +188,11 @@ export const kitchenReconciliation = {
     },
     {
       id: 'dishes',
-      title: 'Dishes',
+      title: 'Items',
       action: 'keep',
       status: 'connected',
       rationale:
-        'Keep menu-ready food records; do not equate a Dish with a costed Recipe.',
+        'Keep menu-ready food records; do not equate a Item with a costed Recipe.',
       source_paths: [
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Items/Index.vue',
       ],
@@ -205,7 +205,7 @@ export const kitchenReconciliation = {
       action: 'keep',
       status: 'connected',
       rationale:
-        'Keep the owned drinks presentation and commands while sharing supported Dish mechanics.',
+        'Keep the owned drinks presentation and commands while sharing supported Item mechanics.',
       source_paths: [
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menu/items/index.vue',
       ],

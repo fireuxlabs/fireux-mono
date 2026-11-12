@@ -11,7 +11,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
-  serverKitchenDishesTarget,
+  serverKitchenItemsTarget,
   serverKitchenMenusTarget,
 } from '../../../kitchen/server/mutation-targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
@@ -55,7 +55,7 @@ export async function writeKitchenMenuDraft(input: {
     stamp
   )
   const menus = serverKitchenMenusTarget(input.kitchenId)
-  const dishes = serverKitchenDishesTarget(input.kitchenId)
+  const dishes = serverKitchenItemsTarget(input.kitchenId)
   const write = await runGuardedServerTransaction(
     { kind: 'runtime' },
     async (mutations) => {
@@ -114,14 +114,14 @@ export async function writeKitchenMenuDraft(input: {
         updated: stamp,
         ...(description ? { description } : {}),
       }
-      const plannedDishes = plannedSections.flatMap((section) => section.items)
-      const dishSnapshots = await mutations.readMany(
+      const plannedItems = plannedSections.flatMap((section) => section.items)
+      const itemSnapshots = await mutations.readMany(
         dishes,
-        plannedDishes.map((item) => item.dishId)
+        plannedItems.map((item) => item.dishId)
       )
 
-      for (const [index, planned] of plannedDishes.entries()) {
-        const previous = dishSnapshots[index]
+      for (const [index, planned] of plannedItems.entries()) {
+        const previous = itemSnapshots[index]
         if (
           Array.isArray(previous?.data?.choice_groups) &&
           previous.data.choice_groups.length
@@ -137,14 +137,14 @@ export async function writeKitchenMenuDraft(input: {
             (key) =>
               JSON.stringify(previous.data?.[key]) !==
               JSON.stringify(
-                planned.dishData[key as keyof typeof planned.dishData]
+                planned.itemData[key as keyof typeof planned.itemData]
               )
           )
         )
           throw createError({
             statusCode: 409,
             statusMessage:
-              'Imported prices conflict with an existing Dish. Edit the Dish or use a promotion.',
+              'Imported prices conflict with an existing Item. Edit the Item or use a promotion.',
           })
       }
       if (menu.exists)
@@ -156,9 +156,9 @@ export async function writeKitchenMenuDraft(input: {
         menuId: input.menuId,
         plannedSections,
         oldItems,
-        existingDishIds: new Set(
-          plannedDishes
-            .filter((_, index) => dishSnapshots[index]?.exists)
+        existingItemIds: new Set(
+          plannedItems
+            .filter((_, index) => itemSnapshots[index]?.exists)
             .map((item) => item.dishId)
         ),
       })

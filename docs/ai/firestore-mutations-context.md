@@ -724,7 +724,7 @@ against active preparation Stations in the exact Kitchen. Missing/null means
 not configured; [] means no preparation. Coordination Stations are excluded.
 Historical groups and Station notes remain stored but do not drive assignment.
 Group writers and onboarding seeds are retired; this source change authorizes no
-live cleanup or migration. Proof lives in Kitchens' `kitchen/dish-commands.test.mjs`
+live cleanup or migration. Proof lives in Kitchens' `kitchen/item-commands.test.mjs`
 and `server/stations/item-references.ts`.
 
 ## Refresh and living-context maintenance

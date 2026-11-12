@@ -3,9 +3,9 @@ import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { requireKitchenWriter } from '../../../../../kitchen/server/core/operator-access'
 import {
-  DishStorage,
-  readDishItemKind,
-} from '../../../../../kitchen/utils/dish'
+  ItemStorage,
+  readLegacyItemKind,
+} from '../../../../../kitchen/utils/item'
 
 const NOTES_MAX_LENGTH = 1_200
 const DESCRIPTION_MAX_LENGTH = 800
@@ -26,11 +26,11 @@ export default defineEventHandler(async (event) => {
 
   const access = await requireKitchenWriter(event, { appId, kitchenId })
   const snapshot = await access.db
-    .collection(`kitchens/${kitchenId}/${DishStorage.collection}`)
+    .collection(`kitchens/${kitchenId}/${ItemStorage.collection}`)
     .doc(drinkId)
     .get()
   const drink = snapshot.data() || {}
-  if (!snapshot.exists || readDishItemKind(drink.item_kind) !== 'drink') {
+  if (!snapshot.exists || readLegacyItemKind(drink.item_kind) !== 'drink') {
     throw createError({ statusCode: 404, statusMessage: 'Drink not found.' })
   }
 

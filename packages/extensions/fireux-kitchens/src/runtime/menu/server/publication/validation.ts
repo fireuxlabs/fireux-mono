@@ -3,14 +3,14 @@ import {
   type ReadinessSection,
 } from '../../utils/publication-readiness'
 import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
-import { readDishPricing } from '../../../kitchen/utils/dish-pricing'
+import { readItemPricing } from '../../../kitchen/utils/item-pricing'
 import { createError } from 'h3'
 import type { DocumentData } from 'firebase-admin/firestore'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
   serverKitchenMenuSectionsTarget,
   serverKitchenMenuItemsTarget,
-  serverKitchenDishesTarget,
+  serverKitchenItemsTarget,
 } from '../../../kitchen/server/mutation-targets'
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -77,9 +77,9 @@ export async function assertKitchenMenuCanPublish(
     const content: ReadinessSection[] = []
     const dishes = new Map<string, DocumentData>()
     const promotions = new Map<string, DocumentData>()
-    const readDish = async (id: string) => {
+    const readItem = async (id: string) => {
       if (!id || dishes.has(id)) return
-      const dish = await tx.read(serverKitchenDishesTarget(input.kitchenId), id)
+      const dish = await tx.read(serverKitchenItemsTarget(input.kitchenId), id)
       if (dish.exists) dishes.set(id, dish.data || {})
     }
     for (const section of sections) {
@@ -93,7 +93,7 @@ export async function assertKitchenMenuCanPublish(
         items: items.map((item) => ({ ...item.data, id: item.id })),
       })
       for (const item of items) {
-        await readDish(text(item.data.dish_id))
+        await readItem(text(item.data.dish_id))
         const id = text(item.data.promotion_id)
         if (!id || promotions.has(id)) continue
         const stored = await tx.read(
@@ -106,7 +106,7 @@ export async function assertKitchenMenuCanPublish(
           ? stored.data!.groups
           : [])
           for (const choice of Array.isArray(group?.dishes) ? group.dishes : [])
-            await readDish(text(choice?.dishId))
+            await readItem(text(choice?.dishId))
       }
     }
     const readiness = menuPublicationReadiness(
@@ -152,7 +152,7 @@ export async function assertKitchenMenuCanPublish(
       if (item.data.promotion_id)
         throw createError({
           statusCode: 400,
-          statusMessage: 'Choose one Dish or meal deal in a regular Menu.',
+          statusMessage: 'Choose one Item or meal deal in a regular Menu.',
         })
       const dishId = text(item.data.dish_id)
       if (!dishId)
@@ -161,7 +161,7 @@ export async function assertKitchenMenuCanPublish(
           statusMessage: 'Every menu item needs a dish',
         })
       const dish = await tx.read(
-        serverKitchenDishesTarget(input.kitchenId),
+        serverKitchenItemsTarget(input.kitchenId),
         dishId
       )
       if (
@@ -174,12 +174,12 @@ export async function assertKitchenMenuCanPublish(
           statusMessage: `Menu item references missing dish: ${dishId}`,
         })
       try {
-        readDishPricing(dish.data || {})
+        readItemPricing(dish.data || {})
       } catch (cause) {
         throw createError({
           statusCode: 400,
           statusMessage:
-            cause instanceof Error ? cause.message : 'Invalid Dish pricing.',
+            cause instanceof Error ? cause.message : 'Invalid Item pricing.',
         })
       }
     }

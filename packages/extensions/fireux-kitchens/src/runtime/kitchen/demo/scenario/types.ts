@@ -1,7 +1,7 @@
 import type { KitchenDemoFinance } from '../finance'
-import type { KitchenDemoDishFinance } from '../operations/Dishes/finance'
+import type { KitchenDemoItemFinance } from '../operations/Items/finance'
 import type {
-  KitchenDemoDishSpec,
+  KitchenDemoItemSpec,
   KitchenDemoMenuItemComponentDelta,
   KitchenDemoPrepItem,
   KitchenDemoProductionRecipe,
@@ -29,8 +29,8 @@ export type KitchenDemoScenarioInput = {
   menu: KitchenDemoMenu
   menuModes?: Readonly<Record<string, KitchenDemoMenuMode>>
   additionalMenus?: KitchenDemoMenu[]
-  dishSpecs?: KitchenDemoDishSpec[]
-  dishFinance?: KitchenDemoDishFinance[]
+  itemSpecs?: KitchenDemoItemSpec[]
+  itemFinance?: KitchenDemoItemFinance[]
   finance?: KitchenDemoFinance
   team?: readonly KitchenDemoTeamMember[]
   services?: readonly KitchenDemoService[]

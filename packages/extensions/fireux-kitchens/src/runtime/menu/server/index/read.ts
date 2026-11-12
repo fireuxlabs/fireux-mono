@@ -1,4 +1,4 @@
-import { readMatchingMenuDishes, matchesFoodSearch } from './food-search'
+import { readMatchingMenuItems, matchesFoodSearch } from './food-search'
 import { MenuStorage } from '../../models/menu-storage.model'
 import {
   menuServiceOfferings,
@@ -240,7 +240,7 @@ export async function readMenuDirectoryPage(
         items.push(menu)
         continue
       }
-      const dishes = await readMatchingMenuDishes(
+      const dishes = await readMatchingMenuItems(
         getRuntimeFirestore(),
         menu,
         search

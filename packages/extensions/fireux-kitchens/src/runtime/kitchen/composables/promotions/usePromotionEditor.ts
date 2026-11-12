@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import type {
-  PromotionDishDraft,
+  PromotionItemDraft,
   MealDealGroupDraft,
 } from '../../models/promotion-draft.model'
 import type { WeekdayTimeDay } from '../../../models/shared/weekday-time.model'
@@ -25,7 +25,7 @@ export function usePromotionEditor() {
     initial && 'groups' in initial ? 'meal_deal' : 'dish_offer'
   )
   const name = ref(initial?.name || '')
-  const rows = ref<PromotionDishDraft[]>(
+  const rows = ref<PromotionItemDraft[]>(
     initial && 'dishes' in initial
       ? initial.dishes.map((dish) => ({ ...dish }))
       : []
@@ -45,7 +45,7 @@ export function usePromotionEditor() {
   const active = ref(initial?.status === 'active')
   const busy = ref(false),
     error = ref('')
-  const dishOptions = computed(() =>
+  const itemOptions = computed(() =>
     state.dishes.items.value
       .map((dish) => ({ label: dish.name, value: dish.id }))
       .sort((a, b) => a.label.localeCompare(b.label))
@@ -117,7 +117,7 @@ export function usePromotionEditor() {
     active,
     busy,
     error,
-    dishOptions,
+    itemOptions,
     disabled,
     dayOptions,
     readError,

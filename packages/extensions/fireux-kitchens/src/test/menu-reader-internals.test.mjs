@@ -79,7 +79,7 @@ async function render(path, state) {
     'UBreadcrumb',
     'FireDiagnosticsDebugPanel',
     'UFormField',
-    'KitchenMenuMenusSectionsDishes',
+    'KitchenMenuMenusSectionsItems',
     'KitchenMenuMenusSectionsCollectionSchedule',
     'UButton',
     'UModal',

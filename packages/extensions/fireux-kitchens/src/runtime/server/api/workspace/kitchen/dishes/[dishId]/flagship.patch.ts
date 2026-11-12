@@ -8,7 +8,7 @@ import {
 } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { serverKitchenDishesTarget } from '../../../../../../kitchen/server/mutation-targets'
+import { serverKitchenItemsTarget } from '../../../../../../kitchen/server/mutation-targets'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import {
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
   const runtime = useRuntimeConfig()
   const appId = requirePathSegment(runtime.public?.fireux?.id, 'Runtime App id')
   const kitchenId = requirePathSegment(getQuery(event).kitchenId, 'Kitchen id')
-  const dishId = requirePathSegment(getRouterParam(event, 'dishId'), 'Dish id')
+  const dishId = requirePathSegment(getRouterParam(event, 'dishId'), 'Item id')
   const body = await readBody<{ is_flagship?: unknown }>(event)
   if (
     !body ||
@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
     })
   const isFlagship = body.is_flagship
   const { uid } = await requireKitchenWriter(event, { appId, kitchenId })
-  const target = serverKitchenDishesTarget(kitchenId)
+  const target = serverKitchenItemsTarget(kitchenId)
 
   await runGuardedServerTransaction(
     { kind: 'runtime' },
@@ -43,11 +43,11 @@ export default defineEventHandler(async (event) => {
       await requireKitchenWriterAccount({ appId, kitchenId }, uid, transaction)
       const current = await transaction.read(target, dishId)
       if (!current.exists)
-        throw createError({ statusCode: 404, statusMessage: 'Dish not found.' })
+        throw createError({ statusCode: 404, statusMessage: 'Item not found.' })
       if (readString(current.data?.kitchen_id) !== kitchenId)
         throw createError({
           statusCode: 409,
-          statusMessage: 'The stored Dish identity is invalid.',
+          statusMessage: 'The stored Item identity is invalid.',
         })
 
       const previousIds: string[] = []

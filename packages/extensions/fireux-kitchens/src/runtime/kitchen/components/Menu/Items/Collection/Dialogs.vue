@@ -18,9 +18,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
-import { useKitchenDishesContext } from '../../../../composables/workspace/dishes/useKitchenDishesContext'
+import { useKitchenItemsContext } from '../../../../composables/workspace/items/useKitchenItemsContext'
 
-const { kitchenId, outcome, readOnly } = useKitchenDishesContext()
+const { kitchenId, outcome, readOnly } = useKitchenItemsContext()
 const createKind = ref<'food' | 'drink' | null>(null)
 const route = useRoute()
 const router = useRouter()
