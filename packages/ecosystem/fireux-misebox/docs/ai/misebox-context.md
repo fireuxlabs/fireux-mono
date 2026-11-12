@@ -587,7 +587,12 @@ Its route declares a content-owned header rather than repeating the shell descri
 The Items catalogue is one searchable collection with compact rows, read-only
 prices and compact choice-group summaries linked to Price & choices. Starting
 prices include the least expensive required choices. The optional grid carries
-the same choice summary and price. Preparation setup stays in the Item detail view. A visible icon-only pressed toggle selects the image grid or list; the toolbar has no More menu.
+a non-interactive ellipsis for choices and the same starting price. Choice details
+remain in its accessible label and tooltip; clicking the indicator follows the
+same whole-tile link. Its whole-tile
+`FireActionSurface` link retains shared hover/focus behavior, with a full-width
+square `KitchenMenuItemsPhoto`, wrapping name and bottom-aligned price. Tiles
+have no arrow or empty-category label. Preparation setup stays in the Item detail view. A visible icon-only pressed toggle selects the image grid or list; the toolbar has no More menu.
 Items AI is inline between its heading and collection controls, reusing the compact
 Capability/Assistant/Composer chain and the existing collection context.
 Its Assistant uses Core `WorkspaceAICompact` for the bounded results area and
@@ -600,8 +605,13 @@ such as Pass are excluded. The Item detail route provides one Station reader thr
 and trusted update command. Historical group fields and free-text Station notes
 remain readable but do not supply assignments. Item groups, their commands and
 onboarding seeds are retired; there is no stored-data deletion or migration.
-`Photo.vue` displays square photos and crops the known transparent margin of the
-owned Dish upload format in presentation only. Stored images are untouched.
+`Photo.vue` uses Core `photoImageUrl` and native square cover presentation, with
+an icon only when no photo exists. Shared photo delivery removes transparent
+padding from existing uploads without changing stored files or tokens. Kitchen
+has no browser canvas, guessed zoom, crop cache or direct-URL retry. Future
+explicit uploads reuse Core `normalizePhotoImage`, retaining natural proportions
+without a padded canvas; Kitchen still owns authorization, immutable Storage
+writes and image attachment. See the shared photo contract in `docs/concepts/brand-assets.md`.
 This structure does not implement printer delivery or live Station queues.
 Existing Item and Menu detail/import/research pages remain for their consumed
 editing workflows. Recipes and Ingredients live under Prep & Production.

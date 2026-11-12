@@ -3,7 +3,7 @@
 import { randomUUID } from 'node:crypto'
 import { getStorage } from 'firebase-admin/storage'
 import { createError } from 'h3'
-import sharp from 'sharp'
+import { normalizePhotoImage } from 'fireux-core/runtime/server/utils/uploads/photo-image'
 import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin'
 import {
   firebaseStorageDownloadUrl,
@@ -11,10 +11,6 @@ import {
 } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { dishImageStoragePath } from '../../utils/dish-image-storage.ts'
 
-const outputSize = 1200
-const clearMargin = 120
-const contentSize = outputSize - clearMargin * 2
-const maxInputPixels = 40_000_000
 const writeMarker = 'fireuxDishImageWriteId'
 
 type DishImageTarget = {
@@ -80,53 +76,12 @@ async function currentObjectMetadata(
   }
 }
 
-async function normalizeDishImage(data: Buffer) {
-  try {
-    const source = sharp(data, {
-      failOn: 'error',
-      limitInputPixels: maxInputPixels,
-    })
-    const metadata = await source.metadata()
-    if (
-      !metadata.format ||
-      !['jpeg', 'png', 'webp'].includes(metadata.format)
-    ) {
-      throw new Error('unsupported format')
-    }
-
-    return await source
-      .rotate()
-      .trim({
-        background: { r: 0, g: 0, b: 0, alpha: 0 },
-        threshold: 4,
-      })
-      .resize(contentSize, contentSize, {
-        fit: 'contain',
-        background: { r: 0, g: 0, b: 0, alpha: 0 },
-      })
-      .extend({
-        top: clearMargin,
-        bottom: clearMargin,
-        left: clearMargin,
-        right: clearMargin,
-        background: { r: 0, g: 0, b: 0, alpha: 0 },
-      })
-      .webp({ quality: 88, alphaQuality: 100, effort: 4 })
-      .toBuffer()
-  } catch {
-    throw createError({
-      statusCode: 415,
-      statusMessage: 'Upload a valid JPEG, PNG, or WebP Dish image.',
-    })
-  }
-}
-
 export async function normalizeAndSaveDishImage(
   input: DishImageTarget & {
     data: Buffer
   }
 ) {
-  const data = await normalizeDishImage(input.data)
+  const data = await normalizePhotoImage(input.data)
   const uploadId = randomUUID()
   const downloadToken = randomUUID()
   const objectPath = dishImageStoragePath(

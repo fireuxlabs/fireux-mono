@@ -72,15 +72,8 @@
       :title="dish.name || dish.id"
       :image-url="dish.image"
       :description="dish.description"
-      :meta="
-        [
-          dish.item_kind === 'food' ? dishCategoryLabel(dish.category) : '',
-          dish.spec ? 'Spec added' : '',
-          choiceSummary(dish),
-        ]
-          .filter(Boolean)
-          .join(' · ')
-      "
+      :meta="tileMeta(dish)"
+      :choices-label="choiceSummary(dish)"
       :price-label="priceLabel(dish)"
       :list="false"
       expanded
@@ -137,6 +130,10 @@ function choiceSummary(dish: Dish) {
         `${group.name} · ${itemChoiceRule(group)} · ${group.options.length} ${group.options.length === 1 ? 'choice' : 'choices'}`
     )
     .join(' / ')
+}
+function tileMeta(dish: Dish) {
+  const category = dish.category ? dishCategoryLabel(dish.category) : ''
+  return category === 'Uncategorised' ? '' : category
 }
 function priceLabel(dish: Dish) {
   const groups = readItemChoiceGroups(dish)

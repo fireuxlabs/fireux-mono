@@ -8,13 +8,15 @@ import {
   type H3Event,
 } from 'h3'
 import { fetchPublicRasterImage } from '../../utils/http/public-raster-image'
+import { cachedPhotoDelivery } from '../../utils/http/photo-delivery-cache'
+import { deliverPhotoImage } from '../../utils/uploads/photo-image'
 
 function isHttpError(error: unknown): error is { statusCode: number } {
   return !!error && typeof error === 'object' && 'statusCode' in error
 }
 
 export default defineEventHandler(async (event: H3Event) => {
-  const { url } = getQuery(event)
+  const { url, variant } = getQuery(event)
 
   if (!url || typeof url !== 'string') {
     throw createError({
@@ -23,19 +25,25 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
-  try {
-    const t0 = Date.now()
-    const image = await fetchPublicRasterImage(url)
+  if (variant !== undefined && variant !== 'photo') {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid image variant',
+    })
+  }
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[proxy/image] upstream', {
-        url: image.finalUrl,
-        status: image.status,
-        contentType: image.contentType,
-        contentLength: `${image.buffer.byteLength}`,
-        ms: Date.now() - t0,
-      })
-    }
+  try {
+    const image =
+      variant === 'photo'
+        ? {
+            contentType: 'image/webp',
+            buffer: await cachedPhotoDelivery(url, () =>
+              deliverPhotoImage(
+                async () => (await fetchPublicRasterImage(url)).buffer
+              )
+            ),
+          }
+        : await fetchPublicRasterImage(url)
 
     setResponseHeaders(event, {
       'Content-Type': image.contentType,
@@ -47,7 +55,10 @@ export default defineEventHandler(async (event: H3Event) => {
   } catch (error: unknown) {
     if (isHttpError(error)) throw error
 
-    console.error('[proxy/image] error:', error instanceof Error ? error.message : error)
+    console.error(
+      '[proxy/image] error:',
+      error instanceof Error ? error.message : error
+    )
     throw createError({
       statusCode: 502,
       statusMessage: 'Image proxy failed',

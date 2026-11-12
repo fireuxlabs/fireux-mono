@@ -139,6 +139,40 @@ proof of byte validation, publication or Storage sync. An App may append its own
 product assets through `app.config.ts` at `fireuxAssets.catalogue`, under its
 `/img/app` contract.
 
+## Photographic media
+
+Photographs and brand artwork have distinct delivery contracts. Core's
+`runtime/server/utils/uploads/photo-image.ts` owns `normalizePhotoImage` for
+explicit domain photo uploads: validate JPEG/PNG/WebP, apply orientation, remove
+only fully transparent outer borders, preserve natural proportions, and encode
+WebP within 1200 pixels without enlargement. Opaque borders and faint alpha
+content remain intact. Do not bake square canvases or presentation padding into
+new photo files. Domains retain upload authority, immutable Storage publication,
+record attachment and cleanup; this helper neither acquires authority nor writes.
+
+`runtime/utils/photo-image-url.ts` supplies `photoImageUrl` for remote photo
+display. It selects `/api/proxy/image?url=…&variant=photo`; local asset paths stay
+local. The Core proxy reuses the bounded public-raster network policy and derives
+normalized bytes without modifying historical files, URLs, tokens or records.
+Two jobs run concurrently, with up to 32 waiting for at most 30 seconds; delivery
+reserves capacity before fetching so ordinary gallery bursts do not exhaust the
+upstream fetch slots. Core's `server/utils/http/photo-delivery-cache.ts` coalesces
+in-flight requests and retains derived bytes per server instance for five minutes,
+bounded by 128 entries and 64 MiB with least-recently-used eviction. Keys include
+the transform contract and exact source URL, including query and token differences;
+failures are never cached. At most 34 distinct deliveries can be pending. Browser
+HTTP caching remains available; domains add no canvas or image-byte cache.
+Square thumbnails use the normalized photo with native `object-fit: cover`;
+uncropped views may use `contain`. Existing opaque letterboxing is content and
+is not guessed away. Logos, wordmarks, avatars and ordinary proxy requests do
+not opt into this photographic transform implicitly.
+
+Verify byte geometry, orientation, alpha preservation and grid bursts with
+`packages/core/fireux-core/src/test/server/uploads/photo-image.test.mjs`, plus
+`packages/core/fireux-core/src/test/server/http/photo-delivery-cache.test.mjs`, and
+the existing proxy network-policy and protected-upload tests. A consuming screen
+still needs visual review; these tests do not establish live image appearance.
+
 ## Ecosystem identity
 
 BuenoHost's SVG masters live in its ecosystem package; global App exports

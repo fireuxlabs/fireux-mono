@@ -1,3 +1,4 @@
+import { photoImageUrl } from 'fireux-core/runtime/utils/photo-image-url'
 import * as itemChoices from '../runtime/kitchen/utils/item-choices.ts'
 import test from 'node:test'
 import assert from 'node:assert/strict'
@@ -36,6 +37,7 @@ function component(path, dependencies = {}) {
   compileFunction(code, ['require', 'exports'])((name) => {
     if (name === 'vue') return Vue
     if (name.endsWith('/item-choices')) return itemChoices
+    if (name.endsWith('/photo-image-url')) return { photoImageUrl }
     assert.ok(dependencies[name], name)
     return dependencies[name]
   }, exports)
@@ -235,7 +237,7 @@ test('failed customer images collapse safely and a changed URL can recover', asy
   }
 })
 
-test('operator Item photos crop only the known upload margin without rewriting assets', async () => {
+test('operator Item photos use shared delivery for existing uploads without rewriting records', async () => {
   const Cell = component('kitchen/components/Menu/Items/Cards/Cell.vue')
   const props = Vue.reactive({
     id: 'dish',
@@ -247,7 +249,10 @@ test('operator Item photos crop only the known upload margin without rewriting a
   props.imageUrl =
     'https://storage.example/o/kitchens%2Fk%2Fdishes%2Fd%2Fimage%2Fr.webp'
   await Vue.nextTick()
-  assert.match(mounted.find('img').parent.props.class, /item-photo--padded/)
+  assert.equal(mounted.find('img').props.src, photoImageUrl(props.imageUrl))
+  assert.equal(mounted.find('img').props.onLoad, undefined)
+  assert.equal(mounted.find('img').props.onError, undefined)
+  assert.equal(mounted.find('img').props.style, undefined)
   props.imageUrl = ''
   await Vue.nextTick()
   assert.equal(mounted.find('img'), undefined)
@@ -527,4 +532,17 @@ test('browse preview selects a variant, toggles extras and resets without mutati
   assert.equal(price(), '4 CHF')
   assert.equal(mounted.all('input').length, 0)
   mounted.app.unmount()
+})
+
+test('operator photo layout remounts keep one stable shared delivery URL', () => {
+  const src =
+    'https://storage.example/o/kitchens%2Fk%2Fdishes%2Fd%2Fimage%2Fr.webp'
+  const Photo = component('kitchen/components/Menu/Items/Photo.vue')
+  for (const layout of ['list', 'grid', 'list', 'grid']) {
+    const surface = mount(Photo, { src, alt: layout })
+    assert.equal(surface.find('img').props.src, photoImageUrl(src))
+    assert.equal(surface.find('img').props.onLoad, undefined)
+    assert.equal(surface.find('img').props.style, undefined)
+    surface.app.unmount()
+  }
 })
