@@ -572,34 +572,37 @@ Their indexes are mini overviews; the child pages remain the working surfaces.
 Menus is the group index at `/workspace/kitchen/menu`
 route. Its shared page header and Menu status precede KitchenAI; Items, Promotions
 and Services are the lower-level child entrances below AI. The existing
-`/menu/menus` route still supplies Menu collection management. Route order puts Identity & brand
+`/menu/menus` route renders the same landing composition for existing links;
+current management entrances and post-delete navigation use `/menu`. The landing
+owns search, archived visibility and its existing creation dialog. Its Menu
+creation context supplies one collection to the group overview and service
+summary, retaining `useMenuList` account/App/Kitchen-scoped list choices. Route order puts Identity & brand
 and Team before the Kitchen working groups, with Settings last. Identity & brand is also a top-level entrance,
 with the Kitchen listing and its venue/brand editors; it is not nested in Settings.
 Settings retains Payments, Integrations and Access. Overview adds no collection readers or mutations.
 Item and Menu creation open dialogs from their indexes; no separate create routes
-are retained. The Items catalogue presents one Items collection, a single Add item entrance
-and Kitchen-owned group filtering. Groups live at
-`kitchens/{kitchenId}/item-groups`; names and stable IDs are independent from
-historical `item_kind` and Menu sections. New Kitchen roots receive ordinary
-Food and Drinks groups; existing roots are never seeded on read or resume.
-New Item creation does not require a Food/Drink classification. Historical
-classification and free-text preparation notes remain readable without guessed
-group or Station relationships. Public Menu projections preserve an explicit
-untyped value for new Items through serialization; only historical records use
-the old missing-kind Food fallback.
-
-Items store `group_ids` and an optional `preparation_station_ids` override.
-An absent override inherits active group defaults; an empty list means no
-preparation. The update command accepts null to return to inheritance. The
-shared Item organisation provider owns one group and Station read per Items
-route. Group and Item commands recheck Kitchen authority and exact active local
-references in their writing transactions. Preparation Stations and coordination
-Stations are distinct; the historical canonical Pass reads as coordination.
-This assignment structure does not implement printer delivery, Station task
-subscriptions or order-time routing snapshots. See Kitchen's
-`models/item-group.model.ts`, `utils/item-organisation.ts`,
-`server/item-groups`, `components/Menu/Items/Organisation.vue` and
-`src/test/item-organisation.test.mjs`.
+are retained. The Items page uses the shared child `WorkspacePageHeader` for its title,
+description and Add item/AI info actions, followed by compact chat and its search/layout toolbar.
+Its route declares a content-owned header rather than repeating the shell description.
+The Items catalogue is one searchable collection with compact rows, read-only
+prices and compact choice-group summaries linked to Price & choices. Starting
+prices include the least expensive required choices. The optional grid carries
+the same choice summary and price. Preparation setup stays in the Item detail view. A visible icon-only pressed toggle selects the image grid or list; the toolbar has no More menu.
+Items AI is inline between its heading and collection controls, reusing the compact
+Capability/Assistant/Composer chain and the existing collection context.
+Its Assistant uses Core `WorkspaceAICompact` for the bounded results area and
+single-row `WorkspaceAICompactComposer` with inline voice/send controls and no
+model footer or idle suggestion row; Kitchen retains prompts, tools, voice and confirmations. It has no More action or slideover. Items store optional `preparation_station_ids`:
+missing/null is not configured, [] explicitly requires no preparation, and IDs
+refer to active preparation Stations in the same Kitchen. Coordination Stations
+such as Pass are excluded. The Item detail route provides one Station reader through
+`useKitchenItemPreparation`; `PreparationStations.vue` consumes the existing Item
+and trusted update command. Historical group fields and free-text Station notes
+remain readable but do not supply assignments. Item groups, their commands and
+onboarding seeds are retired; there is no stored-data deletion or migration.
+`Photo.vue` displays square photos and crops the known transparent margin of the
+owned Dish upload format in presentation only. Stored images are untouched.
+This structure does not implement printer delivery or live Station queues.
 Existing Item and Menu detail/import/research pages remain for their consumed
 editing workflows. Recipes and Ingredients live under Prep & Production.
 Verify these distinctions with `workspace-navigation.test.mjs`.
@@ -610,13 +613,32 @@ All/Food/Drinks locally, and opens the unified `/menu/items/[dishId]`
 editor. `Menu/Items/Collection/Index.vue` composes Controls, Results and
 Dialogs. `useDishCatalogue` owns shared filters, pagination and return-query state;
 its strict provided context never acquires another collection. Dialogs owns local
-creation, category and AI disclosures, clearing them on Kitchen changes. Controls
+the creation disclosure, clearing it on Kitchen changes. Controls
 and Results emit actions without owning commands or dialog state.
 Kind-specific detail contexts retain their filtering and authority. Catalogue
 URLs and editor return links retain kind, search, category, completeness filter,
 layout and page using `kitchen/utils/dish-catalogue-route.ts`. Both editors return
 to the combined catalogue; initial loading preserves the requested page, while
 settled shorter results clamp it. See `dish-reader-internals.test.mjs`.
+
+The Item detail parent provides one live Item reader through
+`useKitchenItemDetailContext`; its field editors and relationship readers consume
+that strict context. Details combines identity and pricing, Preparation combines
+Station assignment and specification with disclosed requirements, and Appears on
+shows only matched Menu placements once reads settle. Legacy Pricing and
+Specification links open Details and Preparation. Relationship links return to
+the inline builder, retaining exact daily-section links. Item actions owns deletion.
+
+Services uses the Workspace page title and its channel controls; it does not
+expose the historical public Menu grouping title as a Services editor. Stored
+`services.title` and its public consumers retain their existing behavior.
+
+The Menu builder expands one section at a time in place, mounting the existing
+`provideMenuSection` and Item editor for that section. The standalone section
+route remains a valid direct entrance. Shared Item links retain an inline return
+intent so returning opens the originating section on the Menu. Date, archived
+view and record changes release the previous section editor. No command or Item
+identity is copied into the parent.
 
 Menus keeps collection search and Show archived in `useMenuList`, in memory for
 the mounted App session and isolated by App, account and Kitchen. Returning from
@@ -2059,6 +2081,19 @@ Source checks include `test/recipe-reader-internals.test.mjs` and
 Verify this boundary with `src/test/recipe-preparation.test.mjs`
 in `fireux-kitchens` and the recipe editor/read surfaces.
 
+Public Menu choices use `menu/components/ChoiceBubbles.vue` for compact wrapping
+labels and prices. Browse Items keep local choice-group selections and preview their combined
+price, initially selecting the lowest-priced variant. The Item resets choices
+on identity changes and drops removed extras. Native radios and checkboxes are
+shared with the service Item selector; browse choices never enter a basket or
+write data. Bubbles sit with Item content without visible group headings or
+divider rows; accessible group names remain.
+Direct ordering uses action bubbles that call its existing add handler.
+The selector retains its existing draft, basket pricing and validation owners.
+Workspace configuration, Item pricing and placement storage do not change with
+this presentation. Verify `item-presentation.test.mjs` and
+`menu-service-basket.test.mjs`.
+
 ## Dish-owned commercial terms
 
 Dish carries no Menu, Promotion or deal classification. The retired `is_deal`
@@ -2066,14 +2101,30 @@ flag is neither accepted by Dish creation nor emitted by catalogue/public
 projections or AI import schemas. Meal deals belong to Kitchen Promotions and
 can be placed on regular interactive Menus; Order pricing remains separate.
 
-`kitchen/models/dish.model.ts` owns normal `price`, `price_options` and `add_ons`.
-`kitchen/utils/dish-pricing.ts` owns validation and the canonical reader; Dish
-create/update commands own writes. The focused Dish Pricing editor uses the
-existing Dish mutation scope. Menu placements own Dish or meal-deal references, availability
-and order, and reject pricing fields. Dish entries resolve normal terms from
-the referenced same-Kitchen Dish; meal-deal entries resolve set price and choices
-from the referenced Kitchen Promotion. Dish offers apply explicit price overrides
-without changing normal terms.
+`kitchen/models/dish.model.ts` owns Item pricing. Optional `choice_groups` is the
+authoritative embedded group contract: stable group/option IDs, names, minimum and
+maximum selections (null means any), and full-price or additional-charge pricing.
+At most one group sets full Item prices and it requires exactly one choice.
+`kitchen/utils/item-choices.ts` validates definitions and prices selections in
+minor units; normal Item update commands retain their existing authority.
+Historical `price_options` and `add_ons` remain readable and are projected as
+choice groups without writes when `choice_groups` is absent. An explicit empty
+array means no groups. The Price & choices editor converts only on explicit save,
+clearing the old flat fields in that same command. Its full-price group derives
+the Item's display starting price rather than asking for a duplicate base price.
+
+`Pricing.vue` owns the scoped draft and save; `Pricing/Groups.vue` owns group and
+choice controls. Its local preview shares `MenuItemChoices` and the pricing
+validator. Public browsing previews choices locally; service selectors and direct
+ordering carry selections separately from meal-deal groups. Checkout resolves
+current Item groups in the existing transaction and enforces bounds, identity,
+prices and stale-price checks. Basket recovery retains those group IDs.
+Menu placements still own only references, availability and display order.
+Promotions reprice full-price choices while leaving additional charges intact.
+Imports and Menu Express review explicitly reject grouped Items that their
+current comparison/delivery formats cannot represent, rather than flattening or
+overwriting them. Verify `item-choice-groups.test.mjs`, `collection-checkout.test.mjs`
+and the existing Item command and public presentation checks.
 
 There is no shared Sellable record, adoption control or placement-price fallback.
 Imports put commercial terms on Dishes and reject conflicting terms on an existing
@@ -2407,9 +2458,9 @@ in `menu-service-basket.test.mjs`, `menu-service-view.test.mjs` and
 Dish may configure an optional `bottle_deposit` amount through the existing
 protected Dish command. Zero/absence means no deposit. Pricing composes the
 focused `Menu/Items/Deposit.vue` field without another record reader;
-normal price, variants and extras are independent. Pricing retains the one
-existing Dish context and save coordinator, composing focused `Pricing/Options.vue`
-and `Pricing/Extras.vue` draft controls. Those controls add no readers or writers.
+normal price, choice groups and deposits retain their own meaning. Pricing uses
+the provided Item context and its existing save coordinator, composing
+`Pricing/Groups.vue` draft controls. Those controls add no readers or writers.
 Public manifests project
 `bottleDeposit` explicitly; descriptions never determine runtime charges.
 Collection item selection composes `Selection/Bottle.vue` for an explicit new

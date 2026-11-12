@@ -13,7 +13,7 @@
         :error="menuSourcesError"
       />
       <UPageLinks v-if="sources.length" :links="sources" />
-      <UButton to="/workspace/kitchen/menu/menus" variant="outline"
+      <UButton to="/workspace/kitchen/menu" variant="outline"
         >Review and publish prepared Menus</UButton
       >
       <UButton to="/workspace/kitchen/qr" variant="outline"

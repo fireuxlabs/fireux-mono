@@ -1,19 +1,15 @@
 <template>
-  <WorkspaceKitchenAICapabilityInfo capability="dishes" />
-  <div>
-    <KitchenMenuItems />
-  </div>
+  <KitchenMenuItems />
 </template>
 
 <script setup lang="ts">
 import { provideKitchenDishesContext } from '../../../../../kitchen/composables/workspace/dishes/useKitchenDishesContext'
-import { provideKitchenItemOrganisation } from '../../../../../kitchen/composables/workspace/dishes/useKitchenItemOrganisation'
-const context = provideKitchenDishesContext('all')
-provideKitchenItemOrganisation(context)
+provideKitchenDishesContext('all')
 
 definePageMeta({
   layout: false,
   workspacePage: true,
+  workspaceHeader: 'content',
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

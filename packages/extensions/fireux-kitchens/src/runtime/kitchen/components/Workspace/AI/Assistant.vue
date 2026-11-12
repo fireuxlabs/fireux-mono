@@ -1,5 +1,47 @@
 <template>
-  <WorkspaceAI aria-label="KitchenAI" :compact="compact">
+  <WorkspaceAICompact
+    v-if="compactChat"
+    aria-label="KitchenAI"
+    results-label="KitchenAI results"
+  >
+    <template
+      v-if="(!commandMode && messages.length) || (commandMode && commandResult)"
+      #results
+    >
+      <Messages
+        v-if="!commandMode && messages.length"
+        :messages="messages"
+        @copy="copyResultAction"
+      />
+      <CommandResult
+        v-if="commandMode && commandResult"
+        :result="commandResult"
+        :pending="Boolean(pendingTool)"
+        :submitting="submitting"
+        @confirm="confirmCommand"
+        @reset="resetCommand"
+        @copy="copyResultAction"
+      />
+    </template>
+    <template #composer="{ spacious }">
+      <Composer
+        v-if="!commandMode || !commandResult"
+        v-model="prompt"
+        compact
+        :spacious="spacious"
+        :placeholder="placeholder"
+        :suggestions="promptSuggestions"
+        :starters="starters"
+        :ai-tools="props.aiTools"
+        :allow-file="allowFile"
+        :aria-label="composerAriaLabel"
+        :submitting="submitting"
+        @submit="sendPrompt"
+        @file="stageFile"
+      />
+    </template>
+  </WorkspaceAICompact>
+  <WorkspaceAI v-else aria-label="KitchenAI" :compact="compact">
     <WorkspaceAIIntro
       v-if="showIntro"
       :agent-label="agentLabel"
@@ -66,6 +108,7 @@ const props = withDefaults(
   defineProps<
     KitchenAIPresentationOptions & {
       kitchenId?: string
+      compactChat?: boolean
       compact?: boolean
       showIntro?: boolean
       aiTools?: readonly KitchenAIToolNugget[]
@@ -81,6 +124,7 @@ const props = withDefaults(
     starters: undefined,
     operation: '',
     kitchenId: '',
+    compactChat: false,
     compact: false,
     showIntro: true,
     aiTools: () => [],

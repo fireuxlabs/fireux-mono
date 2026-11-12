@@ -153,11 +153,15 @@ export async function readKitchenMenuReview(
           statusMessage: 'A Menu Dish is unavailable.',
         })
       const pricing = readDishPricing(dish.data!)
-      if (pricing.add_ons?.length || pricing.bottle_deposit)
+      if (
+        pricing.choice_groups?.length ||
+        pricing.add_ons?.length ||
+        pricing.bottle_deposit
+      )
         throw createError({
           statusCode: 409,
           statusMessage:
-            'Menu Express review does not yet support add-ons or deposits.',
+            'Menu Express review does not yet support choice groups, add-ons or deposits.',
         })
       items.push({
         id: row.id,

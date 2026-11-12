@@ -227,7 +227,7 @@ function mount(h, component, exposed, extra = {}) {
       outcome: vue.ref('ready'),
     }),
     useRouteParam: () => identity.dishId,
-    useKitchenDishDetail: () => identity,
+    useKitchenItemDetail: () => identity,
     useKitchenDishesContext: () => ({
       ...identity,
       dishes: vue.ref([identity.dish.value]),
@@ -568,7 +568,6 @@ test('Native creation is group-neutral and locks inputs and invalidates changed 
       assert.equal(h.calls.length, changed === 'stable' ? 1 : 0)
       if (changed === 'stable') {
         assert.equal(h.calls[0].options.body.draft.item_kind, undefined)
-        assert.deepEqual(h.calls[0].options.body.draft.group_ids, [])
         assert.equal(f.api.name.value, '')
         assert.match(f.api.message.value, /Created Submitted/)
       } else {

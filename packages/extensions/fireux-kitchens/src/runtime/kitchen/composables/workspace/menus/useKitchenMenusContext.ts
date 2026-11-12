@@ -16,7 +16,7 @@ const kitchenMenusWorkspaceKey: InjectionKey<KitchenMenusContext> = Symbol(
   'KitchenMenusContext'
 )
 
-function createKitchenMenusWorkspace() {
+function createKitchenMenusWorkspace(publishPage = true) {
   const workspace = useKitchenWorkspaceMenus()
   const pageState = useWorkspacePageState('kitchen')
   const createOpen = ref(false)
@@ -75,6 +75,7 @@ function createKitchenMenusWorkspace() {
   })
 
   watchEffect(() => {
+    if (!publishPage) return
     pageState.publish({
       menus: state.value.menus,
       selectedMenuId: state.value.selectedMenuId,
@@ -102,8 +103,8 @@ function createKitchenMenusWorkspace() {
   }
 }
 
-export function provideKitchenMenusContext() {
-  const workspace = createKitchenMenusWorkspace()
+export function provideKitchenMenusContext(publishPage = true) {
+  const workspace = createKitchenMenusWorkspace(publishPage)
   provide(kitchenMenusWorkspaceKey, workspace)
   return workspace
 }

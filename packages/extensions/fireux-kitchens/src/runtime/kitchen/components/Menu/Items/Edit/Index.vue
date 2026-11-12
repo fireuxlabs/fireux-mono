@@ -41,7 +41,7 @@
         <UFormField
           v-if="dish.item_kind === 'food'"
           label="Food category"
-          description="Optional food description. Use Item groups to organise the collection."
+          description="Optional food description."
         >
           <USelect
             :model-value="dish.category"
@@ -97,26 +97,20 @@
 <script setup lang="ts">
 import { refreshNuxtData } from 'nuxt/app'
 
-import { useKitchenWorkspace } from '../../../../composables/workspace/useKitchenWorkspace'
-import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useKitchenDishesContext } from '../../../../composables/workspace/dishes/useKitchenDishesContext'
-const workspace = useKitchenWorkspace()
 const { catalogue } = useKitchenDishesContext()
 import { useDishEditorScope } from '../../../../composables/dish/useDishEditorScope'
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenDishDetail } from '../../../../composables/dish/useKitchenDishDetail'
+import { useKitchenItemDetail } from '../../../../composables/dish/useKitchenItemDetailContext'
 import { useDishImageUpload } from '../../../../composables/dish/useDishImageUpload'
 import { useDishUpdate } from '../../../../composables/dish/useDishUpdate'
 import { dishCategories } from '../../../../models/dish.model'
 import type { DishUpdateInput } from '../../../../utils/dish.ts'
 
-const { dish, dishId, kitchenId, canWrite } = useKitchenDishDetail(
-  () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
-  useRouteParam('dishId')
-)
+const { dish, dishId, kitchenId, canWrite } = useKitchenItemDetail()
 
 const toast = useToastify()
 const { currentUser } = useAuth()

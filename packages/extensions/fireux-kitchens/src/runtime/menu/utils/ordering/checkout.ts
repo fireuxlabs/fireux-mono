@@ -13,6 +13,16 @@ export function serviceSelections(
     itemId: line.itemId,
     ...(line.choices.optionId ? { optionId: line.choices.optionId } : {}),
     extraIds: [...line.choices.extraIds],
+    ...(line.choices.choiceGroups
+      ? {
+          choiceGroups: Object.fromEntries(
+            Object.entries(line.choices.choiceGroups).map(([id, values]) => [
+              id,
+              [...values],
+            ])
+          ),
+        }
+      : {}),
     groups: Object.fromEntries(
       Object.entries(line.choices.groups).map(([key, values]) => [
         key,

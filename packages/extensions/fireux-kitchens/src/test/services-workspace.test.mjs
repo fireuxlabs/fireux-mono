@@ -252,11 +252,7 @@ test('mounted service editors and local drafts survive refresh/error; actual own
       ),
     render: Vue.compile(parse(source).descriptor.template.content),
   })
-  for (const name of [
-    'KitchenMenuServicesStatus',
-    'KitchenMenuServicesTitle',
-    'FireDiagnosticsDebugPanel',
-  ])
+  for (const name of ['KitchenMenuServicesStatus', 'FireDiagnosticsDebugPanel'])
     app.component(name, { render: () => null })
   app.component('KitchenMenuServicesService', {
     setup() {

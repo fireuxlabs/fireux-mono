@@ -3,6 +3,7 @@
     <FireCopyError v-if="editor.moveError" :message="editor.moveError" />
     <div class="menu-editor-actions">
       <UButton
+        v-if="!embedded"
         :to="`/workspace/kitchen/menu/menus/${encodeURIComponent(editor.menuSlug)}`"
         @click="editor.rememberView(editor.menuSlug, 'content', $event)"
         color="neutral"
@@ -92,7 +93,8 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { useMenuSectionItemsEditor } from '../../../../../composables/workspace/menus/useMenuSectionItemsEditor'
-const editor = reactive(useMenuSectionItemsEditor())
+const props = defineProps<{ embedded?: boolean }>()
+const editor = reactive(useMenuSectionItemsEditor(Boolean(props.embedded)))
 </script>
 
 <style src="../../../../../../menu/assets/styles/menu-editor.css"></style>

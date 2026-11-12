@@ -1,3 +1,4 @@
+import type { ItemChoiceGroup } from './item-choice.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 
 export const dishCategories = [
@@ -46,6 +47,7 @@ export type DishPriceOption = {
 }
 export type DishAddOnOption = { id: string; label: string; price: number }
 export type DishPricing = {
+  choice_groups?: ItemChoiceGroup[]
   /** Refundable bottle charge; exchange waives it on takeaway selections. */
   bottle_deposit?: number
   price: number
@@ -63,8 +65,9 @@ export type Dish = FireuxStamped &
     description: string
     /** Historical classification only; never an Item group or preparation destination. */
     item_kind?: DishItemKind
+    /** Historical organisation data, retained for reading only. */
     group_ids?: string[]
-    /** Undefined inherits group defaults; [] explicitly requires no preparation. */
+    /** Undefined means not configured; [] explicitly requires no preparation. */
     preparation_station_ids?: string[]
     is_flagship: boolean
     image: string

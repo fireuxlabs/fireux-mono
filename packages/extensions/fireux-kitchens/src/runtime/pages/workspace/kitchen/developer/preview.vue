@@ -12,7 +12,7 @@
 
       <template #footer>
         <div class="fx-card__actions">
-          <UButton to="/workspace/kitchen/menu/menus" icon="i-lucide-book-open">
+          <UButton to="/workspace/kitchen/menu" icon="i-lucide-book-open">
             Manage menus
           </UButton>
           <UButton

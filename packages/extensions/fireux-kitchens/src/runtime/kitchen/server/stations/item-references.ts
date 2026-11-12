@@ -1,25 +1,12 @@
-import { kitchenStationsTarget } from '../stations/default'
+import { kitchenStationsTarget } from './default'
 import { createError } from 'h3'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { kitchenItemGroupsTarget } from './targets'
 
-export async function requireItemOrganisationReferences(
+export async function requireItemPreparationStations(
   tx: GuardedServerTransaction,
   kitchenId: string,
-  input: { group_ids?: string[]; preparation_station_ids?: string[] }
+  input: { preparation_station_ids?: string[] }
 ) {
-  for (const id of input.group_ids || []) {
-    const group = await tx.read(kitchenItemGroupsTarget(kitchenId), id)
-    if (
-      !group.exists ||
-      group.data?.kitchen_id !== kitchenId ||
-      group.data?.active === false
-    )
-      throw createError({
-        statusCode: 409,
-        statusMessage: 'An Item group is unavailable in this Kitchen.',
-      })
-  }
   for (const id of input.preparation_station_ids || []) {
     const station = await tx.read(kitchenStationsTarget(kitchenId), id)
     if (

@@ -4,8 +4,10 @@ import { useMenuGroupIndex } from './useMenuGroupIndex'
 type MenuGroupIndex = ReturnType<typeof useMenuGroupIndex>
 const indexKey: InjectionKey<MenuGroupIndex> = Symbol('MenuGroupIndex')
 
-export function provideMenuGroupIndex() {
-  const index = useMenuGroupIndex()
+export function provideMenuGroupIndex(
+  ...args: Parameters<typeof useMenuGroupIndex>
+) {
+  const index = useMenuGroupIndex(...args)
   provide(indexKey, index)
   return index
 }

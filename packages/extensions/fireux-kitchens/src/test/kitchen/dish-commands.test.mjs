@@ -1,4 +1,4 @@
-import { validateItemReferenceIds } from '../../runtime/kitchen/utils/item-organisation.ts'
+import { validateItemReferenceIds } from '../../runtime/kitchen/utils/item-preparation.ts'
 import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import { dishPricingHelpers } from '../helpers/dish-pricing.mjs'
 import { commandScopeDeps } from '../command-scope-fixture.mjs'
@@ -113,14 +113,14 @@ const references = load(
   },
   '({requireKitchenIngredientReferences,requireKitchenPrepItemReferences,requireKitchenRecipeReference})'
 )
-const requireItemOrganisationReferences = load(
-  '../../runtime/kitchen/server/item-groups/references.ts',
+const requireItemPreparationStations = load(
+  '../../runtime/kitchen/server/stations/item-references.ts',
   {
     createError,
     kitchenItemGroupsTarget: (k) => `kitchens/${k}/item-groups`,
     kitchenStationsTarget: (k) => `kitchens/${k}/stations`,
   },
-  'requireItemOrganisationReferences'
+  'requireItemPreparationStations'
 )
 function deferred() {
   let resolve
@@ -153,7 +153,7 @@ function harness({ wait, retry } = {}) {
   const dependencies = {
     readDishUsage,
     validateItemReferenceIds,
-    requireItemOrganisationReferences,
+    requireItemPreparationStations,
     ...recordInput,
     ...specification,
     ...references,
@@ -911,21 +911,19 @@ test('new Items need no Food/Drink type; group and Station references are checke
       kitchenId: 'k',
       draft: {
         name: 'Umbrella',
-        group_ids: ['merch'],
         preparation_station_ids: [],
       },
     }
   )
   const created = h.writes.at(-1)[3]
   assert.equal(created.item_kind, null)
-  assert.deepEqual(created.group_ids, ['merch'])
   assert.deepEqual(created.preparation_station_ids, [])
   await h.updateDish(
     {},
     {
       kitchenId: 'k',
       dishId: 'existing',
-      changes: { group_ids: ['merch'], preparation_station_ids: ['bar'] },
+      changes: { preparation_station_ids: ['bar'] },
     }
   )
   assert.deepEqual(h.writes.at(-1)[3].preparation_station_ids, ['bar'])
@@ -945,10 +943,51 @@ test('new Items need no Food/Drink type; group and Station references are checke
       {
         kitchenId: 'k',
         dishId: 'existing',
-        changes: { group_ids: ['foreign'] },
+        changes: { preparation_station_ids: ['foreign'] },
       }
     ),
-    /group is unavailable/
+    /preparation Station/
   )
   assert.equal(h.writes.length, count)
+})
+
+test('choice groups use the existing authorized Item update and derive a full-price group minimum', async () => {
+  const groups = [
+    {
+      id: 'size',
+      name: 'Size',
+      min: 1,
+      max: 1,
+      pricing: 'full',
+      options: [
+        { id: 'small', label: 'Small', price: 12 },
+        { id: 'large', label: 'Large', price: 18 },
+      ],
+    },
+  ]
+  const h = harness()
+  await h.updateDish(
+    {},
+    {
+      kitchenId: 'k',
+      dishId: 'existing',
+      changes: {
+        price: 0,
+        choice_groups: groups,
+        price_options: [],
+        add_ons: [],
+      },
+    }
+  )
+  assert.equal(h.writes[0][3].price, 12)
+  assert.deepEqual(h.writes[0][3].choice_groups, groups)
+  const denied = harness()
+  denied.records.delete('apps/app/users/u')
+  await assert.rejects(
+    denied.updateDish(
+      {},
+      { kitchenId: 'k', dishId: 'existing', changes: { choice_groups: groups } }
+    )
+  )
+  assert.equal(denied.writes.length, 0)
 })

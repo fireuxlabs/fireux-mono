@@ -1,6 +1,8 @@
+import { priceItemChoices } from '../../../kitchen/utils/item-choices'
 import type { MenuServiceOffer } from './sections'
 
 export type ServiceItemChoices = {
+  choiceGroups?: Record<string, string[]>
   bottle?: 'deposit' | 'exchange'
   optionId: string
   extraIds: string[]
@@ -56,8 +58,23 @@ export function serviceBasketLine(
         : 'This item does not have a bottle deposit.'
     )
   const depositUnitMinor = choices.bottle === 'deposit' ? deposit : 0
+  const choicePricing =
+    item.choiceGroups !== undefined
+      ? priceItemChoices(
+          item.price,
+          item.choiceGroups,
+          choices.choiceGroups || {}
+        )
+      : undefined
+  if (choicePricing && (choices.optionId || choices.extraIds.length))
+    throw new Error('Use the current Item choice groups.')
+  if (!choicePricing && Object.keys(choices.choiceGroups || {}).length)
+    throw new Error('Item choices have changed.')
   const option = item.priceOptions.find((row) => row.id === choices.optionId)
-  if (item.priceOptions.length ? !option : Boolean(choices.optionId))
+  if (
+    !choicePricing &&
+    (item.priceOptions.length ? !option : Boolean(choices.optionId))
+  )
     throw new Error('Choose an available option.')
   const extraIds = [...new Set(choices.extraIds)].sort()
   const extras = extraIds.map((id) => {
@@ -67,10 +84,11 @@ export function serviceBasketLine(
   })
   const groups: Record<string, string[]> = {}
   const details = [
+    ...(choicePricing?.details || []),
     ...(option ? [option.label] : []),
     ...extras.map((row) => row.label),
   ]
-  let unitMinor = money(option?.price ?? item.price)
+  let unitMinor = choicePricing?.unitMinor ?? money(option?.price ?? item.price)
   for (const extra of extras) unitMinor += money(extra.price)
   for (const group of item.mealDeal?.groups || []) {
     const selected = [...new Set(choices.groups[group.id] || [])].sort()
@@ -91,7 +109,12 @@ export function serviceBasketLine(
   )
     throw new Error('A meal choice has changed.')
   unitMinor += depositUnitMinor
-  const selection = { ...choices, extraIds, groups }
+  const selection = {
+    ...choices,
+    extraIds,
+    groups,
+    ...(choicePricing ? { choiceGroups: choicePricing.selections } : {}),
+  }
   const signature = serviceItemSignature(offer)
   return {
     key: JSON.stringify([
@@ -101,6 +124,7 @@ export function serviceBasketLine(
       choices.bottle,
       extraIds,
       groups,
+      ...(choicePricing ? [choicePricing.selections] : []),
       unitMinor,
     ]),
     source: { ...offer.source },

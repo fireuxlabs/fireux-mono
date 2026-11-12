@@ -1,4 +1,3 @@
-import { createDefaultKitchenItemGroups } from '../../runtime/kitchen/server/item-groups/defaults.ts'
 import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import { resolveAppUserAccess } from '../../../../../core/fireux-core/src/runtime/app/utils/app-user-access.ts'
 import { readKitchenDocument } from '../../runtime/kitchen/utils/read-kitchen-document.ts'
@@ -363,7 +362,6 @@ function shellHarness({
       requireUnambiguousKitchenTeamLink,
       createKitchenSystemMenus,
       createDefaultKitchenStation,
-      createDefaultKitchenItemGroups,
       runGuardedServerTransaction: async (_scope, run) => {
         const queued = []
         const tx = {
@@ -918,7 +916,6 @@ test('guest start creates one unpublished Kitchen with default menus, resumes it
       PLACE_MUTATION_TARGETS: { places: target('places') },
       createKitchenSystemMenus,
       createDefaultKitchenStation,
-      createDefaultKitchenItemGroups,
       buildKitchenTeamMemberRecord,
       serverAuditStamp: ({ by, appId }) => ({ by, app_id: appId, at: created }),
       runGuardedServerTransaction: async (_scope, run) => {
@@ -957,16 +954,7 @@ test('guest start creates one unpublished Kitchen with default menus, resumes it
   assert.equal(records.get('kitchens/guest123').identity.visibility, false)
   assert.equal(records.get('places/guest123').name, 'kitchen-guest1')
   assert.equal(records.get('kitchens/guest123/stations/pass').name, 'Pass')
-  assert.equal(records.size, 9)
-  assert.equal(records.get('kitchens/guest123/item-groups/food').name, 'Food')
-  assert.equal(
-    records.get('kitchens/guest123/item-groups/drinks').name,
-    'Drinks'
-  )
-  assert.deepEqual(
-    records.get('kitchens/guest123/item-groups/food').default_station_ids,
-    []
-  )
+  assert.equal(records.size, 7)
   const before = structuredClone([...records])
   await start({}, { claim_secret: 'b'.repeat(64) })
   assert.deepEqual([...records], before)

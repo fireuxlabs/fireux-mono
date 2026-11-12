@@ -48,22 +48,16 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
-import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
-const workspace = useKitchenWorkspace()
 const { catalogue } = useKitchenDishesContext()
 import { useDishUsage } from '../../../composables/dish/useDishUsage'
 import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenDishDetail } from '../../../composables/dish/useKitchenDishDetail'
+import { useKitchenItemDetail } from '../../../composables/dish/useKitchenItemDetailContext'
 
-const { dish, dishId, kitchenId, canWrite } = useKitchenDishDetail(
-  () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
-  useRouteParam('dishId')
-)
+const { dish, dishId, kitchenId, canWrite } = useKitchenItemDetail()
 
 const {
   usages,

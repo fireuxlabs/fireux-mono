@@ -13,20 +13,13 @@
       :deposit="offer.item.bottleDeposit"
       :money="money"
     />
-    <UFormField
-      v-if="offer.item.priceOptions.length"
-      label="Choose an option"
-      required
-    >
-      <URadioGroup v-model="choices.optionId" :items="options" />
-    </UFormField>
-    <UFormField v-if="offer.item.addOns.length" label="Extras">
-      <FireMultiSelect
-        v-model="choices.extraIds"
-        label="Extras"
-        :items="extras"
-      />
-    </UFormField>
+    <MenuItemChoices
+      :groups="choiceGroups"
+      :model-value="selectedGroups"
+      :money="money"
+      :show-names="offer.item.choiceGroups !== undefined"
+      @update:model-value="updateGroups"
+    />
     <UFormField
       v-for="group in offer.item.mealDeal?.groups || []"
       :key="group.id"
@@ -79,6 +72,8 @@
 </template>
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
+import { readItemChoiceGroups } from '../../../kitchen/utils/item-choices'
+import type { ItemChoiceSelection } from '../../../kitchen/models/item-choice.model'
 import type { MenuServiceOffer } from '../../utils/ordering/sections'
 import {
   serviceBasketLine,
@@ -96,18 +91,22 @@ const choices = reactive<ServiceItemChoices>(
     ? JSON.parse(JSON.stringify(props.initialChoices))
     : { optionId: '', extraIds: [], groups: {}, quantity: 1 }
 )
-const options = computed(() =>
-  props.offer.item.priceOptions.map((row) => ({
-    value: row.id,
-    label: `${row.label} · ${props.money(row.price)}`,
-  }))
+const choiceGroups = computed(() => readItemChoiceGroups(props.offer.item))
+const selectedGroups = computed(() =>
+  props.offer.item.choiceGroups !== undefined
+    ? choices.choiceGroups || {}
+    : {
+        'legacy-variants': choices.optionId ? [choices.optionId] : [],
+        'legacy-extras': choices.extraIds,
+      }
 )
-const extras = computed(() =>
-  props.offer.item.addOns.map((row) => ({
-    value: row.id,
-    label: `${row.label} +${props.money(row.price)}`,
-  }))
-)
+function updateGroups(value: ItemChoiceSelection) {
+  if (props.offer.item.choiceGroups !== undefined) choices.choiceGroups = value
+  else {
+    choices.optionId = value['legacy-variants']?.[0] || ''
+    choices.extraIds = value['legacy-extras'] || []
+  }
+}
 const preview = computed(() => {
   try {
     return { line: serviceBasketLine(props.offer, choices), issue: '' }

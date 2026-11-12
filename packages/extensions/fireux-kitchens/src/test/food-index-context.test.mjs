@@ -6,6 +6,7 @@ import { loadOfferingSource } from './offering-test-helpers.mjs'
 test('Food index children require and reuse one mounted overview', () => {
   const values = new Map()
   let acquisitions = 0
+  const collection = { menus: 'one-reader' }
   const shared = { kitchenId: 'baeren', overview: {} }
   const { provideMenuGroupIndex, useMenuGroupIndexContext } =
     loadOfferingSource(
@@ -14,7 +15,8 @@ test('Food index children require and reuse one mounted overview', () => {
       {
         provide: (key, value) => values.set(key, value),
         inject: (key) => values.get(key),
-        useMenuGroupIndex: () => {
+        useMenuGroupIndex: (provided) => {
+          assert.equal(provided, collection)
           acquisitions++
           return shared
         },
@@ -25,7 +27,7 @@ test('Food index children require and reuse one mounted overview', () => {
     /require their index provider/
   )
   assert.equal(acquisitions, 0)
-  provideMenuGroupIndex()
+  provideMenuGroupIndex(collection)
   for (let child = 0; child < 5; child++)
     assert.equal(useMenuGroupIndexContext(), shared)
   assert.equal(acquisitions, 1)

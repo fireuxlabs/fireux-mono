@@ -1,6 +1,3 @@
-import type { Ref } from 'vue'
-import type { KitchenItemGroup } from '../../../models/item-group.model'
-import { useKitchenItemOrganisation } from './useKitchenItemOrganisation'
 import { computed, ref, watch, inject, provide, type InjectionKey } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { dishCategories } from '../../../models/dish.model'
@@ -12,20 +9,10 @@ import {
 } from '../../../utils/dish-catalogue-route'
 import { useKitchenDishesContext } from './useKitchenDishesContext'
 
-export function useDishCatalogue(groups: Ref<KitchenItemGroup[]> = ref([])) {
+export function useDishCatalogue() {
   const { dishes, outcome, kitchenId, catalogue } = useKitchenDishesContext()
   const route = useRoute()
   const router = useRouter()
-  const group = ref(
-    typeof route.query.group === 'string' ? route.query.group : 'all'
-  )
-  const groupFilters = computed(() => [
-    { value: 'all', label: 'All groups' },
-    { value: 'ungrouped', label: 'No group' },
-    ...groups.value
-      .filter((group) => group.active)
-      .map((group) => ({ value: `group:${group.id}`, label: group.name })),
-  ])
   const initial = readDishCatalogueQuery(route.query)
   const kindFilters = [
     { value: 'all', label: 'All Items' },
@@ -62,9 +49,7 @@ export function useDishCatalogue(groups: Ref<KitchenItemGroup[]> = ref([])) {
     ].filter((item) => item.value === 'all' || item.count > 0)
   )
   const clearFilters = () => {
-    group.value = 'all'
     kind.value = 'all'
-    group.value = 'all'
     query.value = ''
     filter.value = 'all'
     category.value = 'all'
@@ -80,7 +65,6 @@ export function useDishCatalogue(groups: Ref<KitchenItemGroup[]> = ref([])) {
       layout: view.value,
       page: page.value,
     }),
-    group: group.value,
   }))
   const dishLink = (id: string) =>
     `${dishCataloguePath}/${encodeURIComponent(id)}?${new URLSearchParams(catalogueQuery.value)}`
@@ -110,12 +94,6 @@ export function useDishCatalogue(groups: Ref<KitchenItemGroup[]> = ref([])) {
     kindDishes.value
       .filter(
         (dish) =>
-          (group.value === 'all' ||
-            (group.value === 'ungrouped'
-              ? !dish.group_ids?.length
-              : dish.group_ids?.includes(
-                  group.value.replace(/^group:/, '')
-                ))) &&
           (category.value === 'all' ||
             (category.value === 'uncategorised'
               ? !dish.category
@@ -138,7 +116,7 @@ export function useDishCatalogue(groups: Ref<KitchenItemGroup[]> = ref([])) {
       page.value * pageSize
     )
   )
-  watch([query, kind, category, filter, group], () => {
+  watch([query, kind, category, filter], () => {
     page.value = 1
   })
   watch(
@@ -171,14 +149,11 @@ export function useDishCatalogue(groups: Ref<KitchenItemGroup[]> = ref([])) {
     if (!previous) return
     page.value = 1
     kind.value = 'all'
-    group.value = 'all'
     query.value = ''
     filter.value = 'all'
     category.value = 'all'
   })
   return {
-    group,
-    groupFilters,
     kindFilters,
     kind,
     query,
@@ -200,7 +175,7 @@ const catalogueKey: InjectionKey<ReturnType<typeof useDishCatalogue>> =
   Symbol('DishCatalogue')
 
 export function provideDishCatalogue() {
-  provide(catalogueKey, useDishCatalogue(useKitchenItemOrganisation().groups))
+  provide(catalogueKey, useDishCatalogue())
 }
 
 export function useDishCatalogueContext() {

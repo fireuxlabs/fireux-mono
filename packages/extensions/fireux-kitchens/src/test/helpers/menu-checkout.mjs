@@ -1,3 +1,4 @@
+import { priceItemChoices } from '../../runtime/kitchen/utils/item-choices.ts'
 import {
   loadOfferingSource,
   serviceHoursPolicy,
@@ -23,7 +24,8 @@ export const checkoutPricing = loadOfferingSource(
 )
 export const checkoutBasket = loadOfferingSource(
   'menu/utils/ordering/basket',
-  'serviceBasketLine,serviceItemSignature'
+  'serviceBasketLine,serviceItemSignature',
+  { priceItemChoices }
 )
 export const checkoutSelections = loadOfferingSource(
   'menu/server/ordering/selections',

@@ -1,5 +1,5 @@
-import { validateItemReferenceIds } from '../../utils/item-organisation'
-import { requireItemOrganisationReferences } from '../item-groups/references'
+import { validateItemReferenceIds } from '../../utils/item-preparation'
+import { requireItemPreparationStations } from '../stations/item-references'
 import { normalizeDishPricingPatch } from '../../utils/dish-pricing'
 import { createError, type H3Event } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -28,13 +28,13 @@ export async function updateDish(event: H3Event, input: unknown) {
     'slug',
     'description',
     'category',
-    'group_ids',
     'preparation_station_ids',
     'spec',
     'price',
     'price_options',
     'add_ons',
     'bottle_deposit',
+    'choice_groups',
   ])
   if (!Object.keys(changes).length)
     throw createError({
@@ -42,7 +42,7 @@ export async function updateDish(event: H3Event, input: unknown) {
       statusMessage: 'Provide a Dish change.',
     })
   const patch: Record<string, unknown> & { spec?: DishSpec } = {}
-  for (const key of ['group_ids', 'preparation_station_ids']) {
+  for (const key of ['preparation_station_ids']) {
     if (key in changes)
       patch[key] =
         key === 'preparation_station_ids' && changes[key] === null
@@ -66,7 +66,7 @@ export async function updateDish(event: H3Event, input: unknown) {
       validateDishSpecification(changes.spec)
     )
   const pricing = Object.fromEntries(
-    ['price', 'price_options', 'add_ons', 'bottle_deposit']
+    ['price', 'price_options', 'add_ons', 'bottle_deposit', 'choice_groups']
       .filter((key) => key in changes)
       .map((key) => [key, changes[key]])
   )
@@ -90,14 +90,11 @@ export async function updateDish(event: H3Event, input: unknown) {
           statusCode: 409,
           statusMessage: 'The stored Dish identity is invalid.',
         })
-      if (
-        (patch.group_ids as string[] | undefined)?.length ||
-        (patch.preparation_station_ids as string[] | undefined)?.length
-      )
-        await requireItemOrganisationReferences(
+      if ((patch.preparation_station_ids as string[] | undefined)?.length)
+        await requireItemPreparationStations(
           transaction,
           kitchenId,
-          patch as { group_ids?: string[]; preparation_station_ids?: string[] }
+          patch as { preparation_station_ids?: string[] }
         )
       if (patch.spec) {
         await requireKitchenIngredientReferences(

@@ -1,19 +1,24 @@
 <template>
-  <UPage>
-    <UPageHeader title="Bookings" />
-    <UPageBody>
-      <div class="booking-playground">
-        <section aria-labelledby="booking-input-title">
-          <h2 id="booking-input-title">Input</h2>
-          <BookingSandboxConfiguration v-model="configuration" />
-        </section>
-        <section aria-labelledby="booking-surface-title">
-          <h2 id="booking-surface-title">Surface</h2>
+  <UContainer>
+    <UPage>
+      <UPageHeader
+        title="Bookings"
+        description="Configure the inputs, then try the booking experience."
+      />
+      <UPageBody>
+        <div class="booking-playground">
+          <UPageCard
+            title="Input"
+            icon="i-lucide-sliders-horizontal"
+            variant="subtle"
+          >
+            <BookingSandboxConfiguration v-model="configuration" />
+          </UPageCard>
           <BookingsSurface :configuration="configuration" :confirm="confirm" />
-        </section>
-      </div>
-    </UPageBody>
-  </UPage>
+        </div>
+      </UPageBody>
+    </UPage>
+  </UContainer>
 </template>
 
 <script setup lang="ts">
@@ -25,14 +30,9 @@ useSeoMeta({ title: 'Bookings — FireUX Blank', robots: 'noindex, nofollow' })
 <style scoped>
 .booking-playground {
   display: grid;
-  grid-template-columns: minmax(15rem, 1fr) minmax(0, 2fr);
+  grid-template-columns: minmax(17rem, 1fr) minmax(0, 2fr);
+  align-items: start;
   gap: calc(var(--spacing) * 8);
-}
-.booking-playground section {
-  display: grid;
-  align-content: start;
-  gap: calc(var(--spacing) * 5);
-  min-width: 0;
 }
 @media (max-width: 48rem) {
   .booking-playground {

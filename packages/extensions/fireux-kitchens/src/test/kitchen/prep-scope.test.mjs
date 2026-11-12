@@ -214,7 +214,7 @@ test('Dish Prep button ignores stale failure after focus round trip', async () =
       useRoute: () => ({ query: {} }),
       useKitchenWorkspace: () => ({ id: h.selectedId, outcome: ref('ready') }),
       useRouteParam: () => dishId,
-      useKitchenDishDetail: () => ({
+      useKitchenItemDetail: () => ({
         kitchenId: h.selectedId,
         storageKitchenId: ref('k'),
         dishId,

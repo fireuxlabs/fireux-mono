@@ -19,24 +19,33 @@
         <h2 class="fx-type-label">Your menus</h2>
         <div class="menu-overview-actions">
           <UButton
-            to="/workspace/kitchen/menu/menus"
-            label="View menus"
-            icon="i-lucide-layout-list"
-            variant="outline"
-            color="neutral"
-            size="sm"
-          />
-          <UButton
-            :to="{
-              path: '/workspace/kitchen/menu/menus',
-              query: { create: '1' },
-            }"
+            @click="actions.openCreate"
+            :disabled="!canCreateMenu"
             label="Create menu"
             icon="i-lucide-plus"
             size="sm"
           />
         </div>
       </div>
+      <div class="menu-overview-heading">
+        <UInput
+          v-model="query"
+          placeholder="Search menus"
+          aria-label="Search menus"
+          icon="i-lucide-search"
+        />
+        <UButton
+          v-if="menus.some((menu) => menu.status === 'archived')"
+          :label="showArchived ? 'Hide archived' : 'Show archived'"
+          variant="ghost"
+          color="neutral"
+          :aria-pressed="showArchived"
+          @click="showArchived = !showArchived"
+        />
+      </div>
+      <p v-if="menuCreateBlockedMessage" class="fx-type-caption">
+        {{ menuCreateBlockedMessage }}
+      </p>
       <div v-if="visibleMenus.length" class="menu-overview-cards">
         <UPageCard
           v-for="menu in visibleMenus"
@@ -61,7 +70,11 @@
                     : 'i-lucide-pencil'
                 "
                 >{{
-                  menu.status === 'published' ? 'Published' : 'Draft'
+                  menu.status === 'published'
+                    ? 'Published'
+                    : menu.status === 'archived'
+                      ? 'Archived'
+                      : 'Draft'
                 }}</UBadge
               >
             </div>
@@ -81,7 +94,13 @@
           </template>
         </UPageCard>
       </div>
-      <p v-else>No menus yet. Add your first menu to get started.</p>
+      <p v-else>
+        {{
+          query
+            ? 'No matching menus.'
+            : 'No menus yet. Create your first menu to get started.'
+        }}
+      </p>
     </template>
   </section>
 </template>
@@ -89,10 +108,14 @@
 import { computed } from 'vue'
 import { useMenuGroupIndexContext } from '../../../composables/workspace/menu-group/useMenuGroupIndexContext'
 import { menuWorkspaceDestination } from '../../../utils/menu-workspace-destination'
+import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
+const { actions, canCreateMenu, menuCreateBlockedMessage } =
+  useKitchenMenusContext()
+import { useMenuList } from '../../../composables/workspace/menus/useMenuList'
+const { query, showArchived, filteredMenus } = useMenuList()
 const { menus, menusOutcome } = useMenuGroupIndexContext()
 const visibleMenus = computed(() =>
-  menus.value
-    .filter((menu) => menu.status !== 'archived')
+  filteredMenus.value
     .slice()
     .sort(
       (a, b) =>

@@ -348,10 +348,12 @@ test('Surviving Record context completes own live rename/delete but rejects exte
       f.change(change)
       f.response.resolve(f.receipt)
       assert.deepEqual(await result, f.receipt)
-      const path = '/workspace/kitchen/menu/menus'
+      const path = '/workspace/kitchen/menu'
       assert.deepEqual(
         f.destinations,
-        change === 'stable' ? [action === 'rename' ? path + '/food' : path] : []
+        change === 'stable'
+          ? [action === 'rename' ? path + '/menus/food' : path]
+          : []
       )
       assert.equal(f.notices.length, change === 'stable' ? 1 : 0)
       f.lifetime.stop()

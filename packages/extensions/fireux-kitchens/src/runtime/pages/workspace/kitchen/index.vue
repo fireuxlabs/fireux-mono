@@ -14,7 +14,7 @@
   />
   <nav v-if="fireux.isTenant && ready" aria-label="Kitchen actions">
     <UButton
-      to="/workspace/kitchen/menu/menus"
+      to="/workspace/kitchen/menu"
       label="Menus"
       icon="i-lucide-notebook-text"
     />

@@ -38,6 +38,10 @@ const itemRow = (
     )
   if (!dish) throw new Error('A Menu Dish is missing.')
   const pricing = readDishPricing(dish)
+  if (pricing.choice_groups?.length)
+    throw new Error(
+      'Import comparison cannot represent Item choice groups. Review choices in the Item editor.'
+    )
   return {
     id: readString(item.id) || itemId,
     dish_id: readString(item.dish_id),

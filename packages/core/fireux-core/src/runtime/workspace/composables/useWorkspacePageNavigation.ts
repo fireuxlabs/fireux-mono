@@ -44,17 +44,13 @@ export function useWorkspacePageNavigation() {
       items.push({ label, to })
       seen.add(to)
     }
-    add('Home', workspaceEntryPath.value)
-    const overview = navigation.items.value.find(
-      (item) =>
-        item.key ===
-        'workspace-' + navigation.currentWorkspace.value + '-overview'
-    )
-    if (overview) add(overview.label, overview.to)
     for (const item of navigation.items.value) {
       if (
         item.to &&
         item.to !== workspaceEntryPath.value &&
+        item.to !== `/workspace/${navigation.currentWorkspace.value}` &&
+        item.key !==
+          `workspace-${navigation.currentWorkspace.value}-overview` &&
         route.path.startsWith(item.to.replace(/\/$/, '') + '/')
       )
         add(item.label, item.to)

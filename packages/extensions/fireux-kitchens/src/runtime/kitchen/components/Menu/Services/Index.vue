@@ -2,11 +2,6 @@
   <section class="workspace-surface">
     <KitchenMenuServicesStatus />
     <div v-if="retained" :key="source.editorOwnerKey.value">
-      <KitchenMenuServicesTitle
-        :kitchen-id="source.kitchenId.value"
-        :title="retained.kitchen.services?.title || 'Food & drinks'"
-        :disabled="!source.canWrite.value"
-      />
       <KitchenMenuServicesService
         v-for="option in options"
         :key="option.key"

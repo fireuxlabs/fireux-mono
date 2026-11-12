@@ -1,3 +1,4 @@
+import { normalizeItemChoiceGroups } from '../../../kitchen/utils/item-choices'
 import { readDishItemKind } from '../../../kitchen/utils/dish.ts'
 import type {
   MenuManifestAddOn,
@@ -126,6 +127,13 @@ export const readMenuManifestSections = (
             ? { bottleDeposit: itemRecord.bottleDeposit }
             : {}),
           priceLabel: itemPriceLabel(itemRecord),
+          ...(itemRecord.choiceGroups !== undefined
+            ? {
+                choiceGroups: normalizeItemChoiceGroups(
+                  itemRecord.choiceGroups
+                ),
+              }
+            : {}),
           priceOptions: itemPriceOptions(itemRecord),
           addOns: itemAddOns(itemRecord),
         }

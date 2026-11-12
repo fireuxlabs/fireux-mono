@@ -7,11 +7,9 @@
     @activate="emit('action')"
   >
     <div class="card__media">
-      <UAvatar
-        :src="imageUrl || undefined"
-        :alt="title || 'Untitled dish'"
-        icon="i-lucide-utensils"
-        size="3xl"
+      <KitchenMenuItemsPhoto
+        :src="imageUrl"
+        :alt="title || 'Item'"
         class="dish-card__image"
       />
       <div class="card__content card__stack">
@@ -84,7 +82,10 @@ withDefaults(defineProps<Props>(), {
 .dish-card__image {
   width: 100%;
   height: auto;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: grid;
+  place-items: center;
   flex: none;
   border-radius: 0;
 }

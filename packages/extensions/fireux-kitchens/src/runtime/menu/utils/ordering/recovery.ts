@@ -54,6 +54,10 @@ export function readServiceSession(
       )
         return null
       if (
+        (choices.choiceGroups !== undefined &&
+          (!record(choices.choiceGroups) ||
+            Object.keys(choices.choiceGroups).length > 10 ||
+            !Object.values(choices.choiceGroups).every(ids))) ||
         !text(choices.optionId) ||
         !ids(choices.extraIds) ||
         !record(choices.groups) ||

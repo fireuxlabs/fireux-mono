@@ -7,7 +7,7 @@ import {
   useMenuSection,
 } from '../../../../menu/composables/useMenuSection'
 
-export function useMenuSectionItemsEditor() {
+export function useMenuSectionItemsEditor(embedded = false) {
   const { rememberView } = useMenuRecordNavigation()
 
   const {
@@ -113,6 +113,7 @@ export function useMenuSectionItemsEditor() {
       maximumFractionDigits: 2,
     }).format(price)
   return {
+    embedded,
     rememberView,
     kitchenId,
     menuId,

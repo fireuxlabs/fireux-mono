@@ -28,7 +28,8 @@
     "@nuxt/icon": "2.5.1",
     "firebase-functions": "^6.3.2",
     "@google-cloud/functions-framework": "5.0.5",
-    "fireux-businesses": "workspace:*"
+    "fireux-businesses": "workspace:*",
+    "fireux-notifications": "workspace:*"
   },
   "devDependencies": {
     "@vite-pwa/nuxt": "1.1.1"

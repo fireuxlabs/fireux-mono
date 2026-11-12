@@ -1,56 +1,39 @@
 <template>
-  <fieldset class="booking-times">
-    <legend>Available times</legend>
-    <p v-if="!slots.length" role="status">No times are available.</p>
-    <label v-for="slot in slots" :key="slot.id" class="booking-times__choice">
-      <input
-        type="radio"
-        :name="groupName"
-        :value="slot.id"
-        :checked="selected === slot.id"
-        @change="$emit('select', slot.id)"
-      />
-      <BookingPeriod :start-at="slot.startAt" :end-at="slot.endAt" />
-    </label>
-  </fieldset>
+  <UAlert
+    v-if="!slots.length"
+    color="neutral"
+    variant="soft"
+    icon="i-lucide-calendar-x"
+    title="No times available"
+    description="Available times will appear here."
+  />
+  <URadioGroup
+    v-else
+    legend="Available times"
+    :items="items"
+    :model-value="selected"
+    variant="card"
+    size="lg"
+    @update:model-value="select"
+  />
 </template>
 
 <script setup lang="ts">
-import { useId } from 'vue'
-import BookingPeriod from './Period.vue'
+import { computed } from 'vue'
 import type { BookingSlot } from '../types/booking-surface'
-
-defineProps<{ slots: BookingSlot[]; selected: string }>()
-defineEmits<{ select: [id: string] }>()
-const groupName = useId()
+const props = defineProps<{ slots: BookingSlot[]; selected: string }>()
+const emit = defineEmits<{ select: [id: string] }>()
+const items = computed(() =>
+  props.slots.map((slot) => ({
+    value: slot.id,
+    label: slot.startAt.slice(11) + ' – ' + slot.endAt.slice(11),
+    description:
+      slot.startAt.slice(0, 10) === slot.endAt.slice(0, 10)
+        ? slot.startAt.slice(0, 10)
+        : slot.startAt.slice(0, 10) + ' → ' + slot.endAt.slice(0, 10),
+  }))
+)
+function select(value: unknown) {
+  if (typeof value === 'string') emit('select', value)
+}
 </script>
-
-<style scoped>
-.booking-times {
-  display: grid;
-  gap: calc(var(--spacing) * 3);
-  border: 0;
-  padding: 0;
-  margin: 0;
-}
-.booking-times legend {
-  margin-bottom: calc(var(--spacing) * 3);
-}
-.booking-times__choice {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--spacing) * 4);
-  padding: calc(var(--spacing) * 4);
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius);
-  cursor: pointer;
-}
-.booking-times__choice:has(input:checked) {
-  border-color: var(--ui-primary);
-  background: var(--ui-bg-elevated);
-}
-.booking-times__choice:focus-within {
-  outline: 2px solid var(--ui-primary);
-  outline-offset: 2px;
-}
-</style>

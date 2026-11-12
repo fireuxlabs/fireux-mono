@@ -43,7 +43,11 @@ const props = defineProps<{
 }>()
 const itemDestination = computed(() => ({
   path: `/workspace/kitchen/menu/items/${encodeURIComponent(props.row.dishId)}`,
-  query: { menu: props.editor.menuSlug, section: props.editor.sectionId },
+  query: {
+    menu: props.editor.menuSlug,
+    section: props.editor.sectionId,
+    ...(props.editor.embedded ? { inline: '1' } : {}),
+  },
 }))
 const actions = computed(() => [
   [

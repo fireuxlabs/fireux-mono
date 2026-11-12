@@ -1,10 +1,10 @@
 <template>
   <section :aria-label="catalogue.title" class="dish-catalogue">
-    <KitchenMenuItemsCollectionControls
-      @create="dialogs?.openCreate($event)"
-      @categories="dialogs?.openCategories()"
-      @ai="dialogs?.openAI()"
-    />
+    <KitchenMenuItemsCollectionControls @create="dialogs?.openCreate($event)">
+      <template #intro>
+        <KitchenMenuItemsAI v-if="['ready', 'empty'].includes(outcome)" />
+      </template>
+    </KitchenMenuItemsCollectionControls>
     <KitchenMenuItemsCollectionResults @create="dialogs?.openCreate($event)" />
     <KitchenMenuItemsCollectionDialogs ref="dialogs" />
     <FireDiagnosticsDebugPanel
@@ -24,12 +24,10 @@ import { ref } from 'vue'
 import { useKitchenDishesContext } from '../../../../composables/workspace/dishes/useKitchenDishesContext'
 import { provideDishCatalogue } from '../../../../composables/workspace/dishes/useDishCatalogue'
 
-const { catalogue, dishes, debug } = useKitchenDishesContext()
+const { catalogue, dishes, debug, outcome } = useKitchenDishesContext()
 provideDishCatalogue()
 const dialogs = ref<{
   openCreate: (kind: 'food' | 'drink') => void
-  openCategories: () => void
-  openAI: () => void
 } | null>(null)
 </script>
 
@@ -37,6 +35,6 @@ const dialogs = ref<{
 .dish-catalogue {
   display: grid;
   min-width: 0;
-  gap: 24px;
+  gap: calc(var(--spacing) * 4);
 }
 </style>

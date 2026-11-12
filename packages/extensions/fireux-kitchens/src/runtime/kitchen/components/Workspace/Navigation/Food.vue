@@ -1,7 +1,7 @@
 <template>
   <nav aria-label="Food workspace">
     <UButton
-      to="/workspace/kitchen/menu/menus"
+      to="/workspace/kitchen/menu"
       icon="i-lucide-book-open"
       color="neutral"
       variant="soft"

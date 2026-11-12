@@ -420,11 +420,11 @@ test('shared Workspace breadcrumbs own Kitchen route ancestry', () => {
     )
   assert.deepEqual(
     project('/workspace/kitchen/prep/recipes').map((item) => item.to),
-    ['/', '/workspace/kitchen/overview', '/workspace/kitchen/prep', undefined]
+    ['/workspace/kitchen/prep', undefined]
   )
   assert.deepEqual(
     project('/workspace/kitchen/menu/items').map((item) => item.to),
-    ['/', '/workspace/kitchen/overview', undefined]
+    [undefined]
   )
 })
 

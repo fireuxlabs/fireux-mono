@@ -132,7 +132,7 @@ export const kitchenCapabilities = [
     title: 'Menus',
     headline: 'Restaurant Menu Management',
     description: 'Create, structure, publish, and manage Kitchen menus.',
-    to: '/workspace/kitchen/menu/menus',
+    to: '/workspace/kitchen/menu',
     group: 'Food & Drink',
     landingQuestion:
       'Which Menus need to be structured, reviewed, or published?',

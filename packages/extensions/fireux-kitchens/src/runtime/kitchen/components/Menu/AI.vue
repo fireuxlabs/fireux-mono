@@ -5,6 +5,7 @@
     </p>
     <FireCopyError v-if="error" :message="error" />
     <WorkspaceAIComposer
+      spacious
       v-model="prompt"
       :can-submit="Boolean(ready && prompt.trim() && !submitting)"
       :submitting="submitting"

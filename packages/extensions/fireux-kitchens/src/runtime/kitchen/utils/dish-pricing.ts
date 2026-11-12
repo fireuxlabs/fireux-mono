@@ -1,3 +1,4 @@
+import { normalizeItemChoiceGroups } from './item-choices'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import type {
   DishPriceOption,
@@ -79,6 +80,7 @@ export function normalizeDishPricingPatch(
     'price_options',
     'add_ons',
     'bottle_deposit',
+    'choice_groups',
   ])
   if (
     !patch ||
@@ -105,6 +107,14 @@ export function normalizeDishPricingPatch(
   )
     throw new Error('Bottle deposit must be a valid non-negative amount.')
   const normalized = { ...patch }
+  if (Object.hasOwn(patch, 'choice_groups')) {
+    normalized.choice_groups = normalizeItemChoiceGroups(patch.choice_groups)
+    const full = normalized.choice_groups.find(
+      (group) => group.pricing === 'full'
+    )
+    if (full)
+      normalized.price = Math.min(...full.options.map((option) => option.price))
+  }
 
   if (Object.hasOwn(patch, 'price_options')) {
     if (!Array.isArray(patch.price_options))
@@ -179,6 +189,9 @@ export function readDishPricing(data: Record<string, unknown>): DishPricing {
     )
   const patch = normalizeDishPricingPatch({
     price: data.price,
+    ...(Object.hasOwn(data, 'choice_groups')
+      ? { choice_groups: data.choice_groups }
+      : {}),
     price_options: data.price_options ?? [],
     add_ons: data.add_ons ?? [],
     ...(data.bottle_deposit !== undefined

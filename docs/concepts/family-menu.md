@@ -44,8 +44,10 @@ category, completeness filter, layout and page. Food and drink editors return to
 that combined catalogue through `kitchen/utils/dish-catalogue-route.ts`; loading
 does not reset a restored page, and settled results clamp an obsolete page.
 `dish-reader-internals.test.mjs` covers the round trip and delayed Kitchen/data
-resolution. Item detail opens its Details view over the existing identity editor; Pricing,
-Preparation details, Preparation and Menus retain their own views and commands.
+resolution. Item detail has three views: Details combines identity and pricing; Preparation
+combines direct Station assignments, specification and disclosed requirements;
+Appears on shows Menu placements. Existing field editors and commands retain
+their domain responsibilities.
 Removal stays under Item actions. Kind-specific editors retain their existing authority. Named services reference stable
 Menu IDs and own eligibility and serving schedules.
 
@@ -798,22 +800,46 @@ Management authority governs archive/restore/delete; the existing content
 entitlement separately governs editing daily content. Trusted commands remain
 the final authority.
 
+Public Item variants and extras share the Menu-owned `ChoiceBubbles.vue`
+presentation: native radio/checkbox bubbles for local browse price previews
+and service selection. Browse preview state stays with its Item and never
+creates a basket or enables a service. That component owns layout and accessible input presentation,
+not choice state, pricing, basket writes or Workspace configuration. Existing
+selection and basket owners retain those responsibilities.
+
+Item-owned `choice_groups` extends flat variants/extras with stable identifiers,
+selection minimum/maximum and full-price versus additional-charge pricing.
+`kitchen/utils/item-choices.ts` owns strict definitions and selection pricing;
+old flat records project to groups on read without being rewritten. An explicit
+Price & choices save writes groups and clears flat terms. Public previews and
+ordering use the same rules; the submission transaction resolves canonical Item
+terms and validates group selections. Choice groups remain distinct from
+Promotion meal-deal groups and carry no Menu-placement ownership. Import
+comparison and Menu Express delivery reject groups they cannot represent.
+
 ### Section and Item editing
 
-Kitchen-owned Item groups organise the catalogue independently from Menu
-sections and historical Food/Drink classification. Groups can supply default
-preparation Station IDs; Item overrides distinguish inheritance from an explicit
-empty assignment. Coordination Stations such as Pass are excluded from
-preparation assignments. The Items route provides one organisation reader to
-its collection and detail controls; trusted Item and group commands validate
-exact Kitchen references. New Kitchen creation seeds ordinary editable Food and
-Drinks group records, without backfilling existing Kitchens. This is assignment
-structure, not live ticket routing. See `kitchen/utils/item-organisation.ts`,
-`kitchen/server/item-groups` and `item-organisation.test.mjs`.
+The landing composes Menu discovery and creation over one Menu collection;
+the group overview reuses that collection rather than opening a second reader.
+The former collection entrance renders this same composition. The record builder
+mounts one inline section editor at a time through `Sections/Inline.vue`, reusing
+its existing Menu record context and lower Section provider. Shared Item edits
+retain return-to-section intent. Standalone section links remain supported.
+
+Items carry direct preparation Station IDs independently from Menu sections and
+historical Food/Drink classification. There are no Item groups or inherited
+Station defaults. Missing assignment differs from explicit no preparation.
+The Items route provides its existing Station reader and trusted Item update
+command; historical group fields remain stored and unused. See
+`kitchen/server/stations/item-references.ts` and `PreparationStations.vue`.
 
 Menu section rows link directly to the shared Kitchen Item editor, retaining the
-Menu slug and section for return navigation. The Item's Appears on view retains
-its existing Menu/section readers and links back to placements. Shared Item
+Menu slug and section for return navigation. The detail parent acquires the Item once and provides its live reader through
+`useKitchenItemDetailContext`; field and relationship children require that
+context. The Item's Appears on view retains its existing Menu/section readers,
+hides settled non-matches and links back to the inline builder (or the exact
+daily section). Historical Pricing and Specification view links resolve to
+Details and Preparation respectively. Shared Item
 identity, image and description edits apply wherever that Item is used; removal
 from a section is distinct from deleting the Item record.
 

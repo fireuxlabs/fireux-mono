@@ -52,6 +52,10 @@ const navigation = [
     { label: 'Component library', type: 'label' as const },
     { label: 'Public components', to: '/docs/components', exact: true },
     { label: 'Booking surface (Extension)', to: '/docs/components/bookings' },
+    {
+      label: 'Email notification (Extension)',
+      to: '/docs/components/notifications',
+    },
     ...fireuxDocsCatalogue.map((entry) => ({
       label: entry.title,
       to: `/docs/components/${entry.slug}`,

@@ -146,6 +146,9 @@ export function orderItemReader(
       name: String(data.name).trim(),
       price: terms.price,
       ...(terms.bottle_deposit ? { bottleDeposit: terms.bottle_deposit } : {}),
+      ...(terms.choice_groups !== undefined
+        ? { choiceGroups: terms.choice_groups }
+        : {}),
       priceOptions: terms.price_options.map((option, index) => ({
         id:
           option.label.toLowerCase().replace(/[^a-z0-9]+/g, '-') ||

@@ -1,4 +1,5 @@
 export type MenuOrderSelection = {
+  choiceGroups?: Record<string, string[]>
   menuId?: string
   extraIds?: string[]
   groups?: Record<string, string[]>

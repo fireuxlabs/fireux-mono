@@ -4,7 +4,7 @@
     :aria-labelledby="itemNameId"
     data-menu-item="true"
     :data-menu-item-id="item.id"
-    data-menu-item-mode="read-only"
+    data-menu-item-mode="preview"
   >
     <MenuItemImage :enabled="showItemImages" :image-url="item.imageUrl" />
 
@@ -14,7 +14,9 @@
         <span
           v-if="itemPrice"
           class="menu-browse-item__price"
-          :data-menu-item-price-kind="hasPriceOptions ? 'starting' : 'base'"
+          :data-menu-item-price-kind="hasPriceOptions ? 'selected' : 'base'"
+          aria-live="polite"
+          aria-atomic="true"
         >
           <span>{{ itemPrice }}</span>
         </span>
@@ -33,61 +35,30 @@
         :format-price="formatPrice"
       />
 
-      <div
-        v-if="hasPriceOptions || item.addOns.length"
+      <MenuItemChoices
+        v-if="choiceGroups.length"
         class="menu-browse-item__choices"
-      >
-        <div
-          v-if="hasPriceOptions"
-          class="menu-browse-item__options"
-          data-menu-item-price-kind="variant"
-          :data-menu-item-option-count="item.priceOptions.length"
-        >
-          <p :id="priceOptionsLabelId" class="menu-browse-item__options-label">
-            {{ availableOptionsLabel }}
-          </p>
-          <ul :aria-labelledby="`${itemNameId} ${priceOptionsLabelId}`">
-            <li v-for="option in item.priceOptions" :key="option.id">
-              <span>{{ option.label }}</span>
-              <span>{{ formatPrice(option.price) }}</span>
-            </li>
-          </ul>
-        </div>
-
-        <component
-          :is="collapseExtras ? 'details' : 'div'"
-          v-if="item.addOns.length"
-          class="menu-browse-item__options menu-browse-item__options--add-ons"
-          data-menu-item-price-kind="add-on"
-          :data-menu-item-option-count="item.addOns.length"
-        >
-          <component
-            :is="collapseExtras ? 'summary' : 'p'"
-            :id="addOnsLabelId"
-            class="menu-browse-item__options-label"
-          >
-            {{ optionalExtrasLabel }}
-          </component>
-          <ul :aria-labelledby="`${itemNameId} ${addOnsLabelId}`">
-            <li v-for="addOn in item.addOns" :key="addOn.id">
-              <span>{{ addOn.label }}</span>
-              <span>{{ addOnPrice(addOn.price) }}</span>
-            </li>
-          </ul>
-        </component>
-      </div>
+        :groups="choiceGroups"
+        v-model="selections"
+        :money="formatPrice"
+        :show-names="item.choiceGroups !== undefined"
+      />
     </div>
   </article>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
+import {
+  readItemChoiceGroups,
+  priceItemChoices,
+} from '../../../kitchen/utils/item-choices'
+import type { ItemChoiceSelection } from '../../../kitchen/models/item-choice.model'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import { formatCurrencyAmount } from '../../../utils/currency-display'
 import type { MenuManifestItem } from '../../models/menu-detail.model.ts'
 
 const props = defineProps<{
-  collapseExtras?: boolean
   accessibilityId: string
   availableOptionsLabel: string
   currencyCode: string
@@ -99,19 +70,46 @@ const props = defineProps<{
 }>()
 
 const itemNameId = computed(() => `${props.accessibilityId}-name`)
-const priceOptionsLabelId = computed(() => `${props.accessibilityId}-options`)
-const addOnsLabelId = computed(() => `${props.accessibilityId}-add-ons`)
-const hasPriceOptions = computed(() => props.item.priceOptions.length > 0)
+const choiceGroups = computed(() => readItemChoiceGroups(props.item))
+const hasPriceOptions = computed(() =>
+  choiceGroups.value.some((group) => group.pricing === 'full')
+)
+const selections = ref<ItemChoiceSelection>({})
+watch(
+  [() => props.item.id, () => props.item.dishId, choiceGroups],
+  (currentOwner, previousOwner) => {
+    const sameItem =
+      previousOwner &&
+      currentOwner[0] === previousOwner[0] &&
+      currentOwner[1] === previousOwner[1]
+    const next: ItemChoiceSelection = {}
+    for (const group of choiceGroups.value) {
+      const current = (sameItem ? selections.value[group.id] || [] : []).filter(
+        (id) => group.options.some((option) => option.id === id)
+      )
+      const cheapest =
+        group.pricing === 'full'
+          ? group.options.reduce((a, b) => (a.price <= b.price ? a : b))
+          : undefined
+      next[group.id] = current.length ? current : cheapest ? [cheapest.id] : []
+    }
+    selections.value = next
+  },
+  { immediate: true, flush: 'sync' }
+)
 const itemPrice = computed(() => {
-  if (!hasPriceOptions.value) return formatPrice(props.item.price)
-
-  const prices = props.item.priceOptions
-    .map((option) => Number(option.price))
-    .filter((price) => Number.isFinite(price) && price >= 0)
-
-  return prices.length
-    ? formatPrice(Math.min(...prices))
-    : formatPrice(props.item.price)
+  try {
+    return formatPrice(
+      priceItemChoices(
+        props.item.price,
+        choiceGroups.value,
+        selections.value,
+        true
+      ).unitMinor / 100
+    )
+  } catch {
+    return formatPrice(props.item.price)
+  }
 })
 
 function formatPrice(price: number) {
@@ -120,10 +118,6 @@ function formatPrice(price: number) {
     format: props.currencyFormat,
     showCurrency: props.showCurrency,
   })
-}
-
-function addOnPrice(price: number) {
-  return price > 0 ? `+ ${formatPrice(price)}` : 'No extra charge'
 }
 </script>
 
@@ -144,8 +138,7 @@ function addOnPrice(price: number) {
   min-width: 0;
 }
 
-.menu-browse-item__heading,
-.menu-browse-item__options li {
+.menu-browse-item__heading {
   display: grid;
   grid-template-columns: minmax(0, 1fr) max-content;
   gap: calc(var(--spacing) * 4);
@@ -184,55 +177,10 @@ function addOnPrice(price: number) {
 }
 
 .menu-browse-item__choices {
-  display: grid;
-  gap: 0.8rem;
-  margin-top: 0.95rem;
-  padding-top: 0.8rem;
-  border-top: 1px solid color-mix(in srgb, var(--menu-text) 8%, transparent);
-}
-
-.menu-browse-item__options--add-ons:not(:first-child) {
-  padding-top: calc(var(--spacing) * 3);
-  border-top: 1px dashed color-mix(in srgb, var(--menu-text) 10%, transparent);
-}
-
-.menu-browse-item__options-label {
-  margin: 0 0 0.35rem;
-  color: var(--menu-muted);
-  font-size: 0.72rem;
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.menu-browse-item__options ul {
-  display: grid;
-  gap: 0.3rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.menu-browse-item__options li {
-  color: var(--menu-muted);
-  font-size: 0.82rem;
-  line-height: 1.4;
-}
-
-.menu-browse-item__options li span:first-child {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-.menu-browse-item__options li span:last-child {
-  color: var(--menu-text);
-  font-weight: var(--font-weight-bold);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.menu-browse-item__options--add-ons li span:last-child {
-  color: var(--menu-primary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
+  margin-top: calc(var(--spacing) * 2);
 }
 
 @media (max-width: 520px) {
@@ -254,21 +202,15 @@ function addOnPrice(price: number) {
   .menu-browse-item:has(> .menu-item-image) .menu-browse-item__price {
     justify-self: start;
   }
-
-  .menu-browse-item__options li {
-    gap: 0.6rem;
-  }
 }
 
 @media (max-width: 340px) {
-  .menu-browse-item__heading,
-  .menu-browse-item__options li {
+  .menu-browse-item__heading {
     grid-template-columns: minmax(0, 1fr);
     gap: 0.15rem;
   }
 
-  .menu-browse-item__price,
-  .menu-browse-item__options li span:last-child {
+  .menu-browse-item__price {
     justify-self: start;
   }
 }

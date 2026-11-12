@@ -717,20 +717,15 @@ writes. A supplied related-Entity label does not grant authority over that Entit
 Current checks are Core's `chat-session.test.mjs` and the consuming App's
 `menu-express.test.mjs`.
 
-## Kitchen Item organisation
+## Kitchen Item preparation assignments
 
-Kitchen owns `item-groups` beneath its root. The named group save command
-creates or updates one group after current Kitchen record authority; update
-preserves group identity and creation stamps. Group defaults and Item Station
-overrides reference active preparation Stations in the same Kitchen, excluding
-coordination Stations. Item group assignments reference active local groups.
-The trusted Item create/update commands retain these checks in their writing
-transactions. Historical classification and free-text Station notes do not grant
-new relationships. New-root onboarding seeds ordinary Food/Drinks groups; read,
-resume and existing-root flows do not backfill them. No live migration or
-printer/order execution authority is established. Source and proof live in
-Kitchens' `server/item-groups`, `server/dishes`, `item-organisation.test.mjs`
-and `kitchen/dish-commands.test.mjs`.
+Trusted Item create/update commands validate direct `preparation_station_ids`
+against active preparation Stations in the exact Kitchen. Missing/null means
+not configured; [] means no preparation. Coordination Stations are excluded.
+Historical groups and Station notes remain stored but do not drive assignment.
+Group writers and onboarding seeds are retired; this source change authorizes no
+live cleanup or migration. Proof lives in Kitchens' `kitchen/dish-commands.test.mjs`
+and `server/stations/item-references.ts`.
 
 ## Refresh and living-context maintenance
 

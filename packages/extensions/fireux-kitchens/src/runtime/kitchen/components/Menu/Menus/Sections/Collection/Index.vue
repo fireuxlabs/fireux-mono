@@ -89,14 +89,24 @@
           "
           class="menu-editor-list"
         >
-          <KitchenMenuMenusSectionsCollectionRow
+          <section
             v-for="section in editor.showArchived
               ? editor.archivedSections
               : editor.visibleSections"
             :key="section.id"
-            :section="section"
-            :editor="editor"
-          />
+          >
+            <KitchenMenuMenusSectionsCollectionRow
+              :section="section"
+              :editor="editor"
+              :expanded="openSection === section.id"
+              @open="openSection = openSection === section.id ? '' : section.id"
+            />
+            <KitchenMenuMenusSectionsInline
+              v-if="openSection === section.id"
+              :key="section.id"
+              :section-id="section.id"
+            />
+          </section>
         </div>
 
         <p v-else class="fx-type-caption">
@@ -150,9 +160,34 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { useMenuSectionsEditor } from '../../../../../composables/workspace/menus/useMenuSectionsEditor'
+import { useRoute, useRouter } from '#imports'
+const route = useRoute()
+const router = useRouter()
+const openSection = ref(
+  typeof route.query.section === 'string' ? route.query.section : ''
+)
 const editor = reactive(useMenuSectionsEditor())
+watch(
+  () => editor.menuSlug,
+  () => {
+    openSection.value =
+      typeof route.query.section === 'string' ? route.query.section : ''
+  }
+)
+watch(
+  () => `${editor.selectedDate}/${editor.showArchived}`,
+  () => {
+    openSection.value = ''
+  }
+)
+watch(openSection, (section) => {
+  if (route.query.section !== (section || undefined))
+    void router.replace({
+      query: { ...route.query, section: section || undefined },
+    })
+})
 </script>
 
 <style src="../../../../../../menu/assets/styles/menu-editor.css"></style>

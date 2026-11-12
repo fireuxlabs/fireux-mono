@@ -82,6 +82,7 @@ const termsKey = (offer: MenuServiceOffer) =>
     offer.item.price,
     offer.item.priceOptions,
     offer.item.addOns,
+    offer.item.choiceGroups,
     offer.item.bottleDeposit,
     offer.item.mealDeal?.groups,
   ])

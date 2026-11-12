@@ -204,7 +204,6 @@ test('guest creation persists nested Kitchen Identity and shared facts only on P
       }),
       createKitchenSystemMenus() {},
       createDefaultKitchenStation() {},
-      createDefaultKitchenItemGroups() {},
       fail: (_, message) => {
         throw new Error(message)
       },

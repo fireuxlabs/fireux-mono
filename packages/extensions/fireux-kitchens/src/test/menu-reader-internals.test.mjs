@@ -51,7 +51,12 @@ async function render(path, state) {
   )
   const warnings = []
   const app = createSSRApp({
-    setup: () => ({ ...state, editor: state }),
+    setup: () => ({
+      embedded: false,
+      openSection: '',
+      ...state,
+      editor: state,
+    }),
     render: compile(template, {
       onError: (e) => {
         throw e
@@ -87,6 +92,7 @@ async function render(path, state) {
     'KitchenMenuMenusItemsOptions',
     'KitchenMenuMenusCollection',
     'KitchenMenuMenusAi',
+    'KitchenMenuMenusSectionsInline',
   ])
     app.component(name, { render: () => null })
   app.component('UButton', {

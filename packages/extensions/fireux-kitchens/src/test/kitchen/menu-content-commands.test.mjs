@@ -297,6 +297,7 @@ test('Placements reject all pricing fields but retain organisation edits', async
   for (const changes of [
     { price: 1 },
     { price_options: [] },
+    { choice_groups: [] },
     { add_ons: [] },
   ]) {
     const h = harness()

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      v-if="starters.length"
+      v-if="!compact && starters.length"
       class="kitchen-ai-welcome__starters"
       aria-label="Suggested starting points"
     >
@@ -17,7 +17,7 @@
     </div>
 
     <ToolNuggets
-      v-if="aiTools.length"
+      v-if="!compact && aiTools.length"
       :tools="aiTools"
       @select="emit('update:modelValue', $event)"
     />
@@ -31,7 +31,45 @@
       @change="selectFile"
     />
 
+    <WorkspaceAICompactComposer
+      v-if="compact"
+      :model-value="modelValue"
+      :placeholder="placeholder"
+      :aria-label="ariaLabel"
+      :submitting="submitting"
+      :disabled="transcribing"
+      can-submit
+      @update:model-value="emit('update:modelValue', $event)"
+      @submit="emit('submit')"
+    >
+      <template #actions>
+        <UButton
+          v-if="mounted && voice.supported.value"
+          type="button"
+          :icon="voice.recording.value ? 'i-lucide-square' : 'i-lucide-mic'"
+          :color="voice.recording.value ? 'error' : 'neutral'"
+          :variant="voice.recording.value ? 'soft' : 'ghost'"
+          :loading="transcribing"
+          :disabled="submitting || transcribing"
+          :aria-label="
+            voice.recording.value ? 'Stop recording' : 'Speak to Kitchen AI'
+          "
+          @click="toggleVoice"
+        />
+        <UButton
+          v-if="allowFile"
+          type="button"
+          icon="i-lucide-paperclip"
+          color="neutral"
+          variant="ghost"
+          aria-label="Upload your existing menu"
+          @click="fileInput?.click()"
+        />
+      </template>
+    </WorkspaceAICompactComposer>
     <WorkspaceAIComposer
+      v-else
+      :spacious="spacious"
       :model-value="modelValue"
       :placeholder="placeholder"
       :aria-label="ariaLabel"
@@ -102,6 +140,8 @@ const props = withDefaults(
     aiTools?: readonly KitchenAIToolNugget[]
     allowFile?: boolean
     ariaLabel?: string
+    compact?: boolean
+    spacious?: boolean
     submitting?: boolean
   }>(),
   {
@@ -112,6 +152,8 @@ const props = withDefaults(
     aiTools: () => [],
     allowFile: true,
     ariaLabel: 'Ask KitchenAI',
+    compact: false,
+    spacious: false,
     submitting: false,
   }
 )

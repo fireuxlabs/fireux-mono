@@ -64,6 +64,7 @@
             :pending="flow.pending"
             :money="flow.money"
             @add="flow.add"
+            @add-choices="flow.addChoices"
           >
             <UFormField v-if="context === 'table'" label="Table / location">
               <UInput

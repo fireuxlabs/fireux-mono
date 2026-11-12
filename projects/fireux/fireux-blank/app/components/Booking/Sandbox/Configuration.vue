@@ -37,12 +37,16 @@
       <UButton
         color="neutral"
         variant="ghost"
+        icon="i-lucide-trash-2"
+        size="sm"
         :aria-label="`Remove time ${index + 1}`"
         @click="remove(slot.id)"
         >Remove time</UButton
       >
     </fieldset>
-    <UButton color="neutral" variant="outline" @click="add">Add time</UButton>
+    <UButton color="neutral" variant="outline" icon="i-lucide-plus" @click="add"
+      >Add time</UButton
+    >
   </div>
 </template>
 

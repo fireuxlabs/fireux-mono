@@ -1,7 +1,7 @@
 # Workspace
 
-Updated: 2026-11-10
-Ref: 83b341600
+Updated: 2026-11-12
+Ref: 31db3e8fa
 Role: map, not canon
 
 Business is an additional Workspace Entity owned by `fireux-businesses`. Its first tools are business profile/contact editing, optional Place links and the organisational Team roster. Current source and authority are routed through `packages/extensions/fireux-businesses/docs/ai/businesses-context.md`.
@@ -102,6 +102,20 @@ imports and state; one page-provided overview supports genuinely shared AI and
 page JSON. Status and missing-data flags come from records and policy, not AI.
 Do not mount editing controllers merely to calculate overview counts.
 
+## Breadcrumbs
+
+`useWorkspacePageNavigation` owns the shared trail consumed by native
+`UBreadcrumb`. Workspace Home and Overview are not prepended to other pages;
+the sidebar and selected-Entity navigation retain those entrances. Their own
+pages still show their current-page label. A group index starts at its group,
+and children retain the existing registered navigation ancestors and links.
+The current page remains an unlinked final item.
+
+This simplification does not invent ancestry from individual URL segments or
+read record names. Existing registered ancestor matching remains unchanged.
+Full record/section ancestry and resolved identity need domain-owned metadata;
+a generic detail label is not evidence of a record's name.
+
 ## Page introductions
 
 Core's [WorkspacePageHeader](../../packages/core/fireux-core/src/runtime/workspace/components/PageHeader.vue)
@@ -141,6 +155,48 @@ Group descriptions name their actual child capabilities. Useful spanning status
 or actions may accompany their entrances; detailed workflows remain child-owned.
 Optional AI supports these responsibilities rather than defining page anatomy.
 Simple navigation groups do not require dashboards or extra reads.
+
+## Workspace AI presentation
+
+`WorkspaceAICompact` owns child-page chat layout: an optional labelled,
+keyboard-focusable `results` region with bounded scrolling, followed by the
+composer. It defaults to `WorkspaceAICompactComposer`, a one-row inline prompt bar, and accepts `v-model`,
+`placeholder`, `ariaLabel`, `resultsLabel`, `submitting`, `disabled`, `canSubmit`
+and `@submit`. A `composer` slot accommodates the existing domain composer with voice/file
+controls. That domain composer must use `WorkspaceAICompactComposer` for its
+compact branch, placing microphone/file buttons in its `actions` slot. This
+shared prompt bar places those actions and Send beside the native textarea,
+with no model badge or persistent suggestions. It retains native keyboard and
+IME handling, grows to four rows, and guards disabled/busy/empty submissions.
+The full `WorkspaceAIComposer` remains the group-page presentation; setting
+`spacious=false` alone does not turn that full composer into the compact bar. The `results` slot retains domain
+messages, errors and confirmation controls; supply it only when there is content.
+This component adds no conversation state, provider or authority. Use it directly
+rather than nesting it inside another WorkspaceAI section. Existing domain
+Assistant controllers remain mounted once and own their lifecycle. See the
+[compact surface checks](../../packages/core/fireux-core/src/test/workspace/components/AICompact.test.mjs).
+
+
+Core's `workspace/components/AI/Composer.vue` is the shared prompt control.
+Use `WorkspaceAIComposer spacious` for a group index: three initial text rows,
+growing to twelve. Child capabilities use the same composer without `spacious`:
+one initial row, growing to four. Native UChatPrompt retains textarea resizing,
+keyboard submission and accessible controls. Choose the size explicitly by page
+responsibility, not URL depth. `WorkspaceAI compact` controls the surrounding
+section spacing; it is separate from composer size.
+
+Group chat sits after the page introduction and useful group summaries. Child
+chat stays inline near the page introduction, before its working collection or
+controls; it is not hidden in More or an App-specific slideover. Keep one chat
+surface per capability. The smaller surface still exposes its prompt and result;
+compact does not mean removing AI from child pages.
+
+Domain AI components supply prompt state, suggestions, messages/errors, scoped
+context and supported action handlers. They reuse the page's existing context
+and retain confirmation, permission, cancellation and stale-result checks. Core
+adds no provider call, domain read or global conversation. Suggestions remain
+optional and should fit the capability. The Kitchen Menu group consumes the
+spacious composer; child adoption uses the same API and existing domain owner.
 
 ## Component organisation
 

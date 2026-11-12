@@ -1,3 +1,4 @@
+import type { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { computed, watchEffect, onScopeDispose } from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
@@ -9,7 +10,9 @@ import { serviceOverviewSnapshot } from '../../../utils/service-overview'
 import { foodServiceSummary } from '../../../utils/food-service-summary'
 
 /** One read-only overview shared by child surfaces, KitchenAI and page JSON. */
-export function useMenuGroupIndex() {
+export function useMenuGroupIndex(
+  menuCollection?: ReturnType<typeof useKitchenMenuCollection>
+) {
   const workspace = useKitchenWorkspace()
   const kitchenName = computed(() => workspace.data.value?.name || '')
   const {
@@ -22,7 +25,7 @@ export function useMenuGroupIndex() {
     placeOutcome,
     kitchenHours,
     canWrite,
-  } = useKitchenOfferings(workspace.id)
+  } = useKitchenOfferings(workspace.id, menuCollection)
   const catalogue = useFoodCatalogueSummary(
     storageKitchenId,
     menus,

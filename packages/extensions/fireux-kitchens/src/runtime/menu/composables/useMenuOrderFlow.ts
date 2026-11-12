@@ -1,3 +1,5 @@
+import { priceItemChoices } from '../../kitchen/utils/item-choices'
+import type { ItemChoiceSelection } from '../../kitchen/models/item-choice.model'
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import { useMenu } from './useMenu'
@@ -89,6 +91,30 @@ export function useMenuOrderFlow(props: MenuOrderInput) {
       unitPrice: option?.price ?? item.price,
     })
   }
+  function addChoices(
+    sectionId: string,
+    item: MenuManifestItem,
+    selections: ItemChoiceSelection
+  ) {
+    if (!item.choiceGroups) return
+    const priced = priceItemChoices(item.price, item.choiceGroups, selections)
+    const key = JSON.stringify([sectionId, item.id, priced.selections])
+    const existing = cart.value.find((line) => line.key === key)
+    if (existing) {
+      if (existing.quantity < 99) existing.quantity++
+      return
+    }
+    if (cart.value.length >= 50) return
+    cart.value.push({
+      key,
+      sectionId,
+      itemId: item.id,
+      choiceGroups: priced.selections,
+      quantity: 1,
+      name: [item.name, ...priced.details].join(' · '),
+      unitPrice: priced.unitMinor / 100,
+    })
+  }
   function adjust(key: string, delta: number) {
     const line = cart.value.find((line) => line.key === key)
     if (!line) return
@@ -170,7 +196,8 @@ export function useMenuOrderFlow(props: MenuOrderInput) {
         ? { kitchenSlug: props.routeScope.kitchenSlug }
         : {}),
       selections: cart.value.map(
-        ({ sectionId, itemId, optionId, quantity }) => ({
+        ({ sectionId, itemId, optionId, choiceGroups, quantity }) => ({
+          ...(choiceGroups ? { choiceGroups } : {}),
           sectionId,
           itemId,
           ...(optionId ? { optionId } : {}),
@@ -266,6 +293,7 @@ export function useMenuOrderFlow(props: MenuOrderInput) {
     pending,
     error,
     add,
+    addChoices,
     adjust,
     submit,
     reset,

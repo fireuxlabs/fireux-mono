@@ -1,5 +1,5 @@
-import { validateItemReferenceIds } from '../../utils/item-organisation'
-import { requireItemOrganisationReferences } from '../item-groups/references'
+import { validateItemReferenceIds } from '../../utils/item-preparation'
+import { requireItemPreparationStations } from '../stations/item-references'
 import { normalizeDishPricingPatch } from '../../utils/dish-pricing'
 import { createError, type H3Event } from 'h3'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
@@ -20,13 +20,13 @@ export async function createDish(event: H3Event, input: unknown) {
     'name',
     'description',
     'item_kind',
-    'group_ids',
     'preparation_station_ids',
     'is_flagship',
     'price',
     'price_options',
     'add_ons',
     'bottle_deposit',
+    'choice_groups',
   ])
   const name = dishText(draft.name, true)
   const id = requireFirestoreDocumentId(normalizeSlug(name), 'Dish id')
@@ -48,6 +48,9 @@ export async function createDish(event: H3Event, input: unknown) {
   const pricing = validateDishInput(() =>
     normalizeDishPricingPatch({
       ...(Object.hasOwn(draft, 'price') ? { price: draft.price } : {}),
+      ...(Object.hasOwn(draft, 'choice_groups')
+        ? { choice_groups: draft.choice_groups }
+        : {}),
       price_options: draft.price_options ?? [],
       add_ons: draft.add_ons ?? [],
       ...(draft.bottle_deposit !== undefined
@@ -56,10 +59,6 @@ export async function createDish(event: H3Event, input: unknown) {
     })
   )
   const organisation = {
-    group_ids:
-      draft.group_ids === undefined
-        ? []
-        : validateDishInput(() => validateItemReferenceIds(draft.group_ids)),
     ...(draft.preparation_station_ids !== undefined
       ? {
           preparation_station_ids: validateDishInput(() =>
@@ -84,11 +83,8 @@ export async function createDish(event: H3Event, input: unknown) {
           statusCode: 409,
           statusMessage: 'Dish already exists.',
         })
-      if (
-        organisation.group_ids.length ||
-        organisation.preparation_station_ids?.length
-      )
-        await requireItemOrganisationReferences(
+      if (organisation.preparation_station_ids?.length)
+        await requireItemPreparationStations(
           transaction,
           kitchenId,
           organisation

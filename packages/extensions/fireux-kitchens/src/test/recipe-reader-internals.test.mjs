@@ -554,7 +554,7 @@ test('Dish Prep consumer receives additive lifecycle states without losing saved
         computed,
         useKitchenWorkspace: () => ({ id: f.kitchenId, outcome: ref('ready') }),
         useRouteParam: () => ref('dish'),
-        useKitchenDishDetail: () => ({
+        useKitchenItemDetail: () => ({
           dish,
           kitchenId: f.kitchenId,
           storageKitchenId: f.kitchenId,
@@ -600,7 +600,7 @@ test('Dish Spec options consume masked Prep data while preserving their existing
         useDishEditorScope,
         useKitchenWorkspace: () => ({ id: f.kitchenId, outcome: ref('ready') }),
         useRouteParam: () => ref('dish'),
-        useKitchenDishDetail: () => ({
+        useKitchenItemDetail: () => ({
           dish: ref({}),
           dishId: ref('dish'),
           kitchenId: f.kitchenId,

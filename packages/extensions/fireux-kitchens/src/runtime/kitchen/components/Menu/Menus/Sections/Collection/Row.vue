@@ -33,8 +33,9 @@
       <UButton
         size="sm"
         variant="ghost"
-        :to="`/workspace/kitchen/menu/menus/${encodeURIComponent(editor.menuSlug)}/${encodeURIComponent(section.id)}`"
-        >Items</UButton
+        :aria-expanded="expanded"
+        @click="emit('open')"
+        >{{ expanded ? 'Hide Items' : 'Items' }}</UButton
       >
       <UDropdownMenu :items="actions">
         <UButton
@@ -53,12 +54,14 @@ import { computed, type UnwrapNestedRefs } from 'vue'
 import type { useMenuSectionsEditor } from '../../../../../composables/workspace/menus/useMenuSectionsEditor'
 import type { MenuSection } from '../../../../../../menu/models/menu-section.model'
 const props = defineProps<{
+  expanded?: boolean
   section: MenuSection
   editor: UnwrapNestedRefs<ReturnType<typeof useMenuSectionsEditor>>
 }>()
 function saveLabel(value: string, isCurrent?: () => boolean) {
   return props.editor.saveSectionLabel(props.section.id, value, isCurrent)
 }
+const emit = defineEmits<{ open: [] }>()
 const actions = computed(() =>
   props.section.status === 'archived'
     ? [

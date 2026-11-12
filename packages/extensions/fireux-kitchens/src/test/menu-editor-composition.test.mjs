@@ -29,6 +29,8 @@ async function render(relative, props) {
             'actions',
             'saveLabel',
             'itemDestination',
+            'expanded',
+            'emit',
           ],
           render: compile(template),
         },
@@ -86,7 +88,12 @@ function rowSetup(path, props, result) {
   return compileFunction(`${stripTypeScriptTypes(script)};return ${result}`, [
     'computed',
     'defineProps',
-  ])(computed, () => props)
+    'defineEmits',
+  ])(
+    computed,
+    () => props,
+    () => () => {}
+  )
 }
 test('section creation control edits the shared draft and calls its coordinator', async () => {
   let submitted = 0
@@ -132,6 +139,8 @@ test('section row preserves scoped save promises, disabled state and record navi
   const props = { section, editor }
   const { seen, html } = await render(path, {
     ...props,
+    expanded: false,
+    emit: () => {},
     saveLabel: rowSetup(path, props, 'saveLabel'),
   })
   assert.match(html, /Small plates/)
@@ -141,10 +150,9 @@ test('section row preserves scoped save promises, disabled state and record navi
   assert.equal(field['capture-intent'], editor.captureScope)
   assert.equal(field.update('Mains', fieldCurrent), saved)
   assert.deepEqual(calls, [['section one', 'Mains', fieldCurrent]])
-  assert.equal(
-    seen.UButton[0].to,
-    '/workspace/kitchen/menu/menus/food%20menu/section%20one'
-  )
+  assert.equal(seen.UButton[0]['aria-expanded'], false)
+  assert.equal(typeof seen.UButton[0].onClick, 'function')
+  assert.equal(seen.UButton[0].to, undefined)
 })
 test('Menu item row shows prices and confirmed removal inside its vertical actions menu', async () => {
   const calls = []
@@ -204,4 +212,43 @@ test('Menu item row shows prices and confirmed removal inside its vertical actio
   assert.equal(seen.FireFormsEditableSimpleField, undefined)
   assert.equal(seen.KitchenMenuMenusItemsSharedTerms, undefined)
   assert.equal(seen.KitchenMenuMenusItemsOptions, undefined)
+  editor.embedded = true
+  const inline = rowSetup(
+    'Items/Edit/Row.vue',
+    { row, editor },
+    '({ destination: itemDestination.value, actions: actions.value })'
+  )
+  assert.deepEqual(inline.destination.query, {
+    menu: 'food',
+    section: 's',
+    inline: '1',
+  })
+  assert.deepEqual(
+    inline.actions.flat().find((action) => action.label === 'Edit item').to,
+    inline.destination
+  )
+})
+
+test('inline section editor supplies the existing Menu record and explicit section scope once', () => {
+  const props = { sectionId: 'las-tapas' },
+    record = { id: 'existing-record' },
+    calls = []
+  const script = readFileSync(new URL('Sections/Inline.vue', base), 'utf8')
+    .split('<script setup lang="ts">')[1]
+    .split('</script>')[0]
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+  compileFunction(stripTypeScriptTypes(script), [
+    'defineProps',
+    'useKitchenMenuRecordContext',
+    'provideMenuSection',
+  ])(
+    () => props,
+    () => record,
+    (owner, section) => calls.push({ owner, section })
+  )
+  assert.equal(calls.length, 1)
+  assert.equal(calls[0].owner, record)
+  assert.equal(calls[0].section(), 'las-tapas')
+  props.sectionId = 'dessert'
+  assert.equal(calls[0].section(), 'dessert')
 })

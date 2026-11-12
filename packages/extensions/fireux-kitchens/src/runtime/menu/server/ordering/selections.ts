@@ -31,6 +31,7 @@ export function readMenuOrderSelections(value: unknown): MenuOrderSelection[] {
             'sectionId',
             'itemId',
             'optionId',
+            'choiceGroups',
             'extraIds',
             'groups',
             'bottle',
@@ -78,7 +79,26 @@ export function readMenuOrderSelections(value: unknown): MenuOrderSelection[] {
           ])
       )
     }
+    let choiceGroups: Record<string, string[]> | undefined
+    if (raw.choiceGroups !== undefined) {
+      if (
+        !raw.choiceGroups ||
+        typeof raw.choiceGroups !== 'object' ||
+        Array.isArray(raw.choiceGroups) ||
+        Object.keys(raw.choiceGroups).length > 10
+      )
+        return fail('Invalid Item choices.')
+      choiceGroups = Object.fromEntries(
+        Object.entries(raw.choiceGroups)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([key, value]) => [
+            requireFirestoreDocumentId(key, 'Choice group id'),
+            ids(value, 50),
+          ])
+      )
+    }
     const selection: MenuOrderSelection = {
+      ...(choiceGroups ? { choiceGroups } : {}),
       sectionId,
       itemId,
       quantity: raw.quantity,

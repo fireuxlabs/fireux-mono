@@ -191,6 +191,9 @@ export async function readKitchenMenuSections(
                 ...(pricing.bottle_deposit
                   ? { bottleDeposit: pricing.bottle_deposit }
                   : {}),
+                ...(pricing.choice_groups !== undefined
+                  ? { choiceGroups: pricing.choice_groups }
+                  : {}),
                 priceOptions: normalizeDishPriceOptions(pricing.price_options),
                 addOns: normalizeDishAddOns(pricing.add_ons),
               }

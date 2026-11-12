@@ -1,3 +1,4 @@
+import { priceItemChoices } from '../runtime/kitchen/utils/item-choices.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -28,7 +29,8 @@ function load(path, names, context = {}) {
 }
 const policy = load(
   'menu/utils/ordering/basket',
-  'serviceBasketLine,serviceItemSignature'
+  'serviceBasketLine,serviceItemSignature',
+  { priceItemChoices }
 )
 const { useServiceBasket } = load(
   'menu/composables/useServiceBasket',
@@ -579,7 +581,8 @@ test('existing selector prefills a detached draft including meal choices and bot
     .split('</script>')[0]
     .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
   const state = compileFunction(
-    stripTypeScriptTypes(script) + '; return { choices }',
+    stripTypeScriptTypes(script) +
+      '; return { choices, updateGroups, preview }',
     ['computed', 'reactive', 'defineProps', 'defineEmits', 'serviceBasketLine']
   )(
     computed,
@@ -597,5 +600,15 @@ test('existing selector prefills a detached draft including meal choices and bot
     before,
     'cancelling never mutates the saved basket line'
   )
+  state.updateGroups({
+    'legacy-variants': ['large'],
+    'legacy-extras': ['cheese'],
+  })
+  assert.deepEqual([...state.choices.extraIds], ['cheese'])
+  state.updateGroups({
+    'legacy-variants': ['large'],
+    'legacy-extras': ['cheese', 'tomato'],
+  })
+  assert.deepEqual([...state.choices.extraIds], ['cheese', 'tomato'])
   assert.match(source, /Update basket/)
 })

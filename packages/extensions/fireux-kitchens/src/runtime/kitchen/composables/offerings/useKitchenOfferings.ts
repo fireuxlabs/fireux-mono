@@ -25,7 +25,8 @@ import type {
 } from '../../models/offering.model'
 
 export function useKitchenOfferings(
-  explicitKitchenId: MaybeRefOrGetter<string>
+  explicitKitchenId: MaybeRefOrGetter<string>,
+  menuCollection?: ReturnType<typeof useKitchenMenuCollection>
 ) {
   const config = useFireUXConfig()
   const identity = useKitchenIdentity(explicitKitchenId)
@@ -101,7 +102,8 @@ export function useKitchenOfferings(
     ownerOutcome.value === 'ready' ? identity.kitchenId.value : ''
   )
   const { place, placeOutcome } = identity
-  const collection = useKitchenMenuCollection(storageKitchenId)
+  const collection =
+    menuCollection ?? useKitchenMenuCollection(storageKitchenId)
   const offeringRead = useKitchenOfferingCollection(storageKitchenId)
   const outcome = computed(() =>
     ownerOutcome.value === 'ready'

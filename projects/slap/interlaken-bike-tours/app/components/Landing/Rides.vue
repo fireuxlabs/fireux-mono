@@ -8,6 +8,7 @@
       <ToursCard
         v-for="tour in tours"
         :key="tour.slug"
+        :tour-slug="tour.slug"
         :name="tour.name"
         :label="tour.label"
         :summary="tour.summary"

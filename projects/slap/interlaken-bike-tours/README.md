@@ -22,7 +22,7 @@ also directly registers `fireux-bookings` for its server-side Google Calendar
 adapter in `server/utils/tour-calendar.ts`. The visitor booking page checks a
 configured departure (09:00 by default) against Ben's calendar, working days, closed dates and a Business-scoped daily booking lock. It composes the shared `confirmBooking` lifecycle with an App-owned tour adapter, Business-scoped storage and Calendar integration, then inserts the Calendar event before showing an
 on-screen confirmation. Current catalog prices are fixed per person. There is
-no payment, confirmation email or cancellation flow. The Business Workspace manages availability and shows booking records. A provider failure after event creation begins retains the pending reservation for manual reconciliation and returns its booking reference. Do not retry it until the operator has reconciled Calendar and storage.
+no payment, production confirmation email or cancellation flow. The Business Workspace manages availability and shows booking records. A provider failure after event creation begins retains the pending reservation for manual reconciliation and returns its booking reference. Do not retry it until the operator has reconciled Calendar and storage.
 Google Calendar refresh credentials and the calendar id are server-only
 environment settings: `BOOKINGS_GOOGLE_CALENDAR_ID`,
 `BOOKINGS_GOOGLE_CLIENT_ID`, `BOOKINGS_GOOGLE_CLIENT_SECRET` and
@@ -106,6 +106,22 @@ Run `pnpm test:bookings` for the local booking/Calendar boundary checks. The
 tests use an in-memory booking store and mocked Google responses; they do not
 write the App's Firebase database or Ben's Calendar.
 
+## Local booking test
+
+Set `BOOKINGS_LOCAL_TEST=true` in the ignored App `.env` and restart `pnpm dev`
+to exercise `/book` without Business or Google credentials. The server selects
+`server/utils/tour-booking-local.ts` only when both Nuxt development mode and
+that explicit flag are active. Production continues to require real configuration.
+
+The adapter uses the existing tour workflow and shared confirmation lifecycle,
+with in-memory daily reservations and Calendar events. Future dates start open
+at 09:00; a confirmed date becomes unavailable. References start with `local-`.
+Restarting the server clears test bookings. This does not write Firestore or Google
+Calendar and does not test provider credentials or durable persistence.
+
+Run `pnpm test:scope projects/slap/interlaken-bike-tours/tests/booking-local.test.mjs`
+for confirmation, conflict and validation checks.
+
 ## Business Workspace
 
 The App registers `fireux-businesses` and its native layer. The authenticated
@@ -131,3 +147,20 @@ accepting public bookings. The public browser cannot choose that owner. New reco
 settings and locks live beneath that Business. Legacy `interlaken_tour_bookings`
 and `interlaken_tour_booking_days` are not read or automatically migrated.
 Google Calendar credentials are still required for live availability and events.
+
+## Local email notifications
+
+Local bookings compose `fireux-notifications` after confirmation. Messages are
+captured by default; inspect them at `/dev/booking-notifications`. The route and
+API require development mode and `BOOKINGS_LOCAL_TEST=true`. Set
+`BOOKINGS_TEST_EMAIL_FROM` and `BOOKINGS_TEST_EMAIL_TO` in the ignored `.env`.
+
+For an authorized SMTP test, configure `NOTIFICATIONS_SMTP_HOST`,
+`NOTIFICATIONS_SMTP_PORT` (465 or 587), `NOTIFICATIONS_SMTP_USER`, and
+`NOTIFICATIONS_SMTP_PASSWORD`, then explicitly set `BOOKINGS_TEST_EMAIL_SEND=true`
+and restart. Keep all credentials server-only. Gmail needs an eligible app
+password or an OAuth integration; do not use the ordinary account password.
+
+Email failure does not undo a confirmed booking. Captures and delivery state
+are process-local and clear on restart. This hook is disabled in production;
+a durable notification outbox is required before production sending.

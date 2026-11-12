@@ -1,3 +1,4 @@
+import type { ItemChoiceGroup } from '../../kitchen/models/item-choice.model'
 import type { PublicKitchenPromotion } from '../../kitchen/models/promotion.model'
 import type { MenuDocument, MenuStatus } from './menu.model'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
@@ -27,6 +28,7 @@ export type MenuManifestAddOn = {
 }
 
 export type MenuManifestItem = {
+  choiceGroups?: ItemChoiceGroup[]
   bottleDeposit?: number
   mealDeal?: {
     promotionId: string

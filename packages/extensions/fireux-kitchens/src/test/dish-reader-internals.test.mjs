@@ -1,4 +1,4 @@
-import { readItemReferenceIds } from '../runtime/kitchen/utils/item-organisation.ts'
+import { readItemReferenceIds } from '../runtime/kitchen/utils/item-preparation.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import {
   dishCataloguePath,
@@ -19,6 +19,7 @@ import {
   createSSRApp,
   effectScope,
   h,
+  inject,
   nextTick,
   onUnmounted,
   provide,
@@ -423,11 +424,14 @@ function components(app, spec) {
     'KitchenMenuItemsCardsCell',
     'UPagination',
     'USelect',
+    'UCheckbox',
     'KitchenMenuItemsCategories',
     'WorkspaceKitchenAICapability',
     'KitchenMenuItemsEdit',
-    'KitchenMenuItemsOrganisation',
+    'KitchenMenuItemsPreparationStations',
+    'KitchenMenuItemsPhoto',
     'KitchenMenuItemsGroups',
+    'KitchenMenuItemsCollectionAssignGroup',
     'KitchenMenuItemsPricing',
     'KitchenMenuItemsDelete',
     'DishPreparation',
@@ -447,6 +451,12 @@ function components(app, spec) {
     'DishSpec',
     spec || { render: () => h('p', 'Specification editor') }
   )
+  app.component('FireDisclosurePanel', {
+    setup:
+      (_, { slots }) =>
+      () =>
+        h('div', slots.default?.()),
+  })
   app.component('UButton', {
     props: ['label'],
     setup: (props) => () => h('button', props.label),
@@ -519,6 +529,8 @@ function readView(overrides = {}) {
     dishes: [],
     pageDishes: [],
     query: '',
+    selected: [],
+    moreActions: [],
     view: 'list',
     category: 'all',
     categoryFilters: [{ value: 'all', label: 'All dishes', count: 0 }],
@@ -554,7 +566,7 @@ function recordView(overrides = {}) {
     manage: false,
     route: { query: {} },
     views: [],
-    view: 'spec',
+    view: 'preparation',
     dishCategoryLabel,
     removeDish: () => {},
     ...overrides,
@@ -713,6 +725,7 @@ test('Dish linked read perspectives bind exact ready storage owner instead of re
     const scope = effectScope()
     scope.run(() =>
       load(`kitchen/components/Menu/Items/${view}.vue`, '({})', {
+        ref,
         computed,
         reactive,
         watch,
@@ -726,7 +739,7 @@ test('Dish linked read perspectives bind exact ready storage owner instead of re
           outcome: ref('ready'),
         }),
         useRouteParam: () => owner.dishId,
-        useKitchenDishDetail: () => owner,
+        useKitchenItemDetail: () => owner,
         useKitchenPrepItems: reader,
         useKitchenMenuCollection: reader,
         useMenuSectionCollection: reader,
@@ -1005,7 +1018,7 @@ test('Items dialogs honour create authority, consume create links and close when
   const state = f.scope.run(() =>
     load(
       'kitchen/components/Menu/Items/Collection/Dialogs.vue',
-      '({ createKind, organise, aiOpen, openCreate, openCategories, openAI, closeCreate })',
+      '({ createKind, aiOpen, openCreate, openAI, closeCreate })',
       {
         computed,
         ref,
@@ -1030,12 +1043,10 @@ test('Items dialogs honour create authority, consume create links and close when
   assert.equal(state.createKind.value, null)
   state.openCreate('food')
   assert.equal(state.createKind.value, 'food')
-  state.openCategories()
   state.openAI()
   f.workspace.id.value = 'other'
   await nextTick()
   assert.equal(state.createKind.value, null)
-  assert.equal(state.organise.value, false)
   assert.equal(state.aiOpen.value, false)
   state.openCreate('drink')
   assert.equal(state.createKind.value, null)
@@ -1210,7 +1221,10 @@ test('organisation fields keep historical Items readable without inventing group
   assert.deepEqual(old.group_ids, [])
   assert.equal(old.preparation_station_ids, undefined)
   assert.equal(old.spec.station, 'Bar')
-  assert.equal(normalizeDish({ id: 'old', group_ids: ['renamed-group'] }).item_kind, 'food')
+  assert.equal(
+    normalizeDish({ id: 'old', group_ids: ['renamed-group'] }).item_kind,
+    'food'
+  )
   const current = normalizeDish({
     id: 'new',
     item_kind: null,
@@ -1225,4 +1239,75 @@ test('organisation fields keep historical Items readable without inventing group
       .preparation_station_ids,
     undefined
   )
+})
+
+test('Item detail context shares its live reader and requires the owning provider', async () => {
+  const context = load(
+    'kitchen/composables/dish/useKitchenItemDetailContext.ts',
+    '({provideKitchenItemDetail,useKitchenItemDetail})',
+    { provide, inject }
+  )
+  const owner = { dish: ref({ name: 'Soup' }), canWrite: ref(true) }
+  const Child = {
+    setup() {
+      const detail = context.useKitchenItemDetail()
+      assert.equal(detail, owner)
+      return () => h('p', detail.dish.value.name)
+    },
+  }
+  const renderOwner = () =>
+    renderToString(
+      createSSRApp({
+        setup() {
+          assert.equal(context.provideKitchenItemDetail(owner), owner)
+          return () => h(Child)
+        },
+      })
+    )
+  assert.match(await renderOwner(), /Soup/)
+  owner.dish.value = { name: 'Salad' }
+  assert.match(await renderOwner(), /Salad/)
+  const orphan = createSSRApp(Child)
+  orphan.config.warnHandler = () => {}
+  await assert.rejects(renderToString(orphan), /requires its detail provider/)
+})
+
+test('Item placements return to the inline Menu builder or exact daily section', () => {
+  const scope = effectScope()
+  scope.run(() => {
+    const props = reactive({
+      menu: { id: 'menu', slug: 'lunch special', schedule: 'regular' },
+      section: { id: 'main course', label: 'Main course' },
+    })
+    const owner = { dishId: ref('soup'), storageKitchenId: ref('kitchen') }
+    const rows = ref([{ id: 'placement', dish_id: 'soup' }])
+    const pending = ref(false),
+      error = ref(null),
+      emitted = []
+    const state = load(
+      'kitchen/components/Menu/Items/MenuSection.vue',
+      '({destination,matches})',
+      {
+        computed,
+        watch,
+        defineProps: () => props,
+        defineEmits: () => (_, result) => emitted.push(result),
+        useKitchenItemDetail: () => owner,
+        useMenuSectionItemCollection: () => ({ items: rows, pending, error }),
+      }
+    )
+    assert.equal(
+      state.destination.value,
+      '/workspace/kitchen/menu/menus/lunch%20special?section=main%20course'
+    )
+    assert.equal(emitted.at(-1), 'match')
+    props.menu.schedule = 'daily'
+    assert.equal(
+      state.destination.value,
+      '/workspace/kitchen/menu/menus/lunch%20special/main%20course'
+    )
+    owner.dishId.value = 'other'
+    assert.equal(state.matches.value.length, 0)
+  })
+  scope.stop()
 })

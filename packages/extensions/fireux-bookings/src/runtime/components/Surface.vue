@@ -1,6 +1,6 @@
 <template>
-  <UCard class="booking-surface">
-    <template #header>
+  <UPageCard class="booking-surface" icon="i-lucide-calendar-days">
+    <template #title>
       <h2>
         {{
           flow.confirmed.value?.title || configuration.title.trim() || 'Booking'
@@ -8,19 +8,13 @@
       </h2>
     </template>
     <div ref="body" class="booking-surface__body">
-      <ol
+      <UStepper
         v-if="!flow.confirmed.value"
-        class="booking-surface__steps"
-        aria-label="Booking progress"
-      >
-        <li
-          v-for="(label, index) in steps"
-          :key="label"
-          :aria-current="flow.step.value === index ? 'step' : undefined"
-        >
-          <span>{{ index + 1 }}</span> {{ label }}
-        </li>
-      </ol>
+        :model-value="flow.step.value"
+        :items="stepItems"
+        size="sm"
+        @update:model-value="navigateBack"
+      />
       <h3 ref="heading" tabindex="-1">
         {{ flow.confirmed.value ? 'Your booking' : steps[flow.step.value] }}
       </h3>
@@ -59,11 +53,11 @@
         @restart="flow.restart"
       />
     </div>
-  </UCard>
+  </UPageCard>
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import BookingTimeSelection from './TimeSelection.vue'
 import BookingContact from './Contact.vue'
 import BookingReview from './Review.vue'
@@ -83,6 +77,23 @@ const flow = useBookingFlow(
   () => props.confirm
 )
 const steps = ['Choose a time', 'Your details', 'Review']
+const stepItems = computed(() =>
+  steps.map((title, index) => ({
+    title,
+    disabled: flow.pending.value || index > flow.step.value,
+  }))
+)
+function navigateBack(value: string | number | undefined) {
+  if (
+    typeof value !== 'number' ||
+    !Number.isInteger(value) ||
+    value < 0 ||
+    value > 2 ||
+    flow.pending.value
+  )
+    return
+  while (flow.step.value > value && flow.step.value <= 2) flow.back()
+}
 const heading = ref<HTMLElement>()
 const body = ref<HTMLElement>()
 watch(flow.step, async () => {
@@ -100,22 +111,6 @@ watch(flow.step, async () => {
 }
 .booking-surface__body {
   display: grid;
-  gap: calc(var(--spacing) * 5);
-}
-.booking-surface__steps {
-  display: flex;
-  flex-wrap: wrap;
-  gap: calc(var(--spacing) * 4);
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  color: var(--ui-text-muted);
-}
-.booking-surface__steps [aria-current='step'] {
-  color: var(--ui-primary);
-  font-weight: 600;
-}
-.booking-surface__steps span {
-  font-variant-numeric: tabular-nums;
+  gap: calc(var(--spacing) * 6);
 }
 </style>

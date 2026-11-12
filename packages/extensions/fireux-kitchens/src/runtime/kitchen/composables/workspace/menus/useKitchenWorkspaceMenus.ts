@@ -29,16 +29,17 @@ export function useKitchenWorkspaceMenus() {
   )
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
+  const menuCollection = useKitchenMenuCollection(storageKitchenId, {
+    kitchenCollectionPath: rootCollection,
+    databaseId,
+  })
   const {
     menus: fetchedMenus,
     activeMenus: fetchedActiveMenus,
     outcome: menusOutcome,
     error: menusError,
     collectionPath: fetchedCollectionPath,
-  } = useKitchenMenuCollection(storageKitchenId, {
-    kitchenCollectionPath: rootCollection,
-    databaseId,
-  })
+  } = menuCollection
   const create = useMenuCreate({
     kitchenId: kitchenWorkspace.id,
   })
@@ -155,6 +156,7 @@ export function useKitchenWorkspaceMenus() {
   }
 
   return {
+    menuCollection,
     selectedKitchen: kitchenWorkspace.data,
     kitchenId: kitchenWorkspace.id,
     storageKitchenId,

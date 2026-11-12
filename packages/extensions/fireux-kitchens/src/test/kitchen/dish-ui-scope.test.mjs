@@ -229,7 +229,7 @@ test('delete does not navigate or toast after record changes, including same-tic
         ready: ref(true),
         error: ref(null),
       }),
-      useKitchenDishDetail: () => ({
+      useKitchenItemDetail: () => ({
         kitchenId: h.kitchenId,
         dishId: h.dishId,
         dish: ref({ name: 'Pizza' }),
@@ -263,7 +263,7 @@ test('description proposal snapshots its body and never dispatches after focus c
         ...h.deps,
         useAuth: () => ({ currentUser: h.currentUser }),
         useFireUXConfig: () => ({ appId: 'app' }),
-        useKitchenDishDetail: () => ({
+        useKitchenItemDetail: () => ({
           kitchenId: h.kitchenId,
           dishId: h.dishId,
           canWrite: ref(true),
@@ -342,7 +342,7 @@ test('record edit ignores old failures and spec saves a detached payload', async
     {
       ...h.deps,
       useAuth: () => ({ currentUser: h.currentUser }),
-      useKitchenDishDetail: () => identity,
+      useKitchenItemDetail: () => identity,
       useDishUpdate: () => ({ updateDish: () => pending.promise }),
       useDishImageUpload: () => ({ uploadDishImage: async () => {} }),
     },
@@ -362,7 +362,7 @@ test('record edit ignores old failures and spec saves a detached payload', async
     {
       ...h.deps,
       useRoute: () => ({ query: {} }),
-      useKitchenDishDetail: () => identity,
+      useKitchenItemDetail: () => identity,
       useKitchenIngredients: () => ({ ingredients: ref([]), error: ref(null) }),
       useKitchenPrepItems: () => ({ prepItems: ref([]), error: ref(null) }),
       useKitchenRecipeCollection: () => ({
@@ -422,6 +422,7 @@ test('Surviving Dish route completes its live removal but rejects external inten
           },
         }),
         navigateTo: async (x) => navigations.push(x),
+        provideKitchenItemDetail: (detail) => detail,
         useKitchenDishDetail: () => ({
           dish,
           dishId: h.dishId,
@@ -478,7 +479,7 @@ for (const state of ['loading', 'error', 'referenced']) {
           ready: ref(state === 'referenced'),
           error: ref(state === 'error' ? Error('Unavailable') : null),
         }),
-        useKitchenDishDetail: () => ({
+        useKitchenItemDetail: () => ({
           kitchenId: h.kitchenId,
           dishId: h.dishId,
           dish: ref({ name: 'Pizza' }),
@@ -623,7 +624,6 @@ test('item creation requires a price and submits explicit zero without a fixed t
     await api.addDish()
     assert.equal(drafts[0].price, 0)
     assert.equal(drafts[0].item_kind, undefined)
-    assert.deepEqual(drafts[0].group_ids, [])
   }
 })
 

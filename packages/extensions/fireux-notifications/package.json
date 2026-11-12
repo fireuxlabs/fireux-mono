@@ -1,0 +1,35 @@
+{
+  "name": "fireux-notifications",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Reusable email delivery contracts, preview and SMTP adapter",
+  "exports": {
+    "./runtime/*.vue": "./src/runtime/*.vue",
+    "./runtime/*": "./src/runtime/*.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "runtime/*.vue": [
+        "src/runtime/*.vue"
+      ],
+      "runtime/*": [
+        "src/runtime/*.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "test": "node --import ../../../tools/ide/register-test-loader.mjs --test src/test/*.test.mjs"
+  },
+  "dependencies": {
+    "nodemailer": "^10.5.0"
+  },
+  "peerDependencies": {
+    "@nuxt/ui": "^4.12.0",
+    "vue": "^3.5.43"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^8.0.2"
+  }
+}

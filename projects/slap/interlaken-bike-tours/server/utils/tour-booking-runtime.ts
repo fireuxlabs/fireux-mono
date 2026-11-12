@@ -1,5 +1,6 @@
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { createError } from 'h3'
+import { getLocalTourBookingWorkflow } from './tour-booking-local'
 import {
   createInterlakenTourBookingWorkflow,
   InterlakenTourBookingError,
@@ -12,7 +13,12 @@ import {
 } from './tour-calendar'
 
 export function getInterlakenTourBookingWorkflow() {
-  const businessId = requireFirestoreDocumentId(process.env.BOOKINGS_BUSINESS_ID, 'Booking Business id')
+  if (import.meta.dev && process.env.BOOKINGS_LOCAL_TEST === 'true')
+    return getLocalTourBookingWorkflow()
+  const businessId = requireFirestoreDocumentId(
+    process.env.BOOKINGS_BUSINESS_ID,
+    'Booking Business id'
+  )
   const connection = interlakenTourCalendarConnection()
   const store = createInterlakenTourBookingStore(businessId)
   return createInterlakenTourBookingWorkflow({

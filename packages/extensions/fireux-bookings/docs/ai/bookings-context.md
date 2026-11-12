@@ -1,6 +1,6 @@
 # FireUX Bookings context
 
-Updated: 2026-11-10
+Updated: 2026-11-11
 Ref: 614700fd9
 Role: living context
 Scope: reusable booking lifecycle and calendar integrations
@@ -37,9 +37,12 @@ Blank is an ignorant host: its configuration editor supplies a title and time
 options, and its preview adapter returns local receipts. It contains no bike,
 tour, table or accommodation scenario. Docs supplies neutral placeholder offers
 and a separate local receipt adapter. Neither is a durable booking provider.
-The existing customer form and server integrations below are current consumers,
-not a settled target contract for the new surface. Compare actual consumers
-before broadening shared behavior or moving domain policy into the surface.
+Interlaken Bike Tours composes the same surface with its App-owned Booking/Options
+and useTourBooking adapter. The adapter owns tour/date/group selection, availability
+reads, local-time projection and submission to the existing booking API. It retains
+an uncertain submission in memory rather than automatically retrying; the server
+does not yet provide durable request-id replay. Compare actual consumers before
+broadening shared behavior or moving domain policy into the surface.
 
 `fireux-bookings` is an optional Extension owning a provider-independent customer booking presentation, reservation-to-confirmation lifecycle, and provider integrations. `BookingsCustomerForm` owns shared customer fields and the presentation of availability, errors and confirmation; Apps provide reservation inputs through slots and own the service catalogue, schedules, prices, booking commands, and confirmation content. Shared presentation must remain ignorant of any named business. Its provider-independent `confirmBooking` command coordinates atomic reservation, availability revalidation, external effects, confirmation and safe cleanup through consumer-owned adapters. It also owns Google Calendar OAuth refresh transport, provider requests and response validation. Its optional Business Workspace owns Business-scoped availability settings, booking records and exclusive allocation locks. These are Business-owned child records, not a universal Booking Entity. Timezone, allocation-key policy, payments, cancellation and notification remain with their named consumers.
 
@@ -70,6 +73,7 @@ verify how external conflicts and failed event writes affect their own workflow.
 - Provider contract checks: `src/test/google-calendar.test.mjs`.
 - First App Calendar adapter and private credentials boundary:
   `projects/slap/interlaken-bike-tours/server/utils/tour-calendar.ts`.
+- Interlaken development dependency adapter: `projects/slap/interlaken-bike-tours/server/utils/tour-booking-local.ts`, selected by `tour-booking-runtime.ts` only in development with `BOOKINGS_LOCAL_TEST=true`. It reuses the real App workflow with in-memory reservations/events; `tests/booking-local.test.mjs` verifies confirmation, conflicts and validation. It does not establish live provider or durable storage behavior.
 - First App booking workflow and Business-scoped storage adapter:
   `projects/slap/interlaken-bike-tours/server/utils/tour-booking.ts`,
   `tour-booking-store.ts`, and `server/api/bookings/`.
@@ -87,6 +91,12 @@ Property Reservation records and night locks remain in
 `fireux-reservations`; Kitchen table service and order records remain in
 `fireux-kitchens`; Job employment schedule terms remain in `fireux-jobs`.
 Those models are not interchangeable booking records. The Business store accepts a consumer-selected exclusive allocation key; the Interlaken App uses the local date for one tour per day. New tour records are stored under the server-configured `BOOKINGS_BUSINESS_ID`, never a browser-selected owner. Calendar credentials remain server-only. Legacy global Interlaken booking records are not automatically assigned to a Business. Consumers compose the lifecycle and provider APIs while keeping their own record and command authority. Public product packaging, onboarding, commercial terms and deployment belong above the Extension. Core remains independent of this optional product.
+
+Interlaken's development booking API invokes its App-owned
+`server/utils/tour-booking-notifications.ts` after successful confirmation.
+That adapter composes `fireux-notifications`; notification failures do not undo
+bookings. Shared Bookings has no notification dependency or personal recipients.
+See Notifications' scoped context for capture, SMTP and persistence limits.
 
 ## Authority and connection lifecycle
 

@@ -153,7 +153,13 @@ function createMenuSectionState(
           clean(item.dish_id),
         price: deal && 'price' in deal ? deal.price : dish?.price,
         addOns: normalizeDishAddOns(record(dish).add_ons),
-        priceOptions: normalizeDishPriceOptions(record(dish).price_options),
+        priceOptions:
+          dish?.choice_groups !== undefined
+            ? (
+                dish.choice_groups.find((group) => group.pricing === 'full')
+                  ?.options || []
+              ).map((option) => ({ ...option, quantity: 0, unit: '' }))
+            : normalizeDishPriceOptions(record(dish).price_options),
       }
     })
   )

@@ -1,39 +1,22 @@
 <template>
   <UCard>
-    <template #header><h2>Groups &amp; preparation</h2></template>
+    <template #header><h2>Preparation Stations</h2></template>
     <FireState
       v-if="!ready"
-      :outcome="readOutcome"
-      entity="Groups and Stations"
-      :error="groupsError || stationsError"
+      :outcome="stationsOutcome"
+      entity="Stations"
+      :error="stationsError"
     />
     <form
       v-else
       class="workspace-surface workspace-surface--compact"
       @submit.prevent="save"
     >
-      <UFormField
-        label="Item groups"
-        description="Organise this Item independently of Menu sections."
-      >
-        <USelectMenu
-          v-model="groupIds"
-          multiple
-          :items="
-            groups
-              .filter((group) => group.active || groupIds.includes(group.id))
-              .map((group) => ({ value: group.id, label: group.name }))
-          "
-          value-key="value"
-          placeholder="No group"
-          :disabled="busy || !canWrite"
-        />
-      </UFormField>
       <UFormField label="Preparation assignment">
         <USelect
           v-model="mode"
           :items="[
-            { value: 'inherit', label: 'Use group defaults' },
+            { value: 'unconfigured', label: 'Not configured' },
             { value: 'specific', label: 'Choose Stations for this Item' },
             { value: 'none', label: 'No preparation required' },
           ]"
@@ -55,13 +38,6 @@
           :disabled="busy || !canWrite"
         />
       </UFormField>
-      <p v-if="mode === 'inherit'" class="fx-type-caption">
-        {{
-          inheritedNames.length
-            ? `Group defaults: ${inheritedNames.join(', ')}`
-            : 'These groups have no preparation Stations configured.'
-        }}
-      </p>
       <p v-if="dish.spec?.station" class="fx-type-caption">
         Existing preparation note: {{ dish.spec.station }}. This text has not
         been converted into a Station assignment.
@@ -73,7 +49,7 @@
       <UButton
         v-if="canWrite"
         type="submit"
-        label="Save groups & preparation"
+        label="Save Station assignment"
         :loading="busy"
         :disabled="busy || (mode === 'specific' && !stationIds.length)"
       />
@@ -86,36 +62,27 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
 import type { Dish } from '../../../models/dish.model'
-import { useKitchenItemOrganisation } from '../../../composables/workspace/dishes/useKitchenItemOrganisation'
+import { useKitchenItemPreparation } from '../../../composables/workspace/dishes/useKitchenItemPreparation'
 import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
 import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
-import { resolveItemPreparationStations } from '../../../utils/item-organisation'
 const props = defineProps<{
   dish: Dish
   kitchenId: string
   canWrite: boolean
 }>()
-const {
-  groups,
-  groupsOutcome,
-  groupsError,
-  preparationStations,
-  stationsOutcome,
-  stationsError,
-} = useKitchenItemOrganisation()
+const { preparationStations, stationsOutcome, stationsError } =
+  useKitchenItemPreparation()
 const route = useRoute()
-const groupIds = ref<string[]>([]),
-  stationIds = ref<string[]>([]),
-  mode = ref('inherit'),
+const stationIds = ref<string[]>([]),
+  mode = ref('unconfigured'),
   busy = ref(false),
   error = ref(''),
   saved = ref('')
 function reset() {
-  groupIds.value = [...(props.dish.group_ids || [])]
   stationIds.value = [...(props.dish.preparation_station_ids || [])]
   mode.value =
     props.dish.preparation_station_ids === undefined
-      ? 'inherit'
+      ? 'unconfigured'
       : stationIds.value.length
         ? 'specific'
         : 'none'
@@ -127,33 +94,12 @@ watch(
   () => [
     props.kitchenId,
     props.dish.id,
-    JSON.stringify(props.dish.group_ids),
     JSON.stringify(props.dish.preparation_station_ids),
   ],
   reset,
   { immediate: true }
 )
-const ready = computed(() =>
-  [groupsOutcome.value, stationsOutcome.value].every((value) =>
-    ['ready', 'empty'].includes(value)
-  )
-)
-const readOutcome = computed(() =>
-  [groupsOutcome.value, stationsOutcome.value].includes('error')
-    ? 'error'
-    : [groupsOutcome.value, stationsOutcome.value].includes('idle')
-      ? 'idle'
-      : 'pending'
-)
-const inheritedNames = computed(() =>
-  resolveItemPreparationStations(
-    { group_ids: groupIds.value },
-    groups.value
-  ).map(
-    (id) =>
-      preparationStations.value.find((station) => station.id === id)?.name || id
-  )
-)
+const ready = computed(() => ['ready', 'empty'].includes(stationsOutcome.value))
 const sources = [
   () => props.kitchenId,
   () => props.dish.id,
@@ -161,7 +107,7 @@ const sources = [
   () => route.fullPath,
 ]
 const capture = useDishEditorScope(sources, reset)
-const { updateDish } = useDishUpdate([...sources, groupIds, stationIds, mode])
+const { updateDish } = useDishUpdate([...sources, stationIds, mode])
 async function save() {
   if (
     !props.canWrite ||
@@ -178,9 +124,8 @@ async function save() {
     await updateDish(
       props.dish.id,
       {
-        group_ids: [...groupIds.value],
         preparation_station_ids:
-          mode.value === 'inherit'
+          mode.value === 'unconfigured'
             ? null
             : mode.value === 'none'
               ? []
@@ -188,7 +133,7 @@ async function save() {
       },
       { kitchenId: props.kitchenId, isCurrent: current }
     )
-    if (current()) saved.value = 'Groups and preparation saved.'
+    if (current()) saved.value = 'Station assignment saved.'
   } catch (cause) {
     if (current())
       error.value =

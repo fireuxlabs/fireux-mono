@@ -15,13 +15,17 @@
     <template v-else>
       <DishMenu
         v-for="menu in activeMenus"
-        :key="`${kitchenId}:${menu.id}`"
+        :key="`${kitchenId}:${dishId}:${menu.id}`"
         :menu="menu"
+        @result="results[menu.id] = $event"
       />
-      <p v-if="!activeMenus.length">No menus in this kitchen.</p>
+      <p v-if="relationshipsPending" role="status">Checking Menu placements…</p>
+      <p v-else-if="relationshipsEmpty">
+        This Item is not placed on any active Menu yet.
+      </p>
     </template>
     <UButton
-      to="/workspace/kitchen/menu/menus"
+      to="/workspace/kitchen/menu"
       label="Open menus"
       variant="outline"
       color="neutral"
@@ -29,22 +33,35 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
-import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-const workspace = useKitchenWorkspace()
+import { computed, ref, watch } from 'vue'
 import DishMenu from './Menu.vue'
-import { useKitchenDishDetail } from '../../../composables/dish/useKitchenDishDetail'
+import { useKitchenItemDetail } from '../../../composables/dish/useKitchenItemDetailContext'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
-const { kitchenId, storageKitchenId, rootCollection, databaseId } =
-  useKitchenDishDetail(
-    () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
-    useRouteParam('dishId')
-  )
+const { kitchenId, dishId, storageKitchenId, rootCollection, databaseId } =
+  useKitchenItemDetail()
 const { activeMenus, pending, error } = useKitchenMenuCollection(
   storageKitchenId,
   {
     kitchenCollectionPath: rootCollection,
     databaseId,
   }
+)
+const results = ref<Record<string, 'pending' | 'error' | 'empty' | 'match'>>({})
+watch(
+  [kitchenId, dishId],
+  () => {
+    results.value = {}
+  },
+  { flush: 'sync' }
+)
+const relationshipsPending = computed(() =>
+  activeMenus.value.some(
+    (menu) => !results.value[menu.id] || results.value[menu.id] === 'pending'
+  )
+)
+const relationshipsEmpty = computed(
+  () =>
+    !relationshipsPending.value &&
+    activeMenus.value.every((menu) => results.value[menu.id] === 'empty')
 )
 </script>

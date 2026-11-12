@@ -123,6 +123,15 @@ export async function writeKitchenMenuDraft(input: {
       for (const [index, planned] of plannedDishes.entries()) {
         const previous = dishSnapshots[index]
         if (
+          Array.isArray(previous?.data?.choice_groups) &&
+          previous.data.choice_groups.length
+        )
+          throw createError({
+            statusCode: 409,
+            statusMessage:
+              'This existing Item uses choice groups. Manage its choices in the Item editor; imports cannot replace them.',
+          })
+        if (
           previous?.exists &&
           ['price', 'price_options', 'add_ons'].some(
             (key) =>

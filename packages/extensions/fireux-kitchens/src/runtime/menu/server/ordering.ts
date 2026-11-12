@@ -160,6 +160,9 @@ export async function resolveMenuOrderLines(
         },
         {
           quantity: selection.quantity,
+          ...(selection.choiceGroups
+            ? { choiceGroups: selection.choiceGroups }
+            : {}),
           optionId: selection.optionId || '',
           extraIds: selection.extraIds || [],
           groups: selection.groups || {},
@@ -176,19 +179,22 @@ export async function resolveMenuOrderLines(
       const option = item.priceOptions.find(
         (row) => row.id === selection.optionId
       )
-      const notes = item.mealDeal
-        ? item.mealDeal.groups.flatMap((group) =>
-            (selection.groups?.[group.id] || []).map((id) => {
-              const choice = group.dishes.find((row) => row.dishId === id)!
-              return `${group.name}: ${choice.name}${choice.supplement ? ` (+${currency} ${choice.supplement.toFixed(2)})` : ''}`
-            })
-          )
-        : item.addOns
-            .filter((extra) => selection.extraIds?.includes(extra.id))
-            .map(
-              (extra) =>
-                `${extra.label}${extra.price ? ` (+${currency} ${extra.price.toFixed(2)})` : ''}`
-            )
+      const notes =
+        item.choiceGroups !== undefined
+          ? [...resolved.details]
+          : item.mealDeal
+            ? item.mealDeal.groups.flatMap((group) =>
+                (selection.groups?.[group.id] || []).map((id) => {
+                  const choice = group.dishes.find((row) => row.dishId === id)!
+                  return `${group.name}: ${choice.name}${choice.supplement ? ` (+${currency} ${choice.supplement.toFixed(2)})` : ''}`
+                })
+              )
+            : item.addOns
+                .filter((extra) => selection.extraIds?.includes(extra.id))
+                .map(
+                  (extra) =>
+                    `${extra.label}${extra.price ? ` (+${currency} ${extra.price.toFixed(2)})` : ''}`
+                )
       if (selection.bottle)
         notes.push(
           selection.bottle === 'exchange'

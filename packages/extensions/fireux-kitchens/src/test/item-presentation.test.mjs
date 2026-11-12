@@ -1,3 +1,4 @@
+import * as itemChoices from '../runtime/kitchen/utils/item-choices.ts'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -34,6 +35,7 @@ function component(path, dependencies = {}) {
   const exports = {}
   compileFunction(code, ['require', 'exports'])((name) => {
     if (name === 'vue') return Vue
+    if (name.endsWith('/item-choices')) return itemChoices
     assert.ok(dependencies[name], name)
     return dependencies[name]
   }, exports)
@@ -57,6 +59,8 @@ const Item = component('menu/components/Detail/Item.vue', {
   '../../../utils/currency-display': currency,
 })
 const ItemImage = component('menu/components/ItemImage.vue')
+const ChoiceBubbles = component('menu/components/ChoiceBubbles.vue')
+const ItemChoices = component('menu/components/ItemChoices.vue')
 const Surface = {
   render() {
     return Vue.h('span', this.$slots.default?.())
@@ -90,6 +94,8 @@ async function renderItem(changes = {}) {
       }),
   })
   app.component('MenuItemImage', ItemImage)
+  app.component('MenuChoiceBubbles', ChoiceBubbles)
+  app.component('MenuItemChoices', ItemChoices)
   app.component('MenuDetailMealDeal', { render: () => null })
   return renderToString(app)
 }
@@ -169,6 +175,12 @@ function mount(Component, props) {
   })
   app.component('UIcon', { render: () => Vue.h('span') })
   app.component('MenuItemImage', ItemImage)
+  app.component('MenuChoiceBubbles', ChoiceBubbles)
+  app.component('MenuItemChoices', ItemChoices)
+  app.component(
+    'KitchenMenuItemsPhoto',
+    component('kitchen/components/Menu/Items/Photo.vue')
+  )
   app.component('UAvatar', {
     props: ['src', 'alt', 'icon'],
     setup(props) {
@@ -183,7 +195,11 @@ function mount(Component, props) {
     node.tag === tag
       ? node
       : (node.children || []).map((child) => find(tag, child)).find(Boolean)
-  return { app, find, avatar: () => avatar }
+  const all = (tag, node = root) => [
+    ...(node.tag === tag ? [node] : []),
+    ...(node.children || []).flatMap((child) => all(tag, child)),
+  ]
+  return { app, find, all, avatar: () => avatar }
 }
 test('failed customer images collapse safely and a changed URL can recover', async () => {
   for (const [Component, props, change] of [
@@ -219,30 +235,22 @@ test('failed customer images collapse safely and a changed URL can recover', asy
   }
 })
 
-test('operator Item cells delegate imagery and fallback to native Avatar', async () => {
+test('operator Item photos crop only the known upload margin without rewriting assets', async () => {
   const Cell = component('kitchen/components/Menu/Items/Cards/Cell.vue')
   const props = Vue.reactive({
     id: 'dish',
-    title: 'Free item',
-    priceLabel: '0 CHF',
+    title: 'Item',
     imageUrl: '/item.jpg',
   })
   const mounted = mount(Cell, props)
-  assert.equal(mounted.avatar().src, '/item.jpg')
-  assert.equal(mounted.avatar().alt, 'Free item')
-  assert.equal(mounted.avatar().icon, 'i-lucide-utensils')
-  props.imageUrl = '/new.jpg'
+  assert.equal(mounted.find('img').props.src, '/item.jpg')
+  props.imageUrl =
+    'https://storage.example/o/kitchens%2Fk%2Fdishes%2Fd%2Fimage%2Fr.webp'
   await Vue.nextTick()
-  assert.equal(mounted.avatar().src, '/new.jpg')
+  assert.match(mounted.find('img').parent.props.class, /item-photo--padded/)
   props.imageUrl = ''
   await Vue.nextTick()
-  assert.equal(mounted.avatar().src, undefined)
-  assert.equal(mounted.avatar().icon, 'i-lucide-utensils')
-  assert.equal(mounted.find('h3').text, 'Free item')
-  assert.equal(mounted.find('strong').text, '0 CHF')
-  props.title = ''
-  await Vue.nextTick()
-  assert.equal(mounted.avatar().alt, 'Untitled dish')
+  assert.equal(mounted.find('img'), undefined)
   mounted.app.unmount()
 })
 
@@ -400,4 +408,123 @@ test('the Appearance control saves only its boolean preference and forwards capt
     }
   }
   assert.equal(calls.length, 2)
+})
+
+test('public choice bubbles expose local preview controls without visible group headings', async () => {
+  const html = await renderItem({
+    item: item({
+      priceOptions: [{ id: 'large', label: 'Large', price: 18 }],
+      addOns: [
+        { id: 'cheese', label: 'Cheese', price: 2 },
+        { id: 'sauce', label: 'Sauce', price: 0 },
+      ],
+    }),
+  })
+  assert.match(html, /menu-choice-bubble/)
+  assert.match(html, /Large/)
+  assert.match(html, /18 CHF/)
+  assert.match(html, /\+ 2 CHF/)
+  assert.match(html, /Included/)
+  assert.match(html, /type="radio"/)
+  assert.match(html, /type="checkbox"/)
+  assert.doesNotMatch(html, /options-label|<button|<details/)
+})
+
+test('ordering bubbles preserve native radio and checkbox state and emit the chosen identity', async () => {
+  for (const multiple of [false, true]) {
+    const selected = Vue.ref(['small']),
+      emitted = []
+    const props = Vue.reactive({
+      label: 'Portions',
+      interactive: true,
+      multiple,
+      options: [{ id: 'small', label: 'Small', priceLabel: '12 CHF' }],
+      get selectedIds() {
+        return selected.value
+      },
+      onChoose: (id) => emitted.push(id),
+    })
+    const mounted = mount(ChoiceBubbles, props)
+    const input = mounted.find('input')
+    assert.equal(input.props.type, multiple ? 'checkbox' : 'radio')
+    assert.equal(input.props.checked, true)
+    assert.equal(input.props.value, 'small')
+    input.props.onChange()
+    assert.deepEqual(emitted, ['small'])
+    selected.value = []
+    await Vue.nextTick()
+    assert.equal(mounted.find('input').props.checked, false)
+    mounted.app.unmount()
+  }
+})
+
+test('direct ordering bubbles retain the existing add action', () => {
+  const chosen = []
+  const mounted = mount(ChoiceBubbles, {
+    label: 'Pizza variants',
+    action: true,
+    options: [{ id: 'large', label: 'Large', priceLabel: '18 CHF' }],
+    onChoose: (id) => chosen.push(id),
+  })
+  assert.equal(mounted.find('input'), undefined)
+  const button = mounted.find('button')
+  assert.equal(button.props.type, 'button')
+  button.props.onClick()
+  assert.deepEqual(chosen, ['large'])
+  mounted.app.unmount()
+})
+
+test('browse preview selects a variant, toggles extras and resets without mutating the Item', async () => {
+  const saved = item({
+    price: 9,
+    priceOptions: [
+      { id: 'large', label: 'Large', price: 18 },
+      { id: 'small', label: 'Small', price: 12 },
+    ],
+    addOns: [
+      { id: 'cheese', label: 'Cheese', price: 2.5 },
+      { id: 'sauce', label: 'Sauce', price: 0 },
+    ],
+  })
+  const before = structuredClone(saved)
+  const props = Vue.reactive({
+    item: saved,
+    accessibilityId: 'preview',
+    currencyCode: 'CHF',
+    currencyFormat: 'code',
+    showCurrency: true,
+    availableOptionsLabel: 'Options',
+    optionalExtrasLabel: 'Extras',
+  })
+  const mounted = mount(Item, props)
+  const input = (id) =>
+    mounted.all('input').find((node) => node.props.value === id)
+  const text = (node) =>
+    [node.text || '', ...(node.children || []).map(text)].join('')
+  const price = () =>
+    text(
+      mounted
+        .all('span')
+        .find((node) => node.props.class === 'menu-browse-item__price')
+    )
+  assert.equal(input('small').props.checked, true)
+  assert.equal(price(), '12 CHF')
+  input('large').props.onChange()
+  await Vue.nextTick()
+  assert.equal(price(), '18 CHF')
+  input('cheese').props.onChange()
+  await Vue.nextTick()
+  assert.equal(price(), '20.50 CHF')
+  input('sauce').props.onChange()
+  await Vue.nextTick()
+  assert.equal(price(), '20.50 CHF')
+  input('cheese').props.onChange()
+  await Vue.nextTick()
+  assert.equal(price(), '18 CHF')
+  assert.deepEqual(saved, before)
+  props.item = item({ id: 'another', price: 4 })
+  await Vue.nextTick()
+  assert.equal(price(), '4 CHF')
+  assert.equal(mounted.all('input').length, 0)
+  mounted.app.unmount()
 })

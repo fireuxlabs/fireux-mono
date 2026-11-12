@@ -1193,3 +1193,74 @@ test('Collection status copy distinguishes acceptance, preparation and readiness
     state.scope.stop()
   }
 })
+
+test('trusted checkout validates grouped Item choices against current canonical prices and limits', async () => {
+  const { records, tx } = catalogue()
+  records.set('kitchens/venue/dishes/pizza', {
+    name: 'Pizza',
+    price: 12,
+    choice_groups: [
+      {
+        id: 'size',
+        name: 'Size',
+        min: 1,
+        max: 1,
+        pricing: 'full',
+        options: [
+          { id: 'small', label: 'Small', price: 12 },
+          { id: 'large', label: 'Large', price: 18 },
+        ],
+      },
+      {
+        id: 'sauce',
+        name: 'Sauce',
+        min: 0,
+        max: 1,
+        pricing: 'additional',
+        options: [
+          { id: 'hot', label: 'Hot', price: 2 },
+          { id: 'mild', label: 'Mild', price: 0 },
+        ],
+      },
+    ],
+  })
+  const selection = {
+    menuId: 'food',
+    sectionId: 'main',
+    itemId: 'pizza',
+    quantity: 1,
+    choiceGroups: { size: ['large'], sauce: ['hot'] },
+    expectedUnitMinor: 2000,
+    offeringIds: ['collection'],
+  }
+  const before = structuredClone(records)
+  const result = await ordering.resolveMenuOrderLines(
+    tx,
+    input([selection], 20),
+    monday
+  )
+  assert.equal(result.pricing.total, 20)
+  assert.deepEqual(result.lines[0].notes, ['Size: Large', 'Sauce: Hot'])
+  for (const choices of [
+    { size: [] },
+    { size: ['large'], sauce: ['hot', 'mild'] },
+    { size: ['fake'] },
+    { size: ['small'], invented: ['hot'] },
+  ])
+    await assert.rejects(
+      ordering.resolveMenuOrderLines(
+        tx,
+        input([{ ...selection, choiceGroups: choices }], 20),
+        monday
+      )
+    )
+  await assert.rejects(
+    ordering.resolveMenuOrderLines(
+      tx,
+      input([{ ...selection, expectedUnitMinor: 100 }], 20),
+      monday
+    ),
+    /prices changed/
+  )
+  assert.deepEqual(records, before)
+})

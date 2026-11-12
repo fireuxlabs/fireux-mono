@@ -1,18 +1,13 @@
 <template>
-  <WorkspaceKitchenAICapabilityInfo capability="menus" />
-  <div class="fx-page-stack">
-    <KitchenMenuMenus />
-  </div>
+  <KitchenMenu />
 </template>
 
 <script setup lang="ts">
-import { provideKitchenMenusContext } from '../../../../../kitchen/composables/workspace/menus/useKitchenMenusContext'
-
-provideKitchenMenusContext()
-
+import KitchenMenu from '../../../../../kitchen/components/Menu/Index.vue'
 definePageMeta({
   layout: false,
   workspacePage: true,
+  workspaceHeader: 'content',
   pageTransition: false,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',

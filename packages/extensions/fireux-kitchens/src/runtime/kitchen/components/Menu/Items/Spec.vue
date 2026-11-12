@@ -24,9 +24,9 @@
               type="number"
               min="1" /></UFormField
           ><UFormField
-            label="Preparation station"
-            description="Record where this Item is prepared. Printer and order routing are not configured here."
-            ><UInput v-model="draft.station" aria-label="Preparation station"
+            label="Preparation note"
+            description="Optional preparation note. Choose where this Item is prepared using Station assignments above."
+            ><UInput v-model="draft.station" aria-label="Preparation note"
           /></UFormField>
         </div>
         <section class="fx-card-body-stack">
@@ -206,9 +206,6 @@
         <section v-if="dish.spec.prep_items.length">
           <div class="card__header">
             <h3>Mise en place</h3>
-            <NuxtLink :to="{ query: { ...route.query, view: 'preparation' } }"
-              >Batch methods →</NuxtLink
-            >
           </div>
           <ul>
             <li v-for="row in dish.spec.prep_items" :key="row.prep_item_id">
@@ -269,9 +266,6 @@
   </UCard>
 </template>
 <script setup lang="ts">
-import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
-import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-const workspace = useKitchenWorkspace()
 import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
@@ -281,7 +275,7 @@ import {
   emptyDishSpecification,
   validateDishSpecification,
 } from '../../../utils/dish-specification'
-import { useKitchenDishDetail } from '../../../composables/dish/useKitchenDishDetail'
+import { useKitchenItemDetail } from '../../../composables/dish/useKitchenItemDetailContext'
 import { useKitchenIngredients } from '../../../composables/ingredients/useKitchenIngredients'
 import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
 import { useKitchenRecipeCollection } from '../../../composables/useKitchenRecipeCollection'
@@ -295,10 +289,7 @@ const {
   rootCollection,
   databaseId,
   canWrite,
-} = useKitchenDishDetail(
-  () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
-  useRouteParam('dishId')
-)
+} = useKitchenItemDetail()
 const options = { kitchenCollectionPath: rootCollection, databaseId }
 const { ingredients, error: ingredientError } = useKitchenIngredients(
   storageKitchenId,

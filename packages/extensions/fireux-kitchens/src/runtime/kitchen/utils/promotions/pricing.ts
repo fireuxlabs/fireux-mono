@@ -202,6 +202,21 @@ export function promotionPricedItem(
       promotionLabel: offer.name,
       price,
       priceLabel: String(price),
+      ...(item.choiceGroups !== undefined
+        ? {
+            choiceGroups: item.choiceGroups.map((group) =>
+              group.pricing === 'full'
+                ? {
+                    ...group,
+                    options: group.options.map((option) => ({
+                      ...option,
+                      price,
+                    })),
+                  }
+                : group
+            ),
+          }
+        : {}),
       priceOptions: item.priceOptions.map((option) => ({
         ...option,
         price,

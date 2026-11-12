@@ -1,12 +1,14 @@
 <template>
-  <UCard>
-    <template #header><h2>Price, options and extras</h2></template>
+  <UCard id="item-price-choices">
+    <template #header><h2>Price & choices</h2></template>
     <form class="fx-card-body-stack" @submit.prevent="save">
       <p>
-        Normal prices apply wherever this dish appears. Promotions can override
-        the item price.
+        Shared across all Menus using this Item. Choose full Item prices for
+        sizes, or additional charges for included choices and extras.
       </p>
-      <UFormField :label="`Normal price (${currency})`"
+      <UFormField
+        v-if="!groups.some((group) => group.pricing === 'full')"
+        :label="`Normal price (${currency})`"
         ><!-- @vue-generic {string | number, {}} -->
         <UInput
           v-model="price"
@@ -15,19 +17,35 @@
           step="0.01"
           :disabled="!canWrite || busy"
       /></UFormField>
-      <KitchenMenuItemsPricingOptions
-        v-model="options"
+      <KitchenMenuItemsPricingGroups
+        v-model="groups"
         :disabled="!canWrite || busy"
+        :currency="currency"
       />
-      <KitchenMenuItemsPricingExtras
-        v-model="extras"
+      <FireDisclosurePanel title="Try the choices" :default-open="false">
+        <template v-if="validatedGroups">
+          <MenuItemChoices
+            :groups="validatedGroups"
+            v-model="previewChoices"
+            :money="formatMoney"
+            show-names
+          />
+          <p role="status">{{ previewPrice }}</p>
+        </template>
+        <p v-else>Complete the group names, choices and limits to preview.</p>
+      </FireDisclosurePanel>
+      <UButton
+        type="submit"
+        label="Save changes"
+        :loading="busy"
         :disabled="!canWrite || busy"
       />
       <UButton
-        type="submit"
-        label="Save pricing"
-        :loading="busy"
-        :disabled="!canWrite || busy"
+        label="Cancel changes"
+        color="neutral"
+        variant="ghost"
+        :disabled="busy"
+        @click="resetDraft"
       />
       <p v-if="message" role="status">{{ message }}</p>
       <div v-if="error" role="alert">
@@ -47,32 +65,53 @@
 </template>
 <script setup lang="ts">
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
-import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 const workspace = useKitchenWorkspace()
 const selectedKitchen = workspace.data
 import { computed, ref, watch } from 'vue'
-import { useKitchenDishDetail } from '../../../composables/dish/useKitchenDishDetail'
+import { useKitchenItemDetail } from '../../../composables/dish/useKitchenItemDetailContext'
 import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
 import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
+import type {
+  ItemChoiceGroup,
+  ItemChoiceSelection,
+} from '../../../models/item-choice.model'
+import {
+  readItemChoiceGroups,
+  normalizeItemChoiceGroups,
+  priceItemChoices,
+} from '../../../utils/item-choices'
 import { normalizeDishPricingPatch } from '../../../utils/dish-pricing'
-const { dish, dishId, kitchenId, canWrite } = useKitchenDishDetail(
-  () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
-  useRouteParam('dishId')
-)
+const { dish, dishId, kitchenId, canWrite } = useKitchenItemDetail()
 const currency = computed(() => readPlaceCurrencyCode(selectedKitchen.value))
 const price = ref<string | number>('')
-const options = ref<
-  Array<{
-    label: string
-    quantity: number
-    unit: string
-    price: string | number
-  }>
->([])
-const extras = ref<
-  Array<{ id: string; label: string; price: string | number }>
->([])
+const groups = ref<ItemChoiceGroup[]>([])
+const previewChoices = ref<ItemChoiceSelection>({})
+const validatedGroups = computed(() => {
+  try {
+    return normalizeItemChoiceGroups(groups.value)
+  } catch {
+    return null
+  }
+})
+const formatMoney = (value: number) =>
+  new Intl.NumberFormat('en', {
+    style: 'currency',
+    currency: currency.value,
+  }).format(value)
+const previewPrice = computed(() => {
+  try {
+    return formatMoney(
+      priceItemChoices(
+        Number(price.value || 0),
+        validatedGroups.value || [],
+        previewChoices.value
+      ).unitMinor / 100
+    )
+  } catch (error) {
+    return error instanceof Error ? error.message : 'Review choices.'
+  }
+})
 const busy = ref(false),
   error = ref(''),
   message = ref('')
@@ -83,19 +122,15 @@ const sourceKey = computed(() =>
     dish.value?.price,
     dish.value?.price_options,
     dish.value?.add_ons,
+    dish.value?.choice_groups,
   ])
 )
-watch(
-  sourceKey,
-  () => {
-    price.value = dish.value?.price ?? ''
-    options.value = (dish.value?.price_options || []).map((option) => ({
-      ...option,
-    }))
-    extras.value = (dish.value?.add_ons || []).map((extra) => ({ ...extra }))
-  },
-  { immediate: true }
-)
+function resetDraft() {
+  price.value = dish.value?.price ?? ''
+  groups.value = dish.value ? readItemChoiceGroups(dish.value) : []
+  previewChoices.value = {}
+}
+watch(sourceKey, resetDraft, { immediate: true })
 const captureIntent = useDishEditorScope([kitchenId, dishId, canWrite], () => {
   busy.value = false
   error.value = ''
@@ -123,15 +158,12 @@ async function save() {
   message.value = ''
   try {
     const changes = normalizeDishPricingPatch({
-      price: amount(price.value),
-      price_options: options.value.map((option) => ({
-        ...option,
-        price: amount(option.price),
-      })),
-      add_ons: extras.value.map((extra) => ({
-        ...extra,
-        price: amount(extra.price),
-      })),
+      price: groups.value.some((group) => group.pricing === 'full')
+        ? 0
+        : amount(price.value),
+      choice_groups: normalizeItemChoiceGroups(groups.value),
+      price_options: [],
+      add_ons: [],
     })
     await updateDish(dishId.value, changes, {
       kitchenId: kitchenId.value,

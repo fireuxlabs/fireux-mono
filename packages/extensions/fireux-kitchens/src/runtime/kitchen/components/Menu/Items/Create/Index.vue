@@ -165,7 +165,6 @@ const addDish = async () => {
         name: dishName,
         price: Number(price.value),
         description: normalizeString(description.value),
-        group_ids: [],
       },
       { kitchenId: resolvedKitchenId }
     )

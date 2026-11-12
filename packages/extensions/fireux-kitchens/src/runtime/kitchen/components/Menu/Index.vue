@@ -5,6 +5,7 @@
     variant="primary"
   />
   <KitchenMenuMenusOverview />
+  <KitchenMenuMenusCreateDialog />
   <KitchenMenuAI />
   <section
     class="menu-summary"
@@ -16,12 +17,26 @@
   </section>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { provideMenuGroupIndex } from '../../composables/workspace/menu-group/useMenuGroupIndexContext'
-const { kitchenName } = provideMenuGroupIndex()
+import { provideKitchenMenusContext } from '../../composables/workspace/menus/useKitchenMenusContext'
+import { useRoute, useRouter } from '#imports'
+const route = useRoute(),
+  router = useRouter()
+const menus = provideKitchenMenusContext(false)
+const { kitchenName } = provideMenuGroupIndex(menus.menuCollection)
+watch(
+  () => [route.query.create, menus.canCreateMenu.value],
+  () => {
+    if (route.query.create !== '1' || !menus.canCreateMenu.value) return
+    menus.actions.openCreate()
+    void router.replace({ query: { ...route.query, create: undefined } })
+  },
+  { immediate: true }
+)
 const description = computed(
   () =>
-    `Manage ${kitchenName.value ? `${kitchenName.value}'s` : "your Kitchen's"} menus, items, promotions and services and some collective stuff.`
+    `Manage ${kitchenName.value ? `${kitchenName.value}'s` : "your Kitchen's"} menus, items, promotions and services`
 )
 </script>
 

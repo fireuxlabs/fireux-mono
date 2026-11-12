@@ -3,6 +3,7 @@
     <WorkspaceKitchenAIAssistant
       :kitchen-id="kitchenId || ''"
       compact
+      :compact-chat="compactChat"
       :show-intro="false"
       :agent="agent"
       :agent-label="agent.name"
@@ -70,12 +71,14 @@ import { useKitchenCapabilityTools } from '../../../composables/workspace/useKit
 
 const props = withDefaults(
   defineProps<{
+    compactChat?: boolean
     capability: KitchenCapabilitySlug
     suggestions?: KitchenCapabilitySuggestion[]
     actionTargets?: KitchenCapabilityActionTarget[]
     showSuggestionCards?: boolean
   }>(),
   {
+    compactChat: false,
     suggestions: () => [],
     actionTargets: () => [],
     showSuggestionCards: true,
