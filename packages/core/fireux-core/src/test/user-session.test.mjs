@@ -1,5 +1,5 @@
 import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
-import { resolveAppUserAccess } from '../runtime/app/utils/app-user-access.ts'
+import { resolveAppUserAccess } from '../runtime/app/app-user/utils/access.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -238,7 +238,7 @@ function nativeSession(initial = {}) {
     }
   )
   const useAppUserRead = loadRuntime(
-    'app/composables/membership/useAppUserRead.ts',
+    'app/app-user/composables/useAppUserRead.ts',
     'useAppUserRead',
     {
       resolveAppUserAccess,
@@ -256,7 +256,7 @@ function nativeSession(initial = {}) {
       useAvatarProxy: () => ({ getProxiedAvatarUrl: (value) => value }),
       resolveUserAvatarSource: (value) => value || '/img/ecosystem/avatar.png',
       useAppUserAccess: loadRuntime(
-        'app/composables/membership/useAppUserAccess.ts',
+        'app/app-user/composables/useAppUserAccess.ts',
         'useAppUserAccess',
         { computed, resolveAppUserAccess }
       ),

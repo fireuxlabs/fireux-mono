@@ -8,5 +8,6 @@ export const operator = {
   address: 'Eyacheri 2, 3800 Matten bei Interlaken, Switzerland',
   telephone: '+41338226000',
   phoneLabel: '+41 33 822 60 00',
-  email: 'heli1@swissalpineguides.ch',
+  email: 'info@swissalpineguides.ch',
+  heliEmail: 'heli1@swissalpineguides.ch',
 } as const

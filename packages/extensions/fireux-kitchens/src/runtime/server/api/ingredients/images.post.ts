@@ -1,7 +1,7 @@
 import { createError, defineEventHandler } from 'h3'
 import { uploadProtectedImage } from 'fireux-core/runtime/server/utils/uploads/image'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 import {
   curatorContext,
   assertCurator,

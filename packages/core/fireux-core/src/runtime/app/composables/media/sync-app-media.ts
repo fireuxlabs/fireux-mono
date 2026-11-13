@@ -1,9 +1,10 @@
+import type { AppMediaSyncResponse } from '../../media/contracts'
 import { refreshNuxtData } from 'nuxt/app'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { captureCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import { useFireUXConfig } from '../config/FireUXConfig'
 import { useRequireUser } from '../../../composables/fireux/firebase/useRequireUser'
-import type { AppImageKind, AppMediaSyncResponse } from '../../models/app-media'
+import type { AppImageKind } from '../../media/types'
 
 export async function syncAppMediaToStorage(
   kinds?: readonly AppImageKind[]

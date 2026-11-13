@@ -199,7 +199,7 @@ Review implementation claims when their referenced owners change.
 - `packages/extensions/fireux-app/src/runtime/nuxt.config.ts`
 - `packages/extensions/fireux-app/src/test/public-runtime.test.mjs`
 - `packages/extensions/fireux-app/src/test/app/composables/pricing/usePricing.test.mjs`
-- `packages/core/fireux-core/src/runtime/app/utils/app-user-access.ts`
+- `packages/core/fireux-core/src/runtime/app/app-user/utils/access.ts`
 - `packages/core/fireux-core/src/runtime/app/utils/app-subscription-capacity.ts`
 - `projects/*/*-app/app/composables/use*Pricing.ts`
 - `projects/fireux/fireux-app/app/content/meta/source.ts`

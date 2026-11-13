@@ -141,8 +141,8 @@ import {
   appImageLocalPublicPath,
   appImageRequirement,
   appPublicAssetRequirement,
-} from '../../utils/app-media'
-import { type AppImageKind } from '../../models/app-media'
+} from '../../media/utils'
+import { type AppImageKind } from '../../media/types'
 import type { App } from '../../models/app.model.ts'
 
 const props = withDefaults(defineProps<{ app?: App | null }>(), { app: null })

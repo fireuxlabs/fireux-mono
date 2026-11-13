@@ -1,3 +1,7 @@
+import type {
+  AppMediaSyncFailure,
+  AppMediaSyncResponse,
+} from '../../media/contracts'
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { randomUUID } from 'node:crypto'
@@ -13,12 +17,7 @@ import {
   normalizeStorageBucketName,
 } from '../../../server/utils/uploads/storage'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
-import {
-  APP_IMAGE_SYNC_KINDS,
-  type AppImageKind,
-  type AppMediaSyncFailure,
-  type AppMediaSyncResponse,
-} from '../../models/app-media'
+import { APP_IMAGE_SYNC_KINDS, type AppImageKind } from '../../media/types'
 import { findRepoRoot } from '../../../server/utils/files/repository-root'
 import {
   appImageFirestoreField,
@@ -26,7 +25,7 @@ import {
   appImageRequirement,
   appImageStoragePath,
   validateAppAssetDimensions,
-} from '../../utils/app-media'
+} from '../../media/utils'
 
 function mimeTypeForPath(path: string): string {
   switch (extname(path).toLowerCase()) {

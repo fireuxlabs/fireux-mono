@@ -7,7 +7,7 @@ import {
 
 // Concurrent edit — 2026-07-22 12:38 CEST — Ignition delivery pass: expose bounded private request data to FireUX App admins.
 
-import { ConversationStorage } from 'fireux-core/runtime/app/models/conversation.model'
+import { CONVERSATION_COLLECTION } from 'fireux-core/runtime/app/server/chat/storage'
 import { serializeIgnitionRequest } from '../../../utils/ignition-request'
 import { requireFireuxAppAdmin } from '../../../utils/require-fireux-app-admin'
 
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const snapshot = await db
     .collection('apps')
     .doc(appId)
-    .collection(ConversationStorage.collection)
+    .collection(CONVERSATION_COLLECTION)
     .where('kind', '==', 'ignition')
     .limit(50)
     .get()

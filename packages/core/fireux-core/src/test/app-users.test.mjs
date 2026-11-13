@@ -1,6 +1,6 @@
 import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
 import { useCommandScope } from '../runtime/composables/fireux/commands/useCommandScope.ts'
-import { readAppUserSubscription } from '../runtime/app/models/app-user.model.ts'
+import { readAppUserSubscription } from '../runtime/app/app-user/utils/validation.ts'
 import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -12,7 +12,7 @@ import { computed, effectScope, ref, unref } from 'vue'
 test('App memberships retain missing identities and hydrate User data without flattening it', () => {
   const source = readFileSync(
     new URL(
-      '../runtime/app/composables/membership/useAppUsers.ts',
+      '../runtime/app/app-user/composables/useAppUsers.ts',
       import.meta.url
     ),
     'utf8'
@@ -84,7 +84,7 @@ test('App memberships retain missing identities and hydrate User data without fl
 test('one membership uses one exact read and follows viewer authority and selected person', () => {
   const source = readFileSync(
     new URL(
-      '../runtime/app/composables/membership/useAppUserMembership.ts',
+      '../runtime/app/app-user/composables/useAppUserMembership.ts',
       import.meta.url
     ),
     'utf8'
@@ -157,7 +157,7 @@ test('one membership uses one exact read and follows viewer authority and select
 test('administrators beyond the member page are still read and hydrated', () => {
   const source = readFileSync(
     new URL(
-      '../runtime/app/composables/membership/useAppUsers.ts',
+      '../runtime/app/app-user/composables/useAppUsers.ts',
       import.meta.url
     ),
     'utf8'
@@ -216,7 +216,7 @@ test('administrators beyond the member page are still read and hydrated', () => 
 function subscriptionFixture() {
   const source = readFileSync(
     new URL(
-      '../runtime/app/composables/membership/useAppUserMembership.ts',
+      '../runtime/app/app-user/composables/useAppUserMembership.ts',
       import.meta.url
     ),
     'utf8'

@@ -2,7 +2,7 @@
   <ClientOnly>
     <AppMembershipCurrentApp />
     <section aria-label="App user">
-      <AppMembershipAccess />
+      <AppUserAccess />
       <AppMembershipProfiles />
     </section>
   </ClientOnly>

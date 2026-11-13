@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useAppUsers } from 'fireux-core/runtime/app/composables/membership/useAppUsers'
+import { useAppUsers } from 'fireux-core/runtime/app/app-user/composables/useAppUsers'
 
 const ownerUserId = ref('')
 const { memberships, pending, error, membersHasMore, loadMoreMembers } =

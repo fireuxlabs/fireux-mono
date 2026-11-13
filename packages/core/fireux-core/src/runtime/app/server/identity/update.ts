@@ -1,7 +1,8 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, readBody, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
-import { APP_MUTATION_TARGETS, serverAppUsersTarget } from '../mutation-targets'
+import { APP_MUTATION_TARGETS } from '../mutation-targets'
+import { serverAppUsersTarget } from '../../app-user/server/mutation-targets'
 import { requireFirebaseBearerUser } from '../../../server/utils/auth/bearer'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
 

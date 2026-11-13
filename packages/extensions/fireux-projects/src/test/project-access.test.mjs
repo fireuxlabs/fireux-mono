@@ -1,5 +1,5 @@
-import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
-import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/utils/app-user-access.ts'
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
+import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/access.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestore-document-id.ts'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
@@ -48,7 +48,7 @@ const membership = () => ({
   created: { at: { ...stamps } },
 })
 const contract = load(
-  '../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
+  '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
   {},
   '({ readMembershipAccessIds, membershipCreatedAt, createMembershipAccess })'
 )
@@ -98,7 +98,7 @@ function liveHarness(loadDocs) {
   })
   let boundPath, boundId
   const useMembershipAccess = load(
-    '../../../../core/fireux-core/src/runtime/app/composables/membership/useMembershipAccess.ts',
+    '../../../../core/fireux-core/src/runtime/app/app-user/composables/useMembershipAccess.ts',
     {
       computed,
       toValue,

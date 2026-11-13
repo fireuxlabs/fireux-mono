@@ -8,7 +8,7 @@ const accessHelpers = compileFunction(
   `${stripTypeScriptTypes(
     readFileSync(
       new URL(
-        '../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
+        '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
         import.meta.url
       ),
       'utf8'
@@ -71,7 +71,7 @@ function fixture({
       role_ids: [],
     }),
     SUPPLIER_MUTATION_TARGETS: { suppliers: { database: 'db' } },
-BUSINESS_MUTATION_TARGETS: { businesses: 'businesses' },
+    BUSINESS_MUTATION_TARGETS: { businesses: 'businesses' },
     PLACE_MUTATION_TARGETS: { businesses: 'businesses', places: 'places' },
     serverAppUsersTarget: () => 'memberships',
     serverSupplierAccessTarget: (appId) => {

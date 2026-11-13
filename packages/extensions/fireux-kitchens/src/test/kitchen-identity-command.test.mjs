@@ -3,8 +3,8 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
-import { readMembershipAccessIds } from '../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts'
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
+import { readMembershipAccessIds } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts'
 
 const runtime = new URL('../runtime/', import.meta.url)
 const core = '../../../../core/fireux-core/src/runtime/'

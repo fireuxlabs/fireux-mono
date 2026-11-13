@@ -1,5 +1,5 @@
 import { validateItemReferenceIds } from '../../runtime/kitchen/utils/item-preparation.ts'
-import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
+import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
 import { itemPricingHelpers } from '../helpers/item-pricing.mjs'
 import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
@@ -52,7 +52,7 @@ const requireFirestoreDocumentId = (value) => {
   return value
 }
 const readMembershipAccessIds = load(
-  '../../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
+  '../../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
   {},
   'readMembershipAccessIds'
 )

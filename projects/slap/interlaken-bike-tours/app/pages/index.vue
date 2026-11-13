@@ -1,3 +1,4 @@
+ait
 <template>
   <UPage>
     <LandingHero />
@@ -12,9 +13,9 @@
   </UPage>
 </template>
 <script setup lang="ts">
+import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { searchPage } from '~/ignition/search'
 const page = searchPage('/')
-import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 useAppLandingSeo({
   title: page.title,
   description: page.description,

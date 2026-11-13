@@ -9,7 +9,7 @@ import {
   useCommandScope,
 } from '../../../composables/fireux/commands/useCommandScope'
 import { requireUid } from '../../../composables/fireux/firestore/utils/useEnsureCommon'
-import { runAppUserCommand } from '../../../app/composables/membership/run-app-user-command'
+import { runAppUserCommand } from '../../../app/app-user/composables/run-app-user-command'
 import { provisionUserIdentity } from './provision-user'
 import { userDisplayNameSeed } from '../../utils/display-name-seed'
 

@@ -1,0 +1,42 @@
+// FILE: packages/core/fireux-core/src/runtime/app/app-user/utils/access.ts
+
+import type { AppUserRole, AppUserSubscription } from '../models/model.ts'
+import { readAppUserSubscription, isAppUserRole } from './validation.ts'
+
+export type ResolvedAppUserAccess = {
+  role: AppUserRole | null
+  subscription: AppUserSubscription
+  hasMembership: boolean
+  hasAdminAuthority: boolean
+  hasDeveloperAuthority: boolean
+  hasProSubscription: boolean
+  hasBusinessSubscription: boolean
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
+}
+
+/** Resolve independent App governance and subscription facts. */
+export function resolveAppUserAccess(
+  membership: unknown
+): ResolvedAppUserAccess {
+  const value = asRecord(membership)
+  const role: AppUserRole | null = isAppUserRole(value.role) ? value.role : null
+  const storedSubscription = readAppUserSubscription(value.subscription)
+  const hasMembership = role !== null && storedSubscription !== null
+  const subscription = storedSubscription ?? 'free'
+
+  return {
+    role: hasMembership ? role : null,
+    subscription,
+    hasMembership,
+    hasAdminAuthority: hasMembership && (role === 'admin' || role === 'dev'),
+    hasDeveloperAuthority: hasMembership && role === 'dev',
+    hasProSubscription:
+      hasMembership && (subscription === 'pro' || subscription === 'business'),
+    hasBusinessSubscription: hasMembership && subscription === 'business',
+  }
+}

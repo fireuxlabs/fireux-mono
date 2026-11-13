@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import type { DocumentSnapshot } from 'firebase-admin/firestore'
 import { createError, setHeader, type H3Event } from 'h3'
-import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/app-user/utils/validation'
 import {
   DIRECT_EMPLOYMENT_TERMS_VERSION,
   JOB_APPLICATION_STATUSES,

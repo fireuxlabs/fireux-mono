@@ -8,7 +8,7 @@ const accessHelpers = compileFunction(
   `${stripTypeScriptTypes(
     readFileSync(
       new URL(
-        '../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
+        '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
         import.meta.url
       ),
       'utf8'
@@ -73,18 +73,18 @@ for (const domain of ['property', 'portfolio']) {
       resolveWorkspaceEntityOnboardingPolicy: () => current,
       serverAuditStamp: () => ({}),
       APP_MUTATION_TARGETS: { [plural]: { database: 'db' } },
-USER_MUTATION_TARGETS: { [plural]: { database: 'db' } },
-ECOSYSTEM_MUTATION_TARGETS: { [plural]: { database: 'db' } },
-FIREUX_MUTATION_TARGETS: { [plural]: { database: 'db' } },
-SPROOCHLI_MUTATION_TARGETS: { [plural]: { database: 'db' } },
-PLACE_MUTATION_TARGETS: { [plural]: { database: 'db' } },
-KITCHEN_MUTATION_TARGETS: { [plural]: { database: 'db' } },
-INGREDIENT_MUTATION_TARGETS: { [plural]: { database: 'db' } },
-PRODUCT_MUTATION_TARGETS: { [plural]: { database: 'db' } },
-PROPERTY_MUTATION_TARGETS: { [plural]: { database: 'db' } },
-PORTFOLIO_MUTATION_TARGETS: { [plural]: { database: 'db' } },
-SUPPLIER_MUTATION_TARGETS: { [plural]: { database: 'db' } },
-JOB_MUTATION_TARGETS: { [plural]: { database: 'db' } },
+      USER_MUTATION_TARGETS: { [plural]: { database: 'db' } },
+      ECOSYSTEM_MUTATION_TARGETS: { [plural]: { database: 'db' } },
+      FIREUX_MUTATION_TARGETS: { [plural]: { database: 'db' } },
+      SPROOCHLI_MUTATION_TARGETS: { [plural]: { database: 'db' } },
+      PLACE_MUTATION_TARGETS: { [plural]: { database: 'db' } },
+      KITCHEN_MUTATION_TARGETS: { [plural]: { database: 'db' } },
+      INGREDIENT_MUTATION_TARGETS: { [plural]: { database: 'db' } },
+      PRODUCT_MUTATION_TARGETS: { [plural]: { database: 'db' } },
+      PROPERTY_MUTATION_TARGETS: { [plural]: { database: 'db' } },
+      PORTFOLIO_MUTATION_TARGETS: { [plural]: { database: 'db' } },
+      SUPPLIER_MUTATION_TARGETS: { [plural]: { database: 'db' } },
+      JOB_MUTATION_TARGETS: { [plural]: { database: 'db' } },
       serverAppUsersTarget: () => 'membership',
       [`server${title}AccessTarget`]: (appId) => {
         assert.equal(appId, 'app')

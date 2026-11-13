@@ -10,6 +10,11 @@ const catalogueSource = readFileSync(
 const tours = compileFunction(
   `${stripTypeScriptTypes(catalogueSource)};return tours`
 )()
+const activities = JSON.parse(readFileSync(new URL('../app/content/activities.json', import.meta.url), 'utf8'))
+const operatorSource = readFileSync(new URL('../app/content/operator.ts', import.meta.url), 'utf8').replace(/^export /gm, '')
+const operator = compileFunction(`${stripTypeScriptTypes(operatorSource)};return operator`)()
+const optionsSource = readFileSync(new URL('../app/content/enquiry-options.ts', import.meta.url), 'utf8').replace(/^import .*$/gm, '').replace(/^export /gm, '')
+const enquiryOptions = compileFunction(`${stripTypeScriptTypes(optionsSource)};return enquiryOptions`, ['activities', 'tours', 'operator'])(activities, tours, operator)
 const source = readFileSync(
   new URL('../server/utils/enquiry.ts', import.meta.url),
   'utf8'
@@ -18,8 +23,8 @@ const source = readFileSync(
   .replace(/^export /gm, '')
 const { validateEnquiry, prepareEnquiryDraft } = compileFunction(
   `${stripTypeScriptTypes(source)};return {validateEnquiry,prepareEnquiryDraft}`,
-  ['tours']
-)(tours)
+  ['enquiryOptions']
+)(enquiryOptions)
 const valid = {
   tour: 'ebnefluh',
   name: 'Client Example',
@@ -38,7 +43,7 @@ test('all five tours prepare a draft without claiming a booking', () => {
     const draft = prepareEnquiryDraft({ ...valid, tour: tour.id })
     assert.match(draft.body, /not a confirmed booking/)
     assert.ok(draft.body.includes(tour.route))
-    assert.deepEqual(Object.keys(draft).sort(), ['body', 'subject'])
+    assert.deepEqual(Object.keys(draft).sort(), ['body', 'subject', 'to'])
     assert.doesNotMatch(draft.body, /CHF|available seats|booking confirmed/)
   }
 })
@@ -69,4 +74,19 @@ test('names and notes remain ordinary text in the email body', () => {
   })
   assert.ok(draft.body.includes('<b>Example</b>'))
   assert.ok(draft.body.includes('x & y?'))
+})
+
+test('every activity and support enquiry uses the correct fixed operator recipient', () => {
+  for (const option of enquiryOptions) {
+    const draft = prepareEnquiryDraft({ ...valid, tour: option.id, activity: option.heli ? 'ski' : 'other' })
+    assert.equal(draft.to, option.heli ? 'heli1@swissalpineguides.ch' : 'info@swissalpineguides.ch')
+    assert.ok(draft.body.includes(option.name))
+    assert.match(draft.body, /not a confirmed booking/)
+    if (!option.heli) assert.doesNotMatch(draft.body, /aircraft availability/)
+  }
+})
+test('general enquiries reject unsupported activity types and recipient injection', () => {
+  assert.throws(() => prepareEnquiryDraft({ ...valid, tour: 'via-ferrata', activity: 'ski' }))
+  const result = prepareEnquiryDraft({ ...valid, tour: 'via-ferrata', activity: 'other', to: 'outsider@example.com' })
+  assert.equal(result.to, 'info@swissalpineguides.ch')
 })

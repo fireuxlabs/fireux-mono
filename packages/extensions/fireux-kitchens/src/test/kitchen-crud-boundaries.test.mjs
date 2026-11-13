@@ -1,4 +1,4 @@
-import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -16,7 +16,7 @@ function load(path, names, deps = {}) {
   )(...Object.values(deps))
 }
 const { readMembershipAccessIds } = load(
-  '../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
+  '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
   'readMembershipAccessIds'
 )
 const { readKitchenAccessIds } = load(
@@ -33,7 +33,7 @@ const authority = load(
     serverAppUsersTarget: (id) => `apps/${id}/users`,
     serverKitchenAccessTarget: () => 'kitchen_access',
     KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
-PLACE_MUTATION_TARGETS: { places: 'places' },
+    PLACE_MUTATION_TARGETS: { places: 'places' },
     readAppUserSubscription,
     readKitchenAccessIds,
   }
@@ -86,12 +86,20 @@ test('Kitchen record authority rejects missing membership, revoked/rejoined acce
   for (const overrides of [
     { 'apps/app/users/operator': undefined },
     { 'kitchen_access/operator': undefined },
-    { 'kitchen_access/operator': { apps: { app: { ...access, ids: ['other'] } } } },
     {
-      'kitchen_access/operator': { apps: { app: {
-        ...access,
-        membership_created_at: { ...at, seconds: 99 },
-      } } },
+      'kitchen_access/operator': {
+        apps: { app: { ...access, ids: ['other'] } },
+      },
+    },
+    {
+      'kitchen_access/operator': {
+        apps: {
+          app: {
+            ...access,
+            membership_created_at: { ...at, seconds: 99 },
+          },
+        },
+      },
     },
     { 'apps/app/users/operator': { ...member, subscription: 'invalid' } },
     { 'kitchens/mine': undefined },
@@ -114,7 +122,7 @@ test('Kitchen record authority rejects missing membership, revoked/rejoined acce
 const prep = load(
   '../runtime/kitchen/utils/recipe-preparation.ts',
   'validateRecipePreparation,normalizeRecipePreparation',
-  {isFirestoreDocumentId}
+  { isFirestoreDocumentId }
 )
 const { normalizeTranslatedText } = load(
   '../runtime/kitchen/utils/recipe.ts',
@@ -185,7 +193,11 @@ test('trusted Recipe patch validation rejects injected scope before persisting',
   )
   const api = useRecipeUpdate()
   await assert.rejects(
-    api.updateRecipe('soup', { name: 'Soup', kitchen_id: 'other' }, { kitchenId: 'k' })
+    api.updateRecipe(
+      'soup',
+      { name: 'Soup', kitchen_id: 'other' },
+      { kitchenId: 'k' }
+    )
   )
   assert.equal(writes.length, 0)
   await api.updateRecipe('soup', { name: ' Soup ' }, { kitchenId: 'k' })

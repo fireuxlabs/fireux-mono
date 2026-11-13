@@ -27,7 +27,7 @@ Map App artwork ownership, local delivery, stored media, and User avatars.
 - Asset catalogue:
   `packages/core/fireux-core/src/runtime/pages/assets.vue`, with App-owned
   presentation under `runtime/app/components/Assets` and the catalogue in
-  `runtime/app/models/asset-catalogue.ts`
+  `runtime/app/media/catalogue.ts`
 - App logo and wordmark renderers:
   `packages/core/fireux-core/src/runtime/app/components/Brand/Logo.vue` and
   `packages/core/fireux-core/src/runtime/app/components/Brand/Wordmark.vue`
@@ -35,7 +35,7 @@ Map App artwork ownership, local delivery, stored media, and User avatars.
   `packages/core/fireux-core/src/runtime/app/components/Detail/Index.vue` and
   `packages/extensions/fireux-ecosystem/src/runtime/components/landing/AppCollection.vue`
 - App role paths, dimensions and stored field names:
-  `packages/core/fireux-core/src/runtime/app/models/app-media-requirements.ts`
+  `packages/core/fireux-core/src/runtime/app/media/requirements.ts`
 - App media editor and trusted sync command:
   `packages/core/fireux-core/src/runtime/app/components/Edit/Media.vue` and
   `packages/core/fireux-core/src/runtime/app/server/media/sync.ts`
@@ -50,7 +50,7 @@ retain their design authority; branded Apps own their artwork. Never borrow
 another App's export to fill a missing asset.
 
 The [asset brief](../assets.md) lists the eight required runtime exports. Their
-executable constraints remain in `app-media-requirements.ts`. Retain original
+executable constraints remain in `app/media/requirements.ts`. Retain original
 masters outside `public`, such as an App-owned `brand` directory. Correcting an
 export's size or surface colour preserves its approved geometry and wording;
 it does not authorize a replacement identity.
@@ -111,6 +111,12 @@ their App/ecosystem exports faithful to those masters.
 
 ## App delivery and sync
 
+`runtime/app/media` owns supporting types, the sync response contract, asset
+requirements, catalogue presentation and pure media helpers. Media remains a
+nested field of the App Entity, not a separate Entity or model. Helpers reuse
+`App['media']`; trusted commands and reactive checks retain their existing
+`app/server` and `app/composables` owners.
+
 The deployed App uses bundled artwork through the immutable `GLOBAL_BRAND_ASSETS`
 export in `src/utils/brandAssets.ts` and App Brand components. Static paths are
 ordinary data; browser asset checks remain reactive composables. The required
@@ -134,7 +140,7 @@ The `/assets` library groups the standard family into Brand, App images, and
 Browser and install. It previews the exact file without brand fallback, reports
 image-load failures and observed dimensions, and provides original-file and
 download links. Preview background controls affect only the artwork frame.
-Requirements come from the canonical App media model; a decoded preview is not
+Requirements come from the canonical App media requirements; a decoded preview is not
 proof of byte validation, publication or Storage sync. An App may append its own
 product assets through `app.config.ts` at `fireuxAssets.catalogue`, under its
 `/img/app` contract.

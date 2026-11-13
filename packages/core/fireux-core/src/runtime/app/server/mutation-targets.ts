@@ -17,17 +17,6 @@ export const APP_MUTATION_TARGETS = Object.freeze({
   }),
 })
 
-export function serverAppUsersTarget(appId: string) {
-  const id = segment(appId, 'appId')
-  return defineFirestoreMutationTarget({
-    key: 'apps.users',
-    lane: 'server',
-    verbs,
-    database: { kind: 'runtime' },
-    collectionPath: `apps/${id}/users`,
-  })
-}
-
 function serverAppChildTarget(appId: string, key: string, collection: string) {
   const id = segment(appId, 'appId')
   return defineFirestoreMutationTarget({

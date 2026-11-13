@@ -24,7 +24,7 @@ const serverAppUsersTarget = (id) => target('apps/' + id + '/users')
 const serverKitchenAccessTarget = () => target('kitchen_access')
 const KITCHEN_MUTATION_TARGETS = { kitchens: target('kitchens') }
 const readMembershipAccessIds = load(
-  '../../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
+  '../../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
   {},
   'readMembershipAccessIds'
 )

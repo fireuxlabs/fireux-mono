@@ -233,7 +233,7 @@ Every Workspace Entity must share these rules:
 
 - Root IDs come from canonical document paths. Reuse Core's
   [stamp value types](../../packages/core/fireux-core/src/runtime/models/utils/stamps.model.ts),
-  without making the App/Ecosystem `FireuxEntity` type a universal superclass.
+  while keeping each Entity's model explicit rather than adding a universal superclass.
   New roots initialize `created` and `updated` in the same trusted creation
   event; later updates preserve `created`. Shared App provenance belongs on
   `created`. Kitchen's historical optional `updated` and domain-specific stamp
@@ -241,7 +241,7 @@ Every Workspace Entity must share these rules:
   an isolated tightening of its stored model.
 
 - Browser membership validity comes from Core's
-  [`resolveAppUserAccess`](../../packages/core/fireux-core/src/runtime/app/utils/app-user-access.ts):
+  [`resolveAppUserAccess`](../../packages/core/fireux-core/src/runtime/app/app-user/utils/access.ts):
   recognized role and readable subscription are both required, including the
   intentional legacy subscription read. `useMembershipAccess` applies that
   decision before reading a grant; its lower timestamp/ID utility retains only

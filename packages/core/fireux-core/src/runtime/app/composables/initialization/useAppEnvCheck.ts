@@ -5,7 +5,7 @@ import type { AsyncData, NuxtApp, NuxtError } from 'nuxt/app'
 import { computed, type ComputedRef } from 'vue'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useDeveloperAccess } from '../useDeveloperAccess'
-import type { EnvCheckResponse } from '../../models/app-environment-check'
+import type { EnvCheckResponse } from '../../contracts/environment-check'
 import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import { useFireUXConfig } from '../config/FireUXConfig'
 
@@ -72,8 +72,10 @@ export function useAppEnvCheck(): UseAppEnvCheckReturn {
   )
 
   const data = computed<EnvCheckResponse | null>(() =>
-    hasAuthState.value && isDeveloper.value &&
-    !state.pending.value && !state.error.value &&
+    hasAuthState.value &&
+    isDeveloper.value &&
+    !state.pending.value &&
+    !state.error.value &&
     state.data.value?.requestUid === uid.value &&
     state.data.value.requestAppId === config.appId
       ? state.data.value.response

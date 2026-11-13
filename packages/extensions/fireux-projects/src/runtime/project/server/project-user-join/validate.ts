@@ -1,4 +1,4 @@
-import type { AppUserJoinedPublicationV1 } from 'fireux-core/runtime/app/models/user-joined-publication'
+import type { AppUserJoinedPublicationV1 } from 'fireux-core/runtime/app/contracts/user-joined-publication'
 
 const ID = /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,1499}$/
 const EVENT_ID = /^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,1499}$/
@@ -17,7 +17,10 @@ function record(value: unknown): Record<string, unknown> {
 function exactKeys(value: Record<string, unknown>, expected: string[]) {
   const actual = Object.keys(value).sort()
   const keys = [...expected].sort()
-  if (actual.length !== keys.length || actual.some((key, index) => key !== keys[index])) {
+  if (
+    actual.length !== keys.length ||
+    actual.some((key, index) => key !== keys[index])
+  ) {
     throw new ProjectUserJoinValidationError('Unexpected fields.')
   }
 }
@@ -76,7 +79,9 @@ export function parseProjectUserJoinPublicationV1(
       ),
       database_id: id(source.database_id, 'Database id'),
       project_id: id(source.project_id, 'Project id'),
-      ecosystem_id: source.ecosystem_id ? id(source.ecosystem_id, 'Ecosystem id') : '',
+      ecosystem_id: source.ecosystem_id
+        ? id(source.ecosystem_id, 'Ecosystem id')
+        : '',
       app_id: id(source.app_id, 'App id'),
     },
     user_id: id(input.user_id, 'User id'),

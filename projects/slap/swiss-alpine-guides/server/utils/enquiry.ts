@@ -1,4 +1,4 @@
-import { tours } from '../../app/content/tours'
+import { enquiryOptions } from '../../app/content/enquiry-options'
 
 export function validateEnquiry(value: unknown) {
   if (!value || typeof value !== 'object' || Array.isArray(value))
@@ -18,8 +18,8 @@ export function validateEnquiry(value: unknown) {
     return clean
   }
   if (input.website) throw new Error('Unable to prepare this enquiry.')
-  const tour = tours.find((tour) => tour.id === input.tour)
-  if (!tour) throw new Error('Choose one of the listed tours.')
+  const tour = enquiryOptions.find(item => item.id === input.tour)
+  if (!tour) throw new Error('Choose one of the listed activities.')
   const name = text('name', 100)
   const email = text('email', 254)
   if (!/^[^\s@\r\n]+@[^\s@\r\n]+\.[^\s@\r\n]+$/.test(email))
@@ -45,7 +45,7 @@ export function validateEnquiry(value: unknown) {
     throw new Error(
       'Choose a group size between 1 and 30. Larger groups can contact the guide directly.'
     )
-  if (!['ski', 'snowboard', 'mixed'].includes(String(input.activity)))
+  if (!(tour.heli ? ['ski', 'snowboard', 'mixed'] : ['other']).includes(String(input.activity)))
     throw new Error('Choose skiing, snowboarding or a mixed group.')
   if (input.acknowledgement !== true)
     throw new Error(
@@ -53,7 +53,9 @@ export function validateEnquiry(value: unknown) {
     )
   const notes = text('notes', 1500, false)
   return {
-    tour: tour.route,
+    tour: tour.name,
+    to: tour.to,
+    heli: tour.heli,
     name,
     email,
     phone,
@@ -80,9 +82,9 @@ export function prepareEnquiryDraft(value: unknown) {
     enquiry.phone ? `Phone: ${enquiry.phone}` : '',
     enquiry.notes ? `Notes: ${enquiry.notes}` : '',
     '',
-    'I understand that weather, snow and avalanche conditions, guide and aircraft availability determine whether a trip can take place. This is an enquiry, not a confirmed booking.',
+    enquiry.heli ? 'I understand that weather, snow and avalanche conditions, guide and aircraft availability determine whether a trip can take place. This is an enquiry, not a confirmed booking.' : 'I understand that conditions, suitability, price and arrangements require operator confirmation. This is an enquiry, not a confirmed booking.',
   ]
     .filter((line) => line !== '')
     .join('\n')
-  return { subject: `Heli-skiing enquiry — ${enquiry.tour}`, body }
+  return { subject: `${enquiry.heli ? 'Heli-skiing' : 'Activity'} enquiry — ${enquiry.tour}`, body, to: enquiry.to }
 }

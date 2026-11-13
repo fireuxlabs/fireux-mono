@@ -3,7 +3,7 @@
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { tourPages } from '~/content/tour-pages'
-import { buildTourJsonLd } from '~/utils/tour-seo'
+import { buildTourJsonLd } from '~/utils/site-seo'
 definePageMeta({ layout: 'alpine', colorMode: 'light', validate: route => { const slug = 'slug' in route.params ? route.params.slug : undefined; return tourPages.some(page => page.slug === slug) } })
 const slug = useRouteParam('slug')
 const page = computed(() => tourPages.find(page => page.slug === slug.value))

@@ -1,11 +1,11 @@
-import type { BrandAssetCheck } from '../../models/app-environment-check'
-import type { AppPublicAssetRequirement } from '../../models/app-media'
+import type { BrandAssetCheck } from '../../contracts/environment-check'
+import type { AppPublicAssetRequirement } from '../../media/types'
 import { readFile, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import imageSize from 'image-size'
 import sharp from 'sharp'
-import { APP_PUBLIC_ASSET_REQUIREMENTS } from '../../models/app-media-requirements'
-import { validateAppAssetDimensions } from '../../utils/app-media'
+import { APP_PUBLIC_ASSET_REQUIREMENTS } from '../../media/requirements'
+import { validateAppAssetDimensions } from '../../media/utils'
 
 const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])
 

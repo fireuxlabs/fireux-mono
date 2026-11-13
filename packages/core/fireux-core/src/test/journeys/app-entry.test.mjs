@@ -672,7 +672,7 @@ async function renderPolishComponent(
         }
       if (id.endsWith('/FireUXConfig'))
         return { useFireUXConfig: () => ({ appId: 'app' }) }
-      if (id.endsWith('/app-user-access'))
+      if (id.endsWith('/utils/access'))
         return {
           resolveAppUserAccess: (value) => ({
             hasMembership: Boolean(value),
@@ -748,7 +748,7 @@ test('shared Home guidance does not flash for loading or signed-in accounts', as
     )
 })
 test('subscription chrome renders settled guest or membership pricing without an unavailable placeholder', async () => {
-  const file = 'user/components/SubscriptionControl.vue'
+  const file = 'app/app-user/components/SubscriptionControl.vue'
   assert.match(await renderPolishComponent(file), /View pricing for Free/)
   assert.match(
     await renderPolishComponent(file, {

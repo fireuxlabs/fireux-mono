@@ -1,12 +1,12 @@
 import {
   createMembershipAccess,
   readMembershipAccessIds,
-} from 'fireux-core/runtime/app/utils/membership-access'
+} from 'fireux-core/runtime/app/app-user/utils/membership-access'
 import { serverBlankAccessTarget } from '../../../app/utils/blank-access'
 import { randomUUID } from 'node:crypto'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/app-user/utils/validation'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { resolveFireuxEntityManagementForApp } from 'fireux-core/runtime/app/utils/entity-management'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -14,7 +14,7 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 import { blankRootTarget, serverBlankTeamMembersTarget } from './team/targets'
 export async function completeBlankOnboarding(event: H3Event, input: unknown) {
   const body = input as { name?: unknown }

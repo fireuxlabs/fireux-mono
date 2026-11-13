@@ -1,5 +1,5 @@
 import { computed, onMounted, ref } from 'vue'
-import { APP_PUBLIC_ASSET_REQUIREMENTS } from '../../models/app-media-requirements'
+import { APP_PUBLIC_ASSET_REQUIREMENTS } from '../../media/requirements'
 
 type RequiredBrandAsset = {
   key: string

@@ -4,7 +4,7 @@
       ><div class="alpine-enquiry__grid">
         <div class="alpine-enquiry__intro">
           <p class="alpine-enquiry__kicker">Swiss Alpine Guides</p>
-          <h2 id="enquiry-title">Enquiries<br />&amp; reservations</h2>
+          <h2 id="enquiry-title">Plan your<br />activity</h2>
           <p>{{ operator.address }}</p>
           <div class="alpine-enquiry__aside">
             <p>
@@ -18,14 +18,13 @@
               >
             </p>
             <p>
-              Choose a tour and provide your preferred date, group size and
-              experience. This prototype prepares an email enquiry; it does not
+              Choose an activity, rental or voucher enquiry and provide your preferred date, group size and questions. This prototype prepares an email enquiry; it does not
               confirm a reservation.
             </p>
           </div>
         </div>
         <form class="alpine-enquiry__form" @submit.prevent="prepare">
-          <UFormField label="Tour" name="tour"
+          <UFormField label="Activity or tour" name="tour"
             ><USelect
               class="alpine-enquiry__control"
               v-model="form.tour"
@@ -50,7 +49,7 @@
             /></UFormField>
           </div>
           <UCheckbox v-model="form.flexible" label="My dates are flexible" />
-          <UFormField label="Activity" name="activity"
+          <UFormField v-if="selectedOption?.heli" label="Ski / board group" name="activity"
             ><USelect
               class="alpine-enquiry__control"
               v-model="form.activity"
@@ -101,7 +100,7 @@
           </div>
           <UCheckbox
             v-model="form.acknowledgement"
-            label="I understand this is an enquiry. Conditions, price and departure require guide confirmation."
+            label="I understand this is an enquiry. Conditions, price and arrangements require operator confirmation."
             required
           />
           <UButton
@@ -114,7 +113,7 @@
           >
           <p class="alpine-enquiry__privacy">
             This preview validates your details to prepare an email draft. It
-            does not store them, send an email or reserve a flight.
+            does not store them, send an email or confirm a booking.
           </p>
           <UAlert
             v-if="error"
@@ -144,16 +143,16 @@
 </template>
 <script setup lang="ts">
 import { operator } from '~/content/operator'
-import { tours } from '~/content/tours'
+import { enquiryOptions } from '~/content/enquiry-options'
 const route = useRoute()
-const tourItems = tours.map((tour) => ({ label: tour.route, value: tour.id }))
+const tourItems = enquiryOptions.map(item => ({ label: item.name, value: item.id }))
 const activityItems = [
   { label: 'Skiing', value: 'ski' },
   { label: 'Snowboarding', value: 'snowboard' },
   { label: 'Mixed group', value: 'mixed' },
 ]
 const form = reactive({
-  tour: tours[0].id as (typeof tours)[number]['id'],
+  tour: 'general',
   date: '',
   flexible: true,
   groupSize: 2,
@@ -168,14 +167,16 @@ const form = reactive({
 watch(
   () => route.query.tour,
   (value) => {
-    const selected = tours.find((t) => t.id === value)
+    const selected = enquiryOptions.find(item => item.id === value)
     if (selected) form.tour = selected.id
   },
   { immediate: true }
 )
+const selectedOption = computed(() => enquiryOptions.find(item => item.id === form.tour))
+watch(() => route.query.programme, value => { if (typeof value === 'string' && !form.notes) form.notes = `Programme: ${value}` }, { immediate: true })
 const pending = ref(false)
 const error = ref('')
-const draft = ref<{ subject: string; body: string } | null>(null)
+const draft = ref<{ subject: string; body: string; to: string } | null>(null)
 let revision = 0
 watch(form, () => {
   revision++
@@ -184,7 +185,7 @@ watch(form, () => {
 })
 const emailUrl = computed(() =>
   draft.value
-    ? `mailto:heli1@swissalpineguides.ch?subject=${encodeURIComponent(draft.value.subject)}&body=${encodeURIComponent(draft.value.body)}`
+    ? `mailto:${draft.value.to}?subject=${encodeURIComponent(draft.value.subject)}&body=${encodeURIComponent(draft.value.body)}`
     : ''
 )
 async function prepare() {
@@ -194,9 +195,9 @@ async function prepare() {
   error.value = ''
   draft.value = null
   try {
-    const result = await $fetch<{ subject: string; body: string }>(
+    const result = await $fetch<{ subject: string; body: string; to: string }>(
       '/api/enquiry',
-      { method: 'POST', body: { ...form, groupSize: Number(form.groupSize) } }
+      { method: 'POST', body: { ...form, activity: selectedOption.value?.heli ? form.activity : 'other', groupSize: Number(form.groupSize) } }
     )
     if (revision === expected) draft.value = result
   } catch (cause) {

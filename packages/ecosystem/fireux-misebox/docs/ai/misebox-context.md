@@ -252,8 +252,10 @@ App-owned command file. Source upload/download live in `sources.ts`; their Nitro
 handlers delegate to that owner. Their common request DTO and policy stay in `contract.ts`.
 Conversation creation, proof validation and messages compose Core App's
 `app/server/chat/session.ts` transaction operations and shared Chat start budget.
-Core App owns the stored Conversation schema in `app/models/conversation.model.ts`;
-the consuming App does not construct it.
+Core App constructs Conversation records in `app/server/chat/session.ts`;
+`app/server/chat/storage.ts` holds consumed storage names, while guarded App
+mutation targets own database paths. The consuming App does not construct a
+competing Conversation payload.
 The customer and operator roots compose focused recovery, source, preparation,
 review, delivery and shared conversation components. Client intake draft, retained recovery identity and submission lifecycle belong
 to `useMenuExpressIntake`; `MenuExpress/Intake.vue` owns the visible form.

@@ -1,12 +1,15 @@
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/app-user/utils/validation'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverMarketplaceStoresTarget, serverMarketplaceStoreTeamMembersTarget } from '../mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import {
+  serverMarketplaceStoresTarget,
+  serverMarketplaceStoreTeamMembersTarget,
+} from '../mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 import type { MarketplaceStore } from '../../models/marketplace.model.ts'
 import type {
   MarketplaceAdminStoresResponse,
@@ -174,7 +177,9 @@ export async function mutateMarketplaceStoreMember(
       })
     }
     if (action === 'add' && !memberSnapshot.exists) {
-      const subscription = readAppUserSubscription(actorMembership.data?.subscription)
+      const subscription = readAppUserSubscription(
+        actorMembership.data?.subscription
+      )
       if (
         !subscription ||
         !hasAppSubscriptionCapacity(

@@ -1,4 +1,4 @@
-import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -9,7 +9,7 @@ const accessHelpers = compileFunction(
   `${stripTypeScriptTypes(
     readFileSync(
       new URL(
-        '../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
+        '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
         import.meta.url
       ),
       'utf8'

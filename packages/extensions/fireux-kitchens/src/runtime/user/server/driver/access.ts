@@ -3,9 +3,13 @@ import { readKitchenAccessIds } from '../../../kitchen/utils/kitchen-access'
 import { createError } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { APP_MUTATION_TARGETS, serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { APP_MUTATION_TARGETS } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 import { KITCHEN_MUTATION_TARGETS } from '../../../kitchen/server/mutation-targets'
-import { serverUserProfileAppStateTarget, serverUserProfileTarget } from 'fireux-core/runtime/user/server/mutation-targets'
+import {
+  serverUserProfileAppStateTarget,
+  serverUserProfileTarget,
+} from 'fireux-core/runtime/user/server/mutation-targets'
 import { planDriverKitchenLinks } from '../../utils/driver/kitchen-links'
 import {
   type DriverKitchenAccessInput,

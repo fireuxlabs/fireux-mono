@@ -1,8 +1,9 @@
 import { createError } from 'h3'
 import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
 import type { FireUXConfig } from '../../composables/config/FireUXConfig'
-import type { AppInitializationResult } from '../../models/app-initialization'
-import { APP_MUTATION_TARGETS, serverAppUsersTarget } from '../mutation-targets'
+import type { AppInitializationResult } from '../../contracts/initialization'
+import { APP_MUTATION_TARGETS } from '../mutation-targets'
+import { serverAppUsersTarget } from '../../app-user/server/mutation-targets'
 import { USER_MUTATION_TARGETS } from '../../../user/server/mutation-targets'
 import {
   getRuntimeFirestore,
@@ -15,8 +16,8 @@ import {
   isAdminMembership,
   requireCanonicalMembership,
   stamp,
-} from '../app-user/command-contract'
-import { reconcileUserAppReference } from '../app-user/user-reference'
+} from '../../app-user/server/command-contract'
+import { reconcileUserAppReference } from '../../app-user/server/user-reference'
 import { reconcileAppEcosystemReference } from '../relationships/ecosystem-reference'
 import { provisionEcosystem } from '../../../ecosystem/server/identity/provision'
 

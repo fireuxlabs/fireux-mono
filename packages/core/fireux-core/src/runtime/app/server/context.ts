@@ -8,7 +8,8 @@ import {
 } from '../../server/utils/records/context'
 import { readRecordString } from '../../server/utils/records/read'
 import { serverAuditStamp } from '../../server/utils/records/stamps'
-import { APP_MUTATION_TARGETS, serverAppUsersTarget } from './mutation-targets'
+import { APP_MUTATION_TARGETS } from './mutation-targets'
+import { serverAppUsersTarget } from '../app-user/server/mutation-targets'
 /** Only the configured owning App; directory membership grants no remote write. */
 export async function appContext(
   event: H3Event,

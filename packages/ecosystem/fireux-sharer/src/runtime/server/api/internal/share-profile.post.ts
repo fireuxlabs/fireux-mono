@@ -3,7 +3,7 @@ import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler, readBody } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 import { serverShareProfilesTarget } from '../../share-profile-target'
 import type { ShareProfileLink } from '../../../share-profile/models/share-profile.model'
 
@@ -61,27 +61,27 @@ export default defineEventHandler(async (event) => {
   return runGuardedServerTransaction(
     serverShareProfilesTarget.database,
     async (mutations) => {
-    const [membership, profile] = await Promise.all([
-      mutations.read<Record<string, unknown>>(memberships, uid),
-      mutations.read(serverShareProfilesTarget, appId),
-    ])
-    const role = String(membership.data?.role || '')
-    if (!membership.exists || !['admin', 'dev'].includes(role)) {
-      fail(403, 'App administrator access is required.')
-    }
+      const [membership, profile] = await Promise.all([
+        mutations.read<Record<string, unknown>>(memberships, uid),
+        mutations.read(serverShareProfilesTarget, appId),
+      ])
+      const role = String(membership.data?.role || '')
+      if (!membership.exists || !['admin', 'dev'].includes(role)) {
+        fail(403, 'App administrator access is required.')
+      }
 
-    const updated = { at: FieldValue.serverTimestamp(), by: uid }
-    if (profile.exists) {
-      mutations.update(serverShareProfilesTarget, appId, { links, updated })
-    } else {
-      mutations.create(serverShareProfilesTarget, appId, {
-        app_id: appId,
-        links,
-        created: updated,
-        updated,
-      })
-    }
-    return { ok: true, appId, created: !profile.exists, links }
+      const updated = { at: FieldValue.serverTimestamp(), by: uid }
+      if (profile.exists) {
+        mutations.update(serverShareProfilesTarget, appId, { links, updated })
+      } else {
+        mutations.create(serverShareProfilesTarget, appId, {
+          app_id: appId,
+          links,
+          created: updated,
+          updated,
+        })
+      }
+      return { ok: true, appId, created: !profile.exists, links }
     }
   )
 })

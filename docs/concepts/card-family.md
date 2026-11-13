@@ -72,12 +72,12 @@ primitives remain under `user/components/Profile` for specialist profile
 compositions. They are not alternate User Overview cards. There is no old
 `UserCardsSummary` or `UserProfile` compatibility registration.
 
-[`AppUser`](../../packages/core/fireux-core/src/runtime/app/models/app-user.model.ts)
+[`AppUser`](../../packages/core/fireux-core/src/runtime/app/app-user/models/model.ts)
 is the App-owned membership of a User; person identity remains with User.
-AppUser presentation reuses User Cards: [App user administration](../../packages/core/fireux-core/src/runtime/app/components/Edit/Sections/AppUsers.vue)
+AppUser presentation reuses User Cards: [App user administration](../../packages/core/fireux-core/src/runtime/app/app-user/components/Administration/Members.vue)
 composes `UserCardsPill` with separate membership controls, and
 [`UserDetail`](../../packages/core/fireux-core/src/runtime/user/components/Detail/Index.vue)
-composes `UserCardsOverview` beside `UserAppMembership`. Role and subscription
+composes `UserCardsOverview` beside `AppUserMembership`. Role and subscription
 commands remain App-owned; consuming surfaces retain their reads, states and
 management controls. This relationship does not need a parallel AppUser Cards family.
 

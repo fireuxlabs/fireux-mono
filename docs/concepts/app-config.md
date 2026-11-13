@@ -290,7 +290,7 @@ App-wide need is a missing shared seam and must be promoted before use.
 - Canonical paths, validation, upload, and App-field updates are owned by the
   core App media runtime.
 - Core's `app/server/onboarding/brand-assets.ts` checks local file types and
-  decoding against `app-media-requirements.ts`. The same inspector gates
+  decoding against `app/media/requirements.ts`. The same inspector gates
   production App builds, `pnpm check:assets` and packaged release assets; it
   does not verify remote Storage contents or approve artwork.
 - Root bulk upload, reset, and deletion scripts are retired migration tooling;

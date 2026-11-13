@@ -65,7 +65,7 @@ test('Notifications hide previous owner data immediately on account change or lo
 
 test('AppUser authority is withdrawn whenever the membership read is not ready', () => {
   const use = load(
-    '../runtime/app/composables/membership/useAppUserAccess.ts',
+    '../runtime/app/app-user/composables/useAppUserAccess.ts',
     'useAppUserAccess',
     {
       computed,

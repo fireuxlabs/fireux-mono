@@ -4,7 +4,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import test from 'node:test'
 import { compileFunction } from 'node:vm'
 import { computed, ref, toValue } from 'vue'
-import { resolveAppUserAccess } from '../runtime/app/utils/app-user-access.ts'
+import { resolveAppUserAccess } from '../runtime/app/app-user/utils/access.ts'
 
 function load(path, result, dependencies = {}) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -22,7 +22,7 @@ const {
   membershipCreatedAt,
   createMembershipAccess,
 } = load(
-  '../runtime/app/utils/membership-access.ts',
+  '../runtime/app/app-user/utils/membership-access.ts',
   '{ readMembershipAccess, readMembershipAccessIds, membershipCreatedAt, createMembershipAccess }'
 )
 const birth = { seconds: 123, nanoseconds: 456 }
@@ -110,7 +110,7 @@ for (const byAdmin of [false, true]) {
     const storedAccess = access()
     const writes = []
     const handleRemoveMember = load(
-      '../runtime/app/server/app-user/remove.ts',
+      '../runtime/app/app-user/server/remove.ts',
       'handleRemoveMember',
       {
         APP_MUTATION_TARGETS: { runtimeApps: 'apps' },
@@ -165,7 +165,7 @@ function reader() {
   let reads = 0
   let path, target
   const useMembershipAccess = load(
-    '../runtime/app/composables/membership/useMembershipAccess.ts',
+    '../runtime/app/app-user/composables/useMembershipAccess.ts',
     'useMembershipAccess',
     {
       computed,

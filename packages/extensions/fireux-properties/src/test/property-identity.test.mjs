@@ -1,4 +1,4 @@
-import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -22,7 +22,7 @@ const requireFirestoreDocumentId = (id) => {
   return id
 }
 const readMembershipAccessIds = load(
-  '../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
+  '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
   'readMembershipAccessIds'
 )
 const managementDeps = {
@@ -58,18 +58,18 @@ const authority = load(
   {
     ...managementDeps,
     APP_MUTATION_TARGETS: targets,
-USER_MUTATION_TARGETS: targets,
-ECOSYSTEM_MUTATION_TARGETS: targets,
-FIREUX_MUTATION_TARGETS: targets,
-SPROOCHLI_MUTATION_TARGETS: targets,
-PLACE_MUTATION_TARGETS: targets,
-KITCHEN_MUTATION_TARGETS: targets,
-INGREDIENT_MUTATION_TARGETS: targets,
-PRODUCT_MUTATION_TARGETS: targets,
-PROPERTY_MUTATION_TARGETS: targets,
-PORTFOLIO_MUTATION_TARGETS: targets,
-SUPPLIER_MUTATION_TARGETS: targets,
-JOB_MUTATION_TARGETS: targets,
+    USER_MUTATION_TARGETS: targets,
+    ECOSYSTEM_MUTATION_TARGETS: targets,
+    FIREUX_MUTATION_TARGETS: targets,
+    SPROOCHLI_MUTATION_TARGETS: targets,
+    PLACE_MUTATION_TARGETS: targets,
+    KITCHEN_MUTATION_TARGETS: targets,
+    INGREDIENT_MUTATION_TARGETS: targets,
+    PRODUCT_MUTATION_TARGETS: targets,
+    PROPERTY_MUTATION_TARGETS: targets,
+    PORTFOLIO_MUTATION_TARGETS: targets,
+    SUPPLIER_MUTATION_TARGETS: targets,
+    JOB_MUTATION_TARGETS: targets,
     serverPropertyAccessTarget: (app) => `property_access/${app}/users`,
     serverAppUsersTarget: (app) => `apps/${app}/users`,
   }
@@ -114,18 +114,18 @@ function harness() {
       requirePropertyMutationAuthority: authority,
       canonicalPropertyRoot,
       APP_MUTATION_TARGETS: targets,
-USER_MUTATION_TARGETS: targets,
-ECOSYSTEM_MUTATION_TARGETS: targets,
-FIREUX_MUTATION_TARGETS: targets,
-SPROOCHLI_MUTATION_TARGETS: targets,
-PLACE_MUTATION_TARGETS: targets,
-KITCHEN_MUTATION_TARGETS: targets,
-INGREDIENT_MUTATION_TARGETS: targets,
-PRODUCT_MUTATION_TARGETS: targets,
-PROPERTY_MUTATION_TARGETS: targets,
-PORTFOLIO_MUTATION_TARGETS: targets,
-SUPPLIER_MUTATION_TARGETS: targets,
-JOB_MUTATION_TARGETS: targets,
+      USER_MUTATION_TARGETS: targets,
+      ECOSYSTEM_MUTATION_TARGETS: targets,
+      FIREUX_MUTATION_TARGETS: targets,
+      SPROOCHLI_MUTATION_TARGETS: targets,
+      PLACE_MUTATION_TARGETS: targets,
+      KITCHEN_MUTATION_TARGETS: targets,
+      INGREDIENT_MUTATION_TARGETS: targets,
+      PRODUCT_MUTATION_TARGETS: targets,
+      PROPERTY_MUTATION_TARGETS: targets,
+      PORTFOLIO_MUTATION_TARGETS: targets,
+      SUPPLIER_MUTATION_TARGETS: targets,
+      JOB_MUTATION_TARGETS: targets,
       serverAuditStamp: (x) => ({ ...x, at: 'server' }),
       requireFirebaseStorageDownloadUrl: storage,
       runtimeStorageBucketName: () => 'bucket',

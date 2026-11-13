@@ -2,18 +2,21 @@ import { normalizePortfolio } from '../../../utils/normalize-portfolio'
 import {
   createMembershipAccess,
   readMembershipAccessIds,
-} from 'fireux-core/runtime/app/utils/membership-access'
+} from 'fireux-core/runtime/app/app-user/utils/membership-access'
 import { serverPortfolioAccessTarget } from '../../../utils/access'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import type { H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { PORTFOLIO_MUTATION_TARGETS, serverPortfolioTeamMembersTarget } from '../../mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import {
+  PORTFOLIO_MUTATION_TARGETS,
+  serverPortfolioTeamMembersTarget,
+} from '../../mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 import {
   assertManagement,
   requireMemberRole,
@@ -49,7 +52,10 @@ export async function completePortfolioOnboarding(
     ['input', 'existing_root_id'],
     'Portfolio onboarding request'
   )
-  if (body.existing_root_id !== undefined && typeof body.existing_root_id !== 'string')
+  if (
+    body.existing_root_id !== undefined &&
+    typeof body.existing_root_id !== 'string'
+  )
     fail(400, 'Portfolio id must be a string.')
   const existingRootId = text(body.existing_root_id)
   if (existingRootId && body.input !== undefined) {

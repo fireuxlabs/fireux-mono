@@ -1,4 +1,4 @@
-import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership-access'
+import { readMembershipAccessIds } from 'fireux-core/runtime/app/app-user/utils/membership-access'
 // Concurrent edit — 2026-07-20 16:00 CEST — FireUX dev recovery: resolve cross-package server imports explicitly.
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { createError, type H3Event } from 'h3'
@@ -72,7 +72,9 @@ export async function readProjectIndex(event: H3Event, requestedId = '') {
       }
       return project
     })
-    .sort((a, b) => (a.identity.name || a.id).localeCompare(b.identity.name || b.id))
+    .sort((a, b) =>
+      (a.identity.name || a.id).localeCompare(b.identity.name || b.id)
+    )
 
   return {
     ok: true as const,

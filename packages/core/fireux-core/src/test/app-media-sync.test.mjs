@@ -385,3 +385,56 @@ test('App media remains inspectable in production without offering an unavailabl
   }
   assert.match(component, /:disabled="!canSync \|\| Boolean\(saving\)"/)
 })
+
+test('media helpers keep bundled artwork limited to the owning App', async () => {
+  const { createJiti } = await import('jiti')
+  const media = await createJiti(import.meta.url).import(
+    '../runtime/app/media/utils.ts'
+  )
+  const stored = { logo_url: 'https://example.com/logo.png' }
+  assert.equal(media.resolveAppMediaForView(stored).logoUrl, stored.logo_url)
+  assert.equal(
+    media.resolveAppMediaForView(stored, { owningAppBundle: true }).logoUrl,
+    '/img/app/logo.png'
+  )
+  assert.equal(media.resolveAppMediaForView(null).logoUrl, '')
+  assert.equal(media.isAppMediaComplete(stored), false)
+  assert.equal(
+    media.isAppMediaComplete(
+      Object.fromEntries(
+        [
+          'thumbnail_url',
+          'logo_url',
+          'wordmark_light_url',
+          'wordmark_dark_url',
+          'cover_url',
+        ].map((field) => [field, 'https://example.com/image.png'])
+      )
+    ),
+    true
+  )
+  assert.equal(media.isAppMediaComplete([]), false)
+})
+
+test('asset catalogue keeps standard roles and rejects conflicting additional assets', async () => {
+  const { createJiti } = await import('jiti')
+  const { APP_ASSET_GROUPS, readAdditionalAppAssets } = await createJiti(
+    import.meta.url
+  ).import('../runtime/app/media/catalogue.ts')
+  assert.equal(APP_ASSET_GROUPS.flatMap((group) => group.items).length, 8)
+  const extra = {
+    key: 'product',
+    label: 'Product',
+    src: '/img/app/product.png',
+  }
+  assert.deepEqual(
+    readAdditionalAppAssets([
+      { ...extra, key: 'logo' },
+      { ...extra, src: '/img/app/logo.png' },
+      { ...extra, src: 'https://example.com/product.png' },
+      extra,
+      extra,
+    ]),
+    [{ ...extra, description: '', shape: 'square', surface: undefined }]
+  )
+})

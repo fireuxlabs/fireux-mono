@@ -1,6 +1,6 @@
 <template>
   <UContainer id="content" class="alpine-detail">
-    <UBreadcrumb :items="[{ label: 'Heliskiing in Interlaken', to: '/#tours' }, { label: page.name }]" />
+    <UBreadcrumb :items="[{ label: 'Home', to: '/' }, { label: 'Activities', to: '/activities' }, { label: 'Heliskiing', to: '/activities/heliskiing' }, { label: page.name }]" />
     <UPage>
       <UPageHeader :title="page.name" :description="page.description" headline="Swiss Alpine Guides · Interlaken" />
       <UPageBody>
@@ -14,7 +14,7 @@
                 <div v-for="fact in facts(tour)" :key="fact.label"><dt>{{ fact.label }}</dt><dd>{{ fact.value }}</dd></div>
               </dl>
               <p><strong>Experience:</strong> {{ tour.requirement }}</p>
-              <template #footer><UButton :to="{ path: '/', query: { tour: tour.id }, hash: '#enquire' }" color="neutral" :label="`Enquire about ${tour.name}`" /></template>
+              <template #footer><UButton :to="{ path: '/contact', query: { tour: tour.id }, hash: '#enquire' }" color="neutral" :label="`Enquire about ${tour.name}`" /></template>
             </UCard>
           </div>
         </section>
@@ -22,7 +22,7 @@
         <section class="alpine-detail__contact" aria-labelledby="operator-heading">
           <h2 id="operator-heading">{{ operator.name }}</h2>
           <p>{{ operator.address }}</p>
-          <p><a :href="`tel:${operator.telephone}`">{{ operator.phoneLabel }}</a> · <a :href="`mailto:${operator.email}`">{{ operator.email }}</a></p>
+          <p><a :href="`tel:${operator.telephone}`">{{ operator.phoneLabel }}</a> · <a :href="`mailto:${operator.heliEmail}`">{{ operator.heliEmail }}</a></p>
           <p>Confirm the current price, your suitability and your preferred date directly with the operator. An enquiry does not reserve a flight or confirm a departure.</p>
           <p class="alpine-detail__sources">Route information: <a v-for="source in sources" :key="source" :href="source" target="_blank" rel="noopener noreferrer">Swiss Alpine Guides {{ source.includes('/Deutsch/') ? '(German)' : '(English)' }} ↗</a></p>
         </section>

@@ -8,7 +8,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { PLACE_MUTATION_TARGETS } from '../mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 import { fetchVerifiedGooglePlacePayload } from '../integration/google/details'
 
 type PlaceEnsureRequest = {
@@ -51,9 +51,7 @@ export async function ensurePlace(event: H3Event, input: PlaceEnsureRequest) {
     'Runtime App id'
   )
   const db = getRuntimeFirestore()
-  const membershipRef = db.doc(
-    `apps/${runtimeAppId}/${'users'}/${uid}`
-  )
+  const membershipRef = db.doc(`apps/${runtimeAppId}/${'users'}/${uid}`)
   const placeRef = db.collection('places').doc(id)
 
   // Reject non-members before spending provider quota. Existing Places are
@@ -79,10 +77,7 @@ export async function ensurePlace(event: H3Event, input: PlaceEnsureRequest) {
         mutations.read<Record<string, unknown>>(memberships, uid),
         mutations.read<Record<string, unknown>>(places, id),
       ])
-      requireAppUserSession(
-        liveMembership.exists,
-        liveMembership.data?.role
-      )
+      requireAppUserSession(liveMembership.exists, liveMembership.data?.role)
       if (livePlace.exists) return false
 
       mutations.create(places, id, {

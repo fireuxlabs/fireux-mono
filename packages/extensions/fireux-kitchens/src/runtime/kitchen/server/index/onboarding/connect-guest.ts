@@ -7,7 +7,7 @@ import {
   serverKitchenTeamMembersTarget,
 } from '../../mutation-targets'
 import { USER_MUTATION_TARGETS } from 'fireux-core/runtime/user/server/mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 import { buildKitchenTeamMemberRecord } from '../../team/member-record.ts'
 import {
   readKitchenTeamAccountLinkInTransaction,
@@ -26,7 +26,7 @@ import {
   readKitchenAccessIds,
   withKitchenAppAccess,
 } from '../../../utils/kitchen-access'
-import { createMembershipAccess } from 'fireux-core/runtime/app/utils/membership-access'
+import { createMembershipAccess } from 'fireux-core/runtime/app/app-user/utils/membership-access'
 import { guestKitchenClaimTarget, hashGuestKitchenSecret } from './guest-claim'
 
 import { fail } from './request'

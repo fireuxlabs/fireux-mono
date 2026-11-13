@@ -37,8 +37,8 @@ for (const path of paths) {
       assert.match(html, /#enquire/)
     } else {
       const list = graph.find(item => item['@type'] === 'ItemList')
-      assert.equal(list.itemListElement.length, 4)
-      for (const route of paths.slice(1)) assert.ok(html.includes(`href="${route}"`))
+      assert.equal(list.itemListElement.length, 6)
+      for (const route of ['/activities/via-ferrata', '/activities/glacier-trekking', '/activities/mountaineering', '/activities/heliskiing', '/activities/snowshoe-trekking', '/activities/avalanche-courses']) assert.ok(html.includes(`href="${route}"`))
       assert.match(html, /preload="metadata"/)
     }
   })

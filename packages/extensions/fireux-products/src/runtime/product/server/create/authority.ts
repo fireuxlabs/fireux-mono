@@ -1,5 +1,5 @@
 import { createError } from 'h3'
-import { isAdminMembership } from 'fireux-core/runtime/app/server/app-user/command-contract'
+import { isAdminMembership } from 'fireux-core/runtime/app/app-user/server/command-contract'
 
 export function requireProductManager(member: {
   exists: boolean

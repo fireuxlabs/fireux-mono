@@ -1,4 +1,4 @@
-import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership-access'
+import { readMembershipAccessIds } from 'fireux-core/runtime/app/app-user/utils/membership-access'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'

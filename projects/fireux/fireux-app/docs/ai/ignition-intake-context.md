@@ -101,7 +101,7 @@ Paths below are relative to this App:
 - `app/composables/useIgnitionQueue.ts`, `app/components/Ignition/Queue.vue` and `app/pages/workspace/project/ignitions.vue`: delivery presentation.
 - `app/ignition/misebox-reference.ts` and `app/pages/workspace/project/ignition-reconciliation.vue`: concrete reference and package consumer.
 - `app/ignition/industry-comparisons.ts` and `app/pages/workspace/project/industry-comparison.vue`: App-owned like-for-like reviews for Misebox, proposed grooming, Granite, BuenoHost and FireUX. Architecture vocabulary and projection are package-owned; concrete claims and source references stay App-owned.
-- [App Conversation model](../../../../../packages/core/fireux-core/src/runtime/app/models/conversation.model.ts): existing storage contract.
+- [App Chat storage names](../../../../../packages/core/fireux-core/src/runtime/app/server/chat/storage.ts): collection names for existing Chat storage; guarded mutation targets retain write authority.
 
 ## Refresh and verification
 

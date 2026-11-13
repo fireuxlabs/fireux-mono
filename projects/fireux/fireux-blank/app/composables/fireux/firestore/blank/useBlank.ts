@@ -1,6 +1,6 @@
 import { refreshNuxtData } from 'nuxt/app'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useMembershipAccess } from 'fireux-core/runtime/app/composables/membership/useMembershipAccess'
+import { useMembershipAccess } from 'fireux-core/runtime/app/app-user/composables/useMembershipAccess'
 import { blankAccessCollection } from '../../../../utils/blank-access'
 import { computed, unref, type Ref } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'

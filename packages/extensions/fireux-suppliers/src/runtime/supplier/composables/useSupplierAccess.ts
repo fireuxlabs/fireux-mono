@@ -2,7 +2,7 @@ import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { computed } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useMembershipAccess } from 'fireux-core/runtime/app/composables/membership/useMembershipAccess'
+import { useMembershipAccess } from 'fireux-core/runtime/app/app-user/composables/useMembershipAccess'
 import { supplierAccessCollection } from '../utils/access'
 
 /** Live Supplier access is independent of the organisational Team. */

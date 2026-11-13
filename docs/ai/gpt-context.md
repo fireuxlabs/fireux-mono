@@ -284,9 +284,12 @@ not establish shared ownership. Before adding a file, identify its owner, real
 consumers and responsibility; place it beneath that owner. Root-level shared
 directories require demonstrated cross-owner reuse, not hypothetical future use.
 
-- `models/` holds consumed data contracts. Keep stored records, command inputs
-  and derived or composed projections distinguishable; do not add another
-  source of truth for another owner's fields.
+- Entity `models/` directories contain only `model.ts` for that Entity, including
+  its owned field vocabulary. Child Entities own their own spines and model;
+  contracts, projections, configuration and executable helpers stay outside models.
+  Apply this shape to new and migrated owners; review remaining legacy entries
+  before moving or removing them. Generic Core models are pending that review
+  and must receive no new declarations.
 - `types/` holds genuine runtime or integration coordination contracts. It is
   not an alternative location for domain models or unused speculative types.
 - `utils/` holds focused stateless behavior. It must not hide canonical record
@@ -345,6 +348,19 @@ Shared stamp types keep App provenance on `created`; domain-specific historical
 stamp data remains readable until its owner defines a reviewed migration.
 This convention does not authorize backfills or require a universal Entity
 superclass. See [Workspace Entity contracts](../concepts/family-workspace-entity.md#shared-spine).
+
+App and Ecosystem declare their own complete Entity shapes, including document
+identity and optional private context. They reuse `FireuxStamps` for creation
+and update values; there is no generic Entity base. Their readers still own
+public projections and their commands retain database and mutation authority.
+
+App's initialization contract lives in `runtime/app/contracts/initialization.ts`.
+AppUser is the App-scoped membership Entity at `runtime/app/app-user`, with its
+own `models/model.ts`, projections, membership contract, readers, UI, access
+validation and trusted commands. Its target factory retains the existing runtime
+database and `apps/{appId}/users/{userId}` path. App initialization and App/User
+sessions compose those owners; they do not create another membership authority.
+AppUser values never replace canonical User identity. App events remain App-owned.
 
 The Workspace surface exists on arrival, even with no saved Entity. An `empty`
 read is not a missing Workspace or onboarding flag; creating a record still

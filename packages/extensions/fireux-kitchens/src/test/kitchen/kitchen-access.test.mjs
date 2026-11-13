@@ -1,5 +1,5 @@
-import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
-import { resolveAppUserAccess } from '../../../../../core/fireux-core/src/runtime/app/utils/app-user-access.ts'
+import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
+import { resolveAppUserAccess } from '../../../../../core/fireux-core/src/runtime/app/app-user/utils/access.ts'
 import { readKitchenDocument } from '../../runtime/kitchen/utils/read-kitchen-document.ts'
 import { useCommandScope } from '../../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
 import assert from 'node:assert/strict'
@@ -26,7 +26,7 @@ import { createError } from 'h3'
 import {
   createMembershipAccess,
   readMembershipAccessIds,
-} from 'fireux-core/runtime/app/utils/membership-access'
+} from 'fireux-core/runtime/app/app-user/utils/membership-access'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import { createDefaultKitchenStation } from '../../runtime/kitchen/server/stations/default.ts'
@@ -231,7 +231,7 @@ test('native Kitchen access clears on live removal, failed read and App membersh
   )
   let locator
   const useMembershipAccess = compile(
-    new URL('app/composables/membership/useMembershipAccess.ts', core),
+    new URL('app/app-user/composables/useMembershipAccess.ts', core),
     'useMembershipAccess',
     {
       computed,

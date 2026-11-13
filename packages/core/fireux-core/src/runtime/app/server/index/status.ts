@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 import { readAppDocument } from '../../utils/readApp'
-import { isAppMediaComplete } from '../../utils/app-media'
+import { isAppMediaComplete } from '../../media/utils'
 import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
 
 export async function readAppStatus(event: H3Event) {

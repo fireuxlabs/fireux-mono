@@ -2,11 +2,11 @@ import type { ReadOutcome } from '../../../utils/read-outcome'
 import { computed } from '#imports'
 import { resolveUserAvatarSource } from '../../utils/user-avatar'
 import type { User } from '../../models/user.model.ts'
-import type { AppUserWithId } from '../../../app/models/app-user.model.ts'
+import type { AppUserWithId } from '../../../app/app-user/types.ts'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import type { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import type { Ref } from 'vue'
-import { useAppUserAccess } from '../../../app/composables/membership/useAppUserAccess'
+import { useAppUserAccess } from '../../../app/app-user/composables/useAppUserAccess'
 
 export type ActiveUserOutcome =
   | 'loading'

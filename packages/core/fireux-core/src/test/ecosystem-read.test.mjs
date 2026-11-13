@@ -107,4 +107,17 @@ test('Ecosystem reads require both canonical stamps and report invalid records a
     ...stamp,
     app_id: 'creator-app',
   })
+  data = {
+    ...root,
+    id: 'stored-id',
+    context: 'Private background',
+    created: { at: stamp.at },
+    updated: { at: stamp.at },
+  }
+  assert.deepEqual(await readEcosystem('one', database), {
+    ...root,
+    id: 'one',
+    created: { at: stamp.at },
+    updated: { at: stamp.at },
+  })
 })

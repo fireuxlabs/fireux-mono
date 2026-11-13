@@ -41,7 +41,7 @@
         icon="i-lucide-building-2"
         variant="subtle"
       >
-        <UserAppMembershipEdit
+        <AppUserMembershipEdit
           v-if="membership"
           :display-name="user.display_name"
           :membership="membership"
@@ -62,7 +62,7 @@ import { computed } from '#imports'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useSeo } from '../../../composables/fireux/seo/useSeo'
 import { useRouteParam } from '../../../composables/shared/useRouteParam'
-import { useAppUserMembership } from '../../../app/composables/membership/useAppUserMembership'
+import { useAppUserMembership } from '../../../app/app-user/composables/useAppUserMembership'
 import { useUserByHandle } from '../../../user/composables/useUserByHandle'
 
 definePageMeta({

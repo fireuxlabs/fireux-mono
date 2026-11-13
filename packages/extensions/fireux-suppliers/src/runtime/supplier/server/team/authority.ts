@@ -1,13 +1,13 @@
-import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership-access'
+import { readMembershipAccessIds } from 'fireux-core/runtime/app/app-user/utils/membership-access'
 import { serverSupplierAccessTarget } from '../../utils/access'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/app-user/utils/validation'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { SUPPLIER_MUTATION_TARGETS } from '../mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,

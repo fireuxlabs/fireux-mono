@@ -1,3 +1,4 @@
+import * as chatStorage from '../runtime/app/server/chat/storage.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -63,7 +64,7 @@ function fixture() {
       target(`apps/${app}/conversations/${id}/messages`),
     serverConversationPrivateTarget: (app, id) =>
       target(`apps/${app}/conversations/${id}/private`),
-    ConversationAccessStorage: { document: 'session' },
+    ...chatStorage,
     useFireUXConfig: () => ({ appId: 'app-a', appName: 'Fixture App' }),
     requireChatStartBudget() {},
     firebaseBearerUser: async () => null,

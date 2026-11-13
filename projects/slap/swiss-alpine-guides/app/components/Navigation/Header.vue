@@ -1,19 +1,26 @@
 <template>
   <UHeader v-model:open="open" title="Swiss Alpine Guides" to="/" mode="slideover" class="alpine-header">
     <template #title><span class="alpine-header__brand">Swiss Alpine Guides</span></template>
-    <UNavigationMenu :items="items" aria-label="Main navigation" />
-    <template #right><UButton class="alpine-header__enquire" to="/#enquire" color="neutral" label="Enquire" /></template>
-    <template #body><UNavigationMenu :items="items" orientation="vertical" aria-label="Mobile navigation" /></template>
+    <UNavigationMenu color="neutral" :items="items" aria-label="Main navigation" />
+    <template #right><UButton class="alpine-header__enquire" to="/contact" color="neutral" label="Enquire" /></template>
+    <template #body><UNavigationMenu color="neutral" :items="items" orientation="vertical" aria-label="Mobile navigation" /></template>
   </UHeader>
 </template>
 <script setup lang="ts">
 const open = ref(false)
 const items = [
-  { label: 'Home', to: '/', exact: true, exactHash: true },
-  { label: 'Tours', to: '/#tours', exactHash: true },
-  { label: 'Tour information', to: '/#mountains', exactHash: true },
-  { label: 'Contact', to: '/#enquire', exactHash: true },
-].map(item => ({ ...item, onSelect: () => { open.value = false } }))
+  { label: 'Home', to: '/', exact: true },
+  { label: 'Activities', children: [
+    { label: 'All activities', to: '/activities', onSelect: () => { open.value = false } },
+    { label: 'Summer', to: '/summer', onSelect: () => { open.value = false } },
+    { label: 'Winter', to: '/winter', onSelect: () => { open.value = false } },
+    { label: 'Courses', to: '/courses', onSelect: () => { open.value = false } },
+  ] },
+  { label: 'Rentals', to: '/rentals' },
+  { label: 'Vouchers', to: '/vouchers' },
+  { label: 'About', to: '/about' },
+  { label: 'Contact', to: '/contact' },
+].map(item => item.children ? item : { ...item, onSelect: () => { open.value = false } })
 </script>
 <style scoped>
 .alpine-header { background: #f3f3efed; border-color: #cdd5d1; }

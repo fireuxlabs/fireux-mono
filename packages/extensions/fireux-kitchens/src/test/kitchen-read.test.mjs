@@ -5,7 +5,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, effectScope, ref, toValue, watch } from 'vue'
 import { useCommandScope } from '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
-import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/utils/app-user-access.ts'
+import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/access.ts'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 import { readKitchenDocument } from '../runtime/kitchen/utils/read-kitchen-document.ts'
 

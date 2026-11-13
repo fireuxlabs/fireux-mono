@@ -5,7 +5,7 @@ import {
   setResponseHeader,
 } from 'h3'
 import { useFireUXConfig } from '../../../../../app/composables/config/FireUXConfig'
-import { requireAdmin } from '../../../../../app/server/app-user/command-contract'
+import { requireAdmin } from '../../../../../app/app-user/server/command-contract'
 import { requireFirebaseBearerUser } from '../../../../utils/auth/bearer'
 import {
   getRuntimeFirestore,

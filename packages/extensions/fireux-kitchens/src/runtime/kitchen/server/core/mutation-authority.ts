@@ -1,14 +1,14 @@
 import { serverKitchenAccessTarget } from './access'
 import { readKitchenAccessIds } from '../../utils/kitchen-access'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/app-user/utils/validation'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { KITCHEN_MUTATION_TARGETS } from '../mutation-targets'
 import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 export async function readKitchenMutationActor(event: H3Event) {
   const fireux = useFireUXConfig(event)
   const runtimeAppId = requireFirestoreDocumentId(
@@ -54,7 +54,9 @@ export async function requireKitchenRecordMutationAuthority(
     runtimeMembership.data?.role,
     'Current App membership is required to manage this Kitchen.'
   )
-  const subscription = readAppUserSubscription(runtimeMembership.data?.subscription)
+  const subscription = readAppUserSubscription(
+    runtimeMembership.data?.subscription
+  )
   if (!subscription) {
     throw createError({
       statusCode: 409,
@@ -94,10 +96,7 @@ export async function requireKitchenMutationAuthority(
     actor,
     kitchenId
   )
-  const place = await mutations.read(
-    PLACE_MUTATION_TARGETS.places,
-    kitchenId
-  )
+  const place = await mutations.read(PLACE_MUTATION_TARGETS.places, kitchenId)
   if (!place.exists) {
     throw createError({
       statusCode: 409,

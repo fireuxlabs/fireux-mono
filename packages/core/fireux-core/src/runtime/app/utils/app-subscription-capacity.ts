@@ -1,6 +1,6 @@
 import type { FireuxAppSubscriptionCapacity } from '../../../config/app/types'
-import type { AppUserSubscription } from '../models/app-user.model'
-import { readAppUserSubscription } from '../models/app-user.model.ts'
+import type { AppUserSubscription } from '../app-user/models/model'
+import { readAppUserSubscription } from '../app-user/utils/validation.ts'
 
 export function appSubscriptionCapacity(
   capacity: FireuxAppSubscriptionCapacity,

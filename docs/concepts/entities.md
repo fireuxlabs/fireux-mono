@@ -203,7 +203,7 @@ same membership decision as their list.
 
 ### Subscription naming migration
 
-`readAppUserSubscription` in Core's App model reads legacy `premium` as `pro`.
+`readAppUserSubscription` in Core's AppUser `utils/validation.ts` reads legacy `premium` as `pro`.
 New subscription commands and App capacity configuration use `pro`. Unknown
 subscription values grant no membership authority. The authored membership
 Rules accept both names for the migration period.
@@ -259,7 +259,9 @@ Entity as a privacy mechanism.
 - `FinancialMoney`: Primitive.
 - `FinancialFact`: immutable App-owned Record derived from a source operation.
 - `KitchenSale`: Kitchen-owned Record derived from a completed KitchenOrder.
-- `AppUser`, `UserAccount`, and App access rows: support Records.
+- `UserAccount` and domain access rows: support Records. AppUser is an App-scoped
+  membership Entity with its own model, authority and lifecycle, not another root
+  or a replacement for User.
 - `EcosystemDirectoryEntry`: directory Shape built from an Ecosystem, its App
   count, and its detail link. Its contract lives with
   [Ecosystem models](../../packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem-directory.ts). See the

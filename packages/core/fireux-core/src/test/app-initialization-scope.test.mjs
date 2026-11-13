@@ -29,7 +29,11 @@ const useCommandScope = load(
 )
 const deferred = () => Promise.withResolvers()
 const initialized = {
+  ok: true,
+  appId: 'app',
+  userId: 'a',
   appCreated: true,
+  ecosystemCreated: false,
   membershipCreated: false,
   membershipUpdated: false,
 }

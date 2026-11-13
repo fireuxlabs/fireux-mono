@@ -1,4 +1,4 @@
-import type { FireuxEntity } from '../../models/utils/entity.model'
+import type { FireuxStamps } from '../../models/utils/stamps.model'
 
 export const APP_ROLES = ['global', 'tenant', 'standalone'] as const
 export type AppRole = (typeof APP_ROLES)[number]
@@ -6,7 +6,13 @@ export type AppRole = (typeof APP_ROLES)[number]
 export const APP_STATUSES = ['active', 'inactive'] as const
 export type AppStatus = (typeof APP_STATUSES)[number]
 
-export type App = FireuxEntity & {
+export type App = {
+  /** Supplied by the document path, not stored in the document. */
+  id: string
+  /** Saved AI context; public projections omit this field. */
+  context?: string
+  created: FireuxStamps['created']
+  updated: FireuxStamps['updated']
   ecosystem_id: string
   role: AppRole
   status: AppStatus

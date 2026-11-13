@@ -1,8 +1,8 @@
 import { tours } from './tours'
 
 export const homeSearch = {
-  title: 'Heliskiing & Heliboarding in Interlaken | Swiss Alpine Guides',
-  description: 'Compare Swiss Alpine Guides heliskiing and heliboarding routes from Interlaken: Ebnefluh, Petersgrat and Sustenlimi. View descents, requirements and enquiry options.',
+  title: 'Swiss Alpine Guides | Mountain Activities & Courses in Interlaken',
+  description: 'Summer and winter mountain activities, courses, private guides, rentals and gift vouchers with Swiss Alpine Guides in Interlaken.',
 }
 
 export const tourPages = [

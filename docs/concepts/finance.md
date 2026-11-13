@@ -29,8 +29,9 @@ reports into one generic Finance workspace.
 - Nearest presentation sibling: the shared Card family. Finance report
   presentation is likewise dumb and view-model-driven, but remains a distinct
   metric-summary family rather than a Card.
-- Nearest record sibling: Core `AppEvent` for an App-scoped immutable record
-  with deterministic identity and source/actor timestamps.
+- Nearest record sibling: Core App's joined-event publisher at
+  `app/server/events/publish-joined-event.ts` creates an App-scoped immutable
+  record with deterministic identity and source/actor timestamps.
 - `FinancialMoney` is a primitive. `KitchenSale` and `FinancialFact` are
   parent-owned records, not entities. Neither has an independent mutable
   lifecycle, public route, collection stack, or direct Workspace surface. The

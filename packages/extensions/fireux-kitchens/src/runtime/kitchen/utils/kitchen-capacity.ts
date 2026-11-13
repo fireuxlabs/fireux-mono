@@ -1,5 +1,5 @@
 import type { FireuxAppSubscriptionCapacity } from 'fireux-core/config/app/types'
-import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
 import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 /** Maximum retained Kitchen associations on one App membership. */
 export const KITCHEN_USER_LIMIT = 50

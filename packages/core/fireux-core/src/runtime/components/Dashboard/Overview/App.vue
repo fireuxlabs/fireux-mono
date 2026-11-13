@@ -43,7 +43,7 @@
 import { computed } from 'vue'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
-import { useAppUserRead } from '../../../app/composables/membership/useAppUserRead'
+import { useAppUserRead } from '../../../app/app-user/composables/useAppUserRead'
 import { useWorkspaceEntryCta } from '../../../workspace/composables/useWorkspaceEntryCta'
 
 const config = useFireUXConfig()

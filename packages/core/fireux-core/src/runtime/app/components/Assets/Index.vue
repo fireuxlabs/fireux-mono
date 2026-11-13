@@ -39,7 +39,7 @@ import {
   APP_ASSET_GROUPS,
   readAdditionalAppAssets,
   type AppAssetGroup,
-} from '../../models/asset-catalogue'
+} from '../../media/catalogue'
 
 const fireux = useFireUXConfig()
 const appConfig = useAppConfig() as { fireuxAssets?: { catalogue?: unknown } }

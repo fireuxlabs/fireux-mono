@@ -2,7 +2,7 @@ import type {
   EnvCheckResponse,
   EnvVarEntry,
   StorageAccessStatus,
-} from '../../models/app-environment-check'
+} from '../../contracts/environment-check'
 // FILE: packages/core/fireux-core/src/runtime/server/api/internal/app/env-check.ts
 // Concurrent edit — 2026-07-20 16:35 CEST — Repo Efficiency Pass 1 of 6: authenticate and prevent caching of environment diagnostics.
 import { useAppConfig, useRuntimeConfig } from '#imports'

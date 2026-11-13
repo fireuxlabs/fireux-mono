@@ -66,7 +66,7 @@ const specs = [
   ],
   [
     'App membership',
-    'core/fireux-core/src/runtime/app/composables/membership/run-app-user-command.ts',
+    'core/fireux-core/src/runtime/app/app-user/composables/run-app-user-command.ts',
     'runAppUserCommand',
     'membership',
   ],

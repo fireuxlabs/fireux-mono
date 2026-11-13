@@ -1,4 +1,4 @@
-import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
 import {
   serviceHoursPolicy,
   testKitchenHours,
@@ -92,7 +92,7 @@ const options = load(
   tableChannels
 )
 const { readMembershipAccessIds } = core(
-  'app/utils/membership-access',
+  'app/app-user/utils/membership-access',
   'readMembershipAccessIds'
 )
 const { readKitchenAccessIds } = load(
@@ -112,7 +112,7 @@ const authority = load(
     serverAppUsersTarget: (app) => 'apps/' + app + '/users',
     serverKitchenAccessTarget: () => 'kitchen_access',
     KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
-PLACE_MUTATION_TARGETS: { places: 'places' },
+    PLACE_MUTATION_TARGETS: { places: 'places' },
     readAppUserSubscription,
   }
 )

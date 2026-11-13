@@ -182,6 +182,15 @@ test('App audit stamps allow App provenance only at creation', () => {
     updated: stamp,
   }
   assert.deepEqual(readAppDocument(source, 'app'), { ...source, id: 'app' })
+  for (const created of [stamp, { ...stamp, app_id: 'source-app' }]) {
+    assert.deepEqual(
+      readAppDocument(
+        { ...source, created, id: 'stored-id', context: 'Private background' },
+        'app'
+      ),
+      { ...source, created, id: 'app' }
+    )
+  }
   for (const appId of [null, 42, {}, []]) {
     assert.equal(
       readAppDocument(

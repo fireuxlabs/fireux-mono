@@ -27,23 +27,23 @@
       </video>
       <div class="alpine-scene__shade" aria-hidden="true" />
       <div class="alpine-scene__intro">
-        <p class="alpine-scene__eyebrow">Swiss Alpine Guides</p>
-        <h1 id="hero-title">Heliskiing<br /><em>Heliboarding</em></h1>
+        <p class="alpine-scene__eyebrow">Mountain guide school</p>
+        <h1 id="hero-title">Swiss Alpine<br /><em>Guides</em></h1>
         <p class="alpine-scene__caption">Interlaken · Switzerland</p>
       </div>
       <div class="alpine-scene__outro" aria-hidden="true">
-        <p class="alpine-scene__eyebrow">Combination tour</p>
+        <p class="alpine-scene__eyebrow">All year in the mountains</p>
         <p class="alpine-scene__statement">
-          Ebnefluh &amp;<br /><em>Petersgrat</em>
+          Summer &amp;<br /><em>winter</em>
         </p>
         <p class="alpine-scene__caption">
-          2 flights · 2 descents<br />Up to 35 km · 4,000 m vertical
+          Activities · Courses · Private guiding
         </p>
       </div>
       <a
         class="alpine-scene__scroll"
-        href="#tours"
-        aria-label="Scroll to the tours"
+        href="#activities"
+        aria-label="Explore the activities"
         ><span aria-hidden="true">↓</span></a
       >
     </div>

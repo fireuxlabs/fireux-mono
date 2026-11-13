@@ -3,7 +3,7 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { INGREDIENT_MUTATION_TARGETS } from './mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 import type { Ingredient } from '../models/ingredient.model'
 import { assertCurator, curatorContext } from './curation-authority'
 import { badRequest, normalizeIngredientInput } from './curation-input'

@@ -8,12 +8,11 @@ import { FieldValue, Timestamp } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 import {
-  ConversationAccessStorage,
-  ConversationMessageStorage,
-  ConversationStorage,
-  type ConversationParticipantType,
-  type ConversationRelatedEntity,
-} from '../../models/conversation.model'
+  CONVERSATION_COLLECTION,
+  CONVERSATION_MESSAGES_COLLECTION,
+  CONVERSATION_PRIVATE_COLLECTION,
+  CONVERSATION_SESSION_DOCUMENT,
+} from './storage'
 import { firebaseBearerUser } from '../../../server/utils/auth/bearer'
 import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
@@ -27,6 +26,14 @@ import {
   serverConversationPrivateTarget,
 } from '../mutation-targets'
 import { requireChatStartBudget } from './start-rate-limit'
+
+type ConversationParticipantType = 'admin' | 'user' | 'guest' | 'system'
+type ConversationRelatedEntity = {
+  family: string
+  id: string
+  path: string
+  label: string
+}
 
 const SESSION_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000
 const MAX_MESSAGES = 200
@@ -122,13 +129,13 @@ function sessionRefs(appId: string, conversationId: string) {
   const conversationRef = getRuntimeFirestore()
     .collection('apps')
     .doc(appId)
-    .collection(ConversationStorage.collection)
+    .collection(CONVERSATION_COLLECTION)
     .doc(conversationId)
   return {
     conversationRef,
     accessRef: conversationRef
-      .collection(ConversationAccessStorage.collection)
-      .doc(ConversationAccessStorage.document),
+      .collection(CONVERSATION_PRIVATE_COLLECTION)
+      .doc(CONVERSATION_SESSION_DOCUMENT),
   }
 }
 
@@ -179,7 +186,7 @@ export async function requireChatSessionAccess(
     ),
     mutations.read(
       serverConversationPrivateTarget(input.appId, input.conversationId),
-      ConversationAccessStorage.document
+      CONVERSATION_SESSION_DOCUMENT
     ),
   ])
   if (!conversation.exists || !access.exists)
@@ -290,7 +297,7 @@ export function stageChatSessionCreation(
   )
   mutations.create(
     serverConversationPrivateTarget(appId, conversationId),
-    ConversationAccessStorage.document,
+    CONVERSATION_SESSION_DOCUMENT,
     {
       token_hash: recoveryHash,
       expires_at: expiresAt,
@@ -410,7 +417,7 @@ export async function readChatSession(event: H3Event, input: ChatSessionInput) {
   }
   assertChatSessionAccess(access.data(), token, actor.isAdmin)
   const messages = await conversationRef
-    .collection(ConversationMessageStorage.collection)
+    .collection(CONVERSATION_MESSAGES_COLLECTION)
     .orderBy('created.at', 'asc')
     .limit(MAX_MESSAGES)
     .get()

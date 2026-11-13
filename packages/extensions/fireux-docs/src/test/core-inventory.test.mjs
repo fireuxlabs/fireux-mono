@@ -25,7 +25,7 @@ test('Core inventory covers every component source once, including connected own
   assert.equal(new Set(inventory.map((entry) => entry.id)).size, files.length)
   assert.deepEqual(
     new Set(inventory.map((entry) => entry.scope)),
-    new Set(['Shared', 'App', 'Ecosystem', 'User', 'Workspace'])
+    new Set(['Shared', 'App', 'AppUser', 'Ecosystem', 'User', 'Workspace'])
   )
 })
 

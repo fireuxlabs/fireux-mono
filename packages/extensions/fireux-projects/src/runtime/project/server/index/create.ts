@@ -10,14 +10,14 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/server/entity/creation-identity'
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
-import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/app-user/utils/validation'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from '../app-targets'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   createMembershipAccess,
   readMembershipAccessIds,
-} from 'fireux-core/runtime/app/utils/membership-access'
+} from 'fireux-core/runtime/app/app-user/utils/membership-access'
 import { serverProjectAccessTarget } from '../access'
 import { isGuestProject } from '../../utils/guest-project'
 import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/workspace/utils/policy'

@@ -1,6 +1,6 @@
 import type { DocumentSnapshot } from 'firebase-admin/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'

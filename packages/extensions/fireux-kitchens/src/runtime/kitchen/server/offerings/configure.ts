@@ -10,8 +10,8 @@ import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../core/mutation-authority'
-import { readKitchenOfferingsInTransaction } from '../offerings/read'
-import { serverKitchenOfferingsTarget } from '../offerings/target'
+import { readKitchenOfferingsInTransaction } from './read'
+import { serverKitchenOfferingsTarget } from './target'
 import { kitchenOfferingData } from '../../utils/offerings'
 import { patchKitchenOfferingInteraction } from '../../utils/offering-interaction'
 import { kitchenOfferingOptions } from '../../utils/offering-options'

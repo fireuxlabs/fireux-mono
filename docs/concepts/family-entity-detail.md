@@ -88,12 +88,12 @@ Every Entity Detail route should:
 - Canonical User detail proves the one-object boundary: the route acquires the
   canonical User and renders `<UserDetail v-if="user" :user="user" />`.
   `UserDetail` owns the separately authorized AppUser membership read and
-  composes `UserCardsOverview` and `UserAppMembership`. Overview, membership, and
+  composes `UserCardsOverview` and `AppUserMembership`. Overview, membership, and
   App-owned capability components derive their own
   viewer decisions, labels, links, pending state, and commands from the object
   plus runtime context; the route does not spray those decisions through scalar
   props. Missing membership is not a Free subscription. The inline admin panel
-  and `/users/:handle/edit` reuse `UserAppMembershipEdit`; both retain the same
+  and `/users/:handle/edit` reuse `AppUserMembershipEdit`; both retain the same
   trusted AppUser mutation authority. Specialist profile pages remain with
   their owning domains and are not inferred or registered through the User page.
   Misebox's App-owned `UserDetail` composition appends the Kitchen-owned

@@ -22,6 +22,12 @@ export function configureComponents(resolver: Resolver) {
     ignore: ['FireuxApp.vue', 'FireuxWorkspaceApp.vue'],
   })
 
+  registerComponentsDir(resolver, './runtime/app/app-user/components', {
+    global: false,
+    pathPrefix: true,
+    prefix: 'AppUser',
+  })
+
   registerComponentsDir(resolver, './runtime/ecosystem/components', {
     global: false,
     pathPrefix: true,

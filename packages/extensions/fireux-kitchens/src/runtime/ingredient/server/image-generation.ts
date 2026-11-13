@@ -4,7 +4,7 @@ import { generateFireuxImage } from 'fireux-ai/runtime/server/utils/image-genera
 import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { INGREDIENT_MUTATION_TARGETS } from './mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { assertCurator, curatorContext } from './curation-authority'
@@ -38,7 +38,12 @@ export async function generateIngredientImage(event: H3Event, id: string) {
           statusMessage: 'Ingredient not found.',
         })
       if (source?.image_url)
-        return { id, image_url: String(source.image_url), name: '', category: '' }
+        return {
+          id,
+          image_url: String(source.image_url),
+          name: '',
+          category: '',
+        }
       if (
         source?.image_generation?.status === 'generating' &&
         Number(source.image_generation.expires_at) > Date.now()
@@ -63,7 +68,8 @@ export async function generateIngredientImage(event: H3Event, id: string) {
       }
     }
   )
-  if (claim.image_url) return { id, image_url: claim.image_url, generated: false }
+  if (claim.image_url)
+    return { id, image_url: claim.image_url, generated: false }
 
   try {
     const image = await generateFireuxImage(event, {

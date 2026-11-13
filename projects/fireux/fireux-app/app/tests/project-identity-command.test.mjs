@@ -18,7 +18,7 @@ function load(path, dependencies, name) {
 const createError = (x) => Object.assign(new Error(x.statusMessage), x)
 const core = 'packages/core/fireux-core/src/runtime/'
 const readMembershipAccessIds = load(
-  core + 'app/utils/membership-access.ts',
+  core + 'app/app-user/utils/membership-access.ts',
   {},
   'readMembershipAccessIds'
 )

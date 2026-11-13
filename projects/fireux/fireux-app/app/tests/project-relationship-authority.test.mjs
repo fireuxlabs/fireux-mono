@@ -7,7 +7,7 @@ import { ECOSYSTEM_STATUSES } from '../../../../../packages/core/fireux-core/src
 import {
   isAppUserSubscription,
   readAppUserSubscription,
-} from '../../../../../packages/core/fireux-core/src/runtime/app/models/app-user.model.ts'
+} from '../../../../../packages/core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
 const root = new URL('../../../../../', import.meta.url)
 const core = 'packages/core/fireux-core/src/runtime/'
 const app = 'projects/fireux/fireux-app/server/project/'
@@ -24,7 +24,7 @@ function load(path, result, deps = {}) {
 const createError = (value) =>
   Object.assign(new Error(value.statusMessage), value)
 const readMembershipAccessIds = load(
-  core + 'app/utils/membership-access.ts',
+  core + 'app/app-user/utils/membership-access.ts',
   'readMembershipAccessIds'
 )
 const requireWorkspaceEntityMemberRole = load(
@@ -33,7 +33,7 @@ const requireWorkspaceEntityMemberRole = load(
   { createError }
 )
 const isAppUserRole = load(
-  core + 'app/models/app-user.model.ts',
+  core + 'app/app-user/models/model.ts',
   'isAppUserRole'
 )
 const capacity = load(
@@ -409,7 +409,7 @@ test('Owning Ecosystem reads admit inactive management records without making th
 test('Project ownership and administration in another App cannot administer an existing App', async () => {
   const targets = { runtimeUsers: target('users'), runtimeApps: apps }
   const contract = load(
-    core + 'app/server/app-user/command-contract.ts',
+    core + 'app/app-user/server/command-contract.ts',
     '{forbidden,initialMembership,isAdminMembership,requireCanonicalMembership,roleFrom,stamp,countTransactionAdmins,requireAdmin}',
     {
       createError,
@@ -434,7 +434,7 @@ test('Project ownership and administration in another App cannot administer an e
     }
   )
   const settings = load(
-    core + 'app/server/app-user/settings.ts',
+    core + 'app/app-user/server/settings.ts',
     'handleMembershipSettings',
     {
       ...contract,
@@ -462,7 +462,7 @@ test('Project ownership and administration in another App cannot administer an e
         subscription: 'free',
       })
     const mutate = load(
-      core + 'app/server/app-user/command.ts',
+      core + 'app/app-user/server/command.ts',
       'mutateInTransaction',
       {
         ...contract,

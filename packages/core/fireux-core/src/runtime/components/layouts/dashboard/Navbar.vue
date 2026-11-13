@@ -15,7 +15,7 @@
     </template>
 
     <template #right>
-      <UserSubscriptionControl v-if="showSubscription" />
+      <AppUserSubscriptionControl v-if="showSubscription" />
       <slot name="right" />
 
       <UserNotificationsButton v-if="showNotifications" :kbds="['N']" />

@@ -8,7 +8,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { test } from 'node:test'
 import { computed, ref, toValue } from 'vue'
-import { resolveAppUserAccess } from '../runtime/app/utils/app-user-access.ts'
+import { resolveAppUserAccess } from '../runtime/app/app-user/utils/access.ts'
 const load = (path, name, deps) => {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
@@ -19,7 +19,7 @@ const load = (path, name, deps) => {
   )(...Object.values(deps))
 }
 const readMembershipAccessIds = load(
-  '../runtime/app/utils/membership-access.ts',
+  '../runtime/app/app-user/utils/membership-access.ts',
   'readMembershipAccessIds',
   {}
 )
@@ -57,7 +57,7 @@ for (const [family, path] of Object.entries(paths))
       rootOutcome = ref('ready')
     let readId
     const useMembershipAccess = load(
-      '../runtime/app/composables/membership/useMembershipAccess.ts',
+      '../runtime/app/app-user/composables/useMembershipAccess.ts',
       'useMembershipAccess',
       {
         computed,

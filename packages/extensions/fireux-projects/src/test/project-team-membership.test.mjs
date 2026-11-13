@@ -15,7 +15,7 @@ function load(path, bindings, result) {
 }
 const createError = (x) => Object.assign(new Error(x.statusMessage), x)
 const { readMembershipAccessIds } = load(
-  '../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
+  '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
   {},
   '({readMembershipAccessIds})'
 )

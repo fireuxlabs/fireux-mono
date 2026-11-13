@@ -107,10 +107,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import type {
-  AppAssetItem,
-  AppAssetSurface,
-} from '../../models/asset-catalogue'
+import type { AppAssetItem, AppAssetSurface } from '../../media/catalogue'
 
 const props = defineProps<{ asset: AppAssetItem }>()
 const surface = ref<AppAssetSurface>(props.asset.surface || 'light')

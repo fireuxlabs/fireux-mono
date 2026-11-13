@@ -4,7 +4,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
 import { computed, ref, unref } from 'vue'
-import { readAppUserSubscription } from '../../../../packages/core/fireux-core/src/runtime/app/models/app-user.model.ts'
+import { readAppUserSubscription } from '../../../../packages/core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
 
 function load(path, names, dependencies = {}) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -16,7 +16,7 @@ function load(path, names, dependencies = {}) {
   )(...Object.values(dependencies))
 }
 const accessHelpers = load(
-  '../../../../packages/core/fireux-core/src/runtime/app/utils/membership-access.ts',
+  '../../../../packages/core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
   ['readMembershipAccessIds', 'membershipCreatedAt', 'createMembershipAccess']
 )
 const createdAt = { seconds: 100, nanoseconds: 0 }

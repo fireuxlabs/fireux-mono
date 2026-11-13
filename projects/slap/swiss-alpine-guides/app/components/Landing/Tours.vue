@@ -51,7 +51,7 @@
               color="neutral"
               :aria-label="`View ${tour.name} tour`"
               >View tour</UButton><UButton
-              :to="{ path: '/', query: { tour: tour.id }, hash: '#enquire' }"
+              :to="{ path: '/contact', query: { tour: tour.id }, hash: '#enquire' }"
               variant="link"
               color="neutral"
               :aria-label="`Enquire about ${tour.route}`"
@@ -67,7 +67,7 @@
             minimum of seven participants and private mountain guides on
             request.
           </p>
-          <UButton to="#enquire" color="neutral" variant="outline"
+          <UButton to="/contact" color="neutral" variant="outline"
             >Enquire ↗</UButton
           >
         </div>

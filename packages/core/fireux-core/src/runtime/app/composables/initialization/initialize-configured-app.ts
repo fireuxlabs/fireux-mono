@@ -1,4 +1,4 @@
-import type { AppInitializationResult } from '../../models/app-initialization'
+import type { AppInitializationResult } from '../../contracts/initialization'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { captureCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import { useFireUXConfig } from '../config/FireUXConfig'

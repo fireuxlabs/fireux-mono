@@ -3,8 +3,75 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, effectScope, reactive, ref, watch } from 'vue'
+import {
+  computed,
+  effectScope,
+  reactive,
+  ref,
+  watch,
+  createSSRApp,
+  h,
+} from 'vue'
+import { renderToString } from 'vue/server-renderer'
+import { compileScript, parse } from 'vue/compiler-sfc'
+import { transpileModule, ModuleKind } from 'typescript'
 import { useCommandScope } from '../runtime/composables/fireux/commands/useCommandScope.ts'
+
+test('App editor delegates membership administration with the exact App id', async () => {
+  const file = new URL(
+    '../runtime/app/components/Edit/Admin.vue',
+    import.meta.url
+  )
+  const { descriptor } = parse(readFileSync(file, 'utf8'))
+  const { content } = compileScript(descriptor, {
+    id: 'app-editor-test',
+    inlineTemplate: true,
+  })
+  const { outputText } = transpileModule(content, {
+    compilerOptions: { module: ModuleKind.CommonJS },
+  })
+  const exports = {}
+  const Vue = await import('vue')
+  compileFunction(outputText, ['require', 'exports'])((id) => {
+    assert.equal(id, 'vue')
+    return Vue
+  }, exports)
+  const appRecord = { id: 'selected-app', name: 'Selected App' }
+  const app = createSSRApp({
+    render: () => h(exports.default, { app: appRecord }),
+  })
+  const identities = [],
+    memberships = [],
+    contexts = []
+  for (const name of ['AppEditSectionsAbout', 'AppEditSectionsSocial'])
+    app.component(name, {
+      props: ['app'],
+      setup: (p) => {
+        identities.push(p.app)
+        return () => null
+      },
+    })
+  app.component('AppUserAdministration', {
+    props: ['appId'],
+    setup: (p) => {
+      memberships.push(p.appId)
+      return () => h('section', 'Membership administration')
+    },
+  })
+  app.component('FireContextRecord', {
+    props: ['scope', 'endpoint'],
+    setup: (p) => {
+      contexts.push([p.endpoint, p.scope])
+      return () => null
+    },
+  })
+  assert.match(await renderToString(app), /Membership administration/)
+  assert.deepEqual(identities, [appRecord, appRecord])
+  assert.deepEqual(memberships, ['selected-app'])
+  assert.deepEqual(contexts, [
+    ['/api/internal/app/context', { appId: 'selected-app' }],
+  ])
+})
 
 function deferred() {
   let resolve, reject
@@ -15,7 +82,7 @@ function deferred() {
   return { promise, resolve, reject }
 }
 function fixture() {
-  const props = reactive({ app: { id: 'app-a' } })
+  const props = reactive({ appId: 'app-a' })
   const session = {
     uid: ref('actor-a'),
     appUser: ref({ role: 'admin' }),
@@ -25,7 +92,10 @@ function fixture() {
   const notices = [],
     commands = []
   const source = readFileSync(
-    new URL('../runtime/app/components/Edit/Admin.vue', import.meta.url),
+    new URL(
+      '../runtime/app/app-user/components/Administration/Index.vue',
+      import.meta.url
+    ),
     'utf8'
   )
     .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
@@ -67,8 +137,8 @@ function invalidate(h, changed) {
     h.session.uid.value = 'other'
     h.session.uid.value = 'actor-a'
   } else if (changed === 'app') {
-    h.props.app.id = 'other'
-    h.props.app.id = 'app-a'
+    h.props.appId = 'other'
+    h.props.appId = 'app-a'
   } else if (changed === 'membership') {
     const membership = h.session.appUser.value
     h.session.appUser.value = null

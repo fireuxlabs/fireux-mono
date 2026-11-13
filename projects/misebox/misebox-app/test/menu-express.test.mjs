@@ -1,3 +1,4 @@
+import * as chatStorage from '../../../../packages/core/fireux-core/src/runtime/app/server/chat/storage.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -56,7 +57,7 @@ const chat = load(
     FieldValue: { serverTimestamp: () => time(Date.now()) },
     createError,
     requireFirestoreDocumentId: (value) => value,
-    ConversationAccessStorage: { document: 'session' },
+    ...chatStorage,
     serverAppConversationsTarget: appTarget('conversations'),
     serverConversationMessagesTarget: messagesTarget,
     serverConversationPrivateTarget: privateTarget,

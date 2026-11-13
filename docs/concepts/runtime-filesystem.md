@@ -132,7 +132,9 @@ consumers, including removal of the retired nested authority path.
 
 The package root may still contain shared roles such as `content`, `tools`,
 `types`, and `assets` when they genuinely serve several entities or Nuxt registration.
-Inside an Entity, typed catalogues and contracts belong in `models`, runtime
+Inside an Entity, `models/model.ts` defines only that Entity. Supporting
+types, catalogues and contracts live beside their owning capability; App media
+uses `app/media`. Runtime
 copy resolution and stateless helpers belong in `utils`, component-owned
 styles belong with `components`, AI orchestration belongs in `composables` or
 `server`, and actual operator tools belong in `tools`. This classification
@@ -143,7 +145,7 @@ deferred Demo adapters. Ordinary public product routes use canonical
 Entity readers; they do not import eager App-local imitation records.
 `app/simulations` is retired filesystem vocabulary. Package tests live under
 `src/test`, outside projected `src/runtime`; static catalogues and presentation
-contracts belong in `models`, stateless delivery helpers in `utils`, and
+contracts stay with their owning capability, stateless delivery helpers in `utils`, and
 runtime CSS in `assets/styles`.
 
 ## Nuxt boundary
@@ -195,15 +197,20 @@ remain defensive at runtime, but module source must not advertise an absent
 shared or Entity role. Check declarations against existing source directories
 and generated imports/components to detect phantom targets.
 
-Core App proves the foundation boundary: membership UI, access state, models,
-utilities, and server jobs live under
-`runtime/app/{components,composables,models,utils,server}`, while its
+Core App owns identity, runtime configuration, initialization and App composition
+under `runtime/app/{components,composables,models,utils,server}`. Its AppUser child
+owns `runtime/app/app-user/{components,composables,contracts,models,utils,server}`;
+`models` contains only `model.ts`, and bounded reader/presentation projections
+live in the child's `types.ts`. Native AppUser registration uses the `AppUser`
+component prefix and its explicit composable directory. App events remain App-owned;
+User-profile navigation and current-App composition do not move into AppUser.
+The
 Nuxt handlers remain under `runtime/server/api/**/app/` and delegate inward.
 Commercial offers, public landing and legal presentation, and public catalogue
 pages live in the `fireux-app` runtime layer. Main discovery and child-App
 composition live in `fireux-ecosystem`; Core retains neutral shells and controls.
-The App scope does not repeat `app-` in child names such as `membership`,
-`projection`, or `initialization`.
+Capability names avoid redundant prefixes, such as `initialization`; the named
+child Entity retains its product identity as `app-user`.
 
 ## Ordering inside an entity
 
@@ -288,7 +295,7 @@ commands do not move under Workspace merely because Workspace consumes them.
   composables coordinate client state, server owns trusted execution, and
   tools owns genuine operator tools. An `ai` Entity-root bucket does not hide
   those different jobs.
-- Typed Entity catalogues belong in `models`; Entity-owned Demo Worlds belong
+- Typed Entity catalogues stay outside Entity models with their capability; Entity-owned Demo Worlds belong
   in `demo`. Root `runtime/content` and `runtime/demo` remain available only
   for real cross-entity composition.
 - A surface such as Workspace, Kiosk, Directory, Detail, or Admin may qualify a

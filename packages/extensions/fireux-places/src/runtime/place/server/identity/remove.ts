@@ -10,7 +10,7 @@ import {
 } from 'fireux-core/runtime/server/utils/ids/path'
 import { deleteStorageFileIfExists } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { PLACE_MUTATION_TARGETS } from '../mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 const text = (value: unknown) => String(value ?? '').trim()
 
 const dependencyLabel = (family: string) => {
@@ -58,7 +58,12 @@ export async function removePlace(event: H3Event, placeId: string) {
     }
 
     const references = await Promise.all([
-      mutations.query(placeReferenceTargets.businesses, { field: 'place_ids', op: 'array-contains', value: id, limit: 1 }),
+      mutations.query(placeReferenceTargets.businesses, {
+        field: 'place_ids',
+        op: 'array-contains',
+        value: id,
+        limit: 1,
+      }),
       mutations.query(placeReferenceTargets.kitchens, {
         field: 'place_id',
         op: '==',

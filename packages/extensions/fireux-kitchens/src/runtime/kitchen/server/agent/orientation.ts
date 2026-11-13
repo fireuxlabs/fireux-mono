@@ -4,7 +4,7 @@ import {
   resolveKitchen,
   type KitchenRootRecord,
 } from '../identity/read'
-import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
 import {
   KITCHEN_ACCESS_COLLECTION_PATH,
   readKitchenAccessIds,

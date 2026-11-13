@@ -6,7 +6,7 @@ import {
   serverUserProfileAppStateTarget,
   serverUserProfileTarget,
 } from '../mutation-targets'
-import { serverAppUsersTarget } from '../../../app/server/mutation-targets'
+import { serverAppUsersTarget } from '../../../app/app-user/server/mutation-targets'
 import { requireFirebaseBearerUser } from '../../../server/utils/auth/bearer'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
 import {

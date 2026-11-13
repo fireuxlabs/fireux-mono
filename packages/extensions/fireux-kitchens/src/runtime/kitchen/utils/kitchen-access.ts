@@ -2,7 +2,7 @@ import {
   readMembershipAccess,
   readMembershipAccessIds,
   type MembershipAccess,
-} from 'fireux-core/runtime/app/utils/membership-access'
+} from 'fireux-core/runtime/app/app-user/utils/membership-access'
 import { KITCHEN_USER_LIMIT } from './kitchen-capacity.ts'
 
 export const KITCHEN_ACCESS_COLLECTION_PATH = 'kitchen_access'

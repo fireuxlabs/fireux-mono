@@ -14,7 +14,7 @@ function load(file, deps, name) {
   )(...Object.values(deps))
 }
 const readMembershipAccessIds = load(
-  '../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
+  '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
   {},
   'readMembershipAccessIds'
 )
@@ -37,7 +37,7 @@ function harness() {
   })
   let rootId
   const useMembershipAccess = load(
-    '../../../../core/fireux-core/src/runtime/app/composables/membership/useMembershipAccess.ts',
+    '../../../../core/fireux-core/src/runtime/app/app-user/composables/useMembershipAccess.ts',
     {
       computed,
       toValue,

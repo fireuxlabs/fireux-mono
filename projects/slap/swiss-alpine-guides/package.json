@@ -14,7 +14,8 @@
     "generate": "nuxt generate",
     "test": "node --test tests/enquiry.test.mjs",
     "deploy:preview-alias": "firebase hosting:clone prototype-swiss-alpine-guides:live swiss-alpine-guides-prototype:live --project slap-45389",
-    "test:seo": "node --test tests/seo.test.mjs"
+    "test:seo": "node --test tests/seo.test.mjs",
+    "test:site": "node --test tests/complete-site.test.mjs"
   },
   "dependencies": {
     "@nuxt/ui": "4.12.0",

@@ -26,7 +26,7 @@
           >
             {{ title }}
           </span>
-          <UserSubscriptionControl always-visible />
+          <AppUserSubscriptionControl always-visible />
           <UButton
             icon="i-lucide-info"
             color="neutral"

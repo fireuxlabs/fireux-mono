@@ -10,13 +10,51 @@ Keep the FireUX identity spine understandable: an App, an Ecosystem, and a
 User are canonical records. Supporting records and infrastructure must not
 become competing versions of them.
 
+App and Ecosystem define their complete shapes in their own model files. Both
+declare path-supplied `id`, optional private `context`, and `created`/`updated`
+using the shared `FireuxStamps` value types. There is no generic Entity base.
+Public readers omit private context; this model composition changes neither
+stored fields nor database ownership.
+
+App initialization results and membership command inputs/results belong to
+`runtime/app/contracts/initialization.ts` and
+`runtime/app/app-user/contracts/membership.ts`. These shared
+browser/server agreements are not stored records and do not add a command owner.
+
+AppUser's App-scoped Entity spine is `runtime/app/app-user`. Its only model file,
+`models/model.ts`, owns membership fields and allowed-value vocabulary. Reader
+and presentation projections live in `types.ts`; validation and access decisions
+live in `utils`. Composables, membership UI, the trusted commands and the runtime
+membership mutation target remain together under this child. Its database path
+and User identity relationship are unchanged. App initialization and sessions
+compose this owner; App events remain in `app/server/events`.
+
+App event payload construction and the private deterministic ID helper belong to
+`runtime/app/server/events/publish-joined-event.ts`. The event has no separate
+shared model; the guarded transaction owns record creation and notification
+projections. External delivery retains its explicit publication contract.
+`src/test/app-stored-events.test.mjs` covers stored payloads, repeat publication,
+App membership scope and atomic notification failure; transport is separately
+covered by `src/test/app-user-joined-publication.test.mjs`.
+
+App diagnostics use `runtime/app/contracts/environment-check.ts`; App event
+publication and the Project receiver share
+`runtime/app/contracts/user-joined-publication.ts`. These response and delivery
+contracts are not Entity models. The trusted diagnostics, event publisher and
+receiver retain their own authorization and database scope.
+
+App media support lives in `runtime/app/media`, outside Entity models. Its
+requirements and catalogue are capability data; its sync response is a client/server
+contract. The stored media fields remain owned by the App model. See
+[brand assets](brand-assets.md#app-delivery-and-sync).
+
 Current source is authoritative:
 
 - `packages/core/fireux-core/src/runtime/app/models/app.model.ts`
 - `packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts`
 - `packages/core/fireux-core/src/runtime/user/models/user.model.ts`
 - `packages/extensions/fireux-projects/src/runtime/project/models/project.model.ts`
-- `packages/core/fireux-core/src/runtime/app/models/app-user.model.ts`
+- `packages/core/fireux-core/src/runtime/app/app-user/models/model.ts`
 - `packages/core/fireux-core/src/test/app-collection.test.mjs`
 - `projects/fireux/fireux-app/app/tests/platform-apps-read.test.mjs`
 
@@ -40,8 +78,8 @@ App descriptive copy uses `name`, optional `short_name`, `tagline`, and
 no separate short/long biography fields; directory consumers select from the
 same App identity rather than maintaining another descriptive record.
 
-`App`, `User`, and `Ecosystem` are root entities. `AppUser` is the App-owned
-relationship record connecting one App to one User, not another root. Every App
+`App`, `User`, and `Ecosystem` are root entities. `AppUser` is the App-scoped
+membership Entity connecting one App to one User, not another root. Every App
 references one Ecosystem; neither Ecosystem nor User stores a reverse array
 of App IDs on its root document. A minimal `users/{uid}/apps/{appId}` child
 reference may locate an AppUser stored in another database; it is not a second
@@ -144,7 +182,7 @@ Read APIs are not evidence of complete UX CRUD. User editing uses
 fields. Avatar upload and attachment have a separate User-owned command at
 `user/server/avatar/update.ts`. AppUser owns no separate avatar; its displays
 hydrate the canonical User. AppUser administration (`useAppUsers`), guarded commands
-(`app/composables/membership/run-app-user-command.ts`), and membership controls are App-owned;
+(`app/app-user/composables/run-app-user-command.ts`), and membership controls are App-owned;
 User may compose them but never stores their implementation. Unconsumed browser and server AppUser Create, Update, Delete helpers and command
 wrappers are retired. Named App-owned membership commands remain the authority;
 there is no separate generic creation input model.
@@ -271,7 +309,7 @@ created/updated stamps; it does not repeat `app_id` or `id`, store domain
 Entity arrays, or own Workspace selection. Domains own App-scoped access
 records containing retained ids and the exact AppUser creation timestamp.
 Core supplies strict lifetime validation and a live binding through
-`app/utils/membership-access.ts` and `app/composables/membership/useMembershipAccess.ts`;
+`app/app-user/utils/membership-access.ts` and `app/app-user/composables/useMembershipAccess.ts`;
 paths, grants and policies stay domain-owned. A removed/recreated membership
 cannot inherit its predecessor's grants. The stored-data migration boundary is
 in `docs/ai/firestore-mutations-context.md`; there is no legacy runtime fallback.
@@ -281,7 +319,7 @@ hydrates only their loaded User ids. An admin outside the member
 page remains discoverable in the admin query. `useAppUserMembership` uses the
 existing exact document reader for another person's membership and reuses the
 session for the current person's membership. Shared presentation rows live in
-`app/models/app-user-summary.ts`: membership fields plus one nested, nullable
+`app/app-user/types.ts`: membership fields plus one nested, nullable
 User summary. Missing identities retain their membership rows. There is no
 second administrative users HTTP endpoint or envelope. This live reader relies
 on Firestore Rules for data access; signed-in client gating is not administrator
@@ -413,8 +451,10 @@ The former `models/core`, `models/system`, and entity-owning parts of
 models retain shared contracts only; no compatibility re-export bridge is
 accepted.
 
-App owns Conversation storage contracts at `app/models/conversation.model.ts`
-and Chat lifecycle at `app/server/chat`. Workspace owns the shared Test intent
+App Chat owns consumed storage names at `app/server/chat/storage.ts` and
+lifecycle, supporting types and stored payload construction at
+`app/server/chat/session.ts`. These names are not an Entity model or schema;
+guarded App mutation targets retain database-path authority. Workspace owns the shared Test intent
 contract. The unconsumed Team-request base and its unused Kitchen wrappers are
 retired; the actively shared roster shape remains in
 `workspace/models/team-member.model.ts`. User provisioning's private input/result

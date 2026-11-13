@@ -2,7 +2,7 @@ import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { computed, watch } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
-import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
 import { useState, useRoute, useRouter, navigateTo } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {

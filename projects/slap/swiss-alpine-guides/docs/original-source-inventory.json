@@ -1,0 +1,438 @@
+[
+  {
+    "url": "https://www.swissalpineguides.ch/",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/index.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/index.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/News/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Heliskiing/heliskiing.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/heliskiing"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Skiguides/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/ski-guiding"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Lawinenkurs/lawinenkurs.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/avalanche-courses"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Freeride/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/freeride"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Miete/Miete.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Schneeschuhwandern/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/snowshoe-trekking"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Eisfallklettern/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/waterfall-ice-climbing"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Skitouren/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/ski-touring"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/AGbs/default.htm",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Gutscheine/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Eisklettern/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/glacier-ice-climbing"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Klettersteige/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/via-ferrata"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Helitrek/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/heli-hiking"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Gletscherwanderung/gletscherwanderung.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/glacier-trekking"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Felsklettern/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/rock-climbing"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Bergsteigen/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/mountaineering"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Paragliding/Paragliding.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/paragliding"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/Heliskiing/heliskiing.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/heliskiing"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/terms/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/Skiguides/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/ski-guiding"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/AvalancheCourse/avalanche%20course.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/avalanche-courses"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/Freeride/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/freeride"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/SnowshoeTrek/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/snowshoe-trekking"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/IcefallClimbing/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/waterfall-ice-climbing"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/Skitouring/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/ski-touring"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/Gift%20Voucher/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/IceClimbing/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/glacier-ice-climbing"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/ViaFerrata/viaFerrata.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/via-ferrata"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Not%20in%20use/Ava/avalanche%20course.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/HeliHiking/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/heli-hiking"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/Glacier_Trek/glaciertek.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/glacier-trekking"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/RockClimbing/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/rock-climbing"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/Mountaineering/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/mountaineering"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/Paragliding/Paragliding%20Interlaken.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/paragliding"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/Teamevents/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/team-events"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/Rentals/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/AvalancheCourse/avalanche course.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/Ava/avalanche%20course.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/Paragliding/Paragliding Interlaken.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/team-events"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Heliboarding/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/Heliskiing/heliskiing.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/Schneeschuhwandern/default.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/Freeride/default.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/Eisfallklettern/default.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/Lawinenkurs/lawinenkurs.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/Gletscherwanderung/gletscherwanderung.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/Klettersteige/default.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/RiverRafting/riverrafting.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/river-rafting"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/index.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/AvalanchCourse/default.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/terms/default.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/default.html",
+    "checked": "2026-11-13",
+    "status": "reference",
+    "activityPages": [
+      "/activities/canyoning"
+    ]
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/english/english/index.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/AGbs/default.htm",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/snowevents/default.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/Deutsch/RiverRafting/riverrafting.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  },
+  {
+    "url": "https://www.swissalpineguides.ch/Deutsch/index.html",
+    "checked": "2026-11-13",
+    "status": "broken",
+    "activityPages": []
+  }
+]

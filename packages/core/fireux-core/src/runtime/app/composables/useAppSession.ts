@@ -1,10 +1,10 @@
 import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
-import type { AppUserWithId } from '../models/app-user.model.ts'
+import type { AppUserWithId } from '../app-user/types.ts'
 import type { App } from '../models/app.model.ts'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useAppRead } from './useAppRead'
-import { useAppUserRead } from './membership/useAppUserRead'
+import { useAppUserRead } from '../app-user/composables/useAppUserRead'
 import { useFireUXConfig } from './config/FireUXConfig'
 
 export type UseAppSessionReturn = {

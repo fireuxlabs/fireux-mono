@@ -38,6 +38,7 @@ inspection of source, consumers, siblings, and available tests.
 | FireUX platform or upstream framework integration    | `docs/concepts/fireux.md`, then the relevant Nuxt, Nuxt UI, or Firebase map |
 | Repository or package ownership                      | `docs/concepts/fireux-mono.md`, `docs/concepts/lasagne.md`                  |
 | App configuration or tenant/global/standalone roles  | `docs/concepts/app-config.md`, `docs/concepts/family-tenant-global.md`      |
+| Core App and AppUser ownership                       | `docs/concepts/core-models.md`                                              |
 | Runtime file placement or Nuxt registration          | `docs/concepts/runtime-filesystem.md`, `docs/concepts/runtime-package.md`   |
 | Nuxt page, layout or route rendering                 | `docs/concepts/pages.md`, `docs/concepts/layouts.md`                        |
 | Components or composition                            | `docs/concepts/components.md`, `docs/concepts/lasagne.md`                   |
@@ -52,7 +53,7 @@ inspection of source, consumers, siblings, and available tests.
 | App ignition and build reconciliation                | `packages/extensions/fireux-ignite/docs/ai/ignite-context.md`               |
 | Business identity, Workspace and Company migration   | `packages/extensions/fireux-businesses/docs/ai/businesses-context.md`       |
 | Reusable booking and calendar integrations           | `packages/extensions/fireux-bookings/docs/ai/bookings-context.md`           |
-| Email notifications and delivery adapters           | `packages/extensions/fireux-notifications/docs/ai/notifications-context.md` |
+| Email notifications and delivery adapters            | `packages/extensions/fireux-notifications/docs/ai/notifications-context.md` |
 | FireUX App Ignition requests and delivery            | `projects/fireux/fireux-app/docs/ai/ignition-intake-context.md`             |
 | Industry research and capability discovery           | `packages/extensions/fireux-ai/docs/ai/research-context.md`                 |
 | Documentation roles or new durable docs              | `docs/concepts/documentation.md`                                            |

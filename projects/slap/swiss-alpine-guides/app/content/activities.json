@@ -1,0 +1,1880 @@
+[
+  {
+    "slug": "heliskiing",
+    "name": "Heliskiing & heliboarding",
+    "seasons": [
+      "Winter"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/Heliskiing/heliskiing.html",
+    "checked": "2026-11-13",
+    "summary": "Helicopter-assisted guided descents on Ebnefluh, Petersgrat and Sustenlimi.",
+    "programs": [],
+    "image": "/img/activities/heliskiing.jpg",
+    "imageSource": "https://www.swissalpineguides.ch/images/Heliskiing%20-me.jpg",
+    "note": "Five routes are detailed in our heliskiing catalogue. Published prices differ between language versions; confirm the current quote.",
+    "heliski": true,
+    "path": "/activities/heliskiing",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/Heliskiing/heliskiing.html",
+      "https://www.swissalpineguides.ch/Deutsch/Heliskiing/heliskiing.html"
+    ]
+  },
+  {
+    "slug": "ski-guiding",
+    "name": "Ski guides & technique",
+    "seasons": [
+      "Winter"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/Skiguides/default.html",
+    "checked": "2026-11-13",
+    "summary": "Private on-piste instruction and off-piste guiding in the Jungfrau ski region.",
+    "programs": [
+      {
+        "name": "On-piste ski instruction",
+        "description": "Technique coaching and guided skiing with a ski instructor.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "December–April"
+          },
+          {
+            "label": "Duration",
+            "value": "Minimum two hours; full-day options"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 500 per full day; group listing CHF 170 per person, minimum five"
+          },
+          {
+            "label": "Includes",
+            "value": "Ski instructor"
+          },
+          {
+            "label": "Excludes",
+            "value": "Ski pass"
+          },
+          {
+            "label": "Meeting",
+            "value": "Grindelwald, Schilthorn or Jungfrau region, conditions permitting"
+          }
+        ]
+      },
+      {
+        "name": "Off-piste mountain guide",
+        "description": "Private guiding with avalanche equipment.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "December–April"
+          },
+          {
+            "label": "Duration",
+            "value": "Full-day options"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 825 per guide/day"
+          },
+          {
+            "label": "Includes",
+            "value": "Professional guide, transceiver, shovel and probe"
+          },
+          {
+            "label": "Bring",
+            "value": "Complete ski equipment and clothing, backpack, snacks and water"
+          },
+          {
+            "label": "Meeting",
+            "value": "Arranged for the selected area"
+          }
+        ]
+      }
+    ],
+    "image": "/img/activities/ski-guiding.png",
+    "imageSource": "https://www.swissalpineguides.ch/images/img/Powder%20Heliski.png",
+    "note": "Older indexed versions list different rates. Choose terrain appropriate to your experience with the operator.",
+    "path": "/activities/ski-guiding",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/Skiguides/default.html",
+      "https://www.swissalpineguides.ch/Deutsch/Skiguides/default.html"
+    ]
+  },
+  {
+    "slug": "avalanche-courses",
+    "name": "Avalanche courses",
+    "seasons": [
+      "Winter",
+      "Courses"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/AvalancheCourse/avalanche%20course.html",
+    "checked": "2026-11-13",
+    "summary": "One-day refresher and two-day practical avalanche courses for skiers, splitboarders and snowshoe trekkers.",
+    "programs": [
+      {
+        "name": "Two-day intensive ski / board course",
+        "description": "Day one covers snow science and rescue practice; day two applies planning and risk assessment on a ski tour, board tour or freeride outing.",
+        "facts": [
+          {
+            "label": "Duration",
+            "value": "Day 1 08:15–17:30; day 2 08:00–16:00"
+          },
+          {
+            "label": "Location",
+            "value": "Interlaken and Grindelwald; Schilthorn / Jungfrau region as conditions require"
+          },
+          {
+            "label": "Requirements",
+            "value": "Intermediate skiing or boarding, black-run confidence and some off-piste ability; no previous avalanche training required"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 360 per person; five–eight participants per guide"
+          },
+          {
+            "label": "Includes",
+            "value": "UIAGM/SBV guide, transceiver, shovel, probe, group equipment and receipt for employer"
+          },
+          {
+            "label": "Excludes",
+            "value": "Lift / transport tickets, accommodation and food; optional SMT certificate CHF 65"
+          },
+          {
+            "label": "Languages",
+            "value": "English or German"
+          },
+          {
+            "label": "Bring",
+            "value": "Ski / splitboard touring equipment, backpack, picnic, warm drink, sun protection and phone"
+          }
+        ]
+      },
+      {
+        "name": "One-day refresher",
+        "description": "Join the first day to refresh existing avalanche knowledge.",
+        "facts": [
+          {
+            "label": "Published price",
+            "value": "CHF 190 per person; five–eight participants"
+          },
+          {
+            "label": "Content",
+            "value": "Snow science, avalanche bulletin, 3×3 planning, transceiver use, efficient probing and shovelling, group rescue and airbag introduction"
+          }
+        ]
+      },
+      {
+        "name": "Two-day snowshoe avalanche course",
+        "description": "Theory, rescue training and a guided snowshoe outing to practise decisions in terrain.",
+        "facts": [
+          {
+            "label": "Duration",
+            "value": "08:15–17:00 and 08:00–16:00"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 360 per person"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, transceiver, probe, shovel and course equipment"
+          },
+          {
+            "label": "Excludes",
+            "value": "Transport or lift tickets"
+          },
+          {
+            "label": "Bring",
+            "value": "Snowshoes, warm boots, poles, winter clothing, picnic, drinks, sun protection and phone"
+          }
+        ]
+      }
+    ],
+    "image": "/img/activities/avalanche-courses.jpg",
+    "imageSource": "https://www.swissalpineguides.ch/images/avalanche.jpg",
+    "dates": [
+      "December 2026: 5–6, 12–13",
+      "January 2027: 9–10, 16–17, 23–24, 30–31 (the source adds an inconsistent “Feb.” marker to this January entry)",
+      "February 2027: 6–7, 13–14, 20–21, 27–28",
+      "March 2027: 6–7, 13–14, 20–21",
+      "Snowshoe course: 9–10 and 30–31 January; 13–14 February 2027",
+      "Private groups: other dates on request"
+    ],
+    "note": "Published course dates are references, not live availability. Confirm every date with the operator.",
+    "path": "/activities/avalanche-courses",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/AvalancheCourse/avalanche%20course.html",
+      "https://www.swissalpineguides.ch/Deutsch/Lawinenkurs/lawinenkurs.html"
+    ]
+  },
+  {
+    "slug": "freeride",
+    "name": "Freeride skiing & snowboarding",
+    "seasons": [
+      "Winter"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/Freeride/default.html",
+    "checked": "2026-11-13",
+    "summary": "Lift-assisted off-piste days in Grindelwald–First, Wengen and Schilthorn–Mürren.",
+    "programs": [
+      {
+        "name": "Grindelwald–First",
+        "description": "Off-piste routes may include walking or abseiling.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "Mid-January–March; weather permitting"
+          },
+          {
+            "label": "Meeting",
+            "value": "08:30 at Grindelwald–First base-station ticket office"
+          }
+        ]
+      },
+      {
+        "name": "Wengen",
+        "description": "Runs around Männlichen and Kleine Scheidegg; walking or abseiling may be involved.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "24 January–mid-March; weather permitting"
+          },
+          {
+            "label": "Meeting",
+            "value": "08:30 at Wengen tourist office, ready to depart"
+          }
+        ]
+      },
+      {
+        "name": "Schilthorn–Mürren",
+        "description": "Lift-assisted skiing and boarding in the Schilthorn area.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "24 January–March; weather permitting"
+          },
+          {
+            "label": "Meeting",
+            "value": "08:30 at Mürren / Schilthorn station"
+          }
+        ]
+      }
+    ],
+    "image": "/img/activities/freeride.png",
+    "imageSource": "https://www.swissalpineguides.ch/english/Freeride/images/freeride%201.png",
+    "common": [
+      {
+        "name": "Practical information",
+        "description": "",
+        "facts": [
+          {
+            "label": "Requirements",
+            "value": "Strong, experienced powder skiers or snowboarders; discuss intermediate / advanced suitability"
+          },
+          {
+            "label": "Duration",
+            "value": "08:30–16:15 with a one-hour lunch break"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 170 per person, minimum five; private guide from CHF 825/day"
+          },
+          {
+            "label": "Includes",
+            "value": "Local mountain guide, avalanche transceiver and group equipment"
+          },
+          {
+            "label": "Excludes",
+            "value": "Ski pass"
+          },
+          {
+            "label": "Bring",
+            "value": "Complete ski / snowboard kit, backpack and spending money"
+          }
+        ]
+      }
+    ],
+    "path": "/activities/freeride",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/Freeride/default.html",
+      "https://www.swissalpineguides.ch/Deutsch/Freeride/default.html"
+    ]
+  },
+  {
+    "slug": "snowshoe-trekking",
+    "name": "Snowshoe treks",
+    "seasons": [
+      "Winter"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/SnowshoeTrek/default.html",
+    "checked": "2026-11-13",
+    "summary": "Short snowshoe outings, Lobhorn hut day tours and spring glacier treks.",
+    "programs": [
+      {
+        "name": "Fun / sunset snowshoe trek",
+        "description": "An introduction for skiers and non-skiers.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "December–April"
+          },
+          {
+            "label": "Duration",
+            "value": "Three–four hours; start by arrangement"
+          },
+          {
+            "label": "Requirements",
+            "value": "Outdoor enjoyment; the source describes all fitness levels"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 125 per person, minimum five; current German homepage lists sunset trekking at CHF 145"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, snowshoes, poles, transceiver, boots, fleece, gloves, beanie, gaiters and backpack"
+          },
+          {
+            "label": "Excludes",
+            "value": "Fondue, drinks and any cableway / lift tickets"
+          }
+        ]
+      },
+      {
+        "name": "Lobhorn hut day tour",
+        "description": "A longer route selected to suit conditions and group fitness.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "December–April"
+          },
+          {
+            "label": "Duration",
+            "value": "Full day"
+          },
+          {
+            "label": "Requirements",
+            "value": "Fit trekkers"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 190 per person, minimum four"
+          },
+          {
+            "label": "Includes",
+            "value": "Snowshoes, poles, transceiver, boots and listed winter equipment"
+          },
+          {
+            "label": "Excludes",
+            "value": "Cableway tickets"
+          }
+        ]
+      },
+      {
+        "name": "Steingletscher snowshoe glacier trek",
+        "description": "A spring outing about an hour’s drive from Interlaken.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "April–June"
+          },
+          {
+            "label": "Duration",
+            "value": "Full day"
+          },
+          {
+            "label": "Requirements",
+            "value": "Fit trekkers"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 190 per person, minimum four"
+          },
+          {
+            "label": "Includes",
+            "value": "Listed snowshoe / winter equipment"
+          },
+          {
+            "label": "Excludes",
+            "value": "Cableway tickets, food and drink"
+          }
+        ]
+      }
+    ],
+    "image": "/img/activities/snowshoe-trekking.jpg",
+    "imageSource": "https://www.swissalpineguides.ch/images/sunset%202.jpg",
+    "common": [
+      {
+        "name": "Prepare for your trek",
+        "description": "",
+        "facts": [
+          {
+            "label": "Bring",
+            "value": "Warm winter clothing, gloves, beanie, snacks or picnic, water, sun protection and sunglasses"
+          },
+          {
+            "label": "Transfers",
+            "value": "Source offers pickup in the Interlaken area or at Interlaken Ost; reserve and confirm arrangements"
+          },
+          {
+            "label": "Guides",
+            "value": "Local professional mountain guides or aspirant guides"
+          }
+        ]
+      }
+    ],
+    "path": "/activities/snowshoe-trekking",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/SnowshoeTrek/default.html",
+      "https://www.swissalpineguides.ch/Deutsch/Schneeschuhwandern/default.html"
+    ]
+  },
+  {
+    "slug": "waterfall-ice-climbing",
+    "name": "Waterfall ice climbing",
+    "seasons": [
+      "Winter"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/IcefallClimbing/default.html",
+    "checked": "2026-11-13",
+    "summary": "Introductory climbing on frozen waterfalls near Grindelwald, Saxeten or Rosenlaui.",
+    "programs": [
+      {
+        "name": "One-day waterfall ice climbing",
+        "description": "Basic ice-climbing skills under a qualified mountain guide.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "January–March, conditions permitting"
+          },
+          {
+            "label": "Duration",
+            "value": "08:00–15:00"
+          },
+          {
+            "label": "Requirements",
+            "value": "No previous experience listed"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 230 per person, minimum four; German homepage lists CHF 225"
+          },
+          {
+            "label": "Includes",
+            "value": "Mountain boots, crampons, ice axes, harness, helmet and technical gear"
+          },
+          {
+            "label": "Excludes",
+            "value": "Transfers"
+          },
+          {
+            "label": "Bring",
+            "value": "Winter clothing, beanie, gloves, goggles / sunglasses, picnic, warm drink and sun protection"
+          },
+          {
+            "label": "Meeting",
+            "value": "Eyacheri 2, Matten bei Interlaken, or Interlaken Ost"
+          }
+        ]
+      }
+    ],
+    "image": "/img/activities/waterfall-ice-climbing.jpg",
+    "imageSource": "https://www.swissalpineguides.ch/english/IcefallClimbing/images/icefallclimb.jpg",
+    "dates": [
+      "The original page lists 17, 24 and 31 January; 7, 15, 21 and 22 February 2026. These dates are past; request the current programme."
+    ],
+    "path": "/activities/waterfall-ice-climbing",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/IcefallClimbing/default.html",
+      "https://www.swissalpineguides.ch/Deutsch/Eisfallklettern/default.html"
+    ]
+  },
+  {
+    "slug": "ski-touring",
+    "name": "Ski touring & courses",
+    "seasons": [
+      "Winter",
+      "Courses"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/Skitouring/default.html",
+    "checked": "2026-11-13",
+    "summary": "Introductory ski touring, two-day skills courses and private mountain guides.",
+    "programs": [
+      {
+        "name": "Ski-tour starter day",
+        "description": "Introduction to touring gear, skins, ascent, kick turns and descent.",
+        "facts": [
+          {
+            "label": "Duration",
+            "value": "Full day"
+          },
+          {
+            "label": "Location",
+            "value": "Jungfrau region, Schilthorn, Grindelwald or Rosenlaui, chosen for conditions"
+          },
+          {
+            "label": "Requirements",
+            "value": "Fit intermediate–advanced skiers; off-piste experience helpful"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 190 per person, minimum four"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, transceiver, probe and shovel"
+          },
+          {
+            "label": "Excludes",
+            "value": "Transport"
+          },
+          {
+            "label": "Bring",
+            "value": "Full touring kit and clothing, picnic, warm drink and water"
+          }
+        ]
+      },
+      {
+        "name": "Two-day ski / board touring course",
+        "description": "Day one develops avalanche and rescue skills; day two combines tour planning, snow assessment and touring technique.",
+        "facts": [
+          {
+            "label": "Duration",
+            "value": "Day 1 08:00–17:00; day 2 08:00–16:00"
+          },
+          {
+            "label": "Location",
+            "value": "Schilthorn, Grindelwald or Haslital; examples include Bandspitz 2,401 m, Grindelgrat 2,390 m and Gstelliwang 2,480 m"
+          },
+          {
+            "label": "Requirements",
+            "value": "Confident intermediate–advanced skier / boarder, some off-piste experience and ability to walk two hours without a break"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 170 per person/day, minimum four"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, avalanche rescue kit and technical course gear"
+          },
+          {
+            "label": "Excludes",
+            "value": "Transport and any lift pass"
+          },
+          {
+            "label": "Bring",
+            "value": "Ski touring or splitboard equipment, backpack, picnic, drinks, sun protection and phone"
+          },
+          {
+            "label": "German source rate",
+            "value": "CHF 165 per person/day; confirm against English CHF 170 listing"
+          }
+        ]
+      }
+    ],
+    "image": "/img/activities/ski-touring.jpg",
+    "imageSource": "https://www.swissalpineguides.ch/images/Freeride.jpg",
+    "dates": [
+      "The source programme lists weekends from 6 January to 7 April 2024. These are archived dates, not current availability."
+    ],
+    "note": "Private guides and dates are available by enquiry.",
+    "path": "/activities/ski-touring",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/Skitouring/default.html",
+      "https://www.swissalpineguides.ch/Deutsch/Skitouren/default.html"
+    ]
+  },
+  {
+    "slug": "glacier-ice-climbing",
+    "name": "Summer glacier ice climbing",
+    "seasons": [
+      "Summer"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/IceClimbing/default.html",
+    "checked": "2026-11-13",
+    "summary": "A guided Rhone Glacier day introducing ice axes, crampons, ropes and glacier ice walls.",
+    "programs": [
+      {
+        "name": "Rhone Glacier ice-climbing day",
+        "description": "Includes instruction and roped climbing / rappelling in glacier terrain.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "June–September"
+          },
+          {
+            "label": "Duration",
+            "value": "08:00–17:00"
+          },
+          {
+            "label": "Requirements",
+            "value": "No previous alpine experience listed"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 230 per person, minimum four"
+          },
+          {
+            "label": "Includes",
+            "value": "Mountain guide, boots, ice axes, crampons, harness, fleece, beanie, gloves, gaiters, backpack and technical gear"
+          },
+          {
+            "label": "Bring",
+            "value": "Sportswear, picnic, energy snacks, water, sun cream and sunglasses"
+          },
+          {
+            "label": "Meeting",
+            "value": "Eyacheri 2 or arranged Interlaken-area pickup"
+          },
+          {
+            "label": "Transfers",
+            "value": "Source offers Interlaken-area hotel pickup; reservation required"
+          }
+        ]
+      }
+    ],
+    "image": "/img/activities/glacier-ice-climbing.jpg",
+    "imageSource": "https://www.swissalpineguides.ch/english/IceClimbing/images/Ice%20ClimbingSommer%20b.jpg",
+    "path": "/activities/glacier-ice-climbing",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/IceClimbing/default.html",
+      "https://www.swissalpineguides.ch/Deutsch/Eisklettern/default.html"
+    ]
+  },
+  {
+    "slug": "via-ferrata",
+    "name": "Via ferrata",
+    "seasons": [
+      "Summer"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/ViaFerrata/viaFerrata.html",
+    "checked": "2026-11-13",
+    "summary": "Guided routes at Mürren, the foot of the Eiger North Face and Kandersteg.",
+    "programs": [
+      {
+        "name": "Mürren → Gimmelwald",
+        "description": "A 2.2 km descending route above Lauterbrunnen, with ladders and an 80 m suspension bridge.",
+        "facts": [
+          {
+            "label": "Grade",
+            "value": "K3"
+          },
+          {
+            "label": "Season",
+            "value": "June–October"
+          },
+          {
+            "label": "Duration",
+            "value": "Half day"
+          },
+          {
+            "label": "Start",
+            "value": "09:10 Mürren or 08:00 Interlaken"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 179 per person, minimum four"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, via ferrata set, helmet, harness, gloves and technical gear"
+          },
+          {
+            "label": "Excludes",
+            "value": "Stechelberg–Mürren–Gimmelwald cableways"
+          },
+          {
+            "label": "Meeting",
+            "value": "Sportchalet Hotel, Mürren, or arranged Interlaken accommodation pickup"
+          },
+          {
+            "label": "Reservation",
+            "value": "Source describes a 50% deposit after contact; balance on the day. This website does not collect payment."
+          }
+        ]
+      },
+      {
+        "name": "Eiger North Face",
+        "description": "Via ferrata terrain beneath the Eiger.",
+        "facts": [
+          {
+            "label": "Grade",
+            "value": "K3"
+          },
+          {
+            "label": "Requirements",
+            "value": "Experienced trekker with a head for heights"
+          },
+          {
+            "label": "Season",
+            "value": "June–October"
+          },
+          {
+            "label": "Duration",
+            "value": "Half day; 08:00 from Interlaken or by arrangement"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 180 per person, minimum five"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, via ferrata equipment, boots, helmet and harness"
+          },
+          {
+            "label": "Excludes",
+            "value": "Grindelwald–Eigergletscher return train"
+          },
+          {
+            "label": "Meeting",
+            "value": "Eigergletscher or as arranged"
+          }
+        ]
+      },
+      {
+        "name": "Kandersteg / Allmenalp",
+        "description": "Exposed ladders, overhanging passages and rope bridges.",
+        "facts": [
+          {
+            "label": "Grade",
+            "value": "K4"
+          },
+          {
+            "label": "Requirements",
+            "value": "Head for heights; confirm suitability"
+          },
+          {
+            "label": "Season",
+            "value": "May–October"
+          },
+          {
+            "label": "Duration",
+            "value": "Half day; 07:30 Interlaken or by arrangement"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 220 per person, minimum five"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, equipment and Interlaken transfers"
+          },
+          {
+            "label": "Meeting",
+            "value": "Kandersteg station (1,176 m) or Allmenalp valley station (1,181 m), as arranged"
+          }
+        ]
+      },
+      {
+        "name": "Tierbergli / Steingletscher",
+        "description": "Follow a gneiss ridge to Tierbergli hut, then return by the summer path to Umpool.",
+        "facts": [
+          {
+            "label": "Grade",
+            "value": "K4 / K3 / T3 on source"
+          },
+          {
+            "label": "Requirements",
+            "value": "Experienced, sure-footed hiker with a head for heights"
+          },
+          {
+            "label": "Season",
+            "value": "July–August"
+          },
+          {
+            "label": "Duration",
+            "value": "One day"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 225 per person, minimum five"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, via ferrata equipment, boots and Interlaken transport"
+          },
+          {
+            "label": "Meeting",
+            "value": "08:00 Interlaken or Hotel Steingletscher by arrangement"
+          },
+          {
+            "label": "Bring",
+            "value": "Trekking shoes, weatherproof clothes, backpack, picnic, drinks and sun protection"
+          }
+        ]
+      }
+    ],
+    "image": "/img/activities/via-ferrata.jpg",
+    "imageSource": "https://www.swissalpineguides.ch/images/via%20Ferrata%20M%C3%BCrren/via%20Ferrata%20m%C3%BCrren%20good.jpg",
+    "common": [
+      {
+        "name": "Prepare for via ferrata",
+        "description": "",
+        "facts": [
+          {
+            "label": "Bring",
+            "value": "Comfortable outdoor clothing, fleece where needed, picnic, snacks, water, sun cream and sunglasses"
+          },
+          {
+            "label": "Guides",
+            "value": "Qualified mountain guides or aspirant guides; confirm individual route suitability"
+          }
+        ]
+      }
+    ],
+    "path": "/activities/via-ferrata",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/ViaFerrata/viaFerrata.html",
+      "https://www.swissalpineguides.ch/Deutsch/Klettersteige/default.html"
+    ]
+  },
+  {
+    "slug": "heli-hiking",
+    "name": "Heli-hiking & trekking",
+    "seasons": [
+      "Summer"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/HeliHiking/default.html",
+    "checked": "2026-11-13",
+    "summary": "A helicopter flight to Petersgrat followed by a guided glacier and valley trek.",
+    "programs": [
+      {
+        "name": "Panorama heli-hike — Petersgrat",
+        "description": "Fly over the mountain landscape to Petersgrat at 3,200 m, then trek roped with a guide via the Mutthorn hut towards Stechelberg.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "June–August, private tours"
+          },
+          {
+            "label": "Duration",
+            "value": "Full day; fitness for at least four hours with a backpack"
+          },
+          {
+            "label": "Requirements",
+            "value": "No previous technical experience listed"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 425 per person, minimum four"
+          },
+          {
+            "label": "Includes",
+            "value": "Helicopter flight, listed trekking / glacier equipment and technical gear"
+          },
+          {
+            "label": "Bring",
+            "value": "Trekking boots, warm outdoor clothing, picnic, snacks, water and sun protection"
+          },
+          {
+            "label": "Meeting",
+            "value": "Interlaken, Lauterbrunnen or Grindelwald by arrangement"
+          },
+          {
+            "label": "Transfers",
+            "value": "Interlaken-area / Interlaken Ost pickup listed; confirm"
+          },
+          {
+            "label": "German source differences",
+            "value": "Fitness for five–seven hours; June–October; quote on enquiry. An optional night at Obersteinberg can split the route over two days. Confirm the current itinerary and rate."
+          }
+        ]
+      },
+      {
+        "name": "Sustenlimi → Steingletscher",
+        "description": "Helicopter flight to Sustenlimi (about 3,200 m), then a roped glacier trek via Tierbergli hut (2,795 m) to Umpool.",
+        "facts": [
+          {
+            "label": "Requirements",
+            "value": "Fitness for four–five hours; no prior alpine experience listed"
+          },
+          {
+            "label": "Season",
+            "value": "June–October on heli-hiking page; June–September on glacier page"
+          },
+          {
+            "label": "Duration",
+            "value": "08:00–16:00"
+          },
+          {
+            "label": "Published price",
+            "value": "German heli-hiking page: quote on enquiry; glacier page: from CHF 425 with four participants"
+          },
+          {
+            "label": "Includes",
+            "value": "Flight, guide, harness, crampons and ice axe / poles"
+          },
+          {
+            "label": "Excludes",
+            "value": "Return transfer from Steingletscher to the meeting point"
+          },
+          {
+            "label": "Meeting",
+            "value": "Meiringen or Hotel Steingletscher by arrangement"
+          },
+          {
+            "label": "Bring",
+            "value": "Mountain boots, backpack, picnic, drinks, warm outdoor kit, gloves, beanie and sun protection"
+          }
+        ]
+      }
+    ],
+    "image": "/img/activities/heli-hiking.jpg",
+    "imageSource": "https://www.swissalpineguides.ch/english/HeliHiking/images/helihike_Petersgrat.jpg",
+    "note": "The source also lists Breithorn. Its current route and contrasting published price references are retained under Mountaineering.",
+    "related": [
+      "mountaineering"
+    ],
+    "path": "/activities/heli-hiking",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/HeliHiking/default.html",
+      "https://www.swissalpineguides.ch/Deutsch/Helitrek/default.html"
+    ]
+  },
+  {
+    "slug": "glacier-trekking",
+    "name": "Glacier treks",
+    "seasons": [
+      "Summer"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/Glacier_Trek/glaciertek.html",
+    "checked": "2026-11-13",
+    "summary": "One-day glacier visits and multi-day routes on Aletsch, Monte Rosa and the Bernese Alps.",
+    "programs": [
+      {
+        "name": "Glacier Eco Tour — one day",
+        "description": "Guided glacier walking with information about glacier formation, colour and environmental change.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "June–October"
+          },
+          {
+            "label": "Duration",
+            "value": "Five–six hours; 08:15 start"
+          },
+          {
+            "label": "Requirements",
+            "value": "No prior experience listed; average fitness"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 230 per person, minimum five; homepage advertises a glacier day from CHF 220"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, boots, warm clothing, crampons, harness, gaiters, ice axe, backpack, transfers and technical kit"
+          },
+          {
+            "label": "Bring",
+            "value": "Picnic, snacks, water, sun cream, sunglasses and camera"
+          },
+          {
+            "label": "Meeting",
+            "value": "Eyacheri 2; Interlaken hotel / Ost pickup by arrangement"
+          }
+        ]
+      },
+      {
+        "name": "Aletsch — Jungfraujoch to Konkordia hut",
+        "description": "Day one crosses the glacier plateau to Konkordia hut (2,850 m): about four hours, +150/−750 m. Day two continues via Märjelenalp to Kühboden: about six hours, +100/−740 m.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "June–October"
+          },
+          {
+            "label": "Duration",
+            "value": "Two days; private groups"
+          },
+          {
+            "label": "Requirements",
+            "value": "Experienced trekker; acclimatisation helpful"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 450 per person, minimum six; older homepage lists a different rate"
+          },
+          {
+            "label": "Includes",
+            "value": "Two-day guide, harness, gaiters, ice axe and technical kit"
+          },
+          {
+            "label": "Excludes",
+            "value": "Konkordia hut half board, Jungfraujoch train, return travel from Fiesch and hut drinks"
+          },
+          {
+            "label": "Meeting",
+            "value": "10:05 Jungfraujoch entrance coffee bar"
+          },
+          {
+            "label": "Bring",
+            "value": "Mountain boots, light backpack, two days’ picnic, water, weatherproof warm clothes, gloves, beanie, sun protection, torch, personal essentials, hut liner and discount / alpine club cards"
+          }
+        ]
+      },
+      {
+        "name": "Steingletscher / Tierbergli hut",
+        "description": "Day one practises glacier equipment and ascends to Tierbergli hut (2,795 m). Day two climbs Vorder Tierberg (3,091 m), then descends to Umpool–Steinalp.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "June–September"
+          },
+          {
+            "label": "Duration",
+            "value": "Two days; three–four hours walking each day"
+          },
+          {
+            "label": "Requirements",
+            "value": "Experienced, sure-footed hiker; no prior alpine experience listed"
+          },
+          {
+            "label": "Published price",
+            "value": "Per person: CHF 395 for five, CHF 470 for four, CHF 600 for three; CHF 1,650 for one–two as worded on source"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, harness, crampons and ice axe"
+          },
+          {
+            "label": "Excludes",
+            "value": "Tierbergli hut half board"
+          },
+          {
+            "label": "Meeting",
+            "value": "10:00 Hotel Steingletscher or by arrangement"
+          },
+          {
+            "label": "Bring",
+            "value": "Mountain boots, 30 L pack, two-day picnic, drinks, warm waterproof clothes, gloves, beanie, personal overnight kit, hut liner and sun protection"
+          }
+        ]
+      },
+      {
+        "name": "Monte Rosa hut",
+        "description": "Day one takes the Gornergrat train to Rotenboden (2,855 m), then crosses the Gorner Glacier to Monte Rosa hut (2,883 m), three–four hours. Day two descends to Furi (1,867 m), about five hours, then returns by cableway to Zermatt.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "June–September"
+          },
+          {
+            "label": "Duration",
+            "value": "Two days / one night; private groups"
+          },
+          {
+            "label": "Requirements",
+            "value": "Experienced trekker; acclimatisation helpful"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 360 per person, minimum six"
+          },
+          {
+            "label": "Includes",
+            "value": "English-speaking Swiss guide, crampons, harness, gaiters, ice axe and technical kit"
+          },
+          {
+            "label": "Excludes",
+            "value": "Hut half board, trains / cableways, travel and hut drinks"
+          },
+          {
+            "label": "Meeting",
+            "value": "10:00 Zermatt station or as confirmed"
+          },
+          {
+            "label": "Bring",
+            "value": "Mountain boots, picnic, water, warm waterproof clothes, gloves, beanie, sun protection, torch, personal essentials and hut liner"
+          }
+        ]
+      },
+      {
+        "name": "Jungfraujoch → Grimsel — seven glaciers",
+        "description": "Four stages: Jungfraufirn to Konkordia hut; Grüneggfirn and Grünhornlücke to Finsteraarhorn hut (3,048 m); Fiescher, Galmi and Studer glaciers to Oberaarjoch hut (3,256 m); Oberaar Glacier to Berghaus Oberaar and Grimsel.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "June–September"
+          },
+          {
+            "label": "Duration",
+            "value": "Four days; about 4.5–6 hours walking daily; private groups"
+          },
+          {
+            "label": "Requirements",
+            "value": "Experienced trekker able to carry a backpack for at least four hours; acclimatisation helpful"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 950 per person; four–six participants"
+          },
+          {
+            "label": "Includes",
+            "value": "Four-day guide and listed guide travel / hut costs, boots, crampons, harness, gaiters and ice axe"
+          },
+          {
+            "label": "Excludes",
+            "value": "Participant accommodation / meals, travel to Jungfraujoch, shared taxi from Berghaus Oberaar and hut drinks"
+          },
+          {
+            "label": "Bring",
+            "value": "Light mountain kit, three days’ picnic, water, warm waterproof clothes, sun protection, torch, personal essentials, hut liner and discount / alpine club cards"
+          },
+          {
+            "label": "German source differences",
+            "value": "July–August; 10:15 Jungfraujoch meeting; CHF 990 for five or CHF 1,090 for four participants, with hut half board and tea included. The English page differs on season, price, group size and participant hut costs. Confirm the agreed package."
+          }
+        ]
+      }
+    ],
+    "image": "/img/activities/glacier-trekking.jpg",
+    "imageSource": "https://www.swissalpineguides.ch/images/Inside%20a%20glacier.jpg",
+    "note": "The operator asks participants to arrange suitable insurance and recommends REGA membership. Confirm route conditions, huts and current arrangements.",
+    "path": "/activities/glacier-trekking",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/Glacier_Trek/glaciertek.html",
+      "https://www.swissalpineguides.ch/Deutsch/Gletscherwanderung/gletscherwanderung.html"
+    ]
+  },
+  {
+    "slug": "rock-climbing",
+    "name": "Rock climbing",
+    "seasons": [
+      "Summer",
+      "Courses"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/RockClimbing/default.html",
+    "checked": "2026-11-13",
+    "summary": "Introductory and outdoor climbing sessions around Interlaken, with private courses on request.",
+    "programs": [
+      {
+        "name": "Interlaken climbing — Fun",
+        "description": "Introduction to climbing, ropes and abseiling.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "April–September"
+          },
+          {
+            "label": "Age",
+            "value": "From 10 years"
+          },
+          {
+            "label": "Duration",
+            "value": "Half or full day; source lists 08:30–16:00"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 150 half day or CHF 190 full day per person; minimum five"
+          },
+          {
+            "label": "Includes",
+            "value": "Climbing shoes, harness, helmet, backpack, technical gear, guide and Interlaken-area transport"
+          },
+          {
+            "label": "Excludes",
+            "value": "Food, drink and transport to other climbing areas"
+          }
+        ]
+      },
+      {
+        "name": "Interlaken outdoor climbing",
+        "description": "Basic technique and safety skills, with progression for returning climbers.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "Late May–September"
+          },
+          {
+            "label": "Age",
+            "value": "From 10 years"
+          },
+          {
+            "label": "Duration",
+            "value": "08:30–17:00"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 190 per person, minimum five"
+          },
+          {
+            "label": "Includes",
+            "value": "Climbing shoes, helmet, harness, backpack, technical kit and guide"
+          }
+        ]
+      },
+      {
+        "name": "Lead-climbing course — Interlaken",
+        "description": "Develop outdoor leading, belaying, rethreading anchors, building belays, abseiling and reading climbing topos.",
+        "facts": [
+          {
+            "label": "Requirements",
+            "value": "Climbing at least grade 4c"
+          },
+          {
+            "label": "Season",
+            "value": "May–October"
+          },
+          {
+            "label": "Duration",
+            "value": "One day"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 190 per person with at least four participants; CHF 425 per person with two"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, harness, shoes, helmet, ropes and technical gear"
+          },
+          {
+            "label": "Excludes",
+            "value": "Accommodation and transport; source lists CHF 35 for an Interlaken–Steingletscher return transfer"
+          },
+          {
+            "label": "Meeting",
+            "value": "08:30 by arrangement; confirm the legacy Gsteigstrasse 1 / Interlaken Ost reference"
+          },
+          {
+            "label": "Bring",
+            "value": "Backpack, climbing shoes, any existing kit, picnic, drinks, outdoor clothes, rain layer and sun protection"
+          }
+        ]
+      },
+      {
+        "name": "Private rock & glacier intensive",
+        "description": "Day one develops rope, belay, leading and abseil skills. Day two covers glacier ropes, ice axe, crampons, anchors, ice climbing and pulley-based crevasse rescue.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "June–October"
+          },
+          {
+            "label": "Duration",
+            "value": "Two days, dates by arrangement"
+          },
+          {
+            "label": "Requirements",
+            "value": "No previous experience or personal equipment listed"
+          },
+          {
+            "label": "Published price",
+            "value": "German rock page per person/day: CHF 425 for two, CHF 310 for three, CHF 250 for four participants; mountaineering page quotes different private-course rates"
+          },
+          {
+            "label": "Includes",
+            "value": "Technical equipment, harness, shoes, helmet, ice axe, crampons and backpack"
+          },
+          {
+            "label": "Excludes",
+            "value": "Accommodation and transport"
+          },
+          {
+            "label": "Meeting",
+            "value": "Interlaken by arrangement"
+          }
+        ]
+      }
+    ],
+    "image": "/img/activities/rock-climbing.jpg",
+    "imageSource": "https://www.swissalpineguides.ch/images/Rock%20guy.jpg",
+    "common": [
+      {
+        "name": "Prepare for climbing",
+        "description": "",
+        "facts": [
+          {
+            "label": "Bring",
+            "value": "Comfortable climbing clothing, picnic / snacks, water and sun protection"
+          },
+          {
+            "label": "Meeting",
+            "value": "Interlaken base or as arranged; some old pages give Gsteigstrasse 31, so confirm the actual meeting point"
+          },
+          {
+            "label": "Transfers",
+            "value": "Interlaken-area hotel / Interlaken Ost pickup listed; confirm"
+          },
+          {
+            "label": "Groups",
+            "value": "Family, friends and group discounts by enquiry"
+          }
+        ]
+      }
+    ],
+    "path": "/activities/rock-climbing",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/RockClimbing/default.html",
+      "https://www.swissalpineguides.ch/Deutsch/Felsklettern/default.html"
+    ]
+  },
+  {
+    "slug": "mountaineering",
+    "name": "Mountaineering & alpine courses",
+    "seasons": [
+      "Summer",
+      "Courses"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/Mountaineering/default.html",
+    "checked": "2026-11-13",
+    "summary": "Guided first 4,000 m summits, classic alpine climbs and two- to four-day skills courses.",
+    "programs": [
+      {
+        "name": "Breithorn — 4,164 m",
+        "description": "From Klein Matterhorn (3,880 m), cross the glaciated plateau by the normal SSW route and return over snow and ice.",
+        "facts": [
+          {
+            "label": "Requirements",
+            "value": "Fit, experienced hiker; no technical experience listed; acclimatisation helpful"
+          },
+          {
+            "label": "Season",
+            "value": "Source lists weekly groups from mid-July; confirm current dates"
+          },
+          {
+            "label": "Duration",
+            "value": "One day; ascent about two hours, descent 1.5–2 hours"
+          },
+          {
+            "label": "Ratio",
+            "value": "Maximum five guests per guide"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 245 / 290 / 370 per person for groups of five / four / three; CHF 950 for one–two participants as worded on the source. The heli-hiking page has older CHF 220 / 260 / 290 / 790 listings."
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, harness, ice axe, crampons and technical gear"
+          },
+          {
+            "label": "Excludes",
+            "value": "Klein Matterhorn return transport"
+          }
+        ]
+      },
+      {
+        "name": "Allalinhorn — 4,027 m",
+        "description": "Travel by Metro Alpin to Mittelallalin, then ascend glaciated rock / ice terrain and return the same way.",
+        "facts": [
+          {
+            "label": "Requirements",
+            "value": "Fit experienced hiker; acclimatisation helpful"
+          },
+          {
+            "label": "Season",
+            "value": "Source lists Tuesday / Wednesday groups from July; confirm"
+          },
+          {
+            "label": "Duration",
+            "value": "Ascent about 2.5 hours; descent 1.5–2 hours"
+          },
+          {
+            "label": "Ratio",
+            "value": "Maximum five guests per guide"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 245 / 290 / 370 per person for five / four / three; CHF 950 for one–two participants as worded on source"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, harness, ice axe, crampons and technical kit"
+          },
+          {
+            "label": "Excludes",
+            "value": "Return transport to Mittelallalin"
+          }
+        ]
+      },
+      {
+        "name": "Mönch — 4,107 m, south-east ridge",
+        "description": "From Jungfraujoch towards Mönchsjoch, then mixed rock, snow and ice to an exposed summit ridge.",
+        "facts": [
+          {
+            "label": "Requirements",
+            "value": "Experienced mountaineer, crampon competence on rock and ice, excellent fitness and acclimatisation; not a first 4,000 m climb"
+          },
+          {
+            "label": "Season",
+            "value": "June–October"
+          },
+          {
+            "label": "Duration",
+            "value": "Ascent three–four hours; descent about three hours"
+          },
+          {
+            "label": "Ratio",
+            "value": "Strictly one guest per guide"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 890"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, guide travel and any listed mountaineering gear rental"
+          },
+          {
+            "label": "Excludes",
+            "value": "Participant travel to / from Jungfraujoch"
+          },
+          {
+            "label": "Meeting",
+            "value": "Jungfraujoch entrance coffee bar; reserve loan equipment in advance"
+          }
+        ]
+      },
+      {
+        "name": "Jungfrau — 4,158 m, Rottal saddle",
+        "description": "Day one reaches Mönchsjoch hut (3,650 m). Day two crosses glacier, rock and ice via the Rottal saddle, returning by the same route.",
+        "facts": [
+          {
+            "label": "Requirements",
+            "value": "Experienced, well-acclimatised mountaineer with strong crampon skills and top fitness"
+          },
+          {
+            "label": "Season",
+            "value": "July–September"
+          },
+          {
+            "label": "Duration",
+            "value": "Day one about one hour to hut; day two about five hours up and four–five down"
+          },
+          {
+            "label": "Ratio",
+            "value": "One–two guests per guide"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 750 per person for two participants; CHF 1,250 for one"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, guide hut / travel costs and listed gear rental"
+          },
+          {
+            "label": "Excludes",
+            "value": "Participant travel and hut half board"
+          },
+          {
+            "label": "Meeting",
+            "value": "17:00 at Mönchsjoch hut or as arranged"
+          }
+        ]
+      },
+      {
+        "name": "Eiger — 3,970 m, Mittellegi ridge",
+        "description": "Day one travels to Eismeer (3,160 m) and climbs about two hours to Mittellegi hut. Day two follows the exposed ridge, then descends via Eigerjoch to Jungfraujoch.",
+        "facts": [
+          {
+            "label": "Requirements",
+            "value": "Experienced mountaineer; excellent crampon skills, fitness and acclimatisation"
+          },
+          {
+            "label": "Season",
+            "value": "Late June–September, conditions permitting"
+          },
+          {
+            "label": "Duration",
+            "value": "Day one half day including travel; day two four–five hours ascent and four–five descent"
+          },
+          {
+            "label": "Ratio",
+            "value": "One guest per guide"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 1,590"
+          },
+          {
+            "label": "Includes",
+            "value": "Guide, guide hut / travel costs and listed rental equipment"
+          },
+          {
+            "label": "Excludes",
+            "value": "Participant transport and hut half board"
+          },
+          {
+            "label": "Meeting",
+            "value": "By confirmation; reserve loan equipment in advance"
+          }
+        ]
+      },
+      {
+        "name": "Two-day mountaineering course",
+        "description": "Rock climbing, knots, belaying and self-rescue, followed by glacier travel, crampons, ice axe and crevasse rescue.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "June–September"
+          },
+          {
+            "label": "Duration",
+            "value": "Two days; 08:15 start"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 380 per person / CHF 190 per day, minimum five"
+          },
+          {
+            "label": "Includes",
+            "value": "Listed mountain / climbing equipment, warm kit and guide"
+          },
+          {
+            "label": "Excludes",
+            "value": "Accommodation and transport; source also lists a CHF 25 two-day ride-with-guide option"
+          }
+        ]
+      },
+      {
+        "name": "Three-day mountaineering course",
+        "description": "The two-day foundations plus a coached 3,000 m summit day with rope-team practice.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "June–September"
+          },
+          {
+            "label": "Duration",
+            "value": "Three days; 08:15 start"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 190 per person/day, minimum five"
+          },
+          {
+            "label": "Includes",
+            "value": "Listed climbing / mountain equipment, warm kit and Swiss guide"
+          },
+          {
+            "label": "Excludes",
+            "value": "Accommodation and transport; source lists a CHF 35 three-day ride-with-guide option"
+          },
+          {
+            "label": "German source total",
+            "value": "CHF 570 per person for the three-day course"
+          }
+        ]
+      },
+      {
+        "name": "Four-day mountaineering course",
+        "description": "Rock and glacier foundations, a coached 3,000 m summit, then a 4,000 m summit training day.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "June–September"
+          },
+          {
+            "label": "Duration",
+            "value": "Four days; 08:15 start"
+          },
+          {
+            "label": "Published price",
+            "value": "Days 1–3 CHF 190 per person/day, minimum five; day four CHF 235"
+          },
+          {
+            "label": "Includes",
+            "value": "Listed mountain / climbing equipment, warm kit and guide"
+          },
+          {
+            "label": "Excludes",
+            "value": "Accommodation, transport and cableways; a CHF 35 ride-with-guide line is also published"
+          },
+          {
+            "label": "German source total",
+            "value": "CHF 790 per person for the four-day course; source versions differ"
+          }
+        ]
+      },
+      {
+        "name": "Private intensive course",
+        "description": "One day on rock and one on glacier ice, covering climbing, ropes, leading, abseiling, equipment and crevasse rescue.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "June–September"
+          },
+          {
+            "label": "Duration",
+            "value": "Two days, dates by arrangement"
+          },
+          {
+            "label": "Published price",
+            "value": "Per person/day: CHF 395 for two, CHF 295 for three, CHF 260 for four participants"
+          },
+          {
+            "label": "Includes",
+            "value": "Listed mountain / climbing equipment, warm kit and guide"
+          },
+          {
+            "label": "Excludes",
+            "value": "Accommodation; source lists transport at CHF 30/person"
+          }
+        ]
+      },
+      {
+        "name": "One-day glacier & crevasse-rescue course",
+        "description": "Glacier rope technique, ice axe and crampons, snow / ice anchors and crevasse rescue around Steingletscher / Tierbergli.",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "June–October"
+          },
+          {
+            "label": "Duration",
+            "value": "One day; source meeting 06:30 Interlaken by arrangement"
+          },
+          {
+            "label": "Requirements",
+            "value": "No prior experience listed"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 190 per person, minimum five"
+          },
+          {
+            "label": "Includes",
+            "value": "Listed alpine technical equipment and guide"
+          },
+          {
+            "label": "Excludes",
+            "value": "Accommodation and transport"
+          },
+          {
+            "label": "Bring",
+            "value": "Mountain boots, backpack, any existing kit, picnic, drinks, warm waterproof layers and sun protection"
+          }
+        ]
+      }
+    ],
+    "image": "/img/activities/mountaineering.jpg",
+    "imageSource": "https://www.swissalpineguides.ch/english/Mountaineering/images/Monch.jpg",
+    "common": [
+      {
+        "name": "Prepare for alpine terrain",
+        "description": "",
+        "facts": [
+          {
+            "label": "Bring",
+            "value": "Crampon-compatible mountain boots, backpack, appropriate warm / waterproof clothing, gloves, beanie, food, water and sun protection. Multi-day climbs also list a headlamp, personal overnight kit and hut liner. Obtain the complete route-specific kit list."
+          },
+          {
+            "label": "Guides",
+            "value": "The original describes Swiss / UIAGM-trained mountain guides and multilingual guiding. No individual guide biography is supplied."
+          },
+          {
+            "label": "Meeting",
+            "value": "Confirm every meeting address; older listings include Gsteigstrasse 31 as well as Eyacheri 2."
+          },
+          {
+            "label": "Insurance",
+            "value": "Participant responsibility; the source recommends suitable insurance and REGA membership."
+          }
+        ]
+      }
+    ],
+    "dates": [
+      "Two-day course 2027: 19–20, 26–27 June; 3–4, 8–9 July; 31 July–1 August; 14–15, 28–29 August",
+      "Three-day course 2027: 19–21, 26–28 June; 3–5, 8–10 July; source also lists 31 July–1 August despite calling it a three-day course; 5–7, 21–23, 28–30 August; 4–6 September",
+      "Four-day course 2027: 19–22, 26–29 June; 3–6, 8–11 July; 31 July–3 August; 5–8, 21–24 August",
+      "These are published programme references. Confirm dates, duration and current availability; the source contains inconsistent entries.",
+      "Archived German rescue course dates: 5, 10 and 19 July 2026",
+      "Archived German two-day course: 20–21, 25–26 June; 4–5, 9–10, 18–19, 30–31 July; 15–16, 27–28 August 2026",
+      "Archived German three-day course: 20–22, 25–27 June; 4–6, 9–11, 18–20 July; 30 July–1 August; 15–17, 27–29 August 2026",
+      "Archived German four-day entries contain three-day ranges in June / July and list 1–4, 15–17 and 27–29 August 2026. These inconsistent past entries are retained as a source warning, not bookable dates."
+    ],
+    "path": "/activities/mountaineering",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/Mountaineering/default.html",
+      "https://www.swissalpineguides.ch/Deutsch/Bergsteigen/default.html"
+    ]
+  },
+  {
+    "slug": "paragliding",
+    "name": "Paragliding Interlaken",
+    "seasons": [
+      "Summer",
+      "Winter"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/Paragliding/Paragliding%20Interlaken.html",
+    "checked": "2026-11-13",
+    "summary": "A tandem Panorama Big Blue flight from Beatenberg towards Interlaken over Lake Thun.",
+    "programs": [
+      {
+        "name": "Panorama Big Blue",
+        "description": "",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "Year-round, conditions permitting"
+          },
+          {
+            "label": "Duration",
+            "value": "Published flying time about 20 minutes"
+          },
+          {
+            "label": "Requirements",
+            "value": "Minimum age six; maximum weight 100 kg / 220 lb"
+          },
+          {
+            "label": "Published price",
+            "value": "Activity page CHF 180 per person; current homepage CHF 190"
+          },
+          {
+            "label": "Includes",
+            "value": "Professional tandem pilot, instruction, boots, helmet and hotel transfer"
+          },
+          {
+            "label": "Extras",
+            "value": "Source lists 12 photos CHF 32, or photos plus a one-minute movie CHF 40"
+          },
+          {
+            "label": "Meeting",
+            "value": "Interlaken hotel / hostel by arrangement"
+          }
+        ]
+      }
+    ],
+    "image": "/img/activities/paragliding.jpg",
+    "imageSource": "https://www.swissalpineguides.ch/english/Paragliding/Paraglide%20nr%201.jpg",
+    "path": "/activities/paragliding",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/Paragliding/Paragliding%20Interlaken.html",
+      "https://www.swissalpineguides.ch/Deutsch/Paragliding/Paragliding.html"
+    ]
+  },
+  {
+    "slug": "team-events",
+    "name": "Team events & private groups",
+    "seasons": [
+      "Summer",
+      "Winter"
+    ],
+    "source": "https://www.swissalpineguides.ch/english/Teamevents/default.html",
+    "checked": "2026-11-13",
+    "summary": "Tailored group programmes around Interlaken, Grindelwald, the mountains and glaciers.",
+    "programs": [
+      {
+        "name": "Team programmes",
+        "description": "Activities and exercises are adapted to the group’s aims and abilities.",
+        "facts": [
+          {
+            "label": "Duration",
+            "value": "From one hour to multi-day seminars"
+          },
+          {
+            "label": "Location",
+            "value": "Interlaken, Grindelwald and surrounding mountains / glaciers"
+          },
+          {
+            "label": "Dates",
+            "value": "By arrangement"
+          },
+          {
+            "label": "Price",
+            "value": "Individual quote"
+          },
+          {
+            "label": "Contact",
+            "value": "Describe group size, dates, experience and objectives"
+          }
+        ]
+      }
+    ],
+    "image": "/img/activities/team-events.jpg",
+    "imageSource": "https://www.swissalpineguides.ch/Deutsch/Teamevents/images/helihike_petersgrat.jpg",
+    "path": "/activities/team-events",
+    "sources": [
+      "https://www.swissalpineguides.ch/english/Teamevents/default.html",
+      "https://www.swissalpineguides.ch/Deutsch/Teamevents/default.html"
+    ]
+  },
+  {
+    "slug": "river-rafting",
+    "name": "River rafting",
+    "seasons": [
+      "Summer"
+    ],
+    "source": "https://www.swissalpineguides.ch/Deutsch/RiverRafting/riverrafting.html",
+    "checked": "2026-11-13",
+    "summary": "An older original-site listing for rafting the Lütschine from Lütschental to Bönigen on Lake Brienz.",
+    "programs": [
+      {
+        "name": "Lütschine rafting",
+        "description": "",
+        "facts": [
+          {
+            "label": "Season",
+            "value": "Source lists 1 May–15 September"
+          },
+          {
+            "label": "Duration",
+            "value": "About 3.5 hours"
+          },
+          {
+            "label": "Requirements",
+            "value": "Swimmers only; minimum age 16"
+          },
+          {
+            "label": "Published price",
+            "value": "CHF 119 per person on the older page"
+          },
+          {
+            "label": "Includes",
+            "value": "Wetsuit, shoes, helmet, transfer and small snack"
+          },
+          {
+            "label": "Bring",
+            "value": "Swimwear, towel and spare T-shirt"
+          },
+          {
+            "label": "Published starts",
+            "value": "08:30, 09:30, 12:00, 15:00 and 15:30; confirm current operation"
+          },
+          {
+            "label": "Meeting",
+            "value": "Raft base or arranged Interlaken-area / Interlaken Ost pickup"
+          }
+        ]
+      }
+    ],
+    "image": "",
+    "imageSource": "https://www.swissalpineguides.ch/english/RiverRafting/images/riverrafting_Interlaken.jpg",
+    "legacy": true,
+    "note": "Found through older source navigation, not the current homepage. Ask whether this activity is currently offered before planning around it.",
+    "path": "/activities/river-rafting"
+  },
+  {
+    "slug": "canyoning",
+    "name": "Canyoning",
+    "seasons": [
+      "Summer"
+    ],
+    "source": "https://www.swissalpineguides.ch/Deutsch/default.html",
+    "checked": "2026-11-13",
+    "summary": "Canyoning is named on an older Swiss Alpine Guides homepage, but no working detailed activity page was found.",
+    "programs": [
+      {
+        "name": "Interlaken canyoning listing",
+        "description": "",
+        "facts": [
+          {
+            "label": "Published price",
+            "value": "The older homepage lists CHF 120"
+          },
+          {
+            "label": "Details",
+            "value": "Route, age limits, equipment, dates, current operation and price require direct confirmation"
+          }
+        ]
+      }
+    ],
+    "image": "",
+    "imageSource": "",
+    "legacy": true,
+    "note": "Retained so an original activity is not silently lost. This is an unconfirmed older listing, not an availability claim.",
+    "path": "/activities/canyoning"
+  }
+]

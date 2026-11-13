@@ -217,7 +217,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { EnvCheckResponse } from '../../models/app-environment-check.ts'
+import type { EnvCheckResponse } from '../../contracts/environment-check.ts'
 
 const props = withDefaults(
   defineProps<{

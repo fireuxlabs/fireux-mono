@@ -1,5 +1,5 @@
 import type { App } from '../models/app.model.ts'
-import { resolveAppMediaForView } from '../utils/app-media'
+import { resolveAppMediaForView } from '../media/utils'
 
 export type AppCard = {
   id: string

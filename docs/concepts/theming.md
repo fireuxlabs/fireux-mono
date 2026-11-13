@@ -75,7 +75,7 @@ colours, and versioned icon URLs from App config plus this bundle; tenant Apps
 must not add a static local manifest.
 
 Core App's file and dimension requirements live in
-`runtime/app/models/app-media-requirements.ts`, consumed by App media validation
+`runtime/app/media/requirements.ts`, consumed by App media validation
 and brand-asset inspection. Misebox TemplateOne's specimen asset-source vocabulary
 is local to `fireux-misebox/src/runtime/models/template-one.ts`; it is not a shared
 Core model or readiness check. Inspection surfaces must show missing or invalid

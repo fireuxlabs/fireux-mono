@@ -3,12 +3,12 @@ import { normalizeSupplier } from '../../utils/normalize-supplier'
 import {
   createMembershipAccess,
   readMembershipAccessIds,
-} from 'fireux-core/runtime/app/utils/membership-access'
+} from 'fireux-core/runtime/app/app-user/utils/membership-access'
 import { serverSupplierAccessTarget } from '../../utils/access'
 // Supplier atomic onboarding binds the root Supplier and its exact Team member.
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import {
   readFireuxEntityManagement,
@@ -23,9 +23,12 @@ import {
   resolveWorkspaceEntityOnboardingPolicy,
 } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { SUPPLIER_MUTATION_TARGETS, serverSupplierTeamMembersTarget } from '../mutation-targets'
+import {
+  SUPPLIER_MUTATION_TARGETS,
+  serverSupplierTeamMembersTarget,
+} from '../mutation-targets'
 import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 import { buildSupplierTeamMemberRecord } from '../team/member-record'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { normalizeBusiness } from 'fireux-businesses/runtime/business/utils/normalize-business'
@@ -205,12 +208,27 @@ export async function completeSupplierOnboarding(
           'Stored Supplier Business id'
         )
       : newBusinessId
-    const business = await mutations.read<Record<string, unknown>>(BUSINESS_MUTATION_TARGETS.businesses, businessId)
-    const businessRoot = business.exists ? normalizeBusiness(businessId, business.data) : null
+    const business = await mutations.read<Record<string, unknown>>(
+      BUSINESS_MUTATION_TARGETS.businesses,
+      businessId
+    )
+    const businessRoot = business.exists
+      ? normalizeBusiness(businessId, business.data)
+      : null
     const locationId = businessRoot?.place_ids[0]
-    const place = locationId ? await mutations.read(PLACE_MUTATION_TARGETS.places, locationId) : null
-    if (!businessRoot || !locationId || !place?.exists || !normalizePlace(locationId, place.data || {}))
-      fail(409, 'Supplier onboarding requires a Business with a valid linked location.')
+    const place = locationId
+      ? await mutations.read(PLACE_MUTATION_TARGETS.places, locationId)
+      : null
+    if (
+      !businessRoot ||
+      !locationId ||
+      !place?.exists ||
+      !normalizePlace(locationId, place.data || {})
+    )
+      fail(
+        409,
+        'Supplier onboarding requires a Business with a valid linked location.'
+      )
     const supplierIds = readMembershipAccessIds(
       accessRecord.data,
       membership.data

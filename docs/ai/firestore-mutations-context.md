@@ -151,7 +151,7 @@ Project, Property, Portfolio, Supplier and Blank retain
 `portfolio_access/{appId}/users`, `supplier_access/{appId}/users` and
 `blank_access/{appId}/users` in their runtime database. Their User documents
 contain `ids` and `membership_created_at`. Core's
-`app/utils/membership-access.ts` validates each selected membership grant and
+`app/app-user/utils/membership-access.ts` validates each selected membership grant and
 compares its timestamp exactly with the current AppUser's `created.at`.
 Missing or superseded access grants nothing; malformed access blocks the read
 or command. Leaving and rejoining cannot reactivate a previous membership's
@@ -246,8 +246,12 @@ records. Public meal-deal projection remains read-only.
 
 ## Current source and migration boundary
 
+- App initialization and membership request/response contracts live in Core
+  `runtime/app/contracts/initialization.ts` and `runtime/app/app-user/contracts/membership.ts`. Browser helpers
+  and server commands consume those types without relocating database scope,
+  authorization, transactions or stale-completion checks into the contracts.
 - Domain mutation definitions live under each owning Entity’s `server/mutation-targets.ts`.
-  Core App, User and Ecosystem own their definitions; no global target registry
+  Core App, AppUser, User and Ecosystem own their definitions; no global target registry
   or compatibility barrel imports domains into Core. FireUX-specific named-database
   Project and App-membership bindings live in `fireux-projects/runtime/project/server`.
   FireUX platform coordination targets live in `fireux-fireux/runtime/platform/targets.ts`.
@@ -275,8 +279,8 @@ records. Public meal-deal projection remains read-only.
   imported directly by consumers; sessions also reuse the owning reader.
   App identity edits use `app/composables/identity/useAppIdentityUpdate.ts`;
   App media sync uses `app/composables/media/sync-app-media.ts`, and
-  AppUser client controls and readers live in `app/composables/membership`;
-  their command transport is `app/composables/membership/run-app-user-command.ts`.
+  AppUser client controls and readers live in `app/app-user/composables`;
+  their command transport is `app/app-user/composables/run-app-user-command.ts`.
   `app/composables/initialization/useAppInitialization.ts` captures one
   account/App/User intent across initialization, media sync and diagnostics
   refresh; obsolete scope stops follow-on dispatch and local completion.
@@ -732,8 +736,9 @@ Core App `app/server/chat/session.ts` owns `stageChatSessionCreation`,
 `requireChatSessionAccess` and `stageChatMessage`. Its ordinary Chat entrypoints
 and Misebox Menu Express consume those operations. The calling domain proves
 its App/operator policy and composes its own record changes in the same guarded
-transaction; `app/models/conversation.model.ts` retains Conversation paths and
-App Chat retains initial records, expiring recovery proof, message payloads and
+transaction. `app/server/chat/storage.ts` contains only consumed storage names;
+guarded App mutation targets own database paths. Supporting participant and related-Entity
+types stay in `session.ts`. App Chat retains initial records, expiring recovery proof, message payloads and
 stored-session validation. Reads precede staged
 writes. A supplied related-Entity label does not grant authority over that Entity.
 Current checks are Core's `chat-session.test.mjs` and the consuming App's

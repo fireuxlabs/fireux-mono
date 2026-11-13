@@ -2,9 +2,9 @@ import {
   isAppUserRole,
   isAppUserSubscription,
   readAppUserSubscription,
-} from '../runtime/app/models/app-user.model.ts'
+} from '../runtime/app/app-user/utils/validation.ts'
 import { userDisplayNameSeed } from '../runtime/user/utils/display-name-seed.ts'
-import { resolveAppUserAccess } from '../runtime/app/utils/app-user-access.ts'
+import { resolveAppUserAccess } from '../runtime/app/app-user/utils/access.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -46,7 +46,7 @@ function deferred() {
 
 const memberships = (appId) => `apps/${appId}/users`
 const contract = load(
-  '../runtime/app/server/app-user/command-contract.ts',
+  '../runtime/app/app-user/server/command-contract.ts',
   '{ appGovernancePatch, countTransactionAdmins, forbidden, initialMembership, isAdminMembership, requireAdmin, requireCanonicalMembership, roleFrom, stamp }',
   {
     createError: ({ statusCode, statusMessage }) =>
@@ -297,7 +297,7 @@ for (const action of ['ensure-self', 'bootstrap-admin', 'remove-member']) {
     }
     const actor = currentUser
     const run = load(
-      '../runtime/app/composables/membership/run-app-user-command.ts',
+      '../runtime/app/app-user/composables/run-app-user-command.ts',
       'runAppUserCommand',
       {
         useAuth: () => ({
@@ -344,11 +344,11 @@ test('removing a disposable member revokes live domain access and a new membersh
     [`${memberships('app')}/administrator`, admin],
   ])
   const accessContract = load(
-    '../runtime/app/utils/membership-access.ts',
+    '../runtime/app/app-user/utils/membership-access.ts',
     'readMembershipAccessIds'
   )
   const useAccess = load(
-    '../runtime/app/composables/membership/useMembershipAccess.ts',
+    '../runtime/app/app-user/composables/useMembershipAccess.ts',
     'useMembershipAccess',
     {
       computed,
@@ -369,7 +369,7 @@ test('removing a disposable member revokes live domain access and a new membersh
   assert.deepEqual(kitchen.ids.value, ['workspace'])
   assert.deepEqual(project.ids.value, ['workspace'])
   const handler = load(
-    '../runtime/app/server/app-user/remove.ts',
+    '../runtime/app/app-user/server/remove.ts',
     'handleRemoveMember',
     {
       ...contract,

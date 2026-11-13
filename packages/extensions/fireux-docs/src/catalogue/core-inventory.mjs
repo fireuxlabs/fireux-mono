@@ -5,6 +5,7 @@ import { join, relative, resolve } from 'node:path'
 const roots = [
   ['components', 'Shared', 'Fire'],
   ['app/components', 'App', 'App'],
+  ['app/app-user/components', 'AppUser', 'AppUser'],
   ['ecosystem/components', 'Ecosystem', 'Ecosystem'],
   ['user/components', 'User', 'User'],
   ['workspace/components', 'Workspace', 'Workspace'],

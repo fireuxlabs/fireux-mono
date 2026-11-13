@@ -5,7 +5,7 @@ import {
   runGuardedServerTransaction,
   type GuardedServerTransaction,
 } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 import { requireChatSessionAccess } from 'fireux-core/runtime/app/server/chat/session'
 import { fail } from './contract'

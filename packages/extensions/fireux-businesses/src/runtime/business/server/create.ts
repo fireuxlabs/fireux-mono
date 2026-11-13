@@ -5,29 +5,46 @@ import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutat
 import {
   createMembershipAccess,
   readMembershipAccessIds,
-} from 'fireux-core/runtime/app/utils/membership-access'
+} from 'fireux-core/runtime/app/app-user/utils/membership-access'
 import { serverBusinessAccessTarget } from './mutation-targets'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/app-user/utils/validation'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
-import { resolveFireuxEntityManagementForApp, resolveFireuxEntityManagementAppId } from 'fireux-core/runtime/app/utils/entity-management'
+import {
+  resolveFireuxEntityManagementForApp,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/app/utils/entity-management'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
-import { BUSINESS_MUTATION_TARGETS, serverBusinessTeamTarget } from './mutation-targets'
-export async function completeBusinessOnboarding(event: H3Event, input: unknown) {
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
+import {
+  BUSINESS_MUTATION_TARGETS,
+  serverBusinessTeamTarget,
+} from './mutation-targets'
+export async function completeBusinessOnboarding(
+  event: H3Event,
+  input: unknown
+) {
   if (!input || typeof input !== 'object' || Array.isArray(input))
-    throw createError({ statusCode: 400, statusMessage: 'Invalid Business input.' })
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid Business input.',
+    })
   const { id: requestedId, ...fields } = input as Record<string, unknown>
   const profile = businessProfile(fields)
   const { uid } = await requireFirebaseBearerUser(event)
   const config = useFireUXConfig(event)
   const appId = requireFirestoreDocumentId(config.appId, 'App id')
-  if (!resolveWorkspaceCanCreate(config.role, config.workspaceConfig, 'business'))
-    throw createError({ statusCode: 403, statusMessage: 'Business creation is disabled in this App.' })
+  if (
+    !resolveWorkspaceCanCreate(config.role, config.workspaceConfig, 'business')
+  )
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Business creation is disabled in this App.',
+    })
   const members = serverAppUsersTarget(appId)
   const grants = serverBusinessAccessTarget(appId)
   const id = requireFirestoreDocumentId(requestedId, 'Business id')
@@ -53,10 +70,25 @@ export async function completeBusinessOnboarding(event: H3Event, input: unknown)
     const ids = readMembershipAccessIds(accessRecord.data, member.data)
     const existing = await tx.read(BUSINESS_MUTATION_TARGETS.businesses, id)
     if (existing.exists) {
-      if (!ids.includes(id)) throw createError({ statusCode: 409, statusMessage: 'Business id is already in use.' })
+      if (!ids.includes(id))
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'Business id is already in use.',
+        })
       const business = normalizeBusiness(id, existing.data)
-      if (!business || (business.management.mode !== 'root' && resolveFireuxEntityManagementAppId(business.management, config.ecosystem) !== appId))
-        throw createError({ statusCode: 409, statusMessage: 'Existing Business is invalid or belongs to another App scope.' })
+      if (
+        !business ||
+        (business.management.mode !== 'root' &&
+          resolveFireuxEntityManagementAppId(
+            business.management,
+            config.ecosystem
+          ) !== appId)
+      )
+        throw createError({
+          statusCode: 409,
+          statusMessage:
+            'Existing Business is invalid or belongs to another App scope.',
+        })
       return { ok: true as const, id, createdRoot: false }
     }
     if (
@@ -73,7 +105,11 @@ export async function completeBusinessOnboarding(event: H3Event, input: unknown)
       })
     for (const placeId of profile.place_ids) {
       const place = await tx.read(PLACE_MUTATION_TARGETS.places, placeId)
-      if (!place.exists) throw createError({ statusCode: 400, statusMessage: 'Linked Place does not exist.' })
+      if (!place.exists)
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Linked Place does not exist.',
+        })
     }
     tx.create(BUSINESS_MUTATION_TARGETS.businesses, id, {
       ...profile,

@@ -36,7 +36,7 @@
           </UButton>
 
           <template v-else-if="isSignedIn">
-            <UserAccessBadge :subscription="subscription" />
+            <AppUserAccessBadge :subscription="subscription" />
 
             <UButton
               to="/dashboard"

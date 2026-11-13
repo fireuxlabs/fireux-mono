@@ -1,9 +1,13 @@
 import { GoogleAuth } from 'google-auth-library'
-import type { AppUserJoinedPublicationV1 } from '../../models/user-joined-publication'
+import type { AppUserJoinedPublicationV1 } from '../../contracts/user-joined-publication'
 
 function configuredTarget() {
-  const endpoint = String(process.env.FIREUX_SIGNUP_MONITOR_ENDPOINT || '').trim()
-  const audience = String(process.env.FIREUX_SIGNUP_MONITOR_OIDC_AUDIENCE || '').trim()
+  const endpoint = String(
+    process.env.FIREUX_SIGNUP_MONITOR_ENDPOINT || ''
+  ).trim()
+  const audience = String(
+    process.env.FIREUX_SIGNUP_MONITOR_OIDC_AUDIENCE || ''
+  ).trim()
 
   if (!endpoint && !audience) return null
 

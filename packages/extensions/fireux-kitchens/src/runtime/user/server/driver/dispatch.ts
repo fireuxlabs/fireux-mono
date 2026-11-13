@@ -12,7 +12,7 @@ import {
   getRuntimeIdentityFirestore,
 } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
 import { serverKitchenOrdersTarget } from '../../../kitchen/server/mutation-targets'
 import {
   DriverDispatchVisibleStatuses,
