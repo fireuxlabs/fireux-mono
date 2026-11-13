@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-21 16:25 CEST — Dashboard Admin pass: shape the shared app control room around real App and AppUser authority. -->
 <template>
   <FireState
-    v-if="appOutcome === 'pending'"
+    v-if="appOutcome === 'idle' || appOutcome === 'pending'"
     entity="app administration"
     outcome="pending"
   />

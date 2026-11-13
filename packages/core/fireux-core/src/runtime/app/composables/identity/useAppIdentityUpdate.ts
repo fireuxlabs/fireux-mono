@@ -2,7 +2,7 @@ import { refreshNuxtData } from 'nuxt/app'
 import type { Ref } from 'vue'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
-import type { App } from '../../models/app.model'
+import type { App } from '../../models/model'
 import { useRequireUser } from '../../../composables/fireux/firebase/useRequireUser'
 import { useFireUXConfig } from '../config/FireUXConfig'
 

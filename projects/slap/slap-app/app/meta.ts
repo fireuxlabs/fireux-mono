@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: declare the current empty workspace-operation set.
-import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/literature/define-meta'
 
 export const appMeta = {
   name: 'Slap',

@@ -1,3 +1,4 @@
+import { defineFireuxMeta } from '../runtime/app/literature/define-meta.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -31,8 +32,8 @@ test('App literature accepts plain checklist items alongside checked and uncheck
 
 test('shared literature contracts and helper have no executable loader imports', () => {
   for (const file of [
-    '../runtime/app/models/meta-content.ts',
-    '../runtime/app/utils/define-app-meta.ts',
+    '../runtime/app/literature/types.ts',
+    '../runtime/app/literature/define-meta.ts',
     '../runtime/workspace/models/capability-families.ts',
   ]) {
     const { outputText } = transpileModule(
@@ -47,4 +48,20 @@ test('shared literature contracts and helper have no executable loader imports',
       file
     )
   }
+})
+
+test('authored literature passes through unchanged without defaults or cloning', () => {
+  const meta = {
+    app: { id: 'fixture', name: 'Fixture', ecosystem: 'fixture' },
+    copy: { headline: 'Authored headline' },
+    solutions: [
+      {
+        slug: 'example',
+        title: 'Example',
+        description: 'Authored description',
+      },
+    ],
+  }
+  assert.equal(defineFireuxMeta(meta), meta)
+  assert.equal(defineFireuxMeta(meta).solutions, meta.solutions)
 })

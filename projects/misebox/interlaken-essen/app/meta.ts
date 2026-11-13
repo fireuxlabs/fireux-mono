@@ -1,4 +1,4 @@
-import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/literature/define-meta'
 import { interlakenPublicCopyEntries } from './content/sproochli-copy-public.ts'
 
 const defaultCopy = (

@@ -28,7 +28,7 @@
 import { computed } from 'vue'
 import { useToastify } from '../../../../composables/ui/useToastify'
 import { useAppIdentityUpdate } from '../../../composables/identity/useAppIdentityUpdate'
-import type { App } from '../../../models/app.model'
+import type { App } from '../../../models/model'
 
 const props = defineProps<{ app: App }>()
 const { updateWebsite, captureIntent } = useAppIdentityUpdate(

@@ -1,5 +1,5 @@
-import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
-import type { FireuxMetaSolution } from 'fireux-core/runtime/app/models/meta-content'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/literature/define-meta'
+import type { FireuxMetaSolution } from 'fireux-core/runtime/app/literature/types'
 
 export const goQrProductSentence =
   'Turn one public thing into a scannable QR page or QR code.'

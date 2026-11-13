@@ -35,7 +35,7 @@ test('App bundles resolve their own defaults and retain watches for indirect dep
     mkdirSync(join(fixture, 'app'))
     writeFileSync(
       join(fixture, 'app/meta.ts'),
-      `import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
+      `import { defineFireuxMeta } from 'fireux-core/runtime/app/literature/define-meta'
 export const metaContent = defineFireuxMeta({ seo: { description: 'Fixture public literature' } })
 `
     )

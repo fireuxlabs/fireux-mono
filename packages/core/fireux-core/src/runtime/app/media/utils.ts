@@ -1,4 +1,4 @@
-import type { App } from '../models/app.model'
+import type { App } from '../models/model'
 import { normalizePublicImgAsset } from '../../../utils/brandAssets'
 import type {
   AppImageKind,

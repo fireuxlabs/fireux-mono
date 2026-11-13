@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
 import type { AppUserWithId } from '../app-user/types.ts'
-import type { App } from '../models/app.model.ts'
+import type { App } from '../models/model.ts'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useAppRead } from './useAppRead'
 import { useAppUserRead } from '../app-user/composables/useAppUserRead'

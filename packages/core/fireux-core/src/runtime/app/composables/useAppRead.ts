@@ -2,7 +2,7 @@ import { useAsyncData, type AsyncData } from 'nuxt/app'
 import { computed, unref, type MaybeRef } from 'vue'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { resolveReadOutcome } from '../../utils/read-outcome'
-import type { App } from '../models/app.model'
+import type { App } from '../models/model'
 
 type AppSnapshot = {
   appId: string

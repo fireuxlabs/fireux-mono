@@ -5,7 +5,7 @@ import {
   normaliseNavVisibility,
 } from '../utils/navigation/visibility'
 import type { NavMeta, NavVisibility } from '../models/navigation'
-import type { AppRole } from '../app/models/app.model'
+import type { AppRole } from '../app/models/model'
 
 type RouteMetaWithVisibility = {
   nav?: NavMeta

@@ -1,4 +1,4 @@
-import type { App } from '../models/app.model.ts'
+import type { App } from '../models/model.ts'
 import { resolveAppMediaForView } from '../media/utils'
 
 export type AppCard = {

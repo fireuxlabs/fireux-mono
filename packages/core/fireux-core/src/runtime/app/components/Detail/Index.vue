@@ -49,7 +49,7 @@ import { computed } from 'vue'
 import { useSeo } from '../../../composables/fireux/seo/useSeo'
 import { useAppView } from '../../composables/useAppView'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
-import type { App } from '../../models/app.model'
+import type { App } from '../../models/model'
 
 const props = defineProps<{ app: App }>()
 const config = useFireUXConfig()

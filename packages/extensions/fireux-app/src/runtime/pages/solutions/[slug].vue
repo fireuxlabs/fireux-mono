@@ -160,7 +160,7 @@ import {
 import type {
   FireuxMetaOperation,
   FireuxMetaSolution,
-} from 'fireux-core/runtime/app/models/meta-content'
+} from 'fireux-core/runtime/app/literature/types'
 
 type SolutionsResponse = {
   ok: boolean

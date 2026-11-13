@@ -80,7 +80,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { App } from '../../models/app.model.ts'
+import type { App } from '../../models/model.ts'
 
 const props = defineProps<{ app: App }>()
 const app = computed(() => props.app)

@@ -1,6 +1,6 @@
 # Swiss Alpine Guides context
 
-Updated: 2026-11-12
+Updated: 2026-11-13
 Role: living context
 Scope: Swiss Alpine Guides App
 
@@ -8,7 +8,8 @@ Scope: Swiss Alpine Guides App
 
 Inherit repository `AGENTS.md`, `docs/ai/gpt-context.md`, and the Apps That Slap
 context at `packages/ecosystem/fireux-slap/docs/ai/apps-that-slap-context.md`.
-Keep this App focused on heli-skiing and heliboarding discovery and enquiries.
+Keep this App a complete source-backed Swiss Alpine Guides website: summer
+and winter activities, courses, private groups, rentals, vouchers and enquiries.
 
 ## Ownership and boundaries
 
@@ -18,7 +19,8 @@ selects the standard App bundle and Slap layer. `app/app.vue` delegates the
 provider, page outlet, initialization and head lifecycle to `FireuxApp`.
 The App-local `alpine` layout composes `NavigationHeader`, the accessible skip
 link, native content slot and footer. The public header reuses native `UHeader`
-and `UNavigationMenu` with Home, Tours, Tour information and Contact links;
+and `UNavigationMenu` with Home, the seasonal activity catalogue, rentals,
+vouchers, About and Contact;
 Nuxt UI owns its mobile overlay and focus handling. The image-led opening
 retains its small summit padding below the sticky header. Hero text appears
 after scrolling; reduced motion presents that copy below the static image.
@@ -28,43 +30,58 @@ part of this public navigation.
 Core and reusable Bookings architecture remain with their package owners and
 fireux-main; this App does not implement the architectural-reset handoff.
 
-`app/pages/index.vue` composes the named Hero, Tours and Enquiry surfaces.
-The Tours panel naturally overlaps the closing mountain scene; each sourced
-route offers an internal detail page and a route-selected enquiry. The hero’s
-closing text fades as this panel arrives. These are App-owned tour offerings,
-not persisted Products or automatic booking inventory.
-`app/composables/useMountainMotion.ts` owns its animation listeners and cleanup.
-`app/content/tours.ts` owns factual summaries of the operator’s five published
-routes, with source URLs. Public copy uses operator activity names and facts,
-not invented slogans, tour names or promotional narratives. The source map in
-`docs/content-sources.md` records the page selection and price conflicts.
-Published seasons and participant requirements are descriptive information,
-not a live availability or reservation promise.
+`app/pages/index.vue` composes Hero, the featured Activities Collection and
+Landing Explore. The rounded activity panel overlaps the closing mountain
+scene; the motion coordinator fades the closing copy as the panel arrives.
+The opening animation and summit framing remain App-owned. Reduced motion
+uses a normal document flow.
 
-`app/content/tour-pages.ts` groups the five routes into four useful search
-pages, combining Petersgrat’s Blatten and Stechelberg descents for comparison.
-`app/pages/heliskiing/[slug].vue` owns route validation and composes `ToursDetail`.
-The landing links to those pages. Core `useSeo` owns canonical, social and
-robots metadata transport. App `utils/tour-seo.ts` projects visible operator
-facts through Core’s connected graph builder; it adds no reviews, current
-availability or unverified offers. Public contacts come from `content/operator.ts`.
-Preview indexing stays disabled in App SEO configuration and Firebase Hosting;
-Core filters all preview pages from its sitemap. Production launch requires a
-reviewed domain and explicit changes to each indexing layer. The public route
-inventory is declared through `seo.staticPaths`; no App-owned robots or sitemap
-transport duplicates Core. Hero video uses metadata-only preload to prioritize
-the static opening image, with native seeking loading the motion on demand.
+`app/content/activities.json` owns the sourced activity families, programme
+facts, original photo provenance, published date references and source warnings.
+`activities.ts` exposes their types and featured selection. `Activities/Collection`
+owns seasonal filtering and search; `Activities/Card` owns each catalogue item;
+`Activities/Detail` owns programme presentation. The thin `/activities/[slug]`
+route validates source-owned slugs. Summer, Winter and Courses are bounded
+catalogue projections, not new data readers. Older rafting and canyoning
+references remain labelled as unconfirmed original-site listings. They do not
+emit a current Service claim. No programme is live booking inventory.
+
+The existing `tours.ts`, `tour-pages.ts`, `ToursDetail` and `/heliskiing/[slug]`
+retain the five heli routes and four detailed search pages. Petersgrat compares
+the two descents. `LandingTours` is now part of the heli activity page rather
+than the whole website's catalogue. Copy uses original activity names and facts,
+not invented slogans, testimonials, guide biographies or availability claims.
+
+`site-information.ts` owns the sourced rentals, vouchers, About, programme
+updates, resources and terms summaries; `Information/Detail` presents them.
+Original English and German source links remain visible. Reference prices,
+conflicting meeting points and past or inconsistent calendar entries are
+explicitly distinguished from current quotes and bookable dates. Terms summaries
+link to both full originals and do not create a new booking acceptance flow.
+`docs/original-source-inventory.json` records the inspected source URLs and
+coverage; `docs/content-sources.md` explains source authority and discrepancies.
+
+Core `useSeo` owns canonical, social and robots metadata transport.
+`app/utils/site-seo.ts` projects visible business/site/page facts through Core's
+graph builder, with bounded catalogue lists and service breadcrumbs. It emits no
+unverified price offers or ratings. Public contact facts come from `operator.ts`.
+Preview indexing stays disabled in App configuration and Firebase Hosting;
+Core filters those pages from its sitemap. A production domain and explicit
+launch remain separate. The App declares public paths through `seo.staticPaths`
+and has no competing robots or sitemap transport.
 
 The enquiry form calls `server/api/enquiry.post.ts`, delegating bounded input
 validation and draft preparation to `server/utils/enquiry.ts`. It has no data
-writer, reservation, Calendar call or automatic email delivery. The visitor
-reviews and sends an email draft in their own mail client. A prepared draft is
+writer, reservation, Calendar call or automatic email delivery. `enquiry-options.ts` supplies the same bounded choices to the UI and server:
+heli requests use the heli contact; other activities, rentals and vouchers use
+the general office. The server selects the recipient, validates the request and
+returns the draft. The visitor reviews and sends it in their own mail client. A prepared draft is
 not a received enquiry or a confirmed booking. Do not reuse a confirmation
 lifecycle merely because the form resembles a booking flow.
 
 The public `/operator` route composes App-owned `Operator/Index.vue` with
 Slap's registered `SlapOperatorActivities`. The adapter projects the same
-sourced tour catalogue into a searchable, filterable review UI shared with
+sourced activity catalogue and heli routes into a searchable, filterable review UI shared with
 Interlaken Bike Tours. It contains no private operator data or management
 commands; existing Business/Bookings authority is unchanged.
 
@@ -97,7 +114,7 @@ Re-read the App manifest, route, layout, API adapter and tests when changing
 this flow. Follow the repository hierarchy/spine, App config, layouts,
 components, brand-assets and Bookings maps for the relevant seam.
 Use App `prepare`, `typecheck`, `test` and `build:release` commands;
-run `test:seo` against the serving App for rendered metadata, connected graphs,
+run `test:site` and `test:seo` against the serving App for rendered metadata, connected graphs,
 route links, 404s and preview sitemap/robots outcomes; run the
 scoped asset audit and check mobile/desktop presentation. Verify API validation,
 draft-only outcomes, route selection, reduced-motion handling and listener

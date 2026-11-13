@@ -143,7 +143,7 @@ import {
   appPublicAssetRequirement,
 } from '../../media/utils'
 import { type AppImageKind } from '../../media/types'
-import type { App } from '../../models/app.model.ts'
+import type { App } from '../../models/model.ts'
 
 const props = withDefaults(defineProps<{ app?: App | null }>(), { app: null })
 const appRef = computed(() => props.app)

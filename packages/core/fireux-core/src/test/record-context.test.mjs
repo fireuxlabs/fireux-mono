@@ -3,7 +3,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { APP_ROLES, APP_STATUSES } from '../runtime/app/models/app.model.ts'
+import { APP_ROLES, APP_STATUSES } from '../runtime/app/models/model.ts'
 
 const root = new URL('../../../../../', import.meta.url)
 function load(path, result, dependencies) {

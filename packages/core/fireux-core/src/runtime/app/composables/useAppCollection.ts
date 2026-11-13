@@ -3,7 +3,7 @@ import { resolveReadOutcome } from '../../utils/read-outcome'
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 
 import { readPages } from '../../composables/http/readPages'
-import type { App } from '../models/app.model'
+import type { App } from '../models/model'
 import type { CollectionPage } from '../../models/utils/directory'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 

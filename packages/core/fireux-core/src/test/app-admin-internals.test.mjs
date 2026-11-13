@@ -189,3 +189,77 @@ test('Current App administration still reports command errors and permits a retr
   assert.equal(h.notices.at(-1), 'Removed admin')
   h.owner.stop()
 })
+
+test('App administration renders the same loading surface before hydration and while its App read is pending', async () => {
+  const file = new URL(
+    '../runtime/app/components/Dashboard/Admin.vue',
+    import.meta.url
+  )
+  const { descriptor } = parse(readFileSync(file, 'utf8'))
+  const { content } = compileScript(descriptor, {
+    id: 'app-admin-loading-test',
+    inlineTemplate: true,
+  })
+  const { outputText } = transpileModule(content, {
+    compilerOptions: { module: ModuleKind.CommonJS },
+  })
+  const outcome = ref('idle')
+  const record = ref({ id: 'app-a', name: 'App A' })
+  const exports = {}
+  const Vue = await import('vue')
+  compileFunction(outputText, ['require', 'exports'])((id) => {
+    if (id === 'vue') return Vue
+    if (id === 'vue-router')
+      return { useRouter: () => ({ getRoutes: () => [] }) }
+    if (id.endsWith('/FireUXConfig'))
+      return {
+        useFireUXConfig: () => ({
+          appId: 'app-a',
+          appName: 'App A',
+          homePath: '/',
+          domains: [],
+        }),
+      }
+    if (id.endsWith('/useAppRead'))
+      return { useAppRead: () => ({ app: record, outcome }) }
+    throw Error(`Unexpected import: ${id}`)
+  }, exports)
+  const render = async () => {
+    const app = createSSRApp(exports.default)
+    app.component('FireState', {
+      props: ['outcome'],
+      setup: (p) => () =>
+        h(
+          'p',
+          { role: 'status' },
+          p.outcome === 'pending'
+            ? 'Loading App administration'
+            : 'App read failed'
+        ),
+    })
+    app.component('UAlert', {
+      props: ['title'],
+      setup: (p) => () => h('div', { role: 'status' }, p.title),
+    })
+    app.component('UPageHeader', {
+      props: ['title'],
+      setup: (p) => () => h('h1', p.title),
+    })
+    app.component('AppEditAdmin', {
+      props: ['app'],
+      setup: (p) => () => h('section', `Edit ${p.app.id}`),
+    })
+    return renderToString(app)
+  }
+  const initial = await render()
+  assert.match(initial, /Loading App administration/)
+  assert.doesNotMatch(initial, /App not found|Edit app-a/)
+  outcome.value = 'pending'
+  assert.equal(await render(), initial)
+  outcome.value = 'error'
+  assert.match(await render(), /App read failed/)
+  outcome.value = 'empty'
+  assert.match(await render(), /App not found/)
+  outcome.value = 'ready'
+  assert.match(await render(), /Edit app-a/)
+})

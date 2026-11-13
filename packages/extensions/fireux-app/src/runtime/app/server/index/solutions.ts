@@ -8,7 +8,7 @@ import type {
   FireuxMetaSolution,
   FireuxMetaSolutionOwner,
   FireuxMetaSolutionStatus,
-} from 'fireux-core/runtime/app/models/meta-content'
+} from 'fireux-core/runtime/app/literature/types'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value)

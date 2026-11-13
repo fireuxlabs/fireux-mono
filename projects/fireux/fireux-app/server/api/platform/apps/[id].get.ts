@@ -8,7 +8,7 @@ import {
 } from 'h3'
 
 import type { DetailResponse } from 'fireux-core/runtime/models/utils/directory'
-import type { App } from 'fireux-core/runtime/app/models/app.model'
+import type { App } from 'fireux-core/runtime/app/models/model'
 import { readPlatformApp } from '../../../utils/apps'
 
 export default defineEventHandler(async (event: H3Event) => {

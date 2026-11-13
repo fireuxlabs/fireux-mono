@@ -43,6 +43,12 @@ publication and the Project receiver share
 contracts are not Entity models. The trusted diagnostics, event publisher and
 receiver retain their own authorization and database scope.
 
+App public literature lives in `runtime/app/literature`: `types.ts` holds the
+shared authored-content contract and `define-meta.ts` preserves authored types.
+The build-time loader remains in `config/app/meta-content-loader.ts`; runtime
+readers consume the contract without importing that loader. Public presentation
+remains with `fireux-app`, and authored literature remains App-owned.
+
 App media support lives in `runtime/app/media`, outside Entity models. Its
 requirements and catalogue are capability data; its sync response is a client/server
 contract. The stored media fields remain owned by the App model. See
@@ -50,7 +56,7 @@ contract. The stored media fields remain owned by the App model. See
 
 Current source is authoritative:
 
-- `packages/core/fireux-core/src/runtime/app/models/app.model.ts`
+- `packages/core/fireux-core/src/runtime/app/models/model.ts`
 - `packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts`
 - `packages/core/fireux-core/src/runtime/user/models/user.model.ts`
 - `packages/extensions/fireux-projects/src/runtime/project/models/project.model.ts`
@@ -237,7 +243,7 @@ it does not require other Entity families to copy App's runtime lifecycle.
 
 | Dimension           | Identity and scope                                                                                                      | Owner and source                                                                                                                                                           |
 | ------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Stored App          | Document id in the owning database; `ecosystem_id` is the relationship authority                                        | Core `app/models/app.model.ts` and `app/utils/readApp.ts`                                                                                                                  |
+| Stored App          | Document id in the owning database; `ecosystem_id` is the relationship authority                                        | Core `app/models/model.ts` and `app/utils/readApp.ts`                                                                                                                      |
 | Running application | Deployment configuration identifies the current App and database; a saved definition does not prove a deployment exists | Concrete App `nuxt.config.ts`, Core `config/app/runtime.ts` and `app/composables/config/FireUXConfig.ts`                                                                   |
 | Current App context | Configured App plus the authenticated User's membership in that App                                                     | Core `app/composables/useAppSession.ts`; composes Auth, `useAppRead` and `useAppUserRead`                                                                                  |
 | Managed App         | Explicit selected Project → its Ecosystems → Apps; selection does not change the running App                            | FireUX App `server/project/apps/read.ts`, FireUX ecosystem `project/server/authority.ts`; FireUX ecosystem `project/composables/useProjectApps.ts` with management enabled |

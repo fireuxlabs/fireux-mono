@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 12:17 CEST — Cleanbox-to-Werkbox app migration: preserve Richies identity under Werkbox.
-import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/literature/define-meta'
 
 export const metaContent = defineFireuxMeta({
   app: {

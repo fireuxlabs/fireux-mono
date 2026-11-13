@@ -127,7 +127,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { App } from 'fireux-core/runtime/app/models/app.model'
+import type { App } from 'fireux-core/runtime/app/models/model'
 import type { AppCollectionController } from 'fireux-core/runtime/app/composables/useAppCollection'
 
 type LandingAppMediaOverride = {

@@ -1,7 +1,7 @@
 import type { NuxtConfig } from '@nuxt/schema'
 import type { FireuxSeoConfig } from './seo-config'
-import type { FireuxMetaContent } from '../../runtime/app/models/meta-content'
-import type { AppRole } from '../../runtime/app/models/app.model'
+import type { FireuxMetaContent } from '../../runtime/app/literature/types'
+import type { AppRole } from '../../runtime/app/models/model'
 
 export type FireuxWorkspaceFamilyConfig = {
   /** Optional App-owned origin for this Workspace entrance. Home remains route-owned. */

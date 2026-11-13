@@ -39,3 +39,42 @@ reuse published requirements, equipment, inclusions and contact arrangements.
 The metadata and connected LocalBusiness/WebSite/WebPage/Service graph use the
 same visible facts. No current offers, ratings, availability or expert biographies
 are invented. Search-oriented headings are navigation summaries, not new tour names.
+
+## Full-site migration · checked 13 November 2026
+
+The source inventory now includes the current German and English homepages,
+all linked activity pages, terms, vouchers, rentals, the original News page and
+older reachable references. `original-source-inventory.json` records successful,
+archived and broken URLs. No documents/PDFs were linked by the inspected pages.
+The original News page contains contact details rather than a dated article feed.
+
+`activities.json` contains 17 activity families, 44 non-heli programmes and the
+heli catalogue doorway. The five existing heli routes remain in `tours.ts`.
+Both languages were compared: German-only additions include Tierbergli via
+ferrata, Steingletscher's two-day trek, Sustenlimi heli-hiking, lead climbing,
+private rock/glacier training and one-day crevasse rescue. Duplicate references
+to Breithorn and heli hikes are cross-referenced rather than silently discarded.
+
+The 15 available activity photographs were copied byte-for-byte from original
+page images. `imageSource` records each original URL. The old rafting photo could
+not be retrieved and canyoning has no working detailed page, so neither is given
+an unrelated replacement photo. The animated mountain entrance remains generated.
+
+Published price tables are reference information, not current Offers. Examples
+of conflicts include snowshoe prices, paragliding, private mountain courses,
+heli-hiking seasons, glacier-tour packages and different meeting addresses.
+Current contact/base facts follow the current German homepage. Past ski-tour
+2024 and waterfall-climbing 2026 dates remain labelled as historical; conflicting
+2026/2027 course entries are labelled rather than silently repaired.
+
+Rentals retain the original one-/two-day equipment table and conflicting source
+notes. Vouchers retain ordering details, payment activation, three-year validity
+and the German two-year extension reference. Terms are reorganised summaries
+with both complete originals linked. External safety, glacier, equipment, webcam
+and booking-calendar references are retained under Resources; no external booking
+or payment integration is represented as local functionality.
+
+This is an English presentation of the bilingual source information. It does
+not advertise unreviewed German route variants or hreflang alternates. Original
+German references remain linked. Operator review of current arrangements and a
+production-domain migration are still separate from preview publication.

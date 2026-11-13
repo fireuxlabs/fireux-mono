@@ -3,7 +3,7 @@ import { resolveHttpDocumentOutcome } from '../../utils/http-document-outcome'
 
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 
-import type { App } from '../models/app.model'
+import type { App } from '../models/model'
 import type { DetailResponse } from '../../models/utils/directory'
 
 /** Public App projection. The endpoint owns visibility and database scope. */

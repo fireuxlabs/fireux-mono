@@ -5,20 +5,23 @@ indexation, rankings, traffic, rich-result eligibility or commercial outcomes.
 
 ## Current page ownership
 
-`app/content/tour-pages.ts` projects the sourced catalogue into a landing and
-four detail pages. Petersgrat’s two descents share a comparison page. The App
-owns those facts and route decisions; Core owns canonical/social metadata,
-robots and sitemap transport. `app/utils/tour-seo.ts` adds only visible, sourced
-business/service facts to Core’s graph. `test:seo` checks rendered responses.
+`app/content/activities.json` owns the complete sourced activity catalogue;
+`site-information.ts` owns rentals, vouchers and supporting information. The
+landing preserves the mountain animation and links into summer, winter, courses
+and all activity pages. Existing heli detail pages remain available. The App
+owns these facts and routes; Core owns canonical/social metadata, robots and
+sitemap transport. `app/utils/site-seo.ts` adds visible, sourced facts to Core’s
+graph. Legacy activities do not claim a current Service. `test:seo` and
+`test:site` check rendered responses and content coverage.
 
 ## Before production indexing
 
-- Confirm the production hostname and whether this App replaces only the
-  heliskiing section. The existing operator website covers other activities;
-  preserve their content, URLs and authority during any scoped launch.
+- Confirm the production hostname and approve the full-site replacement scope.
+  Reconcile every original English and German URL against
+  `original-source-inventory.json`, including archived and broken destinations.
 - Inventory existing English and German URLs and Search Console performance.
   Agree individual permanent redirects for changed pages. Do not redirect the
-  whole existing website to this heli-skiing landing.
+  whole existing website to the homepage.
 - Obtain operator approval for current prices, season/departure arrangements,
   group requirements, contact details, photographs and guide credentials.
 - Add complete reviewed language pages before advertising language alternates.

@@ -89,7 +89,7 @@ import {
   buildPublicPageJsonLd,
   useSeo,
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import type { FireuxMetaSolution } from 'fireux-core/runtime/app/models/meta-content'
+import type { FireuxMetaSolution } from 'fireux-core/runtime/app/literature/types'
 
 type SolutionsResponse = {
   ok: boolean

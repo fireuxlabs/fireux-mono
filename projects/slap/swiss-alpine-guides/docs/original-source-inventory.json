@@ -3,25 +3,34 @@
     "url": "https://www.swissalpineguides.ch/",
     "checked": "2026-11-13",
     "status": "reference",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": [
+      "/about",
+      "/news"
+    ]
   },
   {
     "url": "https://www.swissalpineguides.ch/english/index.html",
     "checked": "2026-11-13",
     "status": "reference",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/index.html",
     "checked": "2026-11-13",
     "status": "reference",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/News/default.html",
     "checked": "2026-11-13",
     "status": "reference",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": [
+      "/news"
+    ]
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Heliskiing/heliskiing.html",
@@ -29,7 +38,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/heliskiing"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Skiguides/default.html",
@@ -37,7 +47,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/ski-guiding"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Lawinenkurs/lawinenkurs.html",
@@ -45,7 +56,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/avalanche-courses"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Freeride/default.html",
@@ -53,13 +65,17 @@
     "status": "reference",
     "activityPages": [
       "/activities/freeride"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Miete/Miete.html",
     "checked": "2026-11-13",
     "status": "reference",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": [
+      "/rentals"
+    ]
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Schneeschuhwandern/default.html",
@@ -67,7 +83,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/snowshoe-trekking"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Eisfallklettern/default.html",
@@ -75,7 +92,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/waterfall-ice-climbing"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Skitouren/default.html",
@@ -83,19 +101,26 @@
     "status": "reference",
     "activityPages": [
       "/activities/ski-touring"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/AGbs/default.htm",
     "checked": "2026-11-13",
     "status": "reference",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": [
+      "/terms"
+    ]
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Gutscheine/default.html",
     "checked": "2026-11-13",
     "status": "reference",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": [
+      "/vouchers"
+    ]
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Eisklettern/default.html",
@@ -103,7 +128,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/glacier-ice-climbing"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Klettersteige/default.html",
@@ -111,7 +137,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/via-ferrata"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Helitrek/default.html",
@@ -119,7 +146,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/heli-hiking"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Gletscherwanderung/gletscherwanderung.html",
@@ -127,7 +155,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/glacier-trekking"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Felsklettern/default.html",
@@ -135,7 +164,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/rock-climbing"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Bergsteigen/default.html",
@@ -143,7 +173,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/mountaineering"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Paragliding/Paragliding.html",
@@ -151,7 +182,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/paragliding"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/Heliskiing/heliskiing.html",
@@ -159,13 +191,17 @@
     "status": "reference",
     "activityPages": [
       "/activities/heliskiing"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/terms/default.html",
     "checked": "2026-11-13",
     "status": "reference",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": [
+      "/terms"
+    ]
   },
   {
     "url": "https://www.swissalpineguides.ch/english/Skiguides/default.html",
@@ -173,7 +209,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/ski-guiding"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/AvalancheCourse/avalanche%20course.html",
@@ -181,6 +218,10 @@
     "status": "reference",
     "activityPages": [
       "/activities/avalanche-courses"
+    ],
+    "informationPages": [
+      "/news",
+      "/resources"
     ]
   },
   {
@@ -189,7 +230,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/freeride"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/SnowshoeTrek/default.html",
@@ -197,6 +239,9 @@
     "status": "reference",
     "activityPages": [
       "/activities/snowshoe-trekking"
+    ],
+    "informationPages": [
+      "/rentals"
     ]
   },
   {
@@ -205,7 +250,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/waterfall-ice-climbing"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/Skitouring/default.html",
@@ -213,13 +259,17 @@
     "status": "reference",
     "activityPages": [
       "/activities/ski-touring"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/Gift%20Voucher/default.html",
     "checked": "2026-11-13",
     "status": "reference",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": [
+      "/vouchers"
+    ]
   },
   {
     "url": "https://www.swissalpineguides.ch/english/IceClimbing/default.html",
@@ -227,7 +277,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/glacier-ice-climbing"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/ViaFerrata/viaFerrata.html",
@@ -235,13 +286,15 @@
     "status": "reference",
     "activityPages": [
       "/activities/via-ferrata"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Not%20in%20use/Ava/avalanche%20course.html",
     "checked": "2026-11-13",
     "status": "reference",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/HeliHiking/default.html",
@@ -249,7 +302,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/heli-hiking"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/Glacier_Trek/glaciertek.html",
@@ -257,6 +311,9 @@
     "status": "reference",
     "activityPages": [
       "/activities/glacier-trekking"
+    ],
+    "informationPages": [
+      "/resources"
     ]
   },
   {
@@ -265,7 +322,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/rock-climbing"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/Mountaineering/default.html",
@@ -273,6 +331,10 @@
     "status": "reference",
     "activityPages": [
       "/activities/mountaineering"
+    ],
+    "informationPages": [
+      "/about",
+      "/news"
     ]
   },
   {
@@ -281,7 +343,8 @@
     "status": "reference",
     "activityPages": [
       "/activities/paragliding"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/Teamevents/default.html",
@@ -289,31 +352,38 @@
     "status": "reference",
     "activityPages": [
       "/activities/team-events"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/Rentals/default.html",
     "checked": "2026-11-13",
     "status": "reference",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": [
+      "/rentals"
+    ]
   },
   {
     "url": "https://www.swissalpineguides.ch/english/AvalancheCourse/avalanche course.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/Ava/avalanche%20course.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/Paragliding/Paragliding Interlaken.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/default.html",
@@ -321,55 +391,64 @@
     "status": "reference",
     "activityPages": [
       "/activities/team-events"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Heliboarding/default.html",
     "checked": "2026-11-13",
     "status": "reference",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/Heliskiing/heliskiing.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/Schneeschuhwandern/default.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/Freeride/default.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/Eisfallklettern/default.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/Lawinenkurs/lawinenkurs.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/Gletscherwanderung/gletscherwanderung.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/Klettersteige/default.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/RiverRafting/riverrafting.html",
@@ -377,25 +456,29 @@
     "status": "reference",
     "activityPages": [
       "/activities/river-rafting"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/index.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/AvalanchCourse/default.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/terms/default.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/default.html",
@@ -403,36 +486,42 @@
     "status": "reference",
     "activityPages": [
       "/activities/canyoning"
-    ]
+    ],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/english/english/index.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Teamevents/Deutsch/AGbs/default.htm",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/snowevents/default.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/Deutsch/RiverRafting/riverrafting.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   },
   {
     "url": "https://www.swissalpineguides.ch/Deutsch/index.html",
     "checked": "2026-11-13",
     "status": "broken",
-    "activityPages": []
+    "activityPages": [],
+    "informationPages": []
   }
 ]

@@ -88,7 +88,7 @@
               v-model="form.notes"
               :rows="3"
               :maxlength="1500"
-              placeholder="Skiing or snowboarding experience, equipment and questions…"
+              placeholder="Your experience, equipment needs and questions…"
           /></UFormField>
           <div class="alpine-enquiry__trap" aria-hidden="true">
             <label
@@ -126,7 +126,7 @@
             <p>
               Nothing has been sent. Open your email app to review and send your
               enquiry. The draft is addressed to the operator’s published
-              heliskiing contact.
+              contact for your selected activity.
             </p>
             <UButton :to="emailUrl" color="neutral"
               >Open email draft ↗</UButton

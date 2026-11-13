@@ -2,7 +2,7 @@ import { useAppConfig } from 'nuxt/app'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import type { AppRole } from '../../app/models/app.model'
+import type { AppRole } from '../../app/models/model'
 import type {
   NavItem,
   NavMeta,

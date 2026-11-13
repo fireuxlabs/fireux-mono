@@ -1,6 +1,6 @@
 import type { DocumentData } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { APP_STATUSES } from '../../models/app.model'
+import { APP_STATUSES } from '../../models/model'
 
 const TEXT_FIELDS = {
   name: 60,

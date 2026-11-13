@@ -1,4 +1,4 @@
-import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/literature/define-meta'
 export const metaContent = defineFireuxMeta({
   app: {
     id: 'interlaken-bike-tours',

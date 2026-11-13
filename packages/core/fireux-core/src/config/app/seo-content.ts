@@ -1,5 +1,5 @@
 /** Derive public solution/operation routes and the default description from App literature. */
-import type { FireuxMetaContent } from '../../runtime/app/models/meta-content'
+import type { FireuxMetaContent } from '../../runtime/app/literature/types'
 import type { FireuxSeoConfig } from './seo-config'
 import { normalizePaths } from './seo-routes'
 

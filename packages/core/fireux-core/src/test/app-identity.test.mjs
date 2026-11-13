@@ -3,7 +3,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { APP_STATUSES } from '../runtime/app/models/app.model.ts'
+import { APP_STATUSES } from '../runtime/app/models/model.ts'
 
 function loadCommand(path, result, dependencies) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')

@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed } from 'vue'
-import { APP_ROLES } from '../runtime/app/models/app.model.ts'
+import { APP_ROLES } from '../runtime/app/models/model.ts'
 
 function load(relative, name, bindings) {
   bindings = { APP_ROLES, ...bindings }

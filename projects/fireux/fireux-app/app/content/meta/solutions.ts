@@ -1,4 +1,4 @@
-import type { FireuxMetaSolution } from 'fireux-core/runtime/app/models/meta-content'
+import type { FireuxMetaSolution } from 'fireux-core/runtime/app/literature/types'
 
 const fireuxOwner = {
   id: 'fireux',

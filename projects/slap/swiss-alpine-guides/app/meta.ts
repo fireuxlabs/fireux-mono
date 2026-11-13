@@ -1,5 +1,5 @@
 import { homeSearch } from './content/tour-pages'
-import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/literature/define-meta'
 export const metaContent = defineFireuxMeta({
   app: {
     id: 'swiss-alpine-guides',
@@ -8,11 +8,11 @@ export const metaContent = defineFireuxMeta({
   },
   copy: {
     big_personality: 'Swiss Alpine Guides',
-    headline: 'Heliskiing & Heliboarding',
+    headline: 'Mountain activities & courses',
     positioning_html:
-      'Heliskiing and heliboarding tours with Swiss Alpine Guides, Interlaken.',
+      'Summer and winter mountain activities with Swiss Alpine Guides, Interlaken.',
     promise_html:
-      'Tour routes, flight counts, descent information, requirements and enquiries.',
+      'Guided activities, mountain courses, equipment rentals, gift vouchers and enquiries.',
     workspace_bridge_html:
       'Contact Swiss Alpine Guides for dates and reservations.',
   },

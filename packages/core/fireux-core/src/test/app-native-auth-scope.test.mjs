@@ -5,7 +5,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, unref } from 'vue'
 import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
-import { APP_ROLES, APP_STATUSES } from '../runtime/app/models/app.model.ts'
+import { APP_ROLES, APP_STATUSES } from '../runtime/app/models/model.ts'
 function load(file, dependencies, name) {
   const source = readFileSync(
     new URL(`../runtime/${file}`, import.meta.url),

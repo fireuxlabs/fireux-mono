@@ -1,4 +1,4 @@
-import type { AppRole } from '../models/app.model'
+import type { AppRole } from '../models/model'
 import type { FireuxEntityManagement } from '../../models/utils/scope.model'
 
 const text = (value: unknown) => String(value ?? '').trim()

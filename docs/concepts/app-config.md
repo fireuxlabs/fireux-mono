@@ -179,10 +179,10 @@ do not patch these runtime fields manually.
   presentation. Its `defineFireuxMeta` helper and types stay free of Node-only
   dependencies; filesystem and Markdown loading belong to Core's config-only
   metadata loader. Shared literature types live in Core
-  `runtime/app/models/meta-content.ts`; the pure `defineFireuxMeta` helper lives
-  in `runtime/app/utils/define-app-meta.ts`. Workspace capability vocabulary
+  `runtime/app/literature/types.ts`; the pure `defineFireuxMeta` helper lives
+  in `runtime/app/literature/define-meta.ts`. Workspace capability vocabulary
   belongs to `runtime/workspace/models/capability-families.ts`. App metadata’s optional `legal.notices` are App-owned additions to
-  Core's shared `/legal` page; `readAppMeta` exposes only the validated public
+  `fireux-app`'s shared `/legal` page; `readAppMeta` exposes only the validated public
   projection. Core platform documents remain shared, and an installed extension
   does not add legal content unless the App explicitly composes it.
 - Core `resolveWorkspaceCanCreate` owns the shared explicit-override then

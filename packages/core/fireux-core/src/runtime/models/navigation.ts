@@ -1,4 +1,4 @@
-import type { AppRole } from '../app/models/app.model'
+import type { AppRole } from '../app/models/model'
 
 export interface NavVisibility {
   apps?: string[]

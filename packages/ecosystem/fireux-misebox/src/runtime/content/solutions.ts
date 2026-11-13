@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-21 12:08 CEST — Shared solutions catalogue: give Misebox one reusable authored source.
 // Concurrent edit — 2026-07-21 13:47 CEST — Ingredient management solution: publish the proven Kitchen catalogue workflow.
-import type { FireuxMetaSolution } from 'fireux-core/runtime/app/models/meta-content'
+import type { FireuxMetaSolution } from 'fireux-core/runtime/app/literature/types'
 
 const owner = {
   id: 'misebox',

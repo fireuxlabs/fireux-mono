@@ -12,6 +12,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { App } from '../../models/app.model'
+import type { App } from '../../models/model'
 defineProps<{ app: App }>()
 </script>

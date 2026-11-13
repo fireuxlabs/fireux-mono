@@ -1,5 +1,5 @@
 import { readPlatformEcosystems } from './ecosystems'
-import type { App } from 'fireux-core/runtime/app/models/app.model'
+import type { App } from 'fireux-core/runtime/app/models/model'
 import { createError } from 'h3'
 import {
   appCollectionPage,

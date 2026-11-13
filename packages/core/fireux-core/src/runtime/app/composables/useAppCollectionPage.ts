@@ -8,7 +8,7 @@ import {
   type FireuxSeoBuilderContext,
   type FireuxSeoJsonLd,
 } from '../../composables/fireux/seo/useSeo'
-import type { App } from '../models/app.model'
+import type { App } from '../models/model'
 
 export type AppCollectionPageSeo = Partial<
   Omit<UseSeoOptions, 'jsonLdBuilder'>

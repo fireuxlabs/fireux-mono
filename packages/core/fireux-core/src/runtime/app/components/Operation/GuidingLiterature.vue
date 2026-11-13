@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { FireuxMetaOperation } from '../../models/meta-content'
+import type { FireuxMetaOperation } from '../../literature/types'
 
 const props = defineProps<{ operation: FireuxMetaOperation }>()
 const headingId = computed(

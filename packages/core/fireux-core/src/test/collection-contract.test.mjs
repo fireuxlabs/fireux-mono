@@ -1,6 +1,6 @@
 import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
 import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
-import { APP_ROLES, APP_STATUSES } from '../runtime/app/models/app.model.ts'
+import { APP_ROLES, APP_STATUSES } from '../runtime/app/models/model.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'

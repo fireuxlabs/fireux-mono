@@ -1,7 +1,7 @@
 import { useRuntimeConfig } from '#imports'
 import type { H3Event } from 'h3'
 import type { RuntimeApp } from '../../../../config/app/runtime'
-import { APP_ROLES, type AppRole } from '../../models/app.model'
+import { APP_ROLES, type AppRole } from '../../models/model'
 import type {
   FireuxWorkspaceConfig,
   FireuxWorkspaceFamilyConfig,

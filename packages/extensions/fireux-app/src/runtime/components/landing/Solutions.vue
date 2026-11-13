@@ -49,7 +49,7 @@
 import { computed } from 'vue'
 import { useAsyncData } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import type { FireuxMetaSolution } from 'fireux-core/runtime/app/models/meta-content'
+import type { FireuxMetaSolution } from 'fireux-core/runtime/app/literature/types'
 
 type SolutionsResponse = {
   ok: boolean

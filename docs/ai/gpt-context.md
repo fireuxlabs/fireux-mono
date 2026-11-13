@@ -270,8 +270,8 @@ This order does not replace readable composition or domain ownership. Format
 changed files through the existing repository formatter and run the applicable
 lint checks; do not claim those checks enforce rules absent from their config.
 
-App public-literature contracts live in Core `runtime/app/models/meta-content.ts`.
-The pure `defineFireuxMeta` helper lives in `runtime/app/utils/define-app-meta.ts`;
+App public-literature contracts live in Core `runtime/app/literature/types.ts`.
+The pure `defineFireuxMeta` helper lives in `runtime/app/literature/define-meta.ts`;
 Workspace capability vocabulary lives in `runtime/workspace/models/capability-families.ts`.
 Configuration may consume these contracts, but runtime consumers do not import
 configuration loaders. `config/app/meta-content-loader.ts` alone owns the

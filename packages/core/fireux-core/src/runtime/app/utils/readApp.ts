@@ -1,4 +1,4 @@
-import { APP_ROLES, APP_STATUSES, type App } from '../models/app.model.ts'
+import { APP_ROLES, APP_STATUSES, type App } from '../models/model.ts'
 
 const APP_FIELDS = new Set([
   'ecosystem_id',

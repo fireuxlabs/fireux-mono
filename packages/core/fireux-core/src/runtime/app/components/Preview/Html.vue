@@ -21,7 +21,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { App } from '../../models/app.model'
+import type { App } from '../../models/model'
 import { renderAppPreview } from '../../utils/renderAppPreview'
 const props = defineProps<{ app: App }>()
 const html = computed(() => renderAppPreview(props.app))

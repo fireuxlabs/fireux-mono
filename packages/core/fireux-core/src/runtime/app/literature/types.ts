@@ -53,7 +53,7 @@ export type FireuxMetaLegalNotice = {
 }
 
 export type FireuxMetaLegalContent = {
-  /** Public, App-specific information rendered in Core's shared Legal page. */
+  /** Public, App-specific information rendered in fireux-app's shared Legal page. */
   notices?: FireuxMetaLegalNotice[]
 }
 
@@ -231,7 +231,7 @@ export type FireuxMetaContent = {
 
   lists?: FireuxMetaLists
 
-  /** App-owned legal additions composed into Core's shared Legal page. */
+  /** App-owned legal additions composed into fireux-app's shared Legal page. */
   legal?: FireuxMetaLegalContent
 
   /**
