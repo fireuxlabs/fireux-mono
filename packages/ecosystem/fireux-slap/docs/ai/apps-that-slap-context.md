@@ -72,11 +72,31 @@ Bike Tours owns its noindex preview release commands in its
 They use the shared artifact tooling with the existing Slap development Rules
 readback and the App's explicit preview target.
 
+Swiss Alpine Guides (`projects/slap/swiss-alpine-guides`) composes the ordinary
+`FireuxApp` root with an App-local branded layout and landing scenes. Its
+server-validated enquiry prepares a visitor-sent email draft, without reservation,
+Calendar allocation, automatic delivery or customer persistence. See the
+[App context](../../../../../projects/slap/swiss-alpine-guides/docs/ai/swiss-alpine-guides-context.md).
+
+## Operator catalogue preview
+
+`SlapOperatorActivities`, registered in `src/module.ts`, owns the shared public
+catalogue review UI at `src/runtime/components/Operator/Activities.vue`.
+Swiss Alpine Guides and Interlaken Bike Tours each compose it through their
+App-owned `Operator/Index.vue` and `/operator` route, mapping their existing
+catalogues to `src/runtime/types/operator-activity.ts`. The surface owns only
+search, filters and selection. Apps own activity facts, sources, prices and
+customer navigation. It has no account, customer reader, persistence command,
+availability or booking authority. Business management remains with the existing
+Business and Bookings owners; this preview does not replace their Workspace.
+Verify both App typechecks and responsive catalogue/detail interactions when
+changing this shared contract.
+
 ## Presentation boundary
 
 App source owns its scene structure and presentation types. Extract a reusable
 presentation contract only when maintained App consumers prove the shared shape.
-Shared transitions remain Core-owned; presentation does not change domain or
+Shared landing transitions remain `fireux-app`-owned; presentation does not change domain or
 infrastructure ownership.
 
 Yellow Velo keeps its shop presentation and filtering App-owned. Catalogue

@@ -610,6 +610,30 @@
       }
     },
     {
+      "name": "Debug: swiss-alpine-guides (3036)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm --dir 'projects/slap/swiss-alpine-guides' dev",
+      "cwd": "${workspaceFolder}",
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: swiss-alpine-guides",
+        "killOnServerStop": true
+      }
+    },
+    {
+      "name": "Browser: swiss-alpine-guides",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "url": "http://localhost:3036",
+      "webRoot": "${workspaceFolder}/projects/slap/swiss-alpine-guides",
+      "sourceMaps": true,
+      "presentation": {
+        "group": "Browser sessions"
+      }
+    },
+    {
       "name": "Debug: werkbox (3002)",
       "type": "node-terminal",
       "request": "launch",

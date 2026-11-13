@@ -1,0 +1,35 @@
+{
+  "hosting": {
+    "site": "prototype-swiss-alpine-guides",
+    "public": ".output/public",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "cleanUrls": true,
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow"
+          }
+        ]
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "swissAlpineGuides",
+          "region": "europe-west1"
+        }
+      }
+    ]
+  },
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "swiss-alpine-guides-ssr",
+      "runtime": "nodejs22"
+    }
+  ]
+}

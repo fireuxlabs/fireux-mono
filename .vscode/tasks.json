@@ -836,6 +836,24 @@
       }
     },
     {
+      "label": "pnpm dev:swiss-alpine-guides",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/slap/swiss-alpine-guides",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
       "label": "pnpm dev:werkbox",
       "type": "process",
       "command": "pnpm",

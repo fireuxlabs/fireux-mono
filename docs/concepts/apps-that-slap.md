@@ -1,6 +1,6 @@
 # Apps That Slap ecosystem map
 
-Updated: 2026-08-09
+Updated: 2026-11-12
 Ref: 90f82847e
 Role: map, not canon
 
@@ -13,7 +13,7 @@ the FireUX Core ownership bucket while preserving genuine domain ownership.
 
 - Parent: `fireux-mono.md`
 - Family registry: `spine.md`
-- Scoped context: `../ai/apps-that-slap-context.md`
+- Scoped context: `../../packages/ecosystem/fireux-slap/docs/ai/apps-that-slap-context.md`
 - Runtime package: `runtime-package.md`
 - App configuration: `app-config.md`
 - Brand assets: `brand-assets.md`
@@ -27,7 +27,7 @@ the FireUX Core ownership bucket while preserving genuine domain ownership.
   `configureFireuxEcosystemModule`.
 - Must match: one stable ecosystem package, automatic App-config loading,
   explicit Firebase binding, package exports, runtime public asset directory,
-  project registry authority, standard App asset contract, and guard coverage.
+  App-owned manifest discovery, standard App asset contract, and focused checks.
 - May differ: admission policy, ecosystem product language, App-owned visual
   composition, and explicitly exported presentation contracts.
 
@@ -55,32 +55,33 @@ project, database, or project tree.
 
 App-local source owns scene composition, styling, and presentation types.
 Shared presentation contracts require real maintained consumers before extraction.
-Reusable transition infrastructure belongs in its coordinated Core seam.
+Shared landing motion belongs to `fireux-app`; App-specific scene composition
+remains local.
 
-## Current source and guards
+## Current source and checks
 
 - `packages/ecosystem/fireux-slap/src/module.ts`
 - `packages/ecosystem/fireux-slap/src/config/firebase/ecosystem.config.ts`
 - `packages/ecosystem/fireux-slap/src/config/module/runtime-config.ts`
-- `scripts/_lib/app-registry.mjs`
-- `scripts/guards/ecosystem.mjs`
-- `scripts/guards/projects.mjs`
-- `scripts/guards/product-landing.mjs`
+- `tools/fireux-launcher/apps.mjs`
+- `tools/ide/check.mjs` and `tools/ide/assets.mjs`
+- `packages/extensions/fireux-app/src/runtime/composables/landing/`
 - App `nuxt.config.ts`, `package.json`, `firebase.json`, and `public/img/app/*`
 
 ## Delta register
 
-| Difference | State | Reason or alignment trigger |
-| --- | --- | --- |
-| Stable key is `slap` while the ecosystem name is Apps That Slap | `accepted` | Existing package, Firebase, database, and project routing use the stable key; a display-name expansion does not warrant infrastructure churn |
-| Existing Apps under `projects/slap` predate the admission rule | `to-confirm` | Audit each App from current source before retaining or changing its classification |
-| Existing optional commerce-language defaults remain available | `accepted` | They support current Apps but do not define ecosystem admission or become a capability every member must use |
-| Slap Main App contains older lifestyle-commerce language | `migration` | Align parent literature bottom-up in its landing-owned task without redefining ecosystem admission from legacy copy |
-| Motion and GSAP are absent from the ecosystem contract | `accepted` | Shared transition infrastructure is coordinated through Core; this seam is semantic structure only |
+| Difference                                                      | State        | Reason or alignment trigger                                                                                                                  |
+| --------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stable key is `slap` while the ecosystem name is Apps That Slap | `accepted`   | Existing package, Firebase, database, and project routing use the stable key; a display-name expansion does not warrant infrastructure churn |
+| Existing Apps under `projects/slap` predate the admission rule  | `to-confirm` | Audit each App from current source before retaining or changing its classification                                                           |
+| Existing optional commerce-language defaults remain available   | `accepted`   | They support current Apps but do not define ecosystem admission or become a capability every member must use                                 |
+| Slap Main App contains older lifestyle-commerce language        | `migration`  | Align parent literature bottom-up in its landing-owned task without redefining ecosystem admission from legacy copy                          |
+| Motion and GSAP are absent from the ecosystem contract          | `accepted`   | Shared landing transitions are coordinated through `fireux-app`; this ecosystem seam is semantic structure only                              |
 
 ## Verification and maintenance
 
-Build/type-check `fireux-slap`, run the ecosystem and relevant project/landing
-guards, then run `pnpm guard`. Update this map when the family relationship,
+Build/type-check `fireux-slap` after package changes, then run the affected App’s
+focused checks and scoped asset audit. The former `scripts/guards` suite and
+`pnpm guard` command are removed. Update this map when the family relationship,
 admission test, stable key, or presentation boundary changes. Keep candidate
 App lists and temporary migration status in implementation reports, not here.

@@ -8,15 +8,16 @@
       :aria-label="item.label"
     >
       <UIcon :name="item.icon" />
+      <span>{{ item.label }}</span>
     </NuxtLink>
   </nav>
 </template>
 
 <script setup lang="ts">
 const navItems = [
-  { label: 'Home', icon: 'i-ph-house', to: '/home' },
+  { label: 'Home', icon: 'i-ph-house', to: '/' },
   { label: 'Location', icon: 'i-ph-map-pin', to: '/location' },
-  { label: 'Menu', icon: 'i-ph-fork-knife', to: '/' },
+  { label: 'Menu', icon: 'i-ph-fork-knife', to: '/menus/food' },
   { label: 'Gallery', icon: 'i-ph-camera', to: '/gallery' },
   { label: 'Information', icon: 'i-ph-info', to: '/info' },
 ] as const
@@ -36,13 +37,14 @@ const navItems = [
 
 .latap-nav__button {
   display: grid;
-  width: 3.1rem;
-  height: 3.1rem;
-  padding: 0;
+  min-height: 3.1rem;
+  padding: 0.5rem 0.85rem;
+  gap: 0.25rem;
   border-radius: calc(var(--ui-radius) * 4);
   cursor: pointer;
   place-items: center;
   text-decoration: none;
+  font-size: 0.7rem;
 }
 
 .latap-nav__button :deep(.iconify) {
@@ -56,8 +58,9 @@ const navItems = [
   }
 
   .latap-nav__button {
-    width: 2.85rem;
-    height: 2.85rem;
+    min-height: 2.85rem;
+    padding: 0.4rem 0.55rem;
+    font-size: 0.6rem;
   }
 }
 </style>
