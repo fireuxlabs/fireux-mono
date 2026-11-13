@@ -1,6 +1,5 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/types/entity-management'
 
 type WidenLiteral<T> = T extends string
   ? string
@@ -22,7 +21,7 @@ export const BlankStorage = {
 
 export const BlankModel = {
   id: '',
-  management: FireuxEntityManagementDefaults,
+  management: { mode: 'root' } satisfies FireuxEntityManagement,
   name: '',
   slug: '',
   status: 'active' as BlankStatus,

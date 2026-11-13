@@ -4,7 +4,7 @@ import { resolveHttpDocumentOutcome } from '../../utils/http-document-outcome'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 
 import type { App } from '../models/model'
-import type { DetailResponse } from '../../models/utils/directory'
+import type { DetailResponse } from '../../types/directory'
 
 /** Public App projection. The endpoint owns visibility and database scope. */
 export function useAppDetail(endpoint: MaybeRefOrGetter<string>) {

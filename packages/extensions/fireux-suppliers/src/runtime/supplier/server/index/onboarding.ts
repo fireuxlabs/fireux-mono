@@ -14,7 +14,7 @@ import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
 } from 'fireux-core/runtime/app/utils/entity-management'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/types/entity-management'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'

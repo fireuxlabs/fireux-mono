@@ -4,7 +4,7 @@ import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
 } from '../../../../app/utils/entity-management'
-import type { FireuxEntityManagement } from '../../../../models/utils/scope.model'
+import type { FireuxEntityManagement } from '../../../../types/entity-management'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const key = (value: unknown) => text(value).toLowerCase()
@@ -73,7 +73,9 @@ export function usePublicScope<TScope>(options: PublicScopeOptions<TScope>) {
         (item) => key(options.scopeKeyOf(item)) === key(unref(options.scopeKey))
       ) ?? null
   )
-  const scopeId = computed(() => text(scope.value ? options.scopeIdOf(scope.value) : ''))
+  const scopeId = computed(() =>
+    text(scope.value ? options.scopeIdOf(scope.value) : '')
+  )
   const pending = computed(() => Boolean(unref(options.pending)))
 
   return {
@@ -87,7 +89,9 @@ export function usePublicScopedRecords<TEntity>(
   options: PublicScopedRecordsOptions<TEntity>
 ) {
   const records = computed(() =>
-    (unref(options.records) ?? []).filter((record) => options.isPublicRecord(record))
+    (unref(options.records) ?? []).filter((record) =>
+      options.isPublicRecord(record)
+    )
   )
   const record = computed<TEntity | null>(() => {
     const selectedKey = text(unref(options.recordKey))

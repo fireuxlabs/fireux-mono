@@ -8,7 +8,7 @@ import {
 } from 'h3'
 
 import { requireFirestoreDocumentId } from '../../utils/ids/path'
-import type { CollectionResponse } from '../../../models/utils/directory'
+import type { CollectionResponse } from '../../../types/directory'
 import type { User } from '../../../user/models/user.model.ts'
 import {
   readUserDirectoryScopeIds,

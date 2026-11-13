@@ -6,7 +6,7 @@ import {
   type H3Event,
 } from 'h3'
 
-import type { DetailResponse } from '../../../models/utils/directory'
+import type { DetailResponse } from '../../../types/directory'
 import type { User } from '../../../user/models/user.model.ts'
 import {
   resolveUserDirectoryScope,

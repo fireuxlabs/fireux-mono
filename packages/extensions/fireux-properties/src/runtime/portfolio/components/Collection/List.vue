@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import FireCollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
-import type { CollectionCellData } from 'fireux-core/runtime/models/utils/collection-cell'
+import type { CollectionCellData } from 'fireux-core/runtime/types/collection-cell'
 import type { PortfolioCard } from '../../composables/firestore/utils/view/usePortfolioInterface'
 const props = defineProps<{ cards: PortfolioCard.Card[] }>()
 const cells = computed<CollectionCellData[]>(() =>

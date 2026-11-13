@@ -5,7 +5,7 @@ import {
 } from 'fireux-core/runtime/utils/read-outcome'
 
 import { computed, type Ref } from 'vue'
-import type { CollectionResponse } from 'fireux-core/runtime/models/utils/directory'
+import type { CollectionResponse } from 'fireux-core/runtime/types/directory'
 import type { ProjectPublicSummary } from '../models/project.model'
 
 export type ProjectCollectionController = {

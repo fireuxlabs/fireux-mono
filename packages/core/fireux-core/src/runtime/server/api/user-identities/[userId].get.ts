@@ -8,7 +8,7 @@ import {
 
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../utils/ids/path'
-import type { DetailResponse } from '../../../models/utils/directory'
+import type { DetailResponse } from '../../../types/directory'
 import type { UserIdentitySummary } from '../../../user/models/user-directory.model.ts'
 import { readUserIdentitySummary } from '../../../user/server/identity/summary'
 

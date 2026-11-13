@@ -6,7 +6,7 @@ import {
   type H3Event,
 } from 'h3'
 
-import type { DetailResponse } from 'fireux-core/runtime/models/utils/directory'
+import type { DetailResponse } from 'fireux-core/runtime/types/directory'
 import type { ProjectPublicSummary } from 'fireux-projects/runtime/project/models/project.model'
 import { readProjectDetail } from 'fireux-projects/runtime/project/server/detail/read'
 

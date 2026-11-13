@@ -5,7 +5,7 @@ import {
   type H3Event,
 } from 'h3'
 
-import type { CollectionResponse } from 'fireux-core/runtime/models/utils/directory'
+import type { CollectionResponse } from 'fireux-core/runtime/types/directory'
 import type { ProjectPublicSummary } from 'fireux-projects/runtime/project/models/project.model'
 import { readProjects } from 'fireux-projects/runtime/project/server/directory/read'
 

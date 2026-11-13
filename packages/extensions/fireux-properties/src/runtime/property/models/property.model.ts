@@ -1,6 +1,5 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/types/entity-management'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> = T extends string
@@ -158,7 +157,7 @@ export const PropertyModel = {
   id: '' as string,
   portfolio_id: '' as string,
   place_id: '' as string,
-  management: FireuxEntityManagementDefaults,
+  management: { mode: 'root' } satisfies FireuxEntityManagement,
   identity: PropertyIdentityModel,
   created: {
     at: {} as FirebaseTimestamp,

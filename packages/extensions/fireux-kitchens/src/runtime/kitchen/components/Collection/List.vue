@@ -88,7 +88,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { CollectionCellData } from 'fireux-core/runtime/models/utils/collection-cell'
+import type { CollectionCellData } from 'fireux-core/runtime/types/collection-cell'
 import type { KitchenCard } from '../../models/kitchen-interface.model'
 
 const props = defineProps<{ cards: KitchenCard.Card[] }>()

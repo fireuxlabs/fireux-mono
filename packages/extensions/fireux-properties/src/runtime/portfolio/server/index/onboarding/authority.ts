@@ -3,7 +3,7 @@ import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
 } from 'fireux-core/runtime/app/utils/entity-management'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/types/entity-management'
 import {
   requireWorkspaceEntityMemberRole,
   resolveWorkspaceEntityOnboardingPolicy,

@@ -1,6 +1,5 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/types/entity-management'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> = T extends string
@@ -53,7 +52,7 @@ export const PortfolioTeamStorage = {
 export type PortfolioStatus = 'active' | 'archived'
 export const PortfolioModel = {
   id: '',
-  management: FireuxEntityManagementDefaults,
+  management: { mode: 'root' } satisfies FireuxEntityManagement,
   identity: {
     name: '',
     tagline: '',
@@ -78,19 +77,34 @@ export const PortfolioModel = {
 } as const
 
 export type PortfolioIdentity = Omit<
-  WidenLiteral<typeof PortfolioModel.identity>, 'status'
+  WidenLiteral<typeof PortfolioModel.identity>,
+  'status'
 > & { status: PortfolioStatus }
 
 export type Portfolio = Omit<
-  WidenLiteral<typeof PortfolioModel>, 'management' | 'identity'
-> & { context?: string; management: FireuxEntityManagement; identity: PortfolioIdentity }
+  WidenLiteral<typeof PortfolioModel>,
+  'management' | 'identity'
+> & {
+  context?: string
+  management: FireuxEntityManagement
+  identity: PortfolioIdentity
+}
 
 export type PortfolioCreateInput = {
-  identity: Pick<PortfolioIdentity, 'name'> & Partial<Omit<PortfolioIdentity, 'name'>>
+  identity: Pick<PortfolioIdentity, 'name'> &
+    Partial<Omit<PortfolioIdentity, 'name'>>
 }
 
 export type PortfolioUpdateInput = {
-  identity: Partial<Pick<PortfolioIdentity,
-    'name' | 'tagline' | 'owner_label' | 'strategy_label' | 'region_label' | 'notes'
-  >>
+  identity: Partial<
+    Pick<
+      PortfolioIdentity,
+      | 'name'
+      | 'tagline'
+      | 'owner_label'
+      | 'strategy_label'
+      | 'region_label'
+      | 'notes'
+    >
+  >
 }

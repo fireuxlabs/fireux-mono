@@ -54,7 +54,7 @@
 import { computed } from 'vue'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import FireCollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
-import type { CollectionCellData } from 'fireux-core/runtime/models/utils/collection-cell'
+import type { CollectionCellData } from 'fireux-core/runtime/types/collection-cell'
 import type { User } from 'fireux-core/runtime/user/models/user.model'
 import { useKitchenUserMemberships } from '../composables/useKitchenUserMemberships'
 import type { KitchenUserMembershipItem } from '../models/user-memberships.model.ts'

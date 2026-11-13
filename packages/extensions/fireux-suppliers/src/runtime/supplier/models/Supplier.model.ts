@@ -1,6 +1,5 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/types/entity-management'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type SupplierStatus = 'active' | 'inactive' | 'archived'
@@ -67,7 +66,7 @@ export const SupplierTeamStorage = {
 
 export const SupplierDefaults = {
   id: '',
-  management: FireuxEntityManagementDefaults,
+  management: { mode: 'root' } satisfies FireuxEntityManagement,
   business_id: '',
   identity: {
     slug: '',

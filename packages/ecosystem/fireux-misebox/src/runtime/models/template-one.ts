@@ -5,7 +5,7 @@ import type {
   WorkspacePalette,
 } from 'fireux-core/runtime/models/utils/style.model'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/types/entity-management'
 import type { AppTypography } from 'fireux-core/types/theme'
 import type {
   MenuManifestContent,

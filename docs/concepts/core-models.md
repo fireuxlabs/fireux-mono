@@ -367,7 +367,17 @@ Core's `runtime/ecosystem/server/identity/read.ts` owns the canonical root read.
 directory derives detail links from the document ID and supplies the App count
 from related Apps.
 
-Core's `runtime/models/utils/directory.ts` owns only generic collection, paged
+Shared management scope is `runtime/types/entity-management.ts`, consumed by
+App scope helpers and the owning domain models/readers. Property, Portfolio,
+Supplier and Blank declare their root defaults locally. Jobs defines its own
+`JobVisibility` (`app` or `public`); there is no generic visibility model or
+shared default object. Parser/resolver and domain scope guards are unchanged.
+
+Shared collection-cell presentation uses `runtime/types/collection-cell.ts`,
+consumed by Core's Cell and domain list adapters. It is a view contract, not a
+stored Entity model.
+
+Core's `runtime/types/directory.ts` owns only generic collection, paged
 collection and detail response envelopes. Ecosystem's discovery projection is
 `runtime/ecosystem/models/ecosystem-directory.ts`, produced by its existing
 `ecosystem/server/directory/projection.ts`. FireUX App owns its cross-source

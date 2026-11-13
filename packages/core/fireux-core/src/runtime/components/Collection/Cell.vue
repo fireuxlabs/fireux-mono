@@ -125,7 +125,7 @@
 
 <script setup lang="ts">
 import { computed, resolveComponent } from 'vue'
-import type { CollectionCellData } from '../../models/utils/collection-cell'
+import type { CollectionCellData } from '../../types/collection-cell'
 
 const props = defineProps<{ cell: CollectionCellData }>()
 const NuxtLink = resolveComponent('NuxtLink')

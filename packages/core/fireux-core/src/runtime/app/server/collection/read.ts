@@ -2,7 +2,7 @@ import { FieldPath, type Firestore, type Query } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { readAppDocument } from '../../utils/readApp'
 import type { App } from '../../models/model'
-import type { CollectionPage } from '../../../models/utils/directory'
+import type { CollectionPage } from '../../../types/directory'
 
 const APP_PAGE_SIZE = 24
 const APP_MAX_PAGE_SIZE = 100

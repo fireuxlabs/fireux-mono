@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import FireCollectionCell from '../../../components/Collection/Cell.vue'
-import type { CollectionCellData } from '../../../models/utils/collection-cell'
+import type { CollectionCellData } from '../../../types/collection-cell'
 import type { User } from '../../models/user.model'
 import { useUserView } from '../../composables/useUserView'
 

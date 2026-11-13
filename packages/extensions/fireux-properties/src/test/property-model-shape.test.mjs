@@ -34,10 +34,7 @@ const readFireuxEntityManagement = load(
 )
 const model = load(
   '../runtime/property/models/property.model.ts',
-  '({PropertyModel,PropertyManualModel})',
-  {
-    FireuxEntityManagementDefaults: { mode: 'root' },
-  }
+  '({PropertyModel,PropertyManualModel})'
 )
 const canonicalPropertyRoot = load(
   '../runtime/property/utils/normalize-property.ts',

@@ -3,7 +3,7 @@ import { useAsyncData } from 'nuxt/app'
 
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
-import type { DetailResponse } from '../../../models/utils/directory.ts'
+import type { DetailResponse } from '../../../types/directory.ts'
 import type { ProfileDirectoryEntry } from '../../models/user-directory.model.ts'
 
 export type ProfileCollection = 'agents' | 'chefs' | 'drivers' | 'professionals'

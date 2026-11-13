@@ -300,6 +300,16 @@ consumer. Remove unused contracts rather than relocating them. Do not create
 barrels, aliases, generic bags or symmetric folders merely to tidy the tree.
 Review ownership and consumers when changing these directories, not just names.
 
+Shared directory transport envelopes live in `runtime/types/directory.ts`;
+shared collection-cell presentation data lives in `runtime/types/collection-cell.ts`.
+Their cross-Entity consumers justify shared contracts, not shared Entity models.
+Domains retain their records, projections and reader policy.
+
+The shared management-scope union lives in `runtime/types/entity-management.ts`.
+Domain defaults declare their own root value; Jobs owns its visibility vocabulary.
+The App management parser/resolvers and domain authority checks retain scope
+policy. A shared type or default does not grant access.
+
 Core `runtime/utils` owns small stateless transformations and validators for
 shared FireUX value contracts. It does not own reactive/browser lifecycle,
 fetching, authentication coordination, onboarding workflow, product literature

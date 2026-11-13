@@ -4,7 +4,7 @@ import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 
 import { readPages } from '../../composables/http/readPages'
 import { resolveReadOutcome } from '../../utils/read-outcome'
-import type { CollectionPage } from '../../models/utils/directory'
+import type { CollectionPage } from '../../types/directory'
 import type { User } from '../models/user.model'
 
 /** Public User pages use the existing server projection and native Nuxt refresh. */

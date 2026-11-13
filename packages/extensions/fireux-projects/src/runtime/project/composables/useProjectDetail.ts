@@ -3,7 +3,7 @@ import { resolveHttpDocumentOutcome } from 'fireux-core/runtime/utils/http-docum
 
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { ProjectPublicSummary } from '../models/project.model'
-import type { DetailResponse } from 'fireux-core/runtime/models/utils/directory'
+import type { DetailResponse } from 'fireux-core/runtime/types/directory'
 
 export function useProjectDetail(id: MaybeRefOrGetter<string>) {
   const projectId = computed(() => String(toValue(id) || '').trim())

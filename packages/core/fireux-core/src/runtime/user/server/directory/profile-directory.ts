@@ -10,7 +10,7 @@ import {
 import type {
   CollectionResponse,
   DetailResponse,
-} from '../../../models/utils/directory.ts'
+} from '../../../types/directory.ts'
 import type {
   ProfileDirectoryEntry,
   ProfileUser,

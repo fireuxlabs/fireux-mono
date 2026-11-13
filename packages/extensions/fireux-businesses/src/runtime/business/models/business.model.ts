@@ -1,7 +1,11 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/types/entity-management'
 
-export type BusinessStamp = { at: FirebaseTimestamp; by?: string; app_id?: string }
+export type BusinessStamp = {
+  at: FirebaseTimestamp
+  by?: string
+  app_id?: string
+}
 
 /** Business identity is independent of its optional physical locations. */
 export type Business = {

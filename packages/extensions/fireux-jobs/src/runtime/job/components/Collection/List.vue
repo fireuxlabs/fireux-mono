@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import FireCollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
-import type { CollectionCellData } from 'fireux-core/runtime/models/utils/collection-cell'
+import type { CollectionCellData } from 'fireux-core/runtime/types/collection-cell'
 import type { JobCard } from '../../composables/firestore/utils/view/useJobInterface'
 const props = defineProps<{ cards: JobCard.Card[] }>()
 const cells = computed<CollectionCellData[]>(() =>

@@ -15,7 +15,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { CollectionCellData } from '../../../models/utils/collection-cell'
+import type { CollectionCellData } from '../../../types/collection-cell'
 import type { AppCard } from '../../composables/useAppView'
 
 const props = defineProps<{ cards: AppCard[] }>()

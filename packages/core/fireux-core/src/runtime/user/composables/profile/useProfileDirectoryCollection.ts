@@ -3,7 +3,7 @@ import { useAsyncData } from 'nuxt/app'
 
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, type ComputedRef } from 'vue'
-import type { CollectionResponse } from '../../../models/utils/directory.ts'
+import type { CollectionResponse } from '../../../types/directory.ts'
 import type {
   ProfileDirectoryEntry,
   ProfileUser,

@@ -6,7 +6,7 @@ import type {
   PropertyCreateInput,
   PropertyIdentity,
 } from '../models/property.model.ts'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/types/entity-management'
 import { readFireuxEntityManagement } from 'fireux-core/runtime/app/utils/entity-management'
 
 const text = (value: unknown) => String(value ?? '').trim()

@@ -91,7 +91,7 @@
 
 <script setup lang="ts">
 import { computed, onScopeDispose, ref } from 'vue'
-import type { CollectionResponse } from '../../../../models/utils/directory'
+import type { CollectionResponse } from '../../../../types/directory'
 import type { User } from '../../../../user/models/user.model'
 
 const props = defineProps<{

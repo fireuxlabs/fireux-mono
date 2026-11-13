@@ -29,10 +29,7 @@ function load(file, result, deps = {}) {
 }
 const model = load(
   '../runtime/portfolio/models/portfolio.model.ts',
-  '({PortfolioModel,PortfolioStorage})',
-  {
-    FireuxEntityManagementDefaults: { mode: 'root' },
-  }
+  '({PortfolioModel,PortfolioStorage})'
 )
 const stamp = { at: { seconds: 1, nanoseconds: 0 }, by: 'u' }
 const root = (id = 'p') => ({

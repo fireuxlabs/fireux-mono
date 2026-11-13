@@ -7,7 +7,7 @@ import {
 } from 'h3'
 
 import { readAppDetail } from 'fireux-core/runtime/app/server/detail/read'
-import type { DetailResponse } from 'fireux-core/runtime/models/utils/directory'
+import type { DetailResponse } from 'fireux-core/runtime/types/directory'
 
 export default defineEventHandler(async (event: H3Event) => {
   setResponseHeader(event, 'Cache-Control', 'no-store')

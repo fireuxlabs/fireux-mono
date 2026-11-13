@@ -4,7 +4,7 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { normalizeUserHandle } from '../utils/user-handle'
-import type { DetailResponse } from '../../models/utils/directory'
+import type { DetailResponse } from '../../types/directory'
 import type { User } from '../models/user.model'
 
 /** Public directory detail follows the server's App eligibility and projection. */
