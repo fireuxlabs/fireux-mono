@@ -295,6 +295,10 @@ directories require demonstrated cross-owner reuse, not hypothetical future use.
 - `utils/` holds focused stateless behavior. It must not hide canonical record
   definitions, workflows, reactive state, readers or commands.
 
+Name readers for acquisition (`use<Entity>Read`) and provided contexts for sharing
+(`use<Entity>Context`); the latter must not acquire data. Keep single-consumer
+normalization private beside its reader. See [composable responsibilities](../concepts/composables.md#names-describe-responsibility).
+
 Keep supporting types beside their implementation when they have no independent
 consumer. Remove unused contracts rather than relocating them. Do not create
 barrels, aliases, generic bags or symmetric folders merely to tidy the tree.
@@ -304,6 +308,19 @@ Shared directory transport envelopes live in `runtime/types/directory.ts`;
 shared collection-cell presentation data lives in `runtime/types/collection-cell.ts`.
 Their cross-Entity consumers justify shared contracts, not shared Entity models.
 Domains retain their records, projections and reader policy.
+
+Place declares its small `brand_palette` field directly in its model;
+consumers read its two colour fields directly. Picker defaults remain local UI
+values, and preview types do not derive compatibility shapes from Place. Boundary validation stays in
+`fireux-places/runtime/place/utils/brand-palette.ts`. Core owns scalar
+hex-colour normalization and App/Workspace palette mechanics in
+`runtime/utils/theme-palette.ts`; their contracts remain in `src/types/theme.ts`. Misebox
+Template One owns its local preview page-style shape. These contracts do not
+form a generic style Entity or an alternate theme system.
+
+Shared creation presentation modes and command results live in
+`runtime/types/entity-create.ts`; domain commands retain validation, scope and
+write authority. Creation contracts are not Entity models.
 
 The shared management-scope union lives in `runtime/types/entity-management.ts`.
 Domain defaults declare their own root value; Jobs owns its visibility vocabulary.

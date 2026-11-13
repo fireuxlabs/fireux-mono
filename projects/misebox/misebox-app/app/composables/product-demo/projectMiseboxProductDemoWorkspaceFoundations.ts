@@ -1,5 +1,5 @@
 import type { Ingredient } from 'fireux-kitchens/runtime/ingredient/utils/ingredient'
-import type { KitchenFinanceReportPeriod } from 'fireux-kitchens/runtime/kitchen/models/finance-report.model'
+import type { KitchenFinanceReportPeriod } from 'fireux-kitchens/runtime/kitchen/utils/finance-report-periods'
 
 type WorkspaceScenario =
   (typeof import('fireux-kitchens/runtime/kitchen/demo/scenarios'))['deanosKitchenDemoScenario']

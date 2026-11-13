@@ -15,14 +15,18 @@
 import { computed, watch } from 'vue'
 import type { Menu } from '../../../../menu/models/menu.model'
 import type { MenuSection } from '../../../../menu/models/menu-section.model'
-import { useKitchenItemDetail } from '../../../composables/item/useKitchenItemDetailContext'
+import { useKitchenItemContext } from '../../../item/composables/useKitchenItemContext'
 import { useMenuSectionItemCollection } from '../../../../menu/composables/useMenuSectionItemCollection'
 const props = defineProps<{ menu: Menu; section: MenuSection }>()
 const emit = defineEmits<{
   result: [value: 'pending' | 'error' | 'empty' | 'match']
 }>()
-const { dishId, storageKitchenId, databaseId, rootCollection } =
-  useKitchenItemDetail()
+const {
+  itemId: dishId,
+  storageKitchenId,
+  databaseId,
+  rootCollection,
+} = useKitchenItemContext()
 const { items, pending, error } = useMenuSectionItemCollection(
   storageKitchenId,
   computed(() => props.menu.id),

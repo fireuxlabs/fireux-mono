@@ -1,17 +1,10 @@
 <template>
   <div>
-    <WorkspaceKitchenAICapabilityInfo capability="suppliers" />
     <section class="workspace-surface">
       <KitchenSuppliersSelector />
       <WorkspaceKitchenToolsToolbar capability="suppliers" />
-      <WorkspaceKitchenAICapability capability="suppliers" />
-      <WorkspaceKitchenResearchCapabilitySummary capability="suppliers" />
+
       <KitchenSuppliers />
-      <WorkspaceKitchenResearchGuide capability="suppliers" />
-      <WorkspaceKitchenResearchSegue
-        capability="Suppliers"
-        base-path="/workspace/kitchen/stock/suppliers/search-demand"
-      />
     </section>
   </div>
 </template>

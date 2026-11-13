@@ -7,7 +7,7 @@ import {
   kitchenIdentityPurpose,
   kitchenIdentityBoundary,
   type KitchenIdentityIntent,
-} from '../../models/identity-intent'
+} from '../../content/identity-intent'
 export async function interpretKitchenIdentity(
   event: H3Event,
   body: unknown

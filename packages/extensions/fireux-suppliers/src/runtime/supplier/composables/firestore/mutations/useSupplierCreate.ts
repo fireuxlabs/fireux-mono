@@ -6,11 +6,7 @@ import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import type {
-  FireuxEntityCreateMode,
-  FireuxEntityCreateResult,
-  FireuxRootCreateResult,
-} from 'fireux-core/runtime/models/utils/entity-create.model'
+import type { FireuxEntityCreateResult } from 'fireux-core/runtime/types/entity-create'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { SupplierOnboardingCompleteResult } from '../../../models/supplier-onboarding.model.ts'
 
@@ -22,19 +18,11 @@ export type SupplierCreateOptions = {
   test?: boolean
 }
 
-export type SupplierCreateModeOptions = {
-  mode?: FireuxEntityCreateMode
+export type SupplierCreateWorkspaceOptions = {
   existingRootId?: string | null
   organizationName?: string | null
   businessId?: string | null
   isCurrent?: () => boolean
-}
-
-type SupplierTestCreateInput = {
-  id?: string
-  name?: string
-  subtitle?: string
-  image_url?: string
 }
 
 export function useSupplierCreate(options: SupplierCreateOptions = {}) {
@@ -54,20 +42,8 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
     }
   }
 
-  async function createTestSupplier(
-    _input: SupplierTestCreateInput = {}
-  ): Promise<FireuxRootCreateResult> {
-    throw new Error(UNSUPPORTED_TEST_WRITE_MESSAGE)
-  }
-
-  async function createSupplier(
-    options: SupplierCreateModeOptions = {}
-  ): Promise<FireuxEntityCreateResult> {
-    return createSupplierWorkspace(options)
-  }
-
   async function createSupplierWorkspace(
-    options: SupplierCreateModeOptions = {}
+    options: SupplierCreateWorkspaceOptions = {}
   ): Promise<FireuxEntityCreateResult> {
     const isCurrent = captureCommand()
     const uid = currentUser.value?.uid
@@ -135,8 +111,6 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   }
 
   return {
-    createSupplier,
     createSupplierWorkspace,
-    createTestSupplier,
   }
 }

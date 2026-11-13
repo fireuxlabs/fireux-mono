@@ -1,6 +1,5 @@
 <template>
   <div>
-    <WorkspaceKitchenAICapabilityInfo capability="receiving" />
     <section class="workspace-surface">
       <UPageHeader title="Deliveries" />
       <UAlert
@@ -9,22 +8,6 @@
         color="warning"
         variant="subtle"
       />
-      <FireDisclosurePanel
-        title="Capability reference"
-        :default-open="false"
-      >
-        <WorkspaceKitchenToolsToolbar capability="receiving" />
-        <WorkspaceKitchenAICapability
-          capability="receiving"
-          :show-suggestion-cards="false"
-        />
-        <WorkspaceKitchenResearchCapabilitySummary capability="receiving" />
-        <WorkspaceKitchenResearchGuide capability="receiving" />
-        <WorkspaceKitchenResearchSegue
-          capability="Receiving"
-          base-path="/workspace/kitchen/stock/receiving/search-demand"
-        />
-      </FireDisclosurePanel>
     </section>
   </div>
 </template>

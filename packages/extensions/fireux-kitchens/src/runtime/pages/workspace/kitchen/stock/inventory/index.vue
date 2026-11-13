@@ -1,6 +1,5 @@
 <template>
   <div>
-    <WorkspaceKitchenAICapabilityInfo capability="inventory" />
     <section class="workspace-surface">
       <UPageHeader title="Stock" />
       <UAlert
@@ -9,22 +8,6 @@
         color="warning"
         variant="subtle"
       />
-      <FireDisclosurePanel
-        title="Capability reference"
-        :default-open="false"
-      >
-        <WorkspaceKitchenToolsToolbar capability="inventory" />
-        <WorkspaceKitchenAICapability
-          capability="inventory"
-          :show-suggestion-cards="false"
-        />
-        <WorkspaceKitchenResearchCapabilitySummary capability="inventory" />
-        <WorkspaceKitchenResearchGuide capability="inventory" />
-        <WorkspaceKitchenResearchSegue
-          capability="Inventory"
-          base-path="/workspace/kitchen/stock/inventory/search-demand"
-        />
-      </FireDisclosurePanel>
     </section>
   </div>
 </template>

@@ -1,6 +1,6 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import { readBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
+import { normalizeHexColor } from 'fireux-core/runtime/utils/normalize-hex-color'
 import type { Place, PlaceStamp } from '../models/place.model.ts'
 import {
   normalizePlaceBusinessHours,
@@ -95,6 +95,10 @@ export function normalizePlace(idValue: unknown, value: unknown): Place | null {
     return null
   }
 
+  const palette = record(source.brand_palette)
+  const primaryColor = normalizeHexColor(palette.primary_color)
+  const secondaryColor = normalizeHexColor(palette.secondary_color)
+
   return {
     id,
     slug: text(source.slug),
@@ -134,7 +138,10 @@ export function normalizePlace(idValue: unknown, value: unknown): Place | null {
       linkedin: text(record(source.social_links).linkedin),
       youtube: text(record(source.social_links).youtube),
     },
-    brand_palette: readBrandPalette(source.brand_palette),
+    brand_palette: {
+      ...(primaryColor ? { primary_color: primaryColor } : {}),
+      ...(secondaryColor ? { secondary_color: secondaryColor } : {}),
+    },
     place_type: placeType,
     types: strings(source.types),
     tags: strings(source.tags),

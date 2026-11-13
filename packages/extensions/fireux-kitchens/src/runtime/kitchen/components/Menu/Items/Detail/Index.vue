@@ -73,13 +73,6 @@
         <KitchenMenuItemsEdit />
         <KitchenMenuItemsPricing />
       </div>
-      <template v-if="view === 'preparation' && dish">
-        <KitchenMenuItemsPreparationStations
-          :dish="dish"
-          :kitchen-id="kitchenId"
-          :can-write="canWrite"
-        />
-      </template>
       <ItemMenus v-if="view === 'menus'" />
       <UModal v-model:open="manage" title="Item actions">
         <template #body
@@ -87,20 +80,6 @@
         </template>
       </UModal>
     </template>
-    <ItemSpec
-      v-if="
-        view === 'preparation' &&
-        storageKitchenId &&
-        dishId &&
-        outcome !== 'empty'
-      "
-    />
-    <FireDisclosurePanel
-      v-if="view === 'preparation' && dish"
-      title="Preparation requirements"
-      :default-open="false"
-      ><ItemPreparation
-    /></FireDisclosurePanel>
     <FireDisclosurePanel
       v-if="dish && canWrite"
       title="Item AI context"
@@ -128,22 +107,19 @@ import { useRoute, navigateTo } from '#imports'
 import { useItemDelete } from '../../../../composables/item/useItemDelete'
 import { useItemEditorScope } from '../../../../composables/item/useItemEditorScope'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import ItemSpec from '../Spec.vue'
 import ItemMenus from '../Menus.vue'
-import ItemPreparation from '../Preparation.vue'
-import { provideKitchenItemDetail } from '../../../../composables/item/useKitchenItemDetailContext'
-import { useKitchenItemRecord } from '../../../../composables/item/useKitchenItemRecord'
+import { provideKitchenItemContext } from '../../../../item/composables/useKitchenItemContext'
+import { useKitchenItemRead } from '../../../../item/composables/useKitchenItemRead'
 const {
-  dish,
-  dishId,
+  item: dish,
+  itemId: dishId,
   kitchenId,
-  storageKitchenId,
   pending,
   error,
   outcome,
   canWrite,
-} = provideKitchenItemDetail(
-  useKitchenItemRecord(
+} = provideKitchenItemContext(
+  useKitchenItemRead(
     () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
     useRouteParam('dishId')
   )
@@ -186,17 +162,10 @@ const menuReturn = computed(() =>
 )
 const views = [
   { id: 'details', label: 'Details', icon: 'i-lucide-info' },
-  { id: 'preparation', label: 'Preparation', icon: 'i-lucide-list-checks' },
   { id: 'menus', label: 'Appears on', icon: 'i-lucide-calendar-days' },
 ]
 const view = computed(() =>
-  route.query.view === 'pricing'
-    ? 'details'
-    : route.query.view === 'spec'
-      ? 'preparation'
-      : views.some((item) => item.id === route.query.view)
-        ? String(route.query.view)
-        : 'details'
+  route.query.view === 'menus' ? 'menus' : 'details'
 )
 </script>
 <style scoped>

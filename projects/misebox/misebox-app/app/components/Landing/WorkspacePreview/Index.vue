@@ -83,7 +83,7 @@
 <script setup lang="ts">
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import { computed, ref } from 'vue'
-import { kitchenCapabilities } from 'fireux-kitchens/runtime/kitchen/models/capabilities'
+import { workspacePreviewLinks } from '~/content/landing'
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
 import type { ItemChildPage } from '~/types/product-demo'
 import LandingWorkspacePreviewFinance from './Finance.vue'
@@ -91,7 +91,7 @@ import LandingWorkspacePreviewStations from './Stations.vue'
 import LandingWorkspacePreviewSuppliers from './Suppliers.vue'
 
 const { workspaceEntryHref, openWorkspace } = useWorkspaceEntryCta('kitchen')
-const operations = kitchenCapabilities
+const operations = workspacePreviewLinks
 const emptyFinance: MiseboxProductDemo['workspace']['finance'] = {
   periods: [],
 }

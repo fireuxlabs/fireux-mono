@@ -1,3 +1,4 @@
+import { ItemStorage } from '../../../../../../kitchen/item/storage'
 // Concurrent edit — 2026-07-22 00:38 CEST — Item image server: expose the authenticated canonical Item image mutation.
 import { useRuntimeConfig } from '#imports'
 import {
@@ -13,7 +14,7 @@ import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { readUploadedMultipartFile } from 'fireux-core/runtime/server/utils/uploads/multipart'
-import { ItemStorage } from '../../../../../../kitchen/utils/item.ts'
+
 import { normalizeAndSaveItemImage } from '../../../../../../kitchen/server/items/image.ts'
 import {
   requireKitchenWriter,

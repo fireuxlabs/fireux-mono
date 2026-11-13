@@ -1,4 +1,4 @@
-import { resolveAppPalette } from 'fireux-core/runtime/utils/brand-palette'
+import { resolveAppPalette } from 'fireux-core/runtime/utils/theme-palette'
 import {
   projectTemplateOneKitchen,
   type TemplateOneFlagshipItem,

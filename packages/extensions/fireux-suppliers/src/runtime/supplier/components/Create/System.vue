@@ -24,25 +24,19 @@
         <p class="fireux-dev-note__label">Developer Note</p>
         <ul data-dev-note-body class="fx-list-stack">
           <li>
-            The supplier mutation creates
-            <code>suppliers/&lt;id&gt;</code>.
+            One authenticated onboarding transaction creates or opens the
+            Supplier.
           </li>
           <li>
-            Workspace mode uses the authenticated Supplier onboarding
-            transaction to create or attach the root and its same-id App support
-            record.
+            The transaction establishes its Team member and membership-bound
+            access.
           </li>
           <li>
-            The transaction also updates the current AppUser Supplier target.
+            Workspace mode selects the Supplier after success; root mode leaves
+            selection unchanged.
           </li>
           <li>
-            Adds the current operator to supplier
-            <code>team_ids</code>
-            data when records are created.
-          </li>
-          <li>
-            Success routes to
-            <code>{{ successTo }}</code
+            Success routes to <code>{{ successTo }}</code
             >.
           </li>
         </ul>
@@ -67,7 +61,7 @@ import { computed } from 'vue'
 import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
-} from 'fireux-core/runtime/models/utils/entity-create.model'
+} from 'fireux-core/runtime/types/entity-create'
 import { useDiagnosticsUi } from 'fireux-core/runtime/composables/diagnostics/useDiagnosticsUi'
 import SupplierCreateWrite from './Write.vue'
 
@@ -95,14 +89,12 @@ const isWorkspaceMode = computed(() => resolvedMode.value === 'workspace')
 const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
 const developerNoteTitle = computed(() => 'Create Supplier')
 const headerTitle = computed(() =>
-  isWorkspaceMode.value
-    ? 'Create your supplier workspace'
-    : 'Create your public supplier'
+  isWorkspaceMode.value ? 'Create Supplier Workspace' : 'Create Supplier'
 )
 const headerDescription = computed(() =>
   isWorkspaceMode.value
-    ? 'We’ll create the supplier workspace for this app and create the public supplier only if it is missing.'
-    : 'We’ll create only the public Supplier root. Workspace onboarding owns App support and access.'
+    ? 'Create or open the Supplier and establish your access, then select it for this Workspace.'
+    : 'Create or open the Supplier and establish your access. Workspace selection happens later.'
 )
 const successTo = computed(() => {
   if (returnTo.value.startsWith('/')) return returnTo.value

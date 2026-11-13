@@ -1,10 +1,8 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
-import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
+import { readWorkspacePalette } from 'fireux-core/runtime/utils/theme-palette'
 import type { Kitchen, KitchenIdentitySource } from '../models/kitchen.model.ts'
-import {
-  KITCHEN_IDENTITY_SOURCES,
-  KITCHEN_STATUSES,
-} from '../models/kitchen.model.ts'
+const KITCHEN_IDENTITY_SOURCES = ['user', 'place'] as const
+const KITCHEN_STATUSES = ['active', 'inactive', 'archived'] as const
 import { weekdayTimeCore } from '../../utils/weekday-time-core.ts'
 
 function isRecord(value: unknown): value is Record<string, unknown> {

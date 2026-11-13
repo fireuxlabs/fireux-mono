@@ -1,13 +1,5 @@
 <template>
-  <div>
-    <WorkspaceKitchenResearchGuide
-      :capability="catalogue.itemKind === 'drink' ? 'drinks' : 'dishes'"
-    />
-    <WorkspaceKitchenResearchSegue
-      :capability="catalogue.title"
-      :base-path="`${catalogue.path}/search-demand`"
-    />
-  </div>
+  <div></div>
 </template>
 
 <script setup lang="ts">

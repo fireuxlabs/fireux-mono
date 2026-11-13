@@ -26,9 +26,16 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 | Menu             | Kitchen-scoped | One interactive or document Menu: name, slug, publication, audience and format |
 | MenuSection      | Menu-scoped    | Groups Item and meal-deal placements                                           |
 | MenuItem         | Section-scoped | Item or meal-deal reference, availability and display order                    |
-| Item             | Kitchen-scoped | Reusable identity, normal price, choices and preparation             |
+| Item             | Kitchen-scoped | Stable identity, name, optional description/photo and provenance               |
 | Promotion        | Kitchen-scoped | Item offers or meal deals with set price, choices and supplements              |
 | MenuSourceUpload | Kitchen-scoped | Source material awaiting review; not a published Menu                          |
+
+The Item identity foundation is `kitchen/item/models/model.ts`. Its reader and
+read adapter live in that same Item spine and retain the existing `dishes`
+collection path. They expose only identity; pricing/choices, preparation and
+Kitchen-selected presentation are separate responsibilities. Historical editor
+fields do not expand this canonical model. See the foundation reader tests in
+`src/test/kitchen/item/foundation.test.mjs`.
 
 `menu/models/menu.model.ts` is the sole stored Menu model.
 `menu/models/menu-storage.model.ts` owns `kitchens/{kitchenId}/menus/{menuId}`.
@@ -44,10 +51,10 @@ category, completeness filter, layout and page. Food and drink editors return to
 that combined catalogue through `kitchen/utils/item-catalogue-route.ts`; loading
 does not reset a restored page, and settled results clamp an obsolete page.
 `item-reader-internals.test.mjs` covers the round trip and delayed Kitchen/data
-resolution. Item detail has three views: Details combines identity and pricing; Preparation
-combines direct Station assignments, specification and disclosed requirements;
-Appears on shows Menu placements. Existing field editors and commands retain
-their domain responsibilities.
+resolution. Item detail has two views: Details and Appears on. Preparation specification,
+prep requirements and Station management belong to Prep & Production; the Menu
+Item route does not acquire their readers. Old preparation/spec view queries
+resolve to Details. Stored preparation data is not migrated or deleted.
 Removal stays under Item actions. Kind-specific editors retain their existing authority. Named services reference stable
 Menu IDs and own eligibility and serving schedules.
 
@@ -368,7 +375,7 @@ Start with:
 
 - Menu declaration and storage: `runtime/menu/models/menu.model.ts` and
   `runtime/menu/models/menu-storage.model.ts`.
-- Normal commercial terms: `runtime/kitchen/models/dish.model.ts` and
+- Normal commercial terms: `runtime/kitchen/item/models/model.ts` and
   `runtime/kitchen/utils/item-pricing.ts`.
 - Direct discovery: `runtime/menu/server/index/read.ts` and
   `src/test/menu-canonical-discovery.test.mjs`.
@@ -826,20 +833,19 @@ mounts one inline section editor at a time through `Sections/Inline.vue`, reusin
 its existing Menu record context and lower Section provider. Shared Item edits
 retain return-to-section intent. Standalone section links remain supported.
 
-Items carry direct preparation Station IDs independently from Menu sections and
-historical Food/Drink classification. There are no Item groups or inherited
-Station defaults. Missing assignment differs from explicit no preparation.
-The Items route provides its existing Station reader and trusted Item update
-command; historical group fields remain stored and unused. See
-`kitchen/server/stations/item-references.ts` and `PreparationStations.vue`.
+Historical Item records may retain direct preparation Station IDs. These remain
+stored independently of Menu placement; the Menu Item route no longer acquires
+Station readers or exposes preparation editing. Prep & Production owns the
+preparation surfaces. Trusted Station reference validation remains at
+`kitchen/server/stations/item-references.ts`; removing UI does not migrate data
+or remove server validation.
 
 Menu section rows link directly to the shared Kitchen Item editor, retaining the
 Menu slug and section for return navigation. The detail parent acquires the Item once and provides its live reader through
-`useKitchenItemDetailContext`; field and relationship children require that
+`useKitchenItemContext`; field and relationship children require that
 context. The Item's Appears on view retains its existing Menu/section readers,
 hides settled non-matches and links back to the inline builder (or the exact
-daily section). Historical Pricing and Specification view links resolve to
-Details and Preparation respectively. Shared Item
+daily section). Historical Pricing, Preparation and Specification view links resolve to Details. Shared Item
 identity, image and description edits apply wherever that Item is used; removal
 from a section is distinct from deleting the Item record.
 
@@ -873,3 +879,13 @@ creation, source preparation, record editing and QR presentation. State feedback
 uses Core FireState; the QR coordinator owns its combined read outcome and error
 facts without relabelling idle as pending. Menu Express does not own or duplicate
 this lower presentation or data lifecycle.
+
+## Kitchen Item read ownership
+
+Kitchen Item's one model is `kitchen/item/models/model.ts`. Its optional stamps
+represent missing historical provenance honestly; trusted Item creation still
+writes both creation and update stamps. `useKitchenItemRead` owns acquisition,
+Kitchen access gating and private normalization through Core's Firestore reader.
+`useKitchenItemContext` only shares that existing reader with detail children.
+There is no separate read-item adapter or `ReadableItem` contract. See
+`src/test/kitchen/item/foundation.test.mjs` and the Item UI scope tests.

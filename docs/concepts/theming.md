@@ -152,8 +152,9 @@ compatibility path also persist a sparse two-colour `brand_palette` on Place
 and Kitchen. Those are migration source, not the target ownership model,
 and must not be mistaken for Workspace or App palette authority. The
 existing gallery and public Place/business-card presentations may evolve, but
-they do not justify more Place theme fields yet. Place `Onboarding/BrandPalette` stays a
-coherent App-template value object, not a collection of colour atoms.
+they do not justify more Place theme fields yet. Place `Onboarding/BrandPalette` edits the two Place colour fields directly.
+Its picker defaults are local UI values; it has no inherited-palette API.
+Place reads select those fields directly and trusted commands validate writes.
 Presentation resolves dynamically from Place through Workspace and App layers;
 inherited values are not copied upward during onboarding. Current source
 keeps Place media backdrop separate from the Workspace/App palette work.
@@ -375,8 +376,14 @@ sources exist.
 
 ## Current source
 
-- Generic style vocabulary:
-  `packages/core/fireux-core/src/runtime/models/utils/style.model.ts`
+- Place-owned two-colour brand palette and validation:
+  `packages/extensions/fireux-places/src/runtime/place/models/place.model.ts`
+  and `runtime/place/utils/brand-palette.ts`
+- Core App/Workspace palette mechanics:
+  `packages/core/fireux-core/src/runtime/utils/theme-palette.ts`
+- App and Workspace theme contracts: `packages/core/fireux-core/src/types/theme.ts`
+- Misebox preview PageStyle: local to
+  `packages/ecosystem/fireux-misebox/src/runtime/models/template-one.ts`
 - Kitchen theme mutation/editor:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/theme.ts`
   and `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Appearance/Index.vue`

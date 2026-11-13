@@ -5,7 +5,6 @@
 // Concurrent edit — 2026-07-23 15:48 CEST — Separate the Kitchen acquisition promise from the focused Jobs doorway.
 import { defineFireuxMeta } from 'fireux-core/runtime/app/literature/define-meta'
 import { swissJobsLegalReview } from 'fireux-jobs/runtime/content/swiss-legal-review'
-import { kitchenCapabilities } from 'fireux-kitchens/runtime/kitchen/models/capabilities'
 import { miseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
 import { sourceMeta } from './content/meta/source'
 
@@ -138,7 +137,6 @@ export const metaContent = defineFireuxMeta({
     about_ticks: [...appMeta.aboutPanelTicks],
   },
   legal: { notices: [swissJobsLegalReview] },
-  operations: [...kitchenCapabilities],
   solutions: miseboxSolutions,
   entities: appMeta.entities.map((entity) => ({
     id: entity.name,

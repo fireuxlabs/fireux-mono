@@ -1,11 +1,9 @@
+import { ItemStorage } from '../../../../../kitchen/item/storage'
 import { createError, defineEventHandler, readBody } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { requireKitchenWriter } from '../../../../../kitchen/server/core/operator-access'
-import {
-  ItemStorage,
-  readLegacyItemKind,
-} from '../../../../../kitchen/utils/item'
+import { readLegacyItemKind } from '../../../../../kitchen/utils/item'
 
 const NOTES_MAX_LENGTH = 1_200
 const DESCRIPTION_MAX_LENGTH = 800

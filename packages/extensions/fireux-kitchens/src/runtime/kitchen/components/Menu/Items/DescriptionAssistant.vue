@@ -73,12 +73,17 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useItemUpdate } from '../../../composables/item/useItemUpdate'
-import { useKitchenItemDetail } from '../../../composables/item/useKitchenItemDetailContext'
+import { useKitchenItemContext } from '../../../item/composables/useKitchenItemContext'
 
 const { appId } = useFireUXConfig()
 const { currentUser } = useAuth()
 const toast = useToastify()
-const { dish, dishId, kitchenId, canWrite } = useKitchenItemDetail()
+const {
+  item: dish,
+  itemId: dishId,
+  kitchenId,
+  canWrite,
+} = useKitchenItemContext()
 const route = useRoute()
 const notes = ref('')
 const proposal = ref('')

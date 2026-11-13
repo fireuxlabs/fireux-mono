@@ -4,7 +4,7 @@ import {
   requireFirebaseStorageDownloadUrl,
   runtimeStorageBucketName,
 } from 'fireux-core/runtime/server/utils/uploads/storage'
-import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
+import { parseBrandPalette } from '../../../utils/brand-palette'
 import type { PlaceOnboardingDefaults } from '../../../models/place-onboarding.model.ts'
 import {
   normalizePlaceCurrencyCode,

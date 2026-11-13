@@ -1,10 +1,8 @@
-import {
-  type TemplateOneKitchenSpecimen,
-} from '../models/template-one'
+import { type TemplateOneKitchenSpecimen } from '../models/template-one'
 import {
   compactAppPalette,
   workspacePaletteFromApp,
-} from 'fireux-core/runtime/utils/brand-palette'
+} from 'fireux-core/runtime/utils/theme-palette'
 import type { AppPalette } from 'fireux-core/types/theme'
 export { createTemplateOneFixtureProjection } from '../utils/template-one-fixture-projection'
 

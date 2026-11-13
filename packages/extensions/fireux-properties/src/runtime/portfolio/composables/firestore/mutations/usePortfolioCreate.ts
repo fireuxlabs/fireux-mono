@@ -7,7 +7,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
-import type { FireuxEntityCreateResult } from 'fireux-core/runtime/models/utils/entity-create.model'
+import type { FireuxEntityCreateResult } from 'fireux-core/runtime/types/entity-create'
 import type { PortfolioCreateInput } from '../../../models/portfolio.model.ts'
 
 export function usePortfolioCreate() {

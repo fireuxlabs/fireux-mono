@@ -1,10 +1,8 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { requireFirebaseStorageDownloadUrl } from 'fireux-core/runtime/server/utils/uploads/storage'
-import {
-  normalizeHexColor,
-  parseBrandPalette,
-} from 'fireux-core/runtime/utils/brand-palette'
+import { normalizeHexColor } from 'fireux-core/runtime/utils/normalize-hex-color'
+import { parseBrandPalette } from '../../utils/brand-palette'
 import {
   normalizePlaceBusinessHours,
   normalizePlaceCurrencyCode,

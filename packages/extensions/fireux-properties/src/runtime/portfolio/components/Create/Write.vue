@@ -64,7 +64,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
-} from 'fireux-core/runtime/models/utils/entity-create.model'
+} from 'fireux-core/runtime/types/entity-create'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'

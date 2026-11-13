@@ -1,6 +1,5 @@
 <template>
   <div>
-    <WorkspaceKitchenAICapabilityInfo capability="finance" />
     <UDashboardToolbar>
       <template #left>
         <UFieldGroup size="sm" aria-label="Finance report period">
@@ -37,17 +36,11 @@
     </UDashboardToolbar>
     <section class="workspace-surface">
       <WorkspaceKitchenToolsToolbar capability="finance" />
-      <WorkspaceKitchenAICapability capability="finance" />
-      <WorkspaceKitchenResearchCapabilitySummary capability="finance" />
+
       <KitchenFinanceNav />
       <KitchenFinanceOverview
         :from-date="calendarRange.start.toString()"
         :to-date="calendarRange.end.toString()"
-      />
-      <WorkspaceKitchenResearchGuide capability="finance" />
-      <WorkspaceKitchenResearchSegue
-        capability="Sales"
-        base-path="/workspace/kitchen/reports/finance/search-demand"
       />
     </section>
   </div>

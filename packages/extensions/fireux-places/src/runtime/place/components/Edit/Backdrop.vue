@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
+import { normalizeHexColor } from 'fireux-core/runtime/utils/normalize-hex-color'
 import { computed } from 'vue'
 import type { PlaceMutationAuthority } from '../../composables/firestore/mutations/usePlaceUpdate'
 import { usePlaceUpdate } from '../../composables/firestore/mutations/usePlaceUpdate'

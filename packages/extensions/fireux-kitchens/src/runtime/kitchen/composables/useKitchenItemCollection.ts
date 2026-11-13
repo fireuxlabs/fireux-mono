@@ -1,9 +1,10 @@
+import { ItemStorage } from '../item/storage'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
-import { ItemStorage, normalizeItem, type Item } from '../utils/item.ts'
+import { normalizeItem, type Item } from '../utils/item.ts'
 import { resolveKitchenChildCollectionBasePath } from '../utils/kitchen-collection-path'
 
 const resolveItemsPath = (kitchenCollectionPath: string, kitchenId: string) =>

@@ -12,7 +12,7 @@ import { useKitchenWorkspace } from './useKitchenWorkspace'
 import {
   kitchenIdentityPurpose,
   kitchenIdentityBoundary,
-} from '../../models/identity-intent'
+} from '../../content/identity-intent'
 export function useKitchenWorkspaceIdentity() {
   const workspace = useKitchenWorkspace()
   const { currentUser } = useAuth()

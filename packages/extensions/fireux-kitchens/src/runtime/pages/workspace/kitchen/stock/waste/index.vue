@@ -1,14 +1,10 @@
 <template>
   <div>
-    <WorkspaceKitchenAICapabilityInfo capability="waste" />
     <section class="workspace-surface">
       <KitchenWasteTools />
-      <KitchenWasteAI />
+
       <KitchenWaste />
-      <WorkspaceKitchenResearchSegue
-        capability="Waste"
-        base-path="/workspace/kitchen/stock/waste/search-demand"
-      />
+
       <KitchenWasteInspection v-if="isDevelopment" />
     </section>
   </div>

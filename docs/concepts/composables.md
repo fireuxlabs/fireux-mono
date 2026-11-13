@@ -45,7 +45,7 @@ not justify another adapter.
 
 | Role                   | Conventional file                                 | Admission condition                                               |
 | ---------------------- | ------------------------------------------------- | ----------------------------------------------------------------- |
-| Canonical data         | `models/x.model.ts`                               | A distinct domain shape is consumed                               |
+| Canonical data         | `models/model.ts`                                 | A distinct domain shape is consumed                               |
 | Live collection        | `composables/useXCollection.ts`                   | Consumers need a scoped list                                      |
 | Direct live record     | `composables/useXRead.ts`                         | Consumers need canonical document binding                         |
 | Routable live record   | `composables/useXDetail.ts`                       | Route resolution, server scope or joins add a real responsibility |
@@ -70,6 +70,21 @@ Before adding or retaining a file, check those four facts against source. If it
 only forwards, renames or repeats an existing owner, remove it and move callers
 to that owner. Move registration and imports together; leave no forwarding alias.
 File count alone proves neither alignment nor complexity.
+
+### Names describe responsibility
+
+- `use<Entity>Read` acquires a live record and owns its exact scope, access gating
+  and domain normalization. Reuse Core transport instead of adding another listener.
+- `use<Entity>Context` only provides/injects an already-owned instance to children.
+  It must not silently acquire another record or grant authority.
+- `normalize<Entity>` selects and normalizes fields. Keep it private beside its
+  reader unless independent consumers prove that it needs a separate owner.
+- The Entity model describes the record consumers can actually receive. Do not
+  manufacture a second `Readable<Entity>` shape merely to mask absent fields;
+  trusted creation commands independently enforce required creation data.
+
+Kitchen Item applies these names in `kitchen/item/composables`. Existing family
+names require review by responsibility; this is not a blanket rename instruction.
 
 ### Verification boundary
 

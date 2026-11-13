@@ -66,7 +66,7 @@ import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWo
 const workspace = useKitchenWorkspace()
 const selectedKitchen = workspace.data
 import { computed, ref, watch } from 'vue'
-import { useKitchenItemDetail } from '../../../composables/item/useKitchenItemDetailContext'
+import { useKitchenItemContext } from '../../../item/composables/useKitchenItemContext'
 import { useItemUpdate } from '../../../composables/item/useItemUpdate'
 import { useItemEditorScope } from '../../../composables/item/useItemEditorScope'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
@@ -80,7 +80,12 @@ import {
   priceItemChoices,
 } from '../../../utils/item-choices'
 import { normalizeItemPricingPatch } from '../../../utils/item-pricing'
-const { dish, dishId, kitchenId, canWrite } = useKitchenItemDetail()
+const {
+  item: dish,
+  itemId: dishId,
+  kitchenId,
+  canWrite,
+} = useKitchenItemContext()
 const currency = computed(() => readPlaceCurrencyCode(selectedKitchen.value))
 const price = ref<string | number>('')
 const groups = ref<ItemChoiceGroup[]>([])

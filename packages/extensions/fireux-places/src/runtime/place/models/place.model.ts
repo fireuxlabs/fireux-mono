@@ -1,5 +1,4 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 
 export type PlaceType = 'physical' | 'non_physical'
 
@@ -71,7 +70,10 @@ export type Place = {
   website: string
   google_maps_url: string
   social_links: PlaceSocialLinks
-  brand_palette: SparseBrandPalette
+  brand_palette: {
+    primary_color?: string
+    secondary_color?: string
+  }
   place_type: PlaceType
   types: string[]
   tags: string[]

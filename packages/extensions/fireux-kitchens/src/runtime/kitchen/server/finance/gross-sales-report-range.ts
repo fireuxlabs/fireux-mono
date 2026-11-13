@@ -2,7 +2,7 @@ import { Timestamp } from 'firebase-admin/firestore'
 import {
   KitchenFinanceReportPeriodDays,
   type KitchenFinanceReportPeriod,
-} from '../../models/finance-report.model.ts'
+} from '../../utils/finance-report-periods'
 import {
   KITCHEN_GROSS_SALES_REPORT_MAX_DAYS,
   MAX_PERIOD_MS,

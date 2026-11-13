@@ -2,7 +2,10 @@ import { refreshNuxtData } from 'nuxt/app'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useMembershipAccess } from 'fireux-core/runtime/app/app-user/composables/useMembershipAccess'
 import { blankAccessCollection } from '../../../../utils/blank-access'
-import { computed, unref, type Ref } from 'vue'
+import { computed, ref, unref, watch, type Ref, type WatchSource } from 'vue'
+import { useRoute } from '#imports'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
@@ -72,10 +75,41 @@ export function useBlankDocsByIds(ids: BlankIdInput) {
   }
 }
 
-export function useBlankCreate() {
+export function useBlankCreate(ownerSources: WatchSource[] = []) {
+  const { currentUser } = useAuth()
+  const session = useAppSession()
+  const config = useFireUXConfig()
+  const route = useRoute()
+  const sources = [
+    currentUser,
+    session.appUser,
+    () => config.appId,
+    () => route.fullPath,
+    ...ownerSources,
+  ]
+  const captureIntent = useCommandScope(sources)
+  const scopeEpoch = ref(0)
+  watch(
+    sources,
+    () => {
+      scopeEpoch.value += 1
+    },
+    { flush: 'sync' }
+  )
   async function createBlank(input: CreateBlankInput = {}) {
+    const body = { name: text(input.name) || 'Blank target' }
+    const uid = currentUser.value?.uid
+    const isCurrent = captureIntent()
+    const assertCurrent = () => {
+      if (!uid || currentUser.value?.uid !== uid || !isCurrent())
+        throw new Error('Blank creation context changed. Try again.')
+    }
+    assertCurrent()
     const user = await useRequireUser()
+    assertCurrent()
+    if (user.uid !== uid) throw new Error('The account changed. Try again.')
     const token = await user.getIdToken()
+    assertCurrent()
     return $fetch<{
       ok: true
       id: string
@@ -92,11 +126,13 @@ export function useBlankCreate() {
       },
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
-      body: { name: text(input.name) || 'Blank target' },
+      body,
     })
   }
 
   return {
     createBlank,
+    captureIntent,
+    scopeEpoch,
   }
 }

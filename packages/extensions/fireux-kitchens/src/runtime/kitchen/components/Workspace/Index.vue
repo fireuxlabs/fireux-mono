@@ -60,7 +60,7 @@ import { workspaceLandingState } from 'fireux-core/runtime/workspace/utils/landi
 import {
   kitchenLandingDestinations,
   type KitchenLandingIntent,
-} from '../../models/landing-intent'
+} from '../../content/landing-intent'
 import { useKitchenCreate } from '../../composables/useKitchenCreate'
 import { useKitchenAnonymousAdoption } from '../../composables/workspace/useKitchenAnonymousAdoption'
 import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'

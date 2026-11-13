@@ -1306,6 +1306,13 @@ Kitchen, Project, Supplier, Property and Portfolio Landing Index components
 compose named `Home/Collection` and `Home/Single` children inside
 `WorkspaceCapability`. Each keeps its `useXWorkspace` selection controller,
 which consumes `useWorkspace`; there is no extra `useIndex` forwarding layer.
+Blank creation snapshots its submitted name before credentials and rechecks
+account, App, membership, route and caller intent before dispatch. Its form
+shares that intent for selection, navigation and pending/error feedback; an
+obsolete completion cannot affect a newer attempt. The trusted onboarding
+transaction retains root, Team and membership-bound access authority. See
+`projects/fireux/fireux-blank/test/blank-create-intent.test.mjs`.
+
 Blank composes its named Home/Collection and Home/Single children into the same
 collection/focus positions. Domain cards and creation doorways remain local.
 The Supplier, Property and Portfolio App routes and tools no longer consume the

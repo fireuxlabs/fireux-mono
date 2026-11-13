@@ -1,6 +1,5 @@
 <template>
   <div>
-    <WorkspaceKitchenAICapabilityInfo capability="costs" />
     <section class="workspace-surface">
       <UPageHeader title="Food costs" />
       <UAlert
@@ -9,28 +8,6 @@
         color="warning"
         variant="subtle"
       />
-      <FireDisclosurePanel
-        title="Capability reference"
-        :default-open="false"
-      >
-        <WorkspaceKitchenToolsToolbar capability="costs" />
-        <WorkspaceKitchenAICapability
-          capability="costs"
-          :show-suggestion-cards="false"
-        />
-        <WorkspaceKitchenResearchCapabilitySummary capability="costs" />
-        <UAlert
-          color="neutral"
-          variant="soft"
-          title="Cost evidence is derived"
-          description="This doorway does not claim profit or accounting measures. Cost reporting becomes available only from authoritative Recipe, Ingredient, purchase-price, and activity records."
-        />
-        <WorkspaceKitchenResearchGuide capability="costs" />
-        <WorkspaceKitchenResearchSegue
-          capability="Costs"
-          base-path="/workspace/kitchen/reports/costs/search-demand"
-        />
-      </FireDisclosurePanel>
     </section>
   </div>
 </template>

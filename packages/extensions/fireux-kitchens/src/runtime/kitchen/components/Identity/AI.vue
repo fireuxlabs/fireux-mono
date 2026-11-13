@@ -31,7 +31,7 @@ import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import type { KitchenIdentityIntent } from '../../models/identity-intent'
+import type { KitchenIdentityIntent } from '../../content/identity-intent'
 import type { useKitchenWorkspaceIdentity } from '../../composables/workspace/useKitchenWorkspaceIdentity'
 const props = defineProps<{
   identity: ReturnType<typeof useKitchenWorkspaceIdentity>

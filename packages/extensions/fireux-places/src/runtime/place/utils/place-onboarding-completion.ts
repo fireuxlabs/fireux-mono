@@ -1,4 +1,4 @@
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
+import type { Place } from '../models/place.model'
 import type {
   PlaceOnboardingCompleteInput,
   PlaceUpsertInput,
@@ -17,7 +17,7 @@ interface PlaceOnboardingCompletionOptions {
   requiredOnly?: boolean
   currencyCode: string
   timezone: string
-  brandPalette: SparseBrandPalette
+  brandPalette: Place['brand_palette']
   imageFile: File | null
   coverFile: File | null
   ensurePlaceExists: (input: { id: string }) => Promise<unknown>
@@ -44,9 +44,7 @@ export async function completePlaceDraft({
   const draft = originalDraft
     ? (JSON.parse(JSON.stringify(originalDraft)) as PlaceUpsertInput)
     : null
-  const brandPalette = JSON.parse(
-    JSON.stringify(originalPalette)
-  ) as SparseBrandPalette
+  const brandPalette = { ...originalPalette }
   const id = canonicalPlaceId(draft?.id)
   if (!id) throw new Error('Choose a Place before continuing.')
 

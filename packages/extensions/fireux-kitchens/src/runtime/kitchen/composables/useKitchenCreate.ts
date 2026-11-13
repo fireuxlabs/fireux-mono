@@ -10,7 +10,7 @@ import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import type { FireuxEntityCreateResult } from 'fireux-core/runtime/models/utils/entity-create.model'
+import type { FireuxEntityCreateResult } from 'fireux-core/runtime/types/entity-create'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { usePlaceCreate } from 'fireux-places/runtime/place/composables/firestore/mutations/usePlaceCreate'
 import type {

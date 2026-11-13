@@ -1,6 +1,5 @@
 <template>
   <div>
-    <WorkspaceKitchenAICapabilityInfo capability="purchasing" />
     <section class="workspace-surface">
       <UPageHeader title="Purchase orders" />
       <UAlert
@@ -9,22 +8,6 @@
         color="warning"
         variant="subtle"
       />
-      <FireDisclosurePanel
-        title="Capability reference"
-        :default-open="false"
-      >
-        <WorkspaceKitchenToolsToolbar capability="purchasing" />
-        <WorkspaceKitchenAICapability
-          capability="purchasing"
-          :show-suggestion-cards="false"
-        />
-        <WorkspaceKitchenResearchCapabilitySummary capability="purchasing" />
-        <WorkspaceKitchenResearchGuide capability="purchasing" />
-        <WorkspaceKitchenResearchSegue
-          capability="Purchasing"
-          base-path="/workspace/kitchen/stock/purchasing/search-demand"
-        />
-      </FireDisclosurePanel>
     </section>
   </div>
 </template>

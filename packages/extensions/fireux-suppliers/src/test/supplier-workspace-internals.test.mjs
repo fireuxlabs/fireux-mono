@@ -30,6 +30,7 @@ import { normalizeSupplier } from '../runtime/supplier/utils/normalize-supplier.
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestore-document-id.ts'
 import { normalizeString } from '../../../../core/fireux-core/src/runtime/utils/normalize-string.ts'
+import { normalizeHexColor } from '../../../../core/fireux-core/src/runtime/utils/normalize-hex-color.ts'
 
 function load(file, result, deps = {}) {
   let source = readFileSync(new URL(file, import.meta.url), 'utf8')
@@ -61,7 +62,7 @@ const normalizePlace = load(
   'normalizePlace',
   {
     isFirestoreDocumentId,
-    readBrandPalette: () => ({}),
+    normalizeHexColor,
     normalizePlaceBusinessHours: () => null,
     readMediaBackdropColor: () => '',
   }
@@ -318,7 +319,8 @@ function deferred() {
   })
   return { promise, resolve }
 }
-function createHarness() {
+function createHarness(controllerOptions = {}) {
+  let credentialRequests = 0
   const credentials = deferred(),
     token = deferred(),
     response = deferred(),
@@ -333,14 +335,18 @@ function createHarness() {
   const api = scope.run(() =>
     load(
       '../runtime/supplier/composables/firestore/mutations/useSupplierCreate.ts',
-      'useSupplierCreate()',
+      'useSupplierCreate(controllerOptions)',
       {
+        controllerOptions,
         useCommandScope,
         useAuth: () => ({ currentUser }),
         useAppSession: () => ({ appUser }),
         useFireUXConfig: () => config,
         useRoute: () => route,
-        useRequireUser: () => credentials.promise,
+        useRequireUser: () => {
+          credentialRequests += 1
+          return credentials.promise
+        },
         isFirestoreDocumentId,
         normalizeSlug,
         $fetch: (url, options) => {
@@ -368,6 +374,9 @@ function createHarness() {
     result,
     user,
     credentials,
+    get credentialRequests() {
+      return credentialRequests
+    },
     token,
     response,
     calls,
@@ -488,7 +497,8 @@ test('Supplier creation preserves an exact existing document ID for idempotent o
   h.scope.stop()
 })
 
-test('Supplier Create passes its full draft scope into the command and suppresses obsolete success feedback', async () => {
+function createFormHarness(input = {}) {
+  const props = reactive(input)
   const scope = effectScope(),
     currentUser = ref({ uid: 'actor' }),
     session = { appUser: ref({}) },
@@ -510,7 +520,7 @@ test('Supplier Create passes its full draft scope into the command and suppresse
         useFireUXConfig: () => ({ appId: 'app' }),
         useRoute: () => route,
         useRouter: () => ({ push: (path) => effects.push(path) }),
-        defineProps: () => ({}),
+        defineProps: () => props,
         defineEmits:
           () =>
           (...args) =>
@@ -523,22 +533,98 @@ test('Supplier Create passes its full draft scope into the command and suppresse
             submitted = options
             return flight.promise
           },
-          createSupplier() {},
         }),
       }
     )
   )
+  return {
+    state,
+    scope,
+    flight,
+    effects,
+    props,
+    get submitted() {
+      return submitted
+    },
+  }
+}
+
+test('Supplier Create passes its full draft scope into the command and suppresses obsolete success feedback', async () => {
+  const h = createFormHarness()
+  const { state, scope, flight, effects } = h
   state.organizationName.value = 'Original'
   state.businessId.value = 'Business-A'
   const pending = state.handleCreate()
-  assert.equal(typeof submitted.isCurrent, 'function')
-  assert.equal(submitted.isCurrent(), true)
+  assert.equal(typeof h.submitted.isCurrent, 'function')
+  assert.equal(h.submitted.isCurrent(), true)
   state.businessId.value = 'Business-B'
-  assert.equal(submitted.isCurrent(), false)
+  assert.equal(h.submitted.isCurrent(), false)
   flight.resolve({ id: 'original', createdRoot: true, createdTeamMember: true })
   await pending
   assert.deepEqual(effects, [])
   assert.equal(state.isCreating.value, false)
   assert.equal(state.errorMessage.value, null)
   scope.stop()
+})
+
+test('Supplier creation rejects unsupported Test writes without credentials or dispatch', async () => {
+  const h = createHarness({ test: true })
+  try {
+    await assert.rejects(
+      h.api.createSupplierWorkspace(h.options),
+      /Supplier Test writes are unsupported/
+    )
+    assert.deepEqual(h.calls, [])
+    assert.equal(h.credentialRequests, 0)
+  } finally {
+    h.scope.stop()
+  }
+})
+
+for (const mode of ['root', 'workspace']) {
+  test(`Supplier ${mode} mode uses the single command and preserves selection/navigation`, async () => {
+    const h = createFormHarness({ mode })
+    try {
+      h.state.organizationName.value = 'Original'
+      h.state.businessId.value = 'Business-A'
+      const pending = h.state.handleCreate()
+      assert.equal(h.submitted.organizationName, 'Original')
+      assert.equal(h.submitted.businessId, 'Business-A')
+      const result = {
+        id: 'original',
+        createdRoot: true,
+        createdTeamMember: true,
+      }
+      h.flight.resolve(result)
+      await pending
+      assert.deepEqual(h.effects, [
+        ...(mode === 'workspace' ? ['original'] : []),
+        ['created', result],
+        mode === 'workspace' ? '/workspace/supplier' : '/suppliers',
+      ])
+    } finally {
+      h.scope.stop()
+    }
+  })
+}
+
+test('Supplier form preserves the explicit create callback and return destination', async () => {
+  const result = { id: 'custom', createdRoot: false, createdTeamMember: false }
+  let calls = 0
+  const h = createFormHarness({
+    mode: 'root',
+    returnTo: '/custom-return',
+    create: async () => {
+      calls++
+      return result
+    },
+  })
+  try {
+    await h.state.handleCreate()
+    assert.equal(calls, 1)
+    assert.equal(h.submitted, undefined)
+    assert.deepEqual(h.effects, [['created', result], '/custom-return'])
+  } finally {
+    h.scope.stop()
+  }
 })

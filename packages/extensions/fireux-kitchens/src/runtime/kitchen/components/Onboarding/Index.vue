@@ -145,7 +145,7 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from '#imports'
-import type { FireuxEntityCreateMode } from 'fireux-core/runtime/models/utils/entity-create.model'
+import type { FireuxEntityCreateMode } from 'fireux-core/runtime/types/entity-create'
 import type { PlaceOnboardingResult } from 'fireux-places/runtime/place/composables/usePlaceOnboarding'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useKitchenOnboarding } from '../../composables/useKitchenOnboarding'

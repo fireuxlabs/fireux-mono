@@ -46,10 +46,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import ItemMenu from './Menu.vue'
-import { useKitchenItemDetail } from '../../../composables/item/useKitchenItemDetailContext'
+import { useKitchenItemContext } from '../../../item/composables/useKitchenItemContext'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
-const { kitchenId, dishId, storageKitchenId, rootCollection, databaseId } =
-  useKitchenItemDetail()
+const {
+  kitchenId,
+  itemId: dishId,
+  storageKitchenId,
+  rootCollection,
+  databaseId,
+} = useKitchenItemContext()
 const { activeMenus, pending, error } = useKitchenMenuCollection(
   storageKitchenId,
   {

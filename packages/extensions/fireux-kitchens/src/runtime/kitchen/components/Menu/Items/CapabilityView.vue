@@ -1,8 +1,4 @@
-<template>
-  <WorkspaceKitchenResearchCapabilitySummary
-    :capability="catalogue.itemKind === 'drink' ? 'drinks' : 'dishes'"
-  />
-</template>
+<template></template>
 
 <script setup lang="ts">
 import { useKitchenItemsContext } from '../../../composables/workspace/items/useKitchenItemsContext'

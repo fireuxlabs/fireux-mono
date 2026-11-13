@@ -75,10 +75,10 @@ test('Price & choices reads legacy Items without writes, saves a detached explic
       normalizeItemPricingPatch,
       useKitchenWorkspace: () => ({ data: Vue.ref({}) }),
       readPlaceCurrencyCode: () => 'CHF',
-      useKitchenItemDetail: () => ({
-        dish,
+      useKitchenItemContext: () => ({
+        item: dish,
         kitchenId: Vue.ref('k'),
-        dishId: Vue.ref('i'),
+        itemId: Vue.ref('i'),
         canWrite: Vue.ref(true),
       }),
       useItemEditorScope: () => () => () => true,

@@ -27,7 +27,7 @@ import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables
 import type { WorkspaceIntro } from 'fireux-core/runtime/workspace/models/capability-context'
 import WorkspaceKitchen from 'fireux-kitchens/runtime/kitchen/components/Workspace/Index.vue'
 import { useKitchenWorkspace } from 'fireux-kitchens/runtime/kitchen/composables/workspace/useKitchenWorkspace'
-import type { KitchenLandingIntent } from 'fireux-kitchens/runtime/kitchen/models/landing-intent'
+import type { KitchenLandingIntent } from 'fireux-kitchens/runtime/kitchen/content/landing-intent'
 import { kitchenWorkspaceIntro } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-workspace-intro'
 
 const workspace = useKitchenWorkspace()

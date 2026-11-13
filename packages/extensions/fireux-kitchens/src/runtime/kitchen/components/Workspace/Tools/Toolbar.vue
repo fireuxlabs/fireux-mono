@@ -1,40 +1,33 @@
 <template>
   <KitchenPrepAndProductionStationsTools v-if="capability === 'stations'" />
-
-  <section
-    v-else-if="tools.length"
-    class="workspace-surface workspace-surface--compact"
-    :aria-labelledby="`${capability}-tools-title`"
-  >
-    <UCard :description="`${title} actions`">
-      <template #title
-        ><h2 :id="`${capability}-tools-title`">Tools</h2></template
-      >
-      <div class="fx-card__actions">
-        <UButton
-          v-for="tool in tools"
-          :key="tool.id"
-          :label="tool.label"
-          icon="i-lucide-plus"
-          size="sm"
-          @click="performAction(tool.id)"
-        />
-      </div>
-    </UCard>
-  </section>
+  <UButton
+    v-else-if="action"
+    :to="action.to"
+    :label="action.label"
+    icon="i-lucide-plus"
+  />
 </template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenCapabilitySlug } from '../../../models/capability-tools'
-import { kitchenCapabilities } from '../../../models/capabilities'
-import { useKitchenCapabilityTools } from '../../../composables/workspace/useKitchenCapabilityTools'
-
-const props = defineProps<{ capability: KitchenCapabilitySlug }>()
-const { tools, performAction } = useKitchenCapabilityTools(props.capability)
-const title = computed(
-  () =>
-    kitchenCapabilities.find((entry) => entry.slug === props.capability)
-      ?.title || props.capability
-)
+const props = defineProps<{ capability: string }>()
+const actions: Record<string, { label: string; to: string }> = {
+  menus: { label: 'Create Menu', to: '/workspace/kitchen/menu/menus?create=1' },
+  dishes: {
+    label: 'Create Item',
+    to: '/workspace/kitchen/menu/items?create=food',
+  },
+  drinks: {
+    label: 'Create Drink',
+    to: '/workspace/kitchen/menu/items?create=drink',
+  },
+  ingredients: {
+    label: 'Add Ingredient',
+    to: '/workspace/kitchen/prep/ingredients/add',
+  },
+  recipes: {
+    label: 'Create Recipe',
+    to: '/workspace/kitchen/prep/recipes?create=1',
+  },
+}
+const action = computed(() => actions[props.capability])
 </script>

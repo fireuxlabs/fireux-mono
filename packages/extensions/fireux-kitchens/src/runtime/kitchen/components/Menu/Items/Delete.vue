@@ -55,9 +55,14 @@ import { useItemEditorScope } from '../../../composables/item/useItemEditorScope
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenItemDetail } from '../../../composables/item/useKitchenItemDetailContext'
+import { useKitchenItemContext } from '../../../item/composables/useKitchenItemContext'
 
-const { dish, dishId, kitchenId, canWrite } = useKitchenItemDetail()
+const {
+  item: dish,
+  itemId: dishId,
+  kitchenId,
+  canWrite,
+} = useKitchenItemContext()
 
 const {
   usages,

@@ -224,10 +224,10 @@ test('delete does not navigate or toast after record changes, including same-tic
         ready: ref(true),
         error: ref(null),
       }),
-      useKitchenItemDetail: () => ({
+      useKitchenItemContext: () => ({
         kitchenId: h.kitchenId,
-        dishId: h.dishId,
-        dish: ref({ name: 'Pizza' }),
+        itemId: h.dishId,
+        item: ref({ name: 'Pizza' }),
         canWrite: ref(true),
         catalogue: { singular: 'dish', path: '/dishes' },
       }),
@@ -258,11 +258,11 @@ test('description proposal snapshots its body and never dispatches after focus c
         ...h.deps,
         useAuth: () => ({ currentUser: h.currentUser }),
         useFireUXConfig: () => ({ appId: 'app' }),
-        useKitchenItemDetail: () => ({
+        useKitchenItemContext: () => ({
           kitchenId: h.kitchenId,
-          dishId: h.dishId,
+          itemId: h.dishId,
           canWrite: ref(true),
-          dish: ref({}),
+          item: ref({}),
           catalogue: {},
         }),
         useItemUpdate: () => ({ updateItem: async () => {} }),
@@ -326,8 +326,8 @@ test('record edit ignores old failures and spec saves a detached payload', async
     rootCollection: ref('kitchens'),
     databaseId: ref('db'),
     kitchenId: h.kitchenId,
-    dishId: h.dishId,
-    dish: ref({ name: 'Pizza' }),
+    itemId: h.dishId,
+    item: ref({ name: 'Pizza' }),
     canWrite: ref(true),
     catalogue: { singular: 'dish' },
   }
@@ -336,7 +336,7 @@ test('record edit ignores old failures and spec saves a detached payload', async
     {
       ...h.deps,
       useAuth: () => ({ currentUser: h.currentUser }),
-      useKitchenItemDetail: () => identity,
+      useKitchenItemContext: () => identity,
       useItemUpdate: () => ({ updateItem: () => pending.promise }),
       useItemImageUpload: () => ({ uploadItemImage: async () => {} }),
     },
@@ -349,40 +349,6 @@ test('record edit ignores old failures and spec saves a detached payload', async
   pending.reject(Error('Stale'))
   await result
   assert.deepEqual(h.notices, [])
-  const second = deferred(),
-    calls = []
-  const spec = evaluate(
-    component('Menu/Items/Spec'),
-    {
-      ...h.deps,
-      useRoute: () => ({ query: {} }),
-      useKitchenItemDetail: () => identity,
-      useKitchenIngredients: () => ({ ingredients: ref([]), error: ref(null) }),
-      useKitchenPrepItems: () => ({ prepItems: ref([]), error: ref(null) }),
-      useKitchenRecipeCollection: () => ({
-        recipes: ref([]),
-        error: ref(null),
-      }),
-      useKitchenPrepItemCreate: () => ({ createPrepItem: async () => {} }),
-      useItemUpdate: () => ({
-        updateItem: (...args) => {
-          calls.push(args)
-          return second.promise
-        },
-      }),
-    },
-    '({toggle,save,draft,error,editing,saving})',
-    true
-  )
-  spec.toggle()
-  const saved = spec.save()
-  spec.draft.value.portion = 99
-  assert.equal(calls[0][1].spec.portion, 1)
-  h.dishId.value = 'other'
-  second.reject(Error('Stale'))
-  await saved
-  assert.equal(spec.error.value, '')
-  assert.equal(spec.saving.value, false)
 })
 test('Surviving Item route completes its live removal but rejects external intent', async () => {
   for (const change of ['own-live', 'account', 'kitchen', 'route', 'dispose']) {
@@ -390,6 +356,7 @@ test('Surviving Item route completes its live removal but rejects external inten
       pending = deferred(),
       dish = ref({ id: 'dish', name: 'Pizza' }),
       routePath = ref('/dishes/dish'),
+      routeView = ref('preparation'),
       navigations = [],
       disposed = []
     const useItemEditorScope = evaluate(
@@ -410,16 +377,18 @@ test('Surviving Item route completes its live removal but rejects external inten
         ...h.deps,
         useItemEditorScope,
         useRoute: () => ({
-          query: {},
+          get query() {
+            return { view: routeView.value }
+          },
           get fullPath() {
             return routePath.value
           },
         }),
         navigateTo: async (x) => navigations.push(x),
-        provideKitchenItemDetail: (detail) => detail,
-        useKitchenItemRecord: () => ({
-          dish,
-          dishId: h.dishId,
+        provideKitchenItemContext: (detail) => detail,
+        useKitchenItemRead: () => ({
+          item: dish,
+          itemId: h.dishId,
           kitchenId: h.kitchenId,
           pending: ref(false),
           canWrite: ref(true),
@@ -427,9 +396,20 @@ test('Surviving Item route completes its live removal but rejects external inten
         }),
         useItemDelete: () => ({ deleteItem: () => pending.promise }),
       },
-      '({removeItem})',
+      '({removeItem,views,view})',
       true
     )
+    assert.deepEqual(
+      api.views.map((view) => view.id),
+      ['details', 'menus']
+    )
+    for (const legacy of ['preparation', 'spec', 'pricing']) {
+      routeView.value = legacy
+      assert.equal(api.view.value, 'details')
+    }
+    routeView.value = 'menus'
+    assert.equal(api.view.value, 'menus')
+
     const result = api.removeItem()
     dish.value = null
     if (change === 'account') {
@@ -473,10 +453,10 @@ for (const state of ['loading', 'error', 'referenced']) {
           ready: ref(state === 'referenced'),
           error: ref(state === 'error' ? Error('Unavailable') : null),
         }),
-        useKitchenItemDetail: () => ({
+        useKitchenItemContext: () => ({
           kitchenId: h.kitchenId,
-          dishId: h.dishId,
-          dish: ref({ name: 'Pizza' }),
+          itemId: h.dishId,
+          item: ref({ name: 'Pizza' }),
           canWrite: ref(true),
           catalogue: { singular: 'dish' },
         }),

@@ -1,3 +1,4 @@
+import { ItemStorage } from '../runtime/kitchen/item/storage.ts'
 import { readItemReferenceIds } from '../runtime/kitchen/utils/item-preparation.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import {
@@ -15,13 +16,11 @@ import { stripTypeScriptTypes } from 'node:module'
 import {
   compile,
   computed,
-  createRenderer,
   createSSRApp,
   effectScope,
   h,
   inject,
   nextTick,
-  onUnmounted,
   provide,
   reactive,
   ref,
@@ -49,9 +48,9 @@ function load(path, result, deps) {
     Object.keys(deps)
   )(...Object.values(deps))
 }
-const { ItemStorage, normalizeItem, normalizeLegacyItemKind } = load(
+const { normalizeItem, normalizeLegacyItemKind } = load(
   'kitchen/utils/item.ts',
-  '({ ItemStorage, normalizeItem, normalizeLegacyItemKind })',
+  '({ normalizeItem, normalizeLegacyItemKind })',
   { readItemReferenceIds, ...itemPricingHelpers }
 )
 const { resolveKitchenChildCollectionBasePath } = load(
@@ -350,8 +349,8 @@ test('Item record route stays reactive across both kinds while catalogues retain
     id = ref('soup'),
     access = { ...f.access, outcome: ref('ready') }
   const use = load(
-    'kitchen/composables/item/useKitchenItemRecord.ts',
-    'useKitchenItemRecord',
+    'kitchen/item/composables/useKitchenItemRead.ts',
+    'useKitchenItemRead',
     {
       computed,
       toValue,
@@ -369,18 +368,18 @@ test('Item record route stays reactive across both kinds while catalogues retain
     )
   )
   assert.equal(f.path, 'kitchens/mine/dishes/soup')
-  assert.equal(record.dish.value.name, 'Soup')
+  assert.equal(record.item.value.name, 'Soup')
   assert.equal(
     context.dishes.value.some((dish) => dish.id === 'tea'),
     false
   )
   id.value = 'tea'
   f.settle(f.raw.value)
-  assert.equal(record.dish.value.name, 'Tea')
+  assert.equal(record.item.value.name, 'Tea')
   id.value = 'missing'
   f.settle(f.raw.value)
   assert.equal(record.outcome.value, 'empty')
-  assert.equal(record.dish.value, null)
+  assert.equal(record.item.value, null)
   f.raw.pending.value = true
   assert.equal(record.outcome.value, 'pending')
   f.raw.error.value = new Error('Read failed')
@@ -409,7 +408,7 @@ function template(path) {
     }
   )
 }
-function components(app, spec) {
+function components(app) {
   const empty = [
     'FireDiagnosticsDebugPanel',
     'UIcon',
@@ -424,13 +423,11 @@ function components(app, spec) {
     'WorkspaceKitchenAICapability',
     'WorkspaceKitchenAICapabilityInfo',
     'KitchenMenuItemsEdit',
-    'KitchenMenuItemsPreparationStations',
     'KitchenMenuItemsPhoto',
     'KitchenMenuItemsGroups',
     'KitchenMenuItemsCollectionAssignGroup',
     'KitchenMenuItemsPricing',
     'KitchenMenuItemsDelete',
-    'ItemPreparation',
     'ItemMenus',
     'ItemMenu',
     'ItemMenuSection',
@@ -443,10 +440,6 @@ function components(app, spec) {
       props: ['message'],
       setup: (props) => () => (props.message ? h('p', props.message) : null),
     })
-  app.component(
-    'ItemSpec',
-    spec || { render: () => h('p', 'Specification editor') }
-  )
   app.component('FireDisclosurePanel', {
     setup:
       (_, { slots }) =>
@@ -564,7 +557,7 @@ function recordView(overrides = {}) {
     manage: false,
     route: { query: {} },
     views: [],
-    view: 'preparation',
+    view: 'details',
     removeItem: () => {},
     ...overrides,
   }
@@ -628,72 +621,6 @@ test('actual Item record error does not render not-found, old read header or edi
   assert.match(empty, /dish not found/)
   assert.doesNotMatch(empty, /Specification editor/)
 })
-test('actual Item owner retains mounted Spec through child refresh/failure and releases it on owner invalidation', async () => {
-  let mounted = 0,
-    unmounted = 0
-  const make = (type) => ({ type, children: [], parent: null })
-  const renderer = createRenderer({
-    createElement: make,
-    createText: (text) => ({ ...make('text'), text }),
-    createComment: (text) => ({ ...make('comment'), text }),
-    setText: (node, text) => {
-      node.text = text
-    },
-    setElementText: (node, text) => {
-      node.text = text
-    },
-    patchProp: () => {},
-    insert: (node, parent, anchor) => {
-      if (node.parent)
-        node.parent.children.splice(node.parent.children.indexOf(node), 1)
-      node.parent = parent
-      const i = anchor ? parent.children.indexOf(anchor) : -1
-      parent.children.splice(i < 0 ? parent.children.length : i, 0, node)
-    },
-    remove: (node) => {
-      if (node.parent)
-        node.parent.children.splice(node.parent.children.indexOf(node), 1)
-    },
-    parentNode: (node) => node.parent,
-    nextSibling: (node) => {
-      const s = node.parent?.children || []
-      return s[s.indexOf(node) + 1] || null
-    },
-  })
-  const state = reactive(recordView()),
-    warnings = [],
-    app = renderer.createApp({
-      setup: () => state,
-      render: template('kitchen/components/Menu/Items/Detail/Index.vue'),
-    })
-  app.config.warnHandler = (warning) => warnings.push(warning)
-  components(app, {
-    setup() {
-      mounted++
-      onUnmounted(() => unmounted++)
-      return () => h('p', 'Local Spec draft')
-    },
-  })
-  app.mount(make('root'))
-  assert.equal(mounted, 1)
-  state.dish = null
-  state.outcome = 'pending'
-  state.pending = true
-  await nextTick()
-  assert.equal(mounted, 1)
-  assert.equal(unmounted, 0)
-  state.outcome = 'error'
-  state.pending = false
-  state.error = new Error('Failed')
-  await nextTick()
-  assert.equal(unmounted, 0)
-  state.storageKitchenId = ''
-  state.outcome = 'pending'
-  await nextTick()
-  assert.equal(unmounted, 1)
-  app.unmount()
-  assert.deepEqual(warnings, [])
-})
 test('Item linked read perspectives bind exact ready storage owner instead of remembered Kitchen selection', () => {
   const owner = {
     kitchenId: ref('remembered'),
@@ -704,7 +631,7 @@ test('Item linked read perspectives bind exact ready storage owner instead of re
     rootCollection: ref('kitchens'),
     selectedKitchen: ref(null),
   }
-  const paths = ['Preparation', 'Menus', 'Menu', 'MenuSection']
+  const paths = ['Menus', 'Menu', 'MenuSection']
   for (const view of paths) {
     let target
     const source = {
@@ -736,8 +663,8 @@ test('Item linked read perspectives bind exact ready storage owner instead of re
           outcome: ref('ready'),
         }),
         useRouteParam: () => owner.dishId,
-        useKitchenItemRecord: () => owner,
-        useKitchenItemDetail: () => owner,
+        useKitchenItemRead: () => owner,
+        useKitchenItemContext: () => owner,
         useKitchenPrepItems: reader,
         useKitchenMenuCollection: reader,
         useMenuSectionCollection: reader,
@@ -752,16 +679,7 @@ test('Item linked read perspectives bind exact ready storage owner instead of re
     scope.stop()
   }
 })
-test('actual Item Preparation and Menu perspectives render failed linked reads without false empty states', async () => {
-  const prep = await render('kitchen/components/Menu/Items/Preparation.vue', {
-    dish: { spec: { portion: 1 } },
-    error: new Error('Denied'),
-    pending: true,
-    rows: [],
-    groups: [],
-  })
-  assert.match(prep, /Prep items unavailable/)
-  assert.doesNotMatch(prep, /No mise en place linked|Loading preparations/)
+test('actual Item Menu perspectives render failed linked reads without false empty states', async () => {
   const menus = await render('kitchen/components/Menu/Items/Menus.vue', {
     error: new Error('Denied'),
     pending: true,
@@ -1235,14 +1153,14 @@ test('organisation fields keep historical Items readable without inventing group
 
 test('Item detail context shares its live reader and requires the owning provider', async () => {
   const context = load(
-    'kitchen/composables/item/useKitchenItemDetailContext.ts',
-    '({provideKitchenItemDetail,useKitchenItemDetail})',
+    'kitchen/item/composables/useKitchenItemContext.ts',
+    '({provideKitchenItemContext,useKitchenItemContext})',
     { provide, inject }
   )
   const owner = { dish: ref({ name: 'Soup' }), canWrite: ref(true) }
   const Child = {
     setup() {
-      const detail = context.useKitchenItemDetail()
+      const detail = context.useKitchenItemContext()
       assert.equal(detail, owner)
       return () => h('p', detail.dish.value.name)
     },
@@ -1251,7 +1169,7 @@ test('Item detail context shares its live reader and requires the owning provide
     renderToString(
       createSSRApp({
         setup() {
-          assert.equal(context.provideKitchenItemDetail(owner), owner)
+          assert.equal(context.provideKitchenItemContext(owner), owner)
           return () => h(Child)
         },
       })
@@ -1261,7 +1179,10 @@ test('Item detail context shares its live reader and requires the owning provide
   assert.match(await renderOwner(), /Salad/)
   const orphan = createSSRApp(Child)
   orphan.config.warnHandler = () => {}
-  await assert.rejects(renderToString(orphan), /requires its detail provider/)
+  await assert.rejects(
+    renderToString(orphan),
+    /requires its Item context provider/
+  )
 })
 
 test('Item placements return to the inline Menu builder or exact daily section', () => {
@@ -1271,7 +1192,7 @@ test('Item placements return to the inline Menu builder or exact daily section',
       menu: { id: 'menu', slug: 'lunch special', schedule: 'regular' },
       section: { id: 'main course', label: 'Main course' },
     })
-    const owner = { dishId: ref('soup'), storageKitchenId: ref('kitchen') }
+    const owner = { itemId: ref('soup'), storageKitchenId: ref('kitchen') }
     const rows = ref([{ id: 'placement', dish_id: 'soup' }])
     const pending = ref(false),
       error = ref(null),
@@ -1284,8 +1205,8 @@ test('Item placements return to the inline Menu builder or exact daily section',
         watch,
         defineProps: () => props,
         defineEmits: () => (_, result) => emitted.push(result),
-        useKitchenItemRecord: () => owner,
-        useKitchenItemDetail: () => owner,
+        useKitchenItemRead: () => owner,
+        useKitchenItemContext: () => owner,
         useMenuSectionItemCollection: () => ({ items: rows, pending, error }),
       }
     )
@@ -1299,7 +1220,7 @@ test('Item placements return to the inline Menu builder or exact daily section',
       state.destination.value,
       '/workspace/kitchen/menu/menus/lunch%20special/main%20course'
     )
-    owner.dishId.value = 'other'
+    owner.itemId.value = 'other'
     assert.equal(state.matches.value.length, 0)
   })
   scope.stop()

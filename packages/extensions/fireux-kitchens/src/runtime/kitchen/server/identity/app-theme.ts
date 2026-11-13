@@ -10,7 +10,7 @@ import {
   readAppPaletteLayer,
   readWorkspacePalette,
   resolveAppPalette,
-} from 'fireux-core/runtime/utils/brand-palette'
+} from 'fireux-core/runtime/utils/theme-palette'
 import { APP_MUTATION_TARGETS } from 'fireux-core/runtime/app/server/mutation-targets'
 import type {
   AppPalette,
@@ -179,18 +179,14 @@ export async function updateKitchenAppTheme(event: H3Event, value: unknown) {
         requested.palette as AppPalette,
         inheritedPalette
       )
-      mutations.update(
-        APP_MUTATION_TARGETS.runtimeApps,
-        current.ownerAppId,
-        {
-          'theme.palette': compact,
-          'theme.typography': requested.typography,
-          updated: serverAuditStamp({
-            by: actor.uid,
-            appId: current.ownerAppId,
-          }),
-        }
-      )
+      mutations.update(APP_MUTATION_TARGETS.runtimeApps, current.ownerAppId, {
+        'theme.palette': compact,
+        'theme.typography': requested.typography,
+        updated: serverAuditStamp({
+          by: actor.uid,
+          appId: current.ownerAppId,
+        }),
+      })
       return { appId: current.ownerAppId, compact }
     }
   )

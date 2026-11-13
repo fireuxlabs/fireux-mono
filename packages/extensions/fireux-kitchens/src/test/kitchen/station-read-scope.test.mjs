@@ -54,7 +54,9 @@ function harness() {
     error = ref(null)
   const rows = ref([{ id: 'pass', name: 'Pass' }])
   let readTarget
+  const route = Vue.reactive({ fullPath: '/workspace/kitchen/stations' })
   const deps = {
+    useRoute: () => route,
     computed,
     ref,
     watch,
@@ -107,6 +109,7 @@ function harness() {
   )
   return {
     state,
+    route,
     surface,
     scope,
     id,
@@ -289,4 +292,17 @@ test('Stations renders loading, failure and empty distinctly, with settled-only 
   ])
   assert.ok(ready.indexOf('Pass') < ready.indexOf('Grill'))
   assert.match(ready, /data-count/)
+})
+
+test('Station creation disclosure belongs to the current account, Kitchen and route', () => {
+  for (const change of ['account', 'kitchen', 'route', 'access']) {
+    const x = harness()
+    x.state.createOpen.value = true
+    if (change === 'account') x.currentUser.value = x.user('other')
+    if (change === 'kitchen') x.id.value = 'other'
+    if (change === 'route') x.route.fullPath = '/workspace/kitchen/overview'
+    if (change === 'access') x.workspaceOutcome.value = 'empty'
+    assert.equal(x.state.createOpen.value, false)
+    x.scope.stop()
+  }
 })

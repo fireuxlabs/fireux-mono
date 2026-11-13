@@ -20,14 +20,6 @@ export type { Item } from '../models/item.model'
  * Optional spec owns per-portion ingredient/prep references, recipe links and
  * assembly. It does not record stock, production execution or menu pricing.
  */
-export const ItemStorage = {
-  shape: 'scoped',
-  path: 'kitchens/{kitchenId}/dishes/{dishId}',
-  collection: 'dishes',
-  parent: 'kitchen',
-  idParam: 'dishId',
-} as const
-
 export const readLegacyItemKind = (value: unknown): string => {
   const kind = String(value ?? '')
     .trim()

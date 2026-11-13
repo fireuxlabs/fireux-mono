@@ -64,7 +64,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { PlaceUpsertInput } from '../../models/place-onboarding.model.ts'
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
+import type { Place } from '../../models/place.model'
 
 const props = defineProps<{
   place: PlaceUpsertInput
@@ -72,7 +72,7 @@ const props = defineProps<{
   timezone: string
   imageFile: File | null
   coverFile: File | null
-  brandPalette: SparseBrandPalette
+  brandPalette: Place['brand_palette']
 }>()
 
 const objectUrl = ref('')

@@ -1,5 +1,5 @@
 import type { IngredientCategory } from 'fireux-kitchens/runtime/ingredient/models/ingredient-taxonomy'
-import type { KitchenFinanceReportPeriod } from 'fireux-kitchens/runtime/kitchen/models/finance-report.model'
+import type { KitchenFinanceReportPeriod } from 'fireux-kitchens/runtime/kitchen/utils/finance-report-periods'
 import type { MenuManifest } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import type { KitchenDemoMenuMode } from 'fireux-kitchens/runtime/kitchen/utils/demo-menu-cascade'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'

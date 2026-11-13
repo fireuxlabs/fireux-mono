@@ -1,5 +1,3 @@
-import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
-
 type TenantPaletteToken = {
   role: string
   name: string
@@ -49,7 +47,7 @@ const palette: TenantPaletteToken[] = [
 ]
 
 const cssVariables = `
-/* La Tap theme spine: app chrome, local molecules, and emitted menu style share these tokens. */
+/* La Tap theme spine: app chrome and local components share these tokens. */
 :root {
   --brand-canvas: ${colors.canvas};
   --brand-canvas-rgb: ${colors.canvasRgb};
@@ -78,22 +76,9 @@ const cssVariables = `
 }
 `
 
-const menuPageStyle = {
-  background_color_light: colors.canvas,
-  background_color_dark: colors.darkCanvas,
-  font_color_light: colors.ink,
-  font_color_dark: colors.darkInk,
-  title_color_light: colors.ink,
-  title_color_dark: colors.darkInk,
-  // PageStyle has one primary token for both modes; use the gold accent so menu prices/controls stay visible on dark canvas.
-  primary_color: colors.accentDark,
-  secondary_color: colors.accent,
-} satisfies Partial<PageStyle>
-
-// Tenant theme spine: app chrome, Nuxt UI palette, and emitted menu API share these tokens.
+// Tenant theme spine: app chrome and the App palette share these tokens.
 export const laTapBerneTheme = {
   colors,
   palette,
   cssVariables,
-  menuPageStyle,
 } as const

@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-21 16:25 CEST — Place onboarding enrichment: define the bounded preview and completion contract.
 // Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: stage one optional sparse brand palette.
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
+import type { Place } from '../models/place.model'
 import type { Place } from './place.model.ts'
 
 export type PlaceUpsertInput = Partial<Place> &
@@ -39,7 +39,7 @@ export type PlaceOnboardingPreview = {
   about?: string
   tags?: string[]
   cover_image?: string
-  brand_palette?: SparseBrandPalette
+  brand_palette?: Place['brand_palette']
 }
 
 export type PlaceOnboardingCompleteResult = {
@@ -49,7 +49,7 @@ export type PlaceOnboardingCompleteResult = {
   configured: boolean
   defaults: PlaceOnboardingDefaults
   image_url?: string
-  brand_palette?: SparseBrandPalette
+  brand_palette?: Place['brand_palette']
 }
 
 export type PlaceOnboardingCompleteInput = PlaceOnboardingDefaults & {
@@ -61,5 +61,5 @@ export type PlaceOnboardingCompleteInput = PlaceOnboardingDefaults & {
   cover_image?: string
   logo_image?: string
   image_url?: string
-  brand_palette?: SparseBrandPalette
+  brand_palette?: Place['brand_palette']
 }

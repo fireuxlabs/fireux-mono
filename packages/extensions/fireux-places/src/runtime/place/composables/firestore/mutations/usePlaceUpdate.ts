@@ -18,7 +18,7 @@ import type {
 import type { PlaceDetailResponse } from '../../../models/place-read.model.ts'
 import { usePlaceDetailState } from '../../usePlaceDetailState'
 import { normalizePlaceBusinessHours } from '../../../utils/place-spine'
-import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
+import { normalizeHexColor } from 'fireux-core/runtime/utils/normalize-hex-color'
 
 import type { PlaceIdentityDraft } from '../../../models/identity-edit'
 

@@ -1,10 +1,8 @@
-import type { BrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import type {
   AppPalette,
   AppPaletteLayer,
   WorkspacePalette,
-} from 'fireux-core/runtime/models/utils/style.model'
-import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
+} from 'fireux-core/types/theme'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/types/entity-management'
 import type { AppTypography } from 'fireux-core/types/theme'
 import type {
@@ -12,12 +10,24 @@ import type {
   PublicMenuItem,
 } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 
-export type {
-  AppPalette,
-  AppPaletteLayer,
-  AppTypography,
-  BrandPalette,
-  WorkspacePalette,
+export type { AppPalette, AppPaletteLayer, AppTypography, WorkspacePalette }
+
+/** Misebox Template One preview presentation; not an Entity or App theme. */
+type PageStyleFontSource = 'system' | 'google'
+
+type PageStyle = {
+  primary_color: string
+  secondary_color: string
+  background_color_light: string
+  background_color_dark: string
+  font_color_light: string
+  font_color_dark: string
+  title_color_light?: string
+  title_color_dark?: string
+  title_font_source?: PageStyleFontSource
+  title_font_family?: string
+  font_source?: PageStyleFontSource
+  font_family?: string
 }
 
 export type TemplateOneKitchenTier = FireuxEntityManagement['mode']

@@ -1,3 +1,4 @@
+import { OrderChannels } from '../types/ordering.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -13,7 +14,7 @@ const source = readFileSync(
 const configure = compileFunction(
   `${stripTypeScriptTypes(source)}; return configureOrdering`,
   ['OrderChannels']
-)(['pos', 'kiosk', 'website', 'app', 'api'])
+)(OrderChannels)
 const fixture = () => ({ options: { runtimeConfig: { public: {} } } })
 test('ordering channels stay opt-in and preserve the existing runtime contract', () => {
   const nuxt = fixture()

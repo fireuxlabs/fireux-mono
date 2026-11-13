@@ -1,4 +1,4 @@
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { ThemePalette } from 'fireux-core/types/theme'
 import {
   deanosKitchenDemoIdentity,
@@ -17,7 +17,7 @@ import {
 const deanosPalette = {
   primary_color: '#ff4f2e',
   secondary_color: '#181817',
-} satisfies SparseBrandPalette
+} satisfies Place['brand_palette']
 
 const deanosPlaceMedia = (filename: string) =>
   placeDemoMediaUrl(deanosKitchenDemoIdentity.placeId, `images/${filename}`)
@@ -120,7 +120,7 @@ export const deanosKitchenDemoTarget = target(
 const pizzaTheActionPalette = {
   primary_color: '#1f6b45',
   secondary_color: '#f2c94c',
-} satisfies SparseBrandPalette
+} satisfies Place['brand_palette']
 
 const pizzaTheActionThemePalette = {
   canvas: '#fff7d6',
@@ -167,7 +167,7 @@ export const pizzaTheActionKitchenDemoTarget = target(
 const miseboxRestaurantPalette = {
   primary_color: '#914632',
   secondary_color: '#61715c',
-} satisfies SparseBrandPalette
+} satisfies Place['brand_palette']
 
 const miseboxRestaurantThemePalette = {
   canvas: '#eee7da',

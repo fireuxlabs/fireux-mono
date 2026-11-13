@@ -27,7 +27,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenAIHandoff } from '../../../composables/workspace/useKitchenAIHandoff'
-import type { KitchenLandingIntent } from '../../../models/landing-intent'
+import type { KitchenLandingIntent } from '../../../content/landing-intent'
 
 const props = defineProps<{
   performAction: (intent: KitchenLandingIntent) => boolean | Promise<boolean>

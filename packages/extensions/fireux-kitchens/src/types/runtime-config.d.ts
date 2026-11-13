@@ -1,4 +1,4 @@
-import type { OrderingConfiguration } from '../runtime/kitchen/models/order.model'
+import type { OrderingConfiguration } from './ordering'
 
 declare module 'nuxt/schema' {
   interface PublicRuntimeConfig {

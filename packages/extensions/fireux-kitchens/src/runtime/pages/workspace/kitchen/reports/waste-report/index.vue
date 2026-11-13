@@ -1,6 +1,5 @@
 <template>
   <div>
-    <WorkspaceKitchenAICapabilityInfo capability="waste-report" />
     <section class="workspace-surface">
       <UPageHeader title="Waste report" />
       <UAlert
@@ -9,28 +8,6 @@
         color="warning"
         variant="subtle"
       />
-      <FireDisclosurePanel
-        title="Capability reference"
-        :default-open="false"
-      >
-        <WorkspaceKitchenToolsToolbar capability="waste-report" />
-        <WorkspaceKitchenAICapability
-          capability="waste-report"
-          :show-suggestion-cards="false"
-        />
-        <WorkspaceKitchenResearchCapabilitySummary capability="waste-report" />
-        <UAlert
-          color="neutral"
-          variant="soft"
-          title="Operational evidence first"
-          description="This report can summarise only Waste recorded by the Kitchen Waste capability. It does not invent missing quantities, reasons, or costs."
-        />
-        <WorkspaceKitchenResearchGuide capability="waste-report" />
-        <WorkspaceKitchenResearchSegue
-          capability="Waste Report"
-          base-path="/workspace/kitchen/reports/waste-report/search-demand"
-        />
-      </FireDisclosurePanel>
     </section>
   </div>
 </template>

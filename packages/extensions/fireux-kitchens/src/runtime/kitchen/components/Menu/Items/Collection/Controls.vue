@@ -5,7 +5,6 @@
     variant="child"
   >
     <template #actions>
-      <WorkspaceKitchenAICapabilityInfo capability="dishes" />
       <UButton
         v-if="!readOnly && ['ready', 'empty'].includes(outcome)"
         label="Add item"

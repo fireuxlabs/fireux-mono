@@ -49,7 +49,7 @@ import { computed } from 'vue'
 import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
-} from 'fireux-core/runtime/models/utils/entity-create.model'
+} from 'fireux-core/runtime/types/entity-create'
 import { useDiagnosticsUi } from 'fireux-core/runtime/composables/diagnostics/useDiagnosticsUi'
 import PortfolioCreateWrite from './Write.vue'
 

@@ -5,10 +5,8 @@
 
 <script setup lang="ts">
 import { provideKitchenItemsContext } from '../../../../../kitchen/composables/workspace/items/useKitchenItemsContext'
-import { provideKitchenItemPreparation } from '../../../../../kitchen/composables/workspace/items/useKitchenItemPreparation'
 
-const context = provideKitchenItemsContext('all')
-provideKitchenItemPreparation(context)
+provideKitchenItemsContext('all')
 
 definePageMeta({
   layout: false,

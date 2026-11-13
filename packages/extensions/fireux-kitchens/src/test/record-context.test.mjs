@@ -212,64 +212,6 @@ test('empty context loads, failed text is retained, and old credentials cannot d
   assert.equal(calls.length, before)
   assert.equal(state.context.value, '')
 })
-test('KitchenAI reads Kitchen and venue strings, reuses Menu root data, and never reads Orders', async () => {
-  const queried = []
-  const db = {
-    collection(path) {
-      queried.push(path)
-      return {
-        doc: () => ({ get: async () => ({ data: () => ({ context: note }) }) }),
-        limit: () => ({
-          get: async () => ({
-            docs: [
-              {
-                id: 'breakfast',
-                data: () => ({
-                  name: 'Breakfast',
-                  status: 'published',
-                  context: 'Breakfast Menu question',
-                }),
-              },
-            ],
-          }),
-        }),
-      }
-    },
-  }
-  const readers = load(
-    '../runtime/kitchen/server/context/read.ts',
-    '({readKitchenOperatorContext, readMenuOperatorContext})',
-    { readRecordString }
-  )
-  const read = load(
-    '../runtime/kitchen/server/agent/context.ts',
-    'readKitchenAgentContext',
-    {
-      ...readers,
-      UserContextStorage: { collection: 'context', document: 'operator' },
-      getRuntimeIdentityFirestore: () => ({
-        collection: () => ({
-          doc: () => ({
-            collection: () => ({
-              doc: () => ({ get: async () => ({ exists: false }) }),
-            }),
-          }),
-        }),
-      }),
-      readRecordString,
-      readKitchenMenuSections: async () => [],
-      KitchenIngredientStorage: {},
-    }
-  )
-  const result = await read(
-    { db, uid: 'operator', rootKitchen: { context: 'Kitchen background' } },
-    { kitchenId: 'baren', operation: 'menus', appId: 'app' }
-  )
-  assert.equal(result.kitchenContext, 'Kitchen background')
-  assert.equal(result.venueContext, note)
-  assert.equal(result.menuManifest[0].context, 'Breakfast Menu question')
-  assert.deepEqual(queried.sort(), ['kitchens/baren/menus', 'places'])
-})
 test('authorized reader checks current access before reading scoped strings and bounds Menu reads', async () => {
   let allowed = false
   const reads = []

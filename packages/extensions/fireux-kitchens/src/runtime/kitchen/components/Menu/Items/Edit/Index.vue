@@ -90,12 +90,17 @@ import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenItemDetail } from '../../../../composables/item/useKitchenItemDetailContext'
+import { useKitchenItemContext } from '../../../../item/composables/useKitchenItemContext'
 import { useItemImageUpload } from '../../../../composables/item/useItemImageUpload'
 import { useItemUpdate } from '../../../../composables/item/useItemUpdate'
 import type { ItemUpdateInput } from '../../../../utils/item.ts'
 
-const { dish, dishId, kitchenId, canWrite } = useKitchenItemDetail()
+const {
+  item: dish,
+  itemId: dishId,
+  kitchenId,
+  canWrite,
+} = useKitchenItemContext()
 
 const toast = useToastify()
 const { currentUser } = useAuth()

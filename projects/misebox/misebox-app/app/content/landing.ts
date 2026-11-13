@@ -126,6 +126,16 @@ export const workspaceSurfaceCopy = {
   },
 } as const satisfies Record<string, WorkspaceSurfaceCopy>
 
+export const workspacePreviewLinks = Object.entries(workspaceSurfaceCopy).map(
+  ([id, content]) => ({
+    id,
+    title: content.action.replace(/^Open /, ''),
+    description: content.description,
+    to: content.to,
+    icon: 'i-lucide-layout-dashboard',
+  })
+)
+
 export const toolsCatalogue = {
   sectionId: 'misebox-tools',
   eyebrow: 'Tools',

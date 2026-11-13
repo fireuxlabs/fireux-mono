@@ -51,7 +51,7 @@ const workspaceTitle = computed(() =>
   fireux.isTenant ? fireux.appName : 'Kitchen Workspace'
 )
 const workspaceSurface = ref<InstanceType<typeof WorkspaceKitchen> | null>(null)
-import type { KitchenLandingIntent } from '../../../kitchen/models/landing-intent'
+import type { KitchenLandingIntent } from '../../../kitchen/content/landing-intent'
 const performLandingAction = (intent: KitchenLandingIntent) =>
   workspaceSurface.value?.performAction(intent) ?? false
 definePageMeta({

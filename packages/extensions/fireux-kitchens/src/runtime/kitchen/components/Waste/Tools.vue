@@ -1,49 +1,53 @@
 <template>
   <section
-    v-if="tool"
     class="workspace-surface workspace-surface--compact"
     aria-labelledby="waste-tools-title"
   >
     <UCard description="Waste actions">
       <template #title><h2 id="waste-tools-title">Tools</h2></template>
       <UButton
-        :label="tool.label"
+        label="Record Waste"
         icon="i-lucide-trash-2"
         size="sm"
         :disabled="!canWrite"
-        @click="performAction(tool.id)"
+        @click="open = true"
       />
     </UCard>
 
     <UModal
-      :open="activeToolId === tool.id"
+      v-model:open="open"
       title="Record Waste"
       description="Record what was wasted, how much, why, and where it happened."
-      @update:open="(open) => !open && closeTool()"
     >
       <template #body>
-        <KitchenWasteCreate @cancel="closeTool" @created="handleCreated" />
+        <KitchenWasteCreate @cancel="open = false" @created="handleCreated" />
       </template>
     </UModal>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, watch } from 'vue'
+import { useRoute } from '#imports'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToast } from '#imports'
-import { useKitchenCapabilityTools } from '../../composables/workspace/useKitchenCapabilityTools'
 import { useKitchenWorkspaceWaste } from '../../composables/workspace/waste/useKitchenWorkspaceWaste'
 
 const toast = useToast()
-const { canWrite } = useKitchenWorkspaceWaste()
-const { tools, activeToolId, performAction, closeTool } =
-  useKitchenCapabilityTools('waste')
-const tool = computed(() =>
-  tools.value.find((candidate) => candidate.id === 'kitchen.waste.record-event')
+const { canWrite, kitchenId } = useKitchenWorkspaceWaste()
+const open = ref(false)
+const route = useRoute()
+const { currentUser } = useAuth()
+watch(
+  [kitchenId, canWrite, () => currentUser.value?.uid, () => route.fullPath],
+  () => {
+    open.value = false
+  },
+  { flush: 'sync' }
 )
 
 function handleCreated(result: { id: string; itemName: string }) {
-  closeTool()
+  open.value = false
   toast.add({
     title: `${result.itemName} recorded`,
     description: 'The Waste event is now part of this Kitchen’s evidence.',

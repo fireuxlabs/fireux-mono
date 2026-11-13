@@ -4,7 +4,7 @@ import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
+import { readWorkspacePalette } from 'fireux-core/runtime/utils/theme-palette'
 import type { WorkspacePalette } from 'fireux-core/types/theme'
 import { KITCHEN_MUTATION_TARGETS } from '../mutation-targets'
 import {

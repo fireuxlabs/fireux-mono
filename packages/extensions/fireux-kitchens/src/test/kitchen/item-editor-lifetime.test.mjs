@@ -194,8 +194,8 @@ function context() {
 }
 function mount(h, component, exposed, extra = {}) {
   const identity = {
-      dish: vue.ref(existing()),
-      dishId: vue.ref('dish'),
+      item: vue.ref(existing()),
+      itemId: vue.ref('dish'),
       kitchenId: h.selectedId,
       storageKitchenId: vue.ref('kitchen'),
       canWrite: vue.ref(true),
@@ -221,11 +221,11 @@ function mount(h, component, exposed, extra = {}) {
       id: identity.kitchenId,
       outcome: vue.ref('ready'),
     }),
-    useRouteParam: () => identity.dishId,
-    useKitchenItemDetail: () => identity,
+    useRouteParam: () => identity.itemId,
+    useKitchenItemContext: () => identity,
     useKitchenItemsContext: () => ({
       ...identity,
-      dishes: vue.ref([identity.dish.value]),
+      dishes: vue.ref([identity.item.value]),
       readOnly,
     }),
     useMenuSection: () => ({
@@ -613,140 +613,6 @@ test('Creation reports saved Item with failed image and suppresses obsolete foll
     f.unmount()
     h.scope.stop()
   }
-})
-test('Specification Save and nested Prep cannot overlap and explicitly convert UInput numeric text', async () => {
-  for (const action of ['save', 'createPrep']) {
-    const h = context(),
-      f = mount(
-        h,
-        'Menu/Items/Spec',
-        '{toggle,save,createPrep,draft,assembly,editing,saving,creating,newPrep,error}'
-      )
-    f.api.toggle()
-    f.api.draft.value.portion = '2'
-    f.api.draft.value.ingredients = [
-      { ingredient_id: 'carrot', quantity: '3', unit: 'g', note: '' },
-    ]
-    f.api.newPrep.value = {
-      ...f.api.newPrep.value,
-      name: 'Sauce',
-      quantity: '4',
-    }
-    const flight = f.api[action]()
-    await vue.nextTick()
-    assert.equal(f.nodes('fieldset')[0].props.disabled, true)
-    await f.api[action === 'save' ? 'createPrep' : 'save']()
-    await finish(h)
-    h.response.resolve({ id: action === 'save' ? 'dish' : 'sauce' })
-    await flight
-    assert.equal(h.calls.length, 1)
-    if (action === 'save') {
-      assert.equal(h.calls[0].options.body.changes.spec.portion, 2)
-      assert.equal(
-        h.calls[0].options.body.changes.spec.ingredients[0].quantity,
-        3
-      )
-    } else {
-      assert.equal(h.calls[0].options.body.draft.yield.quantity, 4)
-      assert.equal(f.api.editing.value, true)
-    }
-    f.unmount()
-    h.scope.stop()
-  }
-})
-test('Specification changed draft or closed/reopened editor cancels credentials without erasing replacement draft', async () => {
-  for (const changed of ['draft', 'reopen', 'prep'])
-    for (const stage of ['token', 'response']) {
-      const h = context(),
-        f = mount(
-          h,
-          'Menu/Items/Spec',
-          '{toggle,save,createPrep,draft,assembly,editing,saving,creating,newPrep,error}'
-        )
-      f.api.toggle()
-      f.api.newPrep.value.name = 'Original'
-      const flight = f.api[changed === 'prep' ? 'createPrep' : 'save']()
-      h.auth.resolve(h.user)
-      await drain()
-      if (stage === 'response') {
-        h.token.resolve('token')
-        await drain()
-        assert.equal(h.calls.length, 1)
-      }
-      if (changed === 'reopen') {
-        f.api.editing.value = false
-        f.api.toggle()
-        f.api.draft.value.station = 'Replacement'
-      } else if (changed === 'prep') f.api.newPrep.value.name = 'Replacement'
-      else f.api.draft.value.station = 'Replacement'
-      h.token.resolve('token')
-      h.response.resolve({ id: changed === 'prep' ? 'prep' : 'dish' })
-      await flight
-      assert.equal(h.calls.length, stage === 'response' ? 1 : 0)
-      assert.equal(f.api.editing.value, true)
-      assert.equal(f.api.error.value, '')
-      if (changed === 'prep')
-        assert.equal(f.api.newPrep.value.name, 'Replacement')
-      else assert.equal(f.api.draft.value.station, 'Replacement')
-      f.unmount()
-      h.scope.stop()
-    }
-})
-test('Specification clean same-ID live updates hydrate while dirty drafts and own pending saves survive', async () => {
-  const h = context(),
-    f = mount(
-      h,
-      'Menu/Items/Spec',
-      '{toggle,save,draft,assembly,editing,error}'
-    )
-  f.api.toggle()
-  f.identity.dish.value = {
-    ...existing(),
-    spec: { ...specification.emptyItemSpecification(), station: 'Fresh' },
-  }
-  await vue.nextTick()
-  assert.equal(f.api.draft.value.station, 'Fresh')
-  f.api.draft.value.station = 'Local'
-  f.identity.dish.value = {
-    ...existing(),
-    spec: { ...specification.emptyItemSpecification(), station: 'External' },
-  }
-  await vue.nextTick()
-  assert.equal(f.api.draft.value.station, 'Local')
-  const flight = f.api.save()
-  await finish(h)
-  f.identity.dish.value = null
-  f.identity.canWrite.value = false
-  await vue.nextTick()
-  assert.equal(f.api.editing.value, true)
-  assert.equal(f.nodes('fieldset')[0].props.disabled, true)
-  h.response.resolve({ id: 'dish' })
-  await flight
-  assert.equal(f.api.editing.value, false)
-  f.unmount()
-  h.scope.stop()
-})
-test('Specification rejects blank/non-finite quantities before a command and suppresses disposed completion', async () => {
-  for (const quantity of ['', Infinity, 0]) {
-    const h = context(),
-      f = mount(h, 'Menu/Items/Spec', '{toggle,save,draft,error}')
-    f.api.toggle()
-    f.api.draft.value.portion = quantity
-    await f.api.save()
-    assert.equal(h.calls.length, 0)
-    assert.match(f.api.error.value, /positive quantity/)
-    f.unmount()
-    h.scope.stop()
-  }
-  const h = context(),
-    f = mount(h, 'Menu/Items/Spec', '{toggle,save}')
-  f.api.toggle()
-  const flight = f.api.save()
-  await finish(h)
-  f.unmount()
-  h.response.resolve({ id: 'dish' })
-  await flight
-  h.scope.stop()
 })
 test('Identity fields pass real local completion predicates through credentials and lock other controls', async () => {
   const h = context(),

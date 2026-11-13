@@ -1,9 +1,12 @@
+import { useRoute } from '#imports'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   computed,
   inject,
   provide,
   ref,
   watchEffect,
+  watch,
   type InjectionKey,
 } from 'vue'
 import {
@@ -47,6 +50,16 @@ function createKitchenWorkspaceStations() {
     workspace.outcome.value === 'ready' && stationsOutcome.value === 'ready'
       ? fetchedStations.value
       : []
+  )
+  const createOpen = ref(false)
+  const route = useRoute()
+  const { currentUser } = useAuth()
+  watch(
+    [kitchenId, canWrite, () => currentUser.value?.uid, () => route.fullPath],
+    () => {
+      createOpen.value = false
+    },
+    { flush: 'sync' }
   )
   const selectedStationId = ref('')
   const selectedStation = computed(
@@ -92,6 +105,7 @@ function createKitchenWorkspaceStations() {
     stations: workspaceStations,
     selectedStation,
     selectedStationId,
+    createOpen,
     pending,
     outcome: computed(() =>
       workspace.outcome.value === 'ready'

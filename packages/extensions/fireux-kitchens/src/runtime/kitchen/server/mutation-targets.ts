@@ -1,3 +1,4 @@
+import { ItemStorage } from '../item/storage'
 import {
   ALL_FIRESTORE_MUTATION_VERBS,
   assertFirestoreMutationDocumentId,
@@ -42,7 +43,7 @@ export const serverKitchenMenusTarget = (kitchenId: string) =>
   serverKitchenChildTarget(kitchenId, 'kitchens.menus', 'menus')
 
 export const serverKitchenItemsTarget = (kitchenId: string) =>
-  serverKitchenChildTarget(kitchenId, 'kitchens.dishes', 'dishes')
+  serverKitchenChildTarget(kitchenId, 'kitchens.dishes', ItemStorage.collection)
 
 export const serverKitchenTeamMembersTarget = (kitchenId: string) =>
   serverKitchenChildTarget(kitchenId, 'kitchens.team', 'team')

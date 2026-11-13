@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useBlankCreate } from '../../../composables/fireux/firestore/blank/useBlank'
 import { useBlankWorkspace } from '../../../composables/workspace/useBlankWorkspace'
 
@@ -53,23 +53,34 @@ const name = ref('Blank target')
 const creating = ref(false)
 const error = ref('')
 const canCreate = computed(() => true)
-const { createBlank } = useBlankCreate()
+const { createBlank, captureIntent, scopeEpoch } = useBlankCreate([name])
+watch(
+  scopeEpoch,
+  () => {
+    creating.value = false
+    error.value = ''
+  },
+  { flush: 'sync' }
+)
 const workspaceIndex = useBlankWorkspace()
 
 async function handleCreate() {
   if (!canCreate.value || creating.value) return
 
+  const isCurrent = captureIntent()
   creating.value = true
   error.value = ''
 
   try {
     const result = await createBlank({ name: name.value })
+    if (!isCurrent()) return
     workspaceIndex.select(result.id)
     await navigateTo('/')
   } catch (cause) {
+    if (!isCurrent()) return
     error.value = cause instanceof Error ? cause.message : String(cause)
   } finally {
-    creating.value = false
+    if (isCurrent()) creating.value = false
   }
 }
 </script>

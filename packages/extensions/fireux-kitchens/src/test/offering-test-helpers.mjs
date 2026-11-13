@@ -43,7 +43,6 @@ const policy = loadOfferingSource(
   'readKitchenOrderTypeConfig',
   {
     ...whatsapp,
-    KitchenOrderContactFields: ['name', 'phone', 'email'],
     KitchenOrderTypes: [
       'collection',
       'delivery',

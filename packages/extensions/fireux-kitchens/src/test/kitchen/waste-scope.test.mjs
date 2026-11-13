@@ -4,7 +4,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, reactive, effectScope } from 'vue'
 function load(path, deps, result, vue = false) {
   deps = commandScopeDeps(deps)
   let source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -167,4 +167,36 @@ test('Waste Create captures result label and drops obsolete success/error', asyn
       )
       assert.equal(api.saving.value, false)
     }
+})
+
+test('Record Waste opens locally and closes when its account, Kitchen or route changes', () => {
+  for (const change of ['account', 'kitchen', 'route', 'access']) {
+    const scope = effectScope()
+    const kitchenId = ref('k'),
+      canWrite = ref(true),
+      currentUser = ref({ uid: 'operator' })
+    const route = reactive({ fullPath: '/workspace/kitchen/stock/waste' })
+    const state = scope.run(() =>
+      load(
+        '../../runtime/kitchen/components/Waste/Tools.vue',
+        {
+          ref,
+          watch,
+          useRoute: () => route,
+          useAuth: () => ({ currentUser }),
+          useToast: () => ({ add() {} }),
+          useKitchenWorkspaceWaste: () => ({ kitchenId, canWrite }),
+        },
+        '({open})',
+        true
+      )
+    )
+    state.open.value = true
+    if (change === 'account') currentUser.value = { uid: 'other' }
+    if (change === 'kitchen') kitchenId.value = 'other'
+    if (change === 'route') route.fullPath = '/workspace/kitchen/overview'
+    if (change === 'access') canWrite.value = false
+    assert.equal(state.open.value, false)
+    scope.stop()
+  }
 })

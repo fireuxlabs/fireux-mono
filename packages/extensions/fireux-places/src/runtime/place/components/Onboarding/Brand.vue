@@ -39,8 +39,6 @@
     <PlaceOnboardingBrandPalette
       :model-value="brandPalette"
       :disabled="!paletteEditable"
-      active-label="Place colour"
-      inherit-label="FireUX default"
       @update:model-value="emit('update:brandPalette', $event)"
     />
 
@@ -57,7 +55,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
+import type { Place } from '../../models/place.model'
 
 const props = defineProps<{
   placeName: string
@@ -65,13 +63,13 @@ const props = defineProps<{
   imageFile: File | null
   uploading: boolean
   imageEditable: boolean
-  brandPalette: SparseBrandPalette
+  brandPalette: Place['brand_palette']
   paletteEditable: boolean
 }>()
 
 const emit = defineEmits<{
   (event: 'image-selected', file: File | null): void
-  (event: 'update:brandPalette', value: SparseBrandPalette): void
+  (event: 'update:brandPalette', value: Place['brand_palette']): void
 }>()
 
 const objectUrl = ref('')

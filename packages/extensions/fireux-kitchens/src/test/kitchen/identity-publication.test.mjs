@@ -29,7 +29,7 @@ import {
 import {
   kitchenIdentityPurpose,
   kitchenIdentityBoundary,
-} from '../../runtime/kitchen/models/identity-intent.ts'
+} from '../../runtime/kitchen/content/identity-intent.ts'
 
 const runtime = new URL('../../runtime/', import.meta.url)
 function load(path, expression, deps) {
@@ -716,61 +716,6 @@ test('Kitchen-only updates use record authority inside their transaction and rej
   assert.equal(writes.length, 1)
 })
 
-test('Identity tools describe implemented controls and route to their actual pages', async () => {
-  const {
-    toolHypotheses: tools,
-    records,
-    clusters,
-  } = load(
-    'kitchen/models/identity-search-demand.ts',
-    'kitchenIdentitySearchDemand',
-    {}
-  )
-  assert.ok(!tools.some((tool) => tool.id.includes('link-place')))
-  assert.ok(!clusters.some((cluster) => cluster.id === 'link'))
-  const navigations = []
-  const state = { value: null }
-  const deps = {
-    computed,
-    watch: () => {},
-    useAuth: () => ({ currentUser: ref({ uid: 'alice' }) }),
-    useState: () => state,
-    useWorkspace: () => ({ selectedId: ref('a') }),
-    useRoute: () => ({ path: '/workspace/kitchen' }),
-    useKitchenMenuCollection: () => ({ menus: ref([]) }),
-    navigateTo: async (path) => navigations.push(path),
-    kitchenCapabilityTools: { identity: tools },
-  }
-  const directory = load(
-    'kitchen/composables/workspace/useKitchenCapabilityTools.ts',
-    'useKitchenCapabilityToolDirectory',
-    deps
-  )()
-  assert.equal(directory.tools.value.length, 5)
-  for (const tool of tools) {
-    assert.equal(tool.status, 'available')
-    for (const path of tool.evidence) {
-      const target = path.startsWith('fireux-places/')
-        ? new URL(
-            '../../../../fireux-places/src/' +
-              path.slice('fireux-places/'.length),
-            import.meta.url
-          )
-        : new URL(path, runtime)
-      assert.ok(readFileSync(target, 'utf8').length)
-    }
-    assert.ok(records.some((record) => record.readBy.includes(tool.id)))
-    assert.equal(await directory.performAction(tool.id), true)
-  }
-  assert.deepEqual(navigations, [
-    '/workspace/kitchen/identity',
-    '/workspace/kitchen/identity',
-    '/workspace/kitchen/identity',
-    '/workspace/kitchen/identity/operating-hours',
-    '/workspace/kitchen/identity/appearance',
-  ])
-})
-
 test('venue failure preserves Kitchen settings, while absent Kitchen hides them', async () => {
   const source = readFileSync(
     new URL('kitchen/components/Identity/Index.vue', runtime),
@@ -921,12 +866,15 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
   for (const status of ['empty', 'error', 'pending']) {
     const html = await render(status, true)
     assert.match(html, /Show in directory/)
-    assert.match(html, new RegExp(status === 'pending' ? 'loading' : status))
+    assert.match(
+      html,
+      new RegExp(status === 'empty' ? 'Choose a Kitchen' : status)
+    )
     assert.doesNotMatch(html, /Currency|Venue details unavailable/)
   }
   const empty = await render('empty', false)
   assert.doesNotMatch(empty, /Show in directory|Currency/)
-  assert.match(empty, /empty/)
+  assert.match(empty, /Choose a Kitchen/)
 })
 
 test('Identity sections use Place facts, keep nested Kitchen identity and close editors on scope changes', () => {

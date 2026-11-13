@@ -1,4 +1,4 @@
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { ThemePalette } from 'fireux-core/types/theme'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import {
@@ -45,7 +45,7 @@ export type DemoPlaceInput = {
   street: string
   lat: number
   lng: number
-  palette: SparseBrandPalette
+  palette: Place['brand_palette']
   logoImage?: string
   wordmarkImage?: string
   imageUrl?: string

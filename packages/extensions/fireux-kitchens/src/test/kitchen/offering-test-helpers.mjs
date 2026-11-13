@@ -16,7 +16,6 @@ const policy = load(
   '../../runtime/kitchen/utils/ordering-policy.ts',
   'readKitchenOrderTypeConfig',
   {
-    KitchenOrderContactFields: ['name', 'phone', 'email'],
     KitchenOrderTypes: [
       'dine_in',
       'eat_in',

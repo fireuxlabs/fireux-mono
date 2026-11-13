@@ -289,9 +289,8 @@ parity.
 
 Ecosystem-owned agent composition is pure metadata under
 `runtime/models/workspace-agents.ts`, not an `ai` Entity or discovery root.
-Kitchen agent server consumers import the Kitchen-owned coordinator from
-`fireux-kitchens/runtime/kitchen/models/workspace-agent`. Misebox's metadata
-only composes that definition beneath its ecosystem agent.
+Misebox has retired its incomplete Kitchen-agent catalogue and exposes no
+agent metadata requiring deleted Kitchen models.
 Bringli, BuenoHost, FireUX and Granite retain equivalent exported metadata;
 placement does not assert that those declarations have an active consumer.
 The existing `./runtime/*` package export resolves these model paths; no Nuxt
@@ -328,9 +327,9 @@ monitor models/validation are domain-owned, without inventing a receiver route.
 
 ### Kitchen AI ownership
 
-`fireux-kitchens` owns Kitchen AI coordination, Team tool selection, Menu summaries,
-Drinks descriptions and the Kitchen voice-input HTTP adapter. Its native layer
-registers the existing routes. Domain implementation lives under
-`kitchen/server/agent`; provider transport stays in `fireux-ai`. Misebox keeps
-its ecosystem identity and cross-extension composition. Kitchen does not import
-Misebox or require a Misebox-owned provider.
+`fireux-kitchens` retains its focused Home, Identity, Menu and Team intent
+interpreters, Menu summaries and Drinks descriptions. Their trusted adapters
+remain with their domain owners; provider transport stays in `fireux-ai`.
+The incomplete catalogue-based Kitchen agents, research references and generic
+agent HTTP adapters are retired. Misebox does not reconstruct their definitions
+as Entity models or compatibility catalogues.

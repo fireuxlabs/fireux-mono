@@ -29,6 +29,16 @@ Explicit Misebox database cutovers and reviewed client input catalogues live in
 plan/apply/verify commands remain manual; filesystem relocation is not a live
 cutover. Package regression tests remain under `src/test`.
 
+## Preview style ownership
+
+Template One's PageStyle is local to `src/runtime/models/template-one.ts` and
+describes preview inputs only, with its own explicit colour fields rather than
+deriving a compatibility shape from Place. App and Workspace theme types come directly
+from `fireux-core/types/theme`. The preview shape does not define Kitchen
+storage, App theme authority or a competing theme system. See the
+[theming map](../../../../../docs/concepts/theming.md) and the current Template
+One consumers when changing this boundary.
+
 ## Ownership
 
 ```text
@@ -45,6 +55,12 @@ Misebox App → fireux-misebox → domain extensions → fireux-core
 - `fireux-app` owns shared landing motion. Template One consumes its
   `runtime/composables/landing/useLandingMotion.ts` directly; scenes keep their
   existing semantic hooks and do not own a second animation lifecycle.
+
+Public operation catalogues are optional App/Ecosystem literature. Misebox App
+currently omits that catalogue rather than deriving public promises from Kitchen
+Entity models. Its public Workspace preview and links reuse App-authored
+`app/content/landing.ts` and point at real Workspace routes; they do not depend
+on an operation catalogue. Workspace registration retains its own owner.
 
 Tenant-specific branches, ids, defaults, and copied domain models do not belong
 in the ecosystem package.
@@ -372,7 +388,7 @@ and Footer components directly. Those shared components remain active.
   content page returns to Menus). Static capability routes stay in place;
   selecting the same Kitchen preserves the current route. Kitchen's index
   selection command owns this navigation through `workspace-switch-route.ts`.
-- `fireux-kitchens` owns `WorkspaceKitchenAI`, `WorkspaceKitchen`, target
+- `fireux-kitchens` owns `WorkspaceKitchen`, target
   loading, selection, creation, authority, and operational capability
   components. Each route supplies its own Kitchen Hero copy directly to the
   shared `WorkspaceHero` primitive.
@@ -601,19 +617,17 @@ remain in its accessible label and tooltip; clicking the indicator follows the
 same whole-tile link. Its whole-tile
 `FireActionSurface` link retains shared hover/focus behavior, with a full-width
 square `KitchenMenuItemsPhoto`, wrapping name and bottom-aligned price. Tiles
-have no arrow or empty-category label. Preparation setup stays in the Item detail view. A visible icon-only pressed toggle selects the image grid or list; the toolbar has no More menu.
+have no arrow or empty-category label. A visible icon-only pressed toggle selects the image grid or list; the toolbar has no More menu.
 Items AI is inline between its heading and collection controls, reusing the compact
 Capability/Assistant/Composer chain and the existing collection context.
 Its Assistant uses Core `WorkspaceAICompact` for the bounded results area and
 single-row `WorkspaceAICompactComposer` with inline voice/send controls and no
-model footer or idle suggestion row; Kitchen retains prompts, tools, voice and confirmations. It has no More action or slideover. Items store optional `preparation_station_ids`:
-missing/null is not configured, [] explicitly requires no preparation, and IDs
-refer to active preparation Stations in the same Kitchen. Coordination Stations
-such as Pass are excluded. The Item detail route provides one Station reader through
-`useKitchenItemPreparation`; `PreparationStations.vue` consumes the existing Item
-and trusted update command. Historical group fields and free-text Station notes
-remain readable but do not supply assignments. Item groups, their commands and
-onboarding seeds are retired; there is no stored-data deletion or migration.
+model footer or idle suggestion row; Kitchen retains prompts, tools, voice and confirmations. It has no More action or slideover. Preparation belongs to Prep & Production, whose existing Recipe preparation,
+Prep Item, Station and Batch surfaces retain their ownership. The Menu Item
+route does not acquire Station, Recipe or Prep Item readers. Its views are
+Details and Appears on; old `view=preparation` and `view=spec` queries open
+Details. Historical preparation fields stay untouched in stored records and do
+not expand the minimal Item identity model.
 `Photo.vue` uses Core `photoImageUrl` and native square cover presentation, with
 an icon only when no photo exists. Shared photo delivery removes transparent
 padding from existing uploads without changing stored files or tokens. Kitchen
@@ -627,10 +641,10 @@ editing workflows. Recipes and Ingredients live under Prep & Production.
 Verify these distinctions with `workspace-navigation.test.mjs`.
 Overview is a direct sidebar entrance for the selected Kitchen;
 the Menu setup tool directory remains a contextual route hidden from the sidebar.
-The combined catalogue reads the existing live Dish collection once, filters
+The combined catalogue reads the existing live `dishes` collection once, filters
 All/Food/Drinks locally, and opens the unified `/menu/items/[dishId]`
 editor. `Menu/Items/Collection/Index.vue` composes Controls, Results and
-Dialogs. `useDishCatalogue` owns shared filters, pagination and return-query state;
+Dialogs. `useItemCatalogue` owns shared filters, pagination and return-query state;
 its strict provided context never acquires another collection. Dialogs owns local
 the creation disclosure, clearing it on Kitchen changes. Controls
 and Results emit actions without owning commands or dialog state.
@@ -643,27 +657,30 @@ settled shorter results clamp it. See `item-reader-internals.test.mjs`.
 The Item detail route declares a content-owned shared child page header, with
 the Item name and return/actions aligned to the Workspace frame. It adds no
 centred domain width cap or repeated thumbnail heading. Details and Price & choices
-use the shared responsive two-column grid, stacking on smaller screens. Preparation
-and Appears on retain their focused views and existing reader lifetimes.
-The canonical Kitchen Item type is `Item` in `kitchen/models/item.model.ts`.
-`MenuItem` owns a section placement; `PublicMenuItem` in
-`menu/models/menu-detail.model.ts` is the resolved guest-facing projection.
-Reusable Item readers, editors and commands live under the Kitchen Item spine;
-`useKitchenItemRecord` acquires the record and `useKitchenItemDetailContext` shares
-that exact read with its children. Historical `dishes`, `dish_id` and `dishId`
-remain storage/API contracts, not competing domain models.
-Item categories are optional operator-authored text, with no system vocabulary or
-Food-only restriction. Catalogue filters use the selected Kitchen’s current Item values.
-The Item model has no closed Food/Drink type. Historical `item_kind` remains
-readable; missing values are not classified as Food by the Item reader.
-Stored `dishes` collection paths and protected command names retain their current contracts.
-The Item detail parent provides one live Item reader through
-`useKitchenItemDetailContext`; its field editors and relationship readers consume
-that strict context. Details combines identity and pricing, Preparation combines
-Station assignment and specification with disclosed requirements, and Appears on
-shows only matched Menu placements once reads settle. Legacy Pricing and
-Specification links open Details and Preparation. Relationship links return to
-the inline builder, retaining exact daily-section links. Item actions owns deletion.
+use the shared responsive two-column grid, stacking on smaller screens. Appears on retains its focused relationship view.
+The minimal Kitchen Item identity belongs to
+`fireux-kitchens/src/runtime/kitchen/item/models/model.ts`. It owns its stable
+path-derived identity, name, optional description, one photo URL and shared
+creation/update stamp values. It has no Kitchen selector, category vocabulary,
+pricing, flagship flag or preparation fields. `item/storage.ts` preserves the
+existing `kitchens/{kitchenId}/dishes/{dishId}` contract; filesystem ownership does
+not rename persisted collections or authorize migration.
+`item/composables/useKitchenItemRead.ts` owns the single live read, Kitchen
+access gating and private Item field/stamp normalization. It reuses Core's
+Firestore reader; path identity wins over stored IDs. Missing or invalid stamps
+remain absent on the one `Item` type, rather than producing a second read shape
+or fabricated provenance. Trusted creation commands still write both stamps.
+`item/composables/useKitchenItemContext.ts` only provides/injects that reader
+for the detail page's children; it performs no read and grants no authority.
+See `src/test/kitchen/item/foundation.test.mjs` for scope, old-record and
+read-outcome checks.
+
+`MenuItem` remains the section placement; `PublicMenuItem` remains the resolved
+guest projection. Pricing/choices, Kitchen-selected flagship, operator categories,
+preparation and effective public offers require their own explicit ownership;
+the identity model is not a replacement for their contracts. Historical storage
+fields do not make those fields Item-owned, and old readers/commands must not
+reintroduce them into the identity model to satisfy compilation.
 
 Services uses the Workspace page title and its channel controls; it does not
 expose the historical public Menu grouping title as a Services editor. Stored
@@ -1254,42 +1271,31 @@ remain visible. Context is omitted from public Kitchen/Place/Menu projections.
 `kitchen/server/context/authorized.ts` supplies the current Home and Menus intent
 interpreters with saved strings after selected-Kitchen authority. Menus includes
 up to 12 listed Menu contexts, prioritizing the selected Menu. Client page facts
-cannot override that context. The Kitchen-owned agents and Menu summary endpoint
-reuse their already-read Kitchen/Menu/Dish/Recipe documents and read the linked Place's
-context through `kitchen/server/context/read.ts`. Saved text is background, not
+cannot override that context. The Menu summary endpoint reuses its already-read Kitchen/Menu records and reads
+the linked Place's context through `kitchen/server/context/read.ts`. Saved text is background, not
 instructions or measured evidence. Questions and provisional assumptions remain
 unconfirmed until the owner decides. Editing context never changes hours, prices
 or other operational settings. These are human Workspace commands, not new
 agent-callable write tools. Verify `fireux-kitchens/src/test/record-context.test.mjs`.
 
-- KitchenAI is the Kitchen-owned coordinator over registered capability agents,
-  evidence, and named tools.
-- It never invents live operational facts or bypasses selection, subscription,
-  authority, confirmation, or approval.
-- Search-demand literature is not runtime evidence.
-- A capability is agent-callable only when a registered tool and trusted command
-  prove it.
-- UI, context, inference, tool selection, confirmation, and mutation remain
-  distinct responsibilities.
+The incomplete catalogue-based capability agents, research reference pages and
+`/api/workspace/kitchen/agent*` adapters are retired. They have no placeholder
+models, compatibility catalogues or no-op endpoints. Misebox publishes no
+Kitchen-agent metadata. Existing Home, Identity, Menu and Team intent
+interpreters, Menu summaries and Drinks description commands keep their domain
+owners and authority checks; provider transport remains in `fireux-ai`.
 
-Menu `tools` definitions describe the existing Workspace import workflow;
-they are not standalone agent-callable registrations and do not accept injected
-tool context. Their catalogue links open the import screen. Team retains its
-real shared definitions and server executors; agent-only actions are reference
-entries, not direct human action links. Verify the rendered distinction and
-doorways with `src/test/kitchen/tool-catalogue.test.mjs`.
+Human actions use their direct routes and existing commands. Station creation
+uses the Station context's modal state, and Record Waste owns its local modal;
+neither requires an AI tool catalogue. Account, Kitchen, route and write-scope
+changes close these disclosures without granting command authority.
 
-Kitchen AI implementation and its `/api/workspace/kitchen/agent*`, Menu AI,
-Drinks description and voice-input adapters belong to `fireux-kitchens`. Native
-Kitchen runtime discovery registers the routes once; Misebox does not provide
-their implementation. Kitchen-owned `kitchen/models/workspace-agent.ts` defines
-the coordinator and operation lookup. Misebox may compose that metadata beneath
-its ecosystem agent without becoming its runtime owner. Provider transport stays
-in `fireux-ai`. Authority, confirmation and domain commands remain Kitchen-owned.
-
-Inspect Kitchen `kitchen/server/agent`, `menu/server/ai`, Workspace AI components
-and their source-owned tests. The App-only product-context projection stays in
-Misebox App’s `server/app/context/product.ts`.
+App-selected channel configuration lives in `fireux-kitchens/src/types/ordering.ts`.
+Persisted service/channel validation stays in `kitchen/utils/interaction-types.ts`;
+bounded report periods stay in `kitchen/utils/finance-report-periods.ts`.
+These are consumed configuration/validation contracts, not Entity models.
+Identity intent copy belongs to `kitchen/content/identity-intent.ts`; shared
+landing action destinations belong to `kitchen/content/landing-intent.ts`.
 
 Kitchen Home, Menus, Identity and Team intent interpreters, plus the shared Test
 interpreter, use the existing Codex development transport without a forced model

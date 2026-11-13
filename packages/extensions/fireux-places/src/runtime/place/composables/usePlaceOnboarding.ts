@@ -1,7 +1,7 @@
 import { useOnboarding } from 'fireux-core/runtime/composables/shared/useOnboarding'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
-import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
+import type { Place } from '../models/place.model'
+import { parseBrandPalette } from '../utils/brand-palette'
 import { computed, ref, watch } from 'vue'
 import { fetchPlaceDetails } from './firestore/fetch/google/usePlacesGoogle'
 import { canonicalPlaceId } from '../utils/canonical-place-id'
@@ -96,7 +96,7 @@ export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
   const canEditBrandPalette = computed(() =>
     Boolean(canAddBrand.value && !preview.value?.brand_palette)
   )
-  const brandPalette = computed<SparseBrandPalette>(
+  const brandPalette = computed<Place['brand_palette']>(
     () => draft.value?.brand_palette || {}
   )
   const currencyCode = computed(() =>
@@ -372,7 +372,7 @@ export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
     coverFile.value = value
   }
 
-  function setBrandPalette(value: SparseBrandPalette) {
+  function setBrandPalette(value: Place['brand_palette']) {
     if (!draft.value || !canEditBrandPalette.value) return
     const next = { ...draft.value }
     if (Object.keys(value).length) next.brand_palette = value

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <WorkspaceKitchenAICapabilityInfo capability="performance" />
     <section class="workspace-surface">
       <UPageHeader title="Service report" />
       <UAlert
@@ -9,28 +8,6 @@
         color="warning"
         variant="subtle"
       />
-      <FireDisclosurePanel
-        title="Capability reference"
-        :default-open="false"
-      >
-        <WorkspaceKitchenToolsToolbar capability="performance" />
-        <WorkspaceKitchenAICapability
-          capability="performance"
-          :show-suggestion-cards="false"
-        />
-        <WorkspaceKitchenResearchCapabilitySummary capability="performance" />
-        <UAlert
-          color="neutral"
-          variant="soft"
-          title="Supported measures only"
-          description="Performance comparisons require authoritative service, production, or readiness records. This doorway does not infer labour, productivity, or profit."
-        />
-        <WorkspaceKitchenResearchGuide capability="performance" />
-        <WorkspaceKitchenResearchSegue
-          capability="Performance"
-          base-path="/workspace/kitchen/reports/performance/search-demand"
-        />
-      </FireDisclosurePanel>
     </section>
   </div>
 </template>

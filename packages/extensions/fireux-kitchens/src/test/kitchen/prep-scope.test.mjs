@@ -191,66 +191,6 @@ test('Recipe Prep button saves only Prep and snapshots quantity for its local un
     assert.equal(api.message.value, '')
   }
 })
-test('Item Prep button ignores stale failure after focus round trip', async () => {
-  const h = scope(),
-    dishId = ref('dish'),
-    pending = deferred()
-  const useItemEditorScope = load(
-    '../../runtime/kitchen/composables/item/useItemEditorScope.ts',
-    {
-      watch,
-      onBeforeUnmount: () => {},
-      useAuth: () => ({ currentUser: h.currentUser }),
-    },
-    'useItemEditorScope'
-  )
-  const api = load(
-    '../../runtime/kitchen/components/Menu/Items/Spec.vue',
-    {
-      ref,
-      computed,
-      ...specification,
-      useItemEditorScope,
-      useRoute: () => ({ query: {} }),
-      useKitchenWorkspace: () => ({ id: h.selectedId, outcome: ref('ready') }),
-      useRouteParam: () => dishId,
-      useKitchenItemDetail: () => ({
-        kitchenId: h.selectedId,
-        storageKitchenId: ref('k'),
-        dishId,
-        dish: ref({}),
-        canWrite: ref(true),
-        rootCollection: ref('kitchens'),
-        databaseId: ref('db'),
-      }),
-      useKitchenIngredients: () => ({ ingredients: ref([]), error: ref(null) }),
-      useKitchenPrepItems: () => ({ prepItems: ref([]), error: ref(null) }),
-      useKitchenRecipeCollection: () => ({
-        recipes: ref([]),
-        error: ref(null),
-      }),
-      useKitchenPrepItemCreate: () => ({
-        createPrepItem: () => pending.promise,
-      }),
-      useItemUpdate: () => ({
-        updateItem: () => {
-          throw Error('Item save remains separate')
-        },
-      }),
-    },
-    '({toggle,createPrep,newPrep,error,creating})',
-    true
-  )
-  api.toggle()
-  api.newPrep.value.name = 'Sauce'
-  const result = api.createPrep()
-  dishId.value = 'other'
-  dishId.value = 'dish'
-  pending.reject(Error('Old failure'))
-  await result
-  assert.equal(api.error.value, '')
-  assert.equal(api.creating.value, false)
-})
 
 test('stable Prep create preserves local source maps and returns the created identity', async () => {
   const h = scope(),

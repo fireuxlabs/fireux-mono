@@ -4,11 +4,8 @@ import type {
   KitchenOrderFulfilmentPolicy,
   KitchenOrderTypeConfig,
 } from '../models/ordering.model'
-import { KitchenOrderContactFields } from '../models/ordering.model'
-import {
-  KitchenOrderTypes,
-  type KitchenOrderType,
-} from '../models/offering-interaction-types.model'
+const KitchenOrderContactFields = ['name', 'phone', 'email'] as const
+import { KitchenOrderTypes, type KitchenOrderType } from './interaction-types'
 import { readKitchenOrderWhatsAppNotificationPolicy } from './ordering-whatsapp'
 
 const depositTypes = [

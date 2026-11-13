@@ -6,7 +6,7 @@
       v-for="field in fields"
       :key="field.key"
       :label="field.label"
-      :hint="modelValue[field.key] ? activeLabel : inheritLabel"
+      :hint="modelValue[field.key] ? 'Place colour' : 'Default'"
     >
       <UColorPicker
         :model-value="displayColor(field.key)"
@@ -31,7 +31,7 @@
           color="neutral"
           variant="soft"
           icon="i-lucide-rotate-ccw"
-          :aria-label="`Use inherited ${field.label.toLowerCase()}`"
+          :aria-label="`Reset ${field.label.toLowerCase()}`"
           @click="resetColor(field.key)"
         />
       </UFieldGroup>
@@ -40,57 +40,49 @@
 </template>
 
 <script setup lang="ts">
-import {
-  type BrandPaletteKey,
-  type SparseBrandPalette,
-} from 'fireux-core/runtime/models/utils/style.model'
-import { DEFAULT_BRAND_PALETTE } from 'fireux-core/runtime/utils/brand-palette'
+import type { Place } from '../../models/place.model'
 
-const props = withDefaults(defineProps<{
-  modelValue: SparseBrandPalette
-  inherited?: SparseBrandPalette
-  disabled?: boolean
-  activeLabel?: string
-  inheritLabel?: string
-}>(), {
-  inherited: () => ({}),
-  disabled: false,
-  activeLabel: 'Selected',
-  inheritLabel: 'Inherited',
-})
+const props = withDefaults(
+  defineProps<{
+    modelValue: Place['brand_palette']
+    disabled?: boolean
+  }>(),
+  {
+    disabled: false,
+  }
+)
 
 const emit = defineEmits<{
-  'update:modelValue': [value: SparseBrandPalette]
+  'update:modelValue': [value: Place['brand_palette']]
 }>()
 
-const fields: { key: BrandPaletteKey; label: string }[] = [
+const fields: { key: keyof Place['brand_palette']; label: string }[] = [
   { key: 'primary_color', label: 'Primary colour' },
   { key: 'secondary_color', label: 'Secondary colour' },
 ]
 
-const text = (value: unknown) => String(value ?? '').trim().toLowerCase()
+const text = (value: unknown) =>
+  String(value ?? '')
+    .trim()
+    .toLowerCase()
 
-function inheritedColor(key: BrandPaletteKey) {
-  return text(props.inherited[key]) || DEFAULT_BRAND_PALETTE[key]
-}
+const defaults = { primary_color: '#0f766e', secondary_color: '#64748b' }
 
-function displayColor(key: BrandPaletteKey) {
+function displayColor(key: keyof Place['brand_palette']) {
   const selected = text(props.modelValue[key])
-  return /^#[0-9a-f]{6}$/.test(selected)
-    ? selected
-    : inheritedColor(key)
+  return /^#[0-9a-f]{6}$/.test(selected) ? selected : defaults[key]
 }
 
-function updateColor(key: BrandPaletteKey, value: unknown) {
+function updateColor(key: keyof Place['brand_palette'], value: unknown) {
   if (props.disabled) return
   const color = text(value)
   const next = { ...props.modelValue }
-  if (!color || color === inheritedColor(key)) delete next[key]
+  if (!color) delete next[key]
   else next[key] = color
   emit('update:modelValue', next)
 }
 
-function resetColor(key: BrandPaletteKey) {
+function resetColor(key: keyof Place['brand_palette']) {
   const next = { ...props.modelValue }
   delete next[key]
   emit('update:modelValue', next)

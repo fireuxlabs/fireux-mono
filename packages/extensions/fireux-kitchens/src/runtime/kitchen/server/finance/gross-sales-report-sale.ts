@@ -7,7 +7,7 @@ import {
 import {
   isKitchenOrderChannel,
   isKitchenOrderType,
-} from '../../models/offering-interaction-types.model'
+} from '../../utils/interaction-types'
 import { KitchenSaleSchemaVersion } from '../../utils/sale.ts'
 import { requireKitchenSalePricing } from './sale-pricing'
 import {

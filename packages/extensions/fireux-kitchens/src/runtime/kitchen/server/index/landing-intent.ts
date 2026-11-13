@@ -7,7 +7,7 @@ import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import {
   kitchenLandingDestinations,
   type KitchenLandingIntent,
-} from '../../models/landing-intent'
+} from '../../content/landing-intent'
 
 /** Prepares page actions and reads only authorized selected-Kitchen knowledge. */
 export async function interpretKitchenLanding(event: H3Event, body: unknown) {

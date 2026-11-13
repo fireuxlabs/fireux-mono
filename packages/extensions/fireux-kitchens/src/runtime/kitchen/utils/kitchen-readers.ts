@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: resolve explicit Kitchen overrides through the concrete Place runtime module.
 import { intersectWeekdayHours } from '../../utils/weekday-time-constraints'
 import type { WorkspacePalette } from 'fireux-core/types/theme'
-import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
+import { readWorkspacePalette } from 'fireux-core/runtime/utils/theme-palette'
 import { readPlaceBusinessHours } from 'fireux-places/runtime/place/utils/place-spine'
 import type { KitchenOrderType } from '../models/offering-interaction-types.model'
 import { readWeekdayTimeWindowsConfig } from '../../utils/weekday-time'

@@ -1,9 +1,7 @@
 <template>
   <section :aria-label="catalogue.title" class="dish-catalogue">
     <KitchenMenuItemsCollectionControls @create="dialogs?.openCreate($event)">
-      <template #intro>
-        <KitchenMenuItemsAI v-if="['ready', 'empty'].includes(outcome)" />
-      </template>
+      <template #intro> </template>
     </KitchenMenuItemsCollectionControls>
     <KitchenMenuItemsCollectionResults @create="dialogs?.openCreate($event)" />
     <KitchenMenuItemsCollectionDialogs ref="dialogs" />

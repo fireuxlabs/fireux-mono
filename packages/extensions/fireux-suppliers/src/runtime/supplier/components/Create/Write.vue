@@ -61,7 +61,7 @@
           :disabled="isCreating || (!create && !businessId)"
           @click="handleCreate"
         >
-          {{ isCreating ? 'Creating…' : 'Create Supplier Workspace' }}
+          {{ isCreating ? 'Creating…' : 'Create Supplier' }}
         </UButton>
         <UButton
           v-if="cancelTo"
@@ -88,7 +88,7 @@ import { useRoute, useRouter } from 'vue-router'
 import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
-} from 'fireux-core/runtime/models/utils/entity-create.model'
+} from 'fireux-core/runtime/types/entity-create'
 import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useSupplierCreate } from '../../composables/firestore/mutations/useSupplierCreate'
 
@@ -106,7 +106,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const route = useRoute()
-const { createSupplier, createSupplierWorkspace } = useSupplierCreate()
+const { createSupplierWorkspace } = useSupplierCreate()
 const { select } = useWorkspace('supplier')
 
 const isCreating = ref(false)
@@ -163,26 +163,18 @@ const handleCreate = async () => {
   const returnTo =
     props.returnTo ||
     (resolvedMode.value === 'root' ? '/suppliers' : '/workspace/supplier')
-  const create =
-    props.create ??
-    (isWorkspaceMode.value ? createSupplierWorkspace : createSupplier)
+  const create = props.create
   isCreating.value = true
   errorMessage.value = null
 
   try {
-    const result = props.create
+    const result = create
       ? await create()
-      : isWorkspaceMode.value
-        ? await createSupplierWorkspace({
-            organizationName: organizationName.value,
-            businessId: businessId.value,
-            isCurrent,
-          })
-        : await createSupplier({
-            organizationName: organizationName.value,
-            businessId: businessId.value,
-            isCurrent,
-          })
+      : await createSupplierWorkspace({
+          organizationName: organizationName.value,
+          businessId: businessId.value,
+          isCurrent,
+        })
     if (!isCurrent()) return
     if (workspaceMode) {
       select(result.id)

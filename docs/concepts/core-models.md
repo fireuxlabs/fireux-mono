@@ -367,6 +367,24 @@ Core's `runtime/ecosystem/server/identity/read.ts` owns the canonical root read.
 directory derives detail links from the document ID and supplies the App count
 from related Apps.
 
+Place owns its two-colour `brand_palette` directly in its model. Consumers
+reference `Place['brand_palette']`; boundary validation lives in
+`runtime/place/utils/brand-palette.ts`. Core retains the scalar
+hex-colour helper and App/Workspace mechanics in `runtime/utils/theme-palette.ts`. App/Workspace
+theme types are imported directly from `fireux-core/types/theme`. Misebox
+Template One owns its local PageStyle preview shape; unused App-only style
+values do not become Core contracts.
+
+Shared creation modes and results live in `runtime/types/entity-create.ts`,
+used by Portfolio, Supplier and Kitchen creation. Root/workspace mode controls
+the existing presentation and selection flow; it is not database authority.
+Supplier rejects unsupported Test writes through its canonical create command;
+there is no unused Test-create facade or shared root-result contract.
+Supplier exposes one `createSupplierWorkspace` command. Both UI modes use
+its existing onboarding transaction; mode controls selection and navigation
+only. The form may retain an explicit caller-supplied create callback, captured
+with the same intent scope.
+
 Shared management scope is `runtime/types/entity-management.ts`, consumed by
 App scope helpers and the owning domain models/readers. Property, Portfolio,
 Supplier and Blank declare their root defaults locally. Jobs defines its own

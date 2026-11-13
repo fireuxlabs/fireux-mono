@@ -1,5 +1,4 @@
 <template>
-  <WorkspaceKitchenAICapabilityInfo capability="ingredients" />
   <div>
     <KitchenPrepAndProductionIngredients />
   </div>
