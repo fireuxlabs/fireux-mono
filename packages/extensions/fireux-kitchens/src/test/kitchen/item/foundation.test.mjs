@@ -8,6 +8,8 @@ import {
   provideKitchenItemContext,
   useKitchenItemContext,
 } from '../../../runtime/kitchen/item/composables/useKitchenItemContext.ts'
+import { readItemIdentity } from '../../../runtime/kitchen/item/identity.ts'
+import { readItemOffer } from '../../../runtime/kitchen/utils/item-pricing.ts'
 import { ItemStorage } from '../../../runtime/kitchen/item/storage.ts'
 import { serverKitchenItemsTarget } from '../../../runtime/kitchen/server/mutation-targets.ts'
 
@@ -104,6 +106,8 @@ function readerFixture() {
     .replace(/^export /gm, '')
   const deps = {
     computed,
+    readItemIdentity,
+    readItemOffer,
     toValue,
     ItemStorage,
     useKitchenAccess: () => access,
@@ -233,4 +237,47 @@ test('Item keeps independently valid provenance without requiring a second recor
   })
   assert.equal(Object.hasOwn(item, 'created'), false)
   assert.deepEqual(item.updated, { at, by: 'operator' })
+})
+
+test('selling defaults share the Item read without expanding identity or inventing a normal price', () => {
+  const f = readerFixture()
+  f.records.value['kitchens/k/dishes/aioli'] = {
+    name: 'Aioli',
+    price_options: [{ label: 'Large', quantity: 0, unit: '', price: 12 }],
+    add_ons: [{ id: 'garlic', label: 'Garlic', price: 0 }],
+  }
+  assert.equal(f.bindings, 1)
+  assert.deepEqual(f.reader.item.value, { id: 'aioli', name: 'Aioli' })
+  assert.equal(f.reader.offer.value.price, undefined)
+  assert.deepEqual(
+    f.reader.offer.value.choice_groups.map((group) => [
+      group.min,
+      group.max,
+      group.pricing,
+    ]),
+    [
+      [1, 1, 'full'],
+      [0, null, 'additional'],
+    ]
+  )
+  assert.equal(f.reader.offerError.value, null)
+  f.access.ids.value = []
+  assert.equal(f.reader.offer.value, null)
+  f.scope.stop()
+})
+
+test('malformed selling data does not hide Item identity or become editable empty defaults', () => {
+  const f = readerFixture()
+  f.records.value['kitchens/k/dishes/aioli'] = {
+    name: 'Aioli',
+    choice_groups: [{ bad: true }],
+  }
+  assert.equal(f.reader.outcome.value, 'ready')
+  assert.equal(f.reader.item.value.name, 'Aioli')
+  assert.equal(f.reader.offer.value, null)
+  assert.ok(f.reader.offerError.value instanceof Error)
+  assert.deepEqual(f.records.value['kitchens/k/dishes/aioli'].choice_groups, [
+    { bad: true },
+  ])
+  f.scope.stop()
 })

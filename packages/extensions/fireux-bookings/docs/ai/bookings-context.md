@@ -33,6 +33,11 @@ change invalidates local state; an obsolete response cannot confirm the new
 intent. This UI boundary does not cancel or roll back host-side effects. The
 host remains responsible for idempotency and uncertain-completion recovery.
 
+The confirmation receipt can include optional labelled plain-text `details`.
+The flow snapshots these with the reference, and the existing Confirmation child
+displays them. Consuming domains own their labels and values (for example, a
+tour's meeting place); Bookings neither requires nor acquires location data.
+
 Blank is an ignorant host: its configuration editor supplies a title and time
 options, and its preview adapter returns local receipts. It contains no bike,
 tour, table or accommodation scenario. Docs supplies neutral placeholder offers

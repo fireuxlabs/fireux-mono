@@ -1,16 +1,13 @@
 <template>
   <LaTapBernePage>
-    <LaTapBerneHero
-      :title="pageTitle"
-      :subtitle="pageSubtitle"
-    >
+    <LaTapBerneHero :title="pageTitle" :subtitle="pageSubtitle">
       <LaTapBerneGalleryPreview />
     </LaTapBerneHero>
   </LaTapBernePage>
 </template>
 
 <script setup lang="ts">
-import { laTapBerneContent } from '../config/content.config'
+import { laTapBerneContent } from '../content/site'
 
 // Tenant content page spine: docs/concepts/family-tenant-global.md
 const page = laTapBerneContent.pages.gallery

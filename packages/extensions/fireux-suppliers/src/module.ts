@@ -6,9 +6,9 @@ import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
 } from 'fireux-core/config/app/seo-config'
-import { configureComponents } from './config/module/components-config'
-import { configurePages } from './config/module/pages-config'
-import { configureServer } from './config/module/server-config'
+import { configureComponents } from './config/module/components-config.ts'
+import { requireNativeRuntimeLayer } from 'fireux-core/config/module/runtime-layer'
+import { configureServer } from './config/module/server-config.ts'
 
 export type FireuxSuppliersModuleOptions = {
   /**
@@ -61,7 +61,7 @@ export default defineNuxtModule<FireuxSuppliersModuleOptions>({
       composables: (resolver) =>
         registerComposablesDirs(resolver, ['./runtime/supplier/composables']),
       components: configureComponents,
-      pages: ownsSupplierProduct ? configurePages : undefined,
+      pages: ownsSupplierProduct ? requireNativeRuntimeLayer : undefined,
       server: ownsSupplierProduct ? configureServer : undefined,
     })
   },

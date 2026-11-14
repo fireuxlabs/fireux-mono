@@ -20,23 +20,12 @@
       "fireux-finance/runtime/*": [
         "../../../packages/extensions/fireux-finance/src/runtime/*"
       ],
-      "fireux-demo": ["../../../packages/extensions/fireux-demo/src/module.ts"],
-      "fireux-demo/*": ["../../../packages/extensions/fireux-demo/src/*"],
-      "fireux-demo/runtime/*": [
-        "../../../packages/extensions/fireux-demo/src/runtime/*"
-      ],
       "fireux-go-qr": [
         "../../../packages/extensions/fireux-go-qr/src/module.ts"
       ],
       "fireux-go-qr/*": ["../../../packages/extensions/fireux-go-qr/src/*"],
       "fireux-go-qr/runtime/*": [
         "../../../packages/extensions/fireux-go-qr/src/runtime/*"
-      ],
-      "fireux-ignite": [
-        "../../../packages/extensions/fireux-ignite/src/runtime/utils/reconcile-ignition.ts"
-      ],
-      "fireux-ignite/runtime/*": [
-        "../../../packages/extensions/fireux-ignite/src/runtime/*"
       ],
       "fireux-ai": ["../../../packages/extensions/fireux-ai/src/module.ts"],
       "fireux-ai/*": ["../../../packages/extensions/fireux-ai/src/*"],

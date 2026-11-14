@@ -8,6 +8,9 @@ Granite composes a Portfolio Workspace for property and landlord operations.
 Start with root `AGENTS.md` and `docs/ai/gpt-context.md`.
 
 - `src/module.ts` installs the configured Portfolio domain extensions.
+  Its shared Ecosystem wiring retains Firebase/SSR identity and conditional
+  Workspace composition. App presentation owns branding; the package publishes
+  no separate unused `public.fireux.granite` defaults.
 - `fireux-properties` owns Portfolio and Property implementation.
 - `fireux-compliance`, `fireux-documents` and `fireux-tasks` contribute their
   Portfolio-scoped records, Tools and commands.

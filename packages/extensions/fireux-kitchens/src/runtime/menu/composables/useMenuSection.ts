@@ -3,7 +3,7 @@ import { useKitchenChildCollection } from '../../kitchen/composables/useKitchenC
 import type {
   ItemPriceOption,
   ItemAddOnOption,
-} from '../../kitchen/models/item.model'
+} from '../../kitchen/utils/item-pricing'
 import {
   normalizeItemPriceOptions,
   normalizeItemAddOns,
@@ -17,7 +17,7 @@ import {
   type InjectionKey,
   type Ref,
 } from 'vue'
-import type { Item } from '../../kitchen/utils/item.ts'
+import type { ItemCollectionRow } from '../../kitchen/utils/item.ts'
 import { type MenuItem } from '../models/menu-item.model.ts'
 import type { MenuSection } from '../models/menu-section.model.ts'
 import { useKitchenItemCollection } from '../../kitchen/composables/useKitchenItemCollection'
@@ -35,7 +35,7 @@ const record = (value: unknown) =>
 export type MenuSectionItemRow = {
   id: string
   item: MenuItem
-  dish: Item | null
+  dish: ItemCollectionRow | null
   promotionId: string
   dishId: string
   label: string
@@ -126,7 +126,7 @@ function createMenuSectionState(
   const itemsPending = itemState.pending
   const itemsCollectionPath = itemState.collectionPath
   const dishesById = computed(() => {
-    const map = new Map<string, Item>()
+    const map = new Map<string, ItemCollectionRow>()
     catalogueState.dishes.value.forEach((dish) => {
       const id = clean(dish.id)
       if (id) map.set(id, dish)

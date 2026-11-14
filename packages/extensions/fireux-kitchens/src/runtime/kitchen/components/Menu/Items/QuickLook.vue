@@ -81,11 +81,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenItemsContext } from '../../../composables/workspace/items/useKitchenItemsContext'
-import type { Item } from '../../../utils/item.ts'
+import type { ItemCollectionRow } from '../../../utils/item.ts'
 
 const props = withDefaults(
   defineProps<{
-    dish: Item | null
+    dish: ItemCollectionRow | null
     menuUsage?: Array<{
       menuId: string
       sectionId: string

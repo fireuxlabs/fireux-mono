@@ -38,7 +38,9 @@ function harness(options = {}) {
         id,
         exists: !options.missingItem,
         data: {
-          kitchen_id: options.foreignItem ? 'other' : 'kitchen',
+          ...(options.minimalItem
+            ? {}
+            : { kitchen_id: options.foreignItem ? 'other' : 'kitchen' }),
           ...(options.archivedItem ? { status: 'archived' } : {}),
         },
       }))
@@ -344,4 +346,10 @@ test('changing a promotion form removes the previous form fields and retains its
       (write) => write[1] === 'promotions' && write[2] === 'existing'
     )
   )
+})
+
+test('Promotions accept minimal Items through the exact Kitchen target without copied ownership fields', async () => {
+  const h = harness({ minimalItem: true })
+  await h.save()
+  assert.equal(h.writes.length, 1)
 })

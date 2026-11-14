@@ -64,7 +64,7 @@
 import {
   banginCoffeeContent as content,
   banginCoffeeLinks as links,
-} from '../config/content.config'
+} from '../content/site'
 
 definePageMeta({
   layout: 'landing',

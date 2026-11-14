@@ -1,0 +1,323 @@
+{
+  "preparations": [
+    {
+      "id": "aioli",
+      "name": "Aioli",
+      "description": "A sauce that can be served alone or used in another preparation."
+    },
+    {
+      "id": "brava-sauce",
+      "name": "Brava sauce",
+      "description": "A component used to finish patatas bravas."
+    },
+    {
+      "id": "patatas-bravas",
+      "name": "Patatas bravas",
+      "description": "A finished dish assembled from potatoes and brava sauce."
+    },
+    {
+      "id": "tortilla",
+      "name": "Tortilla de patata",
+      "description": "A finished potato and egg preparation."
+    }
+  ],
+  "recipes": [
+    {
+      "id": "bread-aioli",
+      "name": "Bread-based aioli",
+      "output_preparation_id": "aioli",
+      "description": "Aioli made with bread, garlic, lemon and olive oil.",
+      "yield": {
+        "quantity": 4,
+        "unit": "portions"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "white-bread",
+          "quantity": 2,
+          "unit": "slices"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "lemon",
+          "quantity": 1,
+          "unit": "each"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "garlic",
+          "quantity": 2,
+          "unit": "cloves"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "olive-oil",
+          "quantity": 200,
+          "unit": "ml"
+        }
+      ],
+      "method": [
+        "Hydrate the bread, then squeeze out excess water.",
+        "Blend it with garlic and the lemon zest and juice.",
+        "Feed in the oil gradually to form the sauce; adjust seasoning."
+      ],
+      "source": {
+        "title": "Richard Corrigan · Great British Chefs",
+        "url": "https://www.greatbritishchefs.com/recipes/aioli-recipe"
+      }
+    },
+    {
+      "id": "saffron-aioli",
+      "name": "Saffron aioli",
+      "output_preparation_id": "aioli",
+      "description": "Aioli made with egg yolks, saffron and mustard.",
+      "yield": {
+        "quantity": 8,
+        "unit": "portions"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "saffron",
+          "quantity": 1,
+          "unit": "pinch"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "egg",
+          "quantity": 2,
+          "unit": "each",
+          "note": "Use the yolks only."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "garlic",
+          "quantity": 1,
+          "unit": "clove"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "mustard",
+          "quantity": 1,
+          "unit": "tbsp"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "lemon",
+          "quantity": 0.5,
+          "unit": "each"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "olive-oil",
+          "quantity": 200,
+          "unit": "ml"
+        }
+      ],
+      "method": [
+        "Infuse saffron in a little hot water and let it cool.",
+        "Blend yolks, garlic, mustard and lemon, then gradually incorporate the oil.",
+        "Mix in the cooled infusion and adjust the consistency."
+      ],
+      "source": {
+        "title": "Anna Glover · Good Food",
+        "url": "https://www.bbcgoodfood.com/recipes/saffron-aioli"
+      }
+    },
+    {
+      "id": "brava-sauce",
+      "name": "Brava sauce",
+      "output_preparation_id": "brava-sauce",
+      "description": "Tomato and paprika sauce for patatas bravas.",
+      "yield": {
+        "quantity": 1,
+        "unit": "batch"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "olive-oil",
+          "quantity": 3,
+          "unit": "tbsp"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "onion",
+          "quantity": 1,
+          "unit": "each"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "garlic",
+          "quantity": 2,
+          "unit": "cloves"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "tomato",
+          "quantity": 227,
+          "unit": "g",
+          "note": "Canned, chopped."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "tomato-puree",
+          "quantity": 1,
+          "unit": "tbsp"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "paprika",
+          "quantity": 2,
+          "unit": "tsp"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "chilli-powder",
+          "quantity": 1,
+          "unit": "pinch"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "sugar",
+          "quantity": 1,
+          "unit": "pinch"
+        }
+      ],
+      "method": [
+        "Soften the onion in oil.",
+        "Add the garlic, tomato ingredients and seasonings.",
+        "Simmer until the tomatoes break down and the sauce thickens."
+      ],
+      "source": {
+        "title": "Mary Cadogan · Good Food",
+        "url": "https://www.bbcgoodfood.com/recipes/patatas-bravas-0"
+      }
+    },
+    {
+      "id": "patatas-bravas",
+      "name": "Patatas bravas assembly",
+      "output_preparation_id": "patatas-bravas",
+      "description": "Roasted potatoes finished with brava sauce.",
+      "yield": {
+        "quantity": 10,
+        "unit": "side portions"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "potato",
+          "quantity": 900,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "olive-oil",
+          "quantity": 2,
+          "unit": "tbsp"
+        },
+        {
+          "kind": "preparation",
+          "reference_id": "brava-sauce",
+          "quantity": 1,
+          "unit": "batch"
+        }
+      ],
+      "method": [
+        "Dry the potato cubes and coat them with oil and seasoning.",
+        "Roast until the outside is crisp.",
+        "Portion the potatoes and finish with the brava sauce."
+      ],
+      "source": {
+        "title": "Mary Cadogan · Good Food",
+        "url": "https://www.bbcgoodfood.com/recipes/patatas-bravas-0"
+      }
+    },
+    {
+      "id": "tortilla",
+      "name": "Potato and onion tortilla",
+      "output_preparation_id": "tortilla",
+      "description": "Potato and onion tortilla.",
+      "yield": {
+        "quantity": 4,
+        "unit": "portions"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "onion",
+          "quantity": 1,
+          "unit": "each"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "olive-oil",
+          "quantity": 4,
+          "unit": "tbsp"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "butter",
+          "quantity": 25,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "potato",
+          "quantity": 400,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "garlic",
+          "quantity": 2,
+          "unit": "cloves"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "egg",
+          "quantity": 8,
+          "unit": "each"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "parsley",
+          "quantity": 1,
+          "unit": "handful"
+        }
+      ],
+      "method": [
+        "Gently soften the sliced onion, then cook the thin potato slices until tender.",
+        "Combine with garlic and beaten eggs and cook gently in the pan.",
+        "Turn the tortilla to finish the second side, then portion and garnish."
+      ],
+      "source": {
+        "title": "Miriam Nice · Good Food",
+        "url": "https://www.bbcgoodfood.com/recipes/spanish-tortilla"
+      }
+    }
+  ],
+  "ingredients": [
+    {
+      "id": "tomato-puree",
+      "name": "Tomato Purée",
+      "category": "sauces-condiments"
+    },
+    {
+      "id": "chilli-powder",
+      "name": "Chilli Powder",
+      "category": "herbs-spices"
+    },
+    {
+      "id": "parsley",
+      "name": "Parsley",
+      "category": "herbs-spices"
+    },
+    {
+      "id": "saffron",
+      "name": "Saffron",
+      "category": "herbs-spices"
+    }
+  ]
+}

@@ -1,27 +1,21 @@
-<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <section class="workspace-surface workspace-surface--compact">
-    <KitchenPrepAndProductionRecipesDetail />
-  </section>
+  <KitchenPrepAndProductionLibraryRead view="recipes" :selected-id="id" />
 </template>
-
 <script setup lang="ts">
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+const id = useRouteParam('recipeId')
 definePageMeta({
   layout: false,
   workspacePage: true,
+  workspaceHeader: 'content',
   workspaceSurface: 'detail',
-  visibility: { modules: ['fireux-kitchens'] },
   requiresAuth: true,
   requiresSelection: true,
+  visibility: { modules: ['fireux-kitchens'] },
   nav: {
-    key: 'workspace-kitchen-recipe-detail',
-    label: 'Recipe Detail',
-    icon: 'i-lucide-book-copy',
-    position: 'top',
+    key: 'workspace-kitchen-recipes-detail',
+    label: 'Recipes',
     hidden: true,
-    desktop: false,
-    mobile: false,
-    layouts: ['workspace'],
   },
 })
 </script>

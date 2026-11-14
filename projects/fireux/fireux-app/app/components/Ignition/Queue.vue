@@ -166,6 +166,13 @@
       </div>
 
       <template #footer>
+        <IgnitionBuild
+          :status="request.status"
+          :name="request.business.name"
+          :purpose="request.app_job"
+          :build="request.build"
+          :prepare="(input) => prepareBuild(request, input)"
+        />
         <p class="fx-type-code">{{ request.id }}</p>
       </template>
     </UCard>
@@ -187,6 +194,7 @@ const {
   originLabel,
   originTo,
   pending,
+  prepareBuild,
   refresh,
   setChecklist,
   setStatus,

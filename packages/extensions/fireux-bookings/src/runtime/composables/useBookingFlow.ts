@@ -110,7 +110,13 @@ export function useBookingFlow(
         throw new Error('The booking could not be confirmed. Please try again.')
       confirmed.value = {
         ...snapshot,
-        receipt: { reference: receipt.reference },
+        receipt: {
+          reference: receipt.reference,
+          details: receipt.details?.map(({ label, value }) => ({
+            label,
+            value,
+          })),
+        },
       }
       step.value = 3
     } catch (cause) {

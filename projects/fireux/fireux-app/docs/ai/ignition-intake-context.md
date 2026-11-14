@@ -1,7 +1,7 @@
 # FireUX App Ignition intake context
 
-Updated: 2026-11-12
-Ref: f2fbf2242
+Updated: 2026-11-14
+Ref: 5916a6874
 Role: living context
 Scope: FireUX App Ignition requests and private delivery tracking
 
@@ -79,6 +79,23 @@ Paths below are relative to this App:
   Products owns catalogue and Checkout integration. Generated provider environment
   values are blank and never inherit FireUX credentials. Input completion retains
   Core `useCommandScope` disposal and stale-response checks.
+- Accepted web requests and the Codex operator converge through
+  `server/api/internal/control/ignition-requests/build.post.ts`. It retains
+  `requireFireuxAppAdmin` and the guarded App Conversation mutation target.
+  `server/utils/ignition-build.ts` owns the canonical project-id build entry,
+  immutable reviewed input, persistent worker claim and one task link. Original
+  enquiries retain their history and forward to the canonical queue entry.
+- `ignition/prepare.mjs --write` submits to that queue; `ignition/delivery.mjs`
+  resumes a queued entry with a current admin token. `ignition/create.mjs`
+  retains the paired source materializer and invokes the local Codex adapter.
+  The public website never opens a desktop connection. Worker and task receipts
+  remain ignored local state; server claims do not automatically expire or
+  transfer after an uncertain external operation. Inspect/reconcile before any
+  separately authorised recovery. The existing queue composes its focused
+  `Ignition/Build.vue` form/progress/task-link surface.
+- Build `ready` proves prepared source and a linked task handoff, separately
+  from operational acceptance, provider readiness or the existing launch stage.
+  Missing Codex connectivity reports `task-pending` while preserving source.
 - Core App initialization invokes the
   [Ecosystem provisioner](../../../../../packages/core/fireux-core/src/runtime/ecosystem/server/identity/provision.ts)
   only for a global main App whose Project and Ecosystem IDs match and whose App

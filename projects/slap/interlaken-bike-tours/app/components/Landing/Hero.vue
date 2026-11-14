@@ -15,13 +15,15 @@
   </UPageHero>
 </template>
 <script setup lang="ts">
-const links = [
+import type { ButtonProps } from '@nuxt/ui'
+
+const links: ButtonProps[] = [
   { label: 'See the tours', to: '/#tours', icon: 'i-lucide-arrow-down' },
   {
     label: 'Check availability',
     to: '/book',
-    color: 'neutral' as const,
-    variant: 'outline' as const,
+    color: 'neutral',
+    variant: 'outline',
   },
 ]
 </script>

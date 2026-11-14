@@ -1,5 +1,5 @@
 import type { WatchSource } from 'vue'
-import type { RecipePreparation } from '../../models/recipe-preparation'
+import type { RecipePreparation } from '../../recipe/models/preparation.ts'
 import { seedSproochliText } from 'fireux-sproochli/runtime/utils/translation-seed'
 import { useRecipeMutation } from './useRecipeMutation'
 

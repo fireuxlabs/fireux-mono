@@ -80,7 +80,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { priceItemChoices } from '../../../kitchen/utils/item-choices'
-import type { ItemChoiceSelection } from '../../../kitchen/models/item-choice.model'
+import type { ItemChoiceSelection } from '../../../kitchen/item/offer'
 const selections = reactive<Record<string, ItemChoiceSelection>>({})
 function groupPrice(item: PublicMenuItem) {
   try {

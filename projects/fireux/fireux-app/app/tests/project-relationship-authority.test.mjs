@@ -6,6 +6,7 @@ import { compileFunction } from 'node:vm'
 import { ECOSYSTEM_STATUSES } from '../../../../../packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts'
 import {
   isAppUserSubscription,
+  isAppUserRole,
   readAppUserSubscription,
 } from '../../../../../packages/core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
 const root = new URL('../../../../../', import.meta.url)
@@ -31,10 +32,6 @@ const requireWorkspaceEntityMemberRole = load(
   core + 'workspace/server/entity/onboarding-authority.ts',
   'requireWorkspaceEntityMemberRole',
   { createError }
-)
-const isAppUserRole = load(
-  core + 'app/app-user/models/model.ts',
-  'isAppUserRole'
 )
 const capacity = load(
   core + 'app/utils/app-subscription-capacity.ts',
@@ -194,7 +191,7 @@ function harness() {
       }),
   }
   const createApp = load(
-    'packages/ecosystem/fireux-fireux/src/runtime/platform/project-apps.ts',
+    'packages/ecosystem/fireux-fireux/src/runtime/project/server/create-app.ts',
     'createProjectApp',
     {
       ...deps,
@@ -416,6 +413,7 @@ test('Project ownership and administration in another App cannot administer an e
       FieldValue: { serverTimestamp: () => 1 },
       isAppUserRole,
       isAppUserSubscription,
+      isAppUserRole,
       readAppUserSubscription,
       APP_MUTATION_TARGETS: targets,
       USER_MUTATION_TARGETS: targets,
@@ -442,6 +440,7 @@ test('Project ownership and administration in another App cannot administer an e
       requireFirestoreDocumentId,
       isAppUserRole,
       isAppUserSubscription,
+      isAppUserRole,
     }
   )
   for (const ownRole of [undefined, 'user', 'admin']) {

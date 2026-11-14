@@ -78,3 +78,28 @@ This is an English presentation of the bilingual source information. It does
 not advertise unreviewed German route variants or hreflang alternates. Original
 German references remain linked. Operator review of current arrangements and a
 production-domain migration are still separate from preview publication.
+
+## Original photo provenance and retained development files
+
+The activity photographs remain the client's husband's original work. Untouched
+masters are retained in `brand/activity-originals`; `development.json` records
+source URLs, SHA-256 hashes, dimensions and the earlier non-generative development
+parameters. Earlier 500/750/1000-pixel exports remain under `public/img/activities/developed`.
+Current activity delivery uses the restored family described below. Source
+composition and attribution are retained, and CSS display crops remain reversible.
+The original website copies remain 1000 × 400; enlargement cannot prove recovery
+of detail absent from those copies.
+
+The landing poster has an AVIF equivalent with WebP fallback. Its original
+mountain composition and ascent video retain their separate source family.
+
+## Photograph restoration for immersive headers
+
+At the client's direction, the same original activity photographs now have
+4× AI-assisted Recraft Crisp restorations. Selected masters and exact provider
+provenance are retained in `brand/activity-restored`; the untouched original
+photographs remain under `brand/activity-originals`. These are retouched versions
+of the supplied scenes, not replacement photography. AI-assisted restoration
+approximates detail and cannot establish that newly resolved detail was present
+in the original. Runtime AVIF/WebP exports under `restored-v1` provide 500, 1000,
+2000 and 4000-pixel sizes. Previous development exports remain archived locally.

@@ -1,0 +1,775 @@
+{
+  "preparations": [
+    {
+      "id": "padron-peppers",
+      "name": "Pimientos de Padrón",
+      "description": "Pan-blistered peppers with sea salt."
+    },
+    {
+      "id": "black-tiger-al-ajillo",
+      "name": "Black Tiger al Ajillo",
+      "description": "Starting recipe for the Menu prawns."
+    },
+    {
+      "id": "portobello-al-ajillo",
+      "name": "Portobello al Ajillo",
+      "description": "Mushroom adaptation; quantities and yield are starting estimates."
+    },
+    {
+      "id": "romesco",
+      "name": "Romesco",
+      "description": "Almond and roasted pepper sauce for the smashburger."
+    },
+    {
+      "id": "chimichurri",
+      "name": "Chimichurri",
+      "description": "Herb sauce for grilled Pulpo; expected batch yield is estimated."
+    },
+    {
+      "id": "spicy-hummus",
+      "name": "Spicy hummus",
+      "description": "Starting adaptation with olive oil instead of yogurt; chilli and yield are estimated."
+    },
+    {
+      "id": "jamon-croquette-filling",
+      "name": "Jamón croquette filling",
+      "description": "Serrano and Manchego adaptation; cooked filling yield is estimated."
+    },
+    {
+      "id": "jamon-croquettes",
+      "name": "Jamón croquettes",
+      "description": "Starting 24-piece batch; coating and retained oil are estimates."
+    },
+    {
+      "id": "tomato-chilli-jam",
+      "name": "Tomato chilli jam",
+      "description": "For Camembert and hot dogs; finished yield is estimated."
+    },
+    {
+      "id": "chocolate-dipping-sauce",
+      "name": "Chocolate dipping sauce",
+      "description": "For Churro Bites; finished yield is estimated."
+    },
+    {
+      "id": "churro-bites",
+      "name": "Churro Bites",
+      "description": "Bite-size adaptation; yield, retained oil and sauce portions are estimates."
+    }
+  ],
+  "recipes": [
+    {
+      "id": "padron-peppers",
+      "name": "Pimientos de Padrón",
+      "description": "Pan-blistered peppers with sea salt.",
+      "output_preparation_id": "padron-peppers",
+      "yield": {
+        "quantity": 6,
+        "unit": "side portions"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "padron-peppers",
+          "quantity": 500,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "olive-oil",
+          "quantity": 1,
+          "unit": "tbsp"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "sea-salt",
+          "quantity": 2,
+          "unit": "g",
+          "note": "Starting seasoning estimate."
+        }
+      ],
+      "method": [
+        "Dry the peppers and blister in a hot oiled pan.",
+        "Toss until softened; finish with sea salt."
+      ],
+      "source": {
+        "title": "Anna Glover · Good Food",
+        "url": "https://www.bbcgoodfood.com/recipes/padron-peppers"
+      }
+    },
+    {
+      "id": "black-tiger-al-ajillo",
+      "name": "Black Tiger al Ajillo",
+      "description": "Starting recipe for the Menu prawns.",
+      "output_preparation_id": "black-tiger-al-ajillo",
+      "yield": {
+        "quantity": 2,
+        "unit": "tapas portions"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "crevetten",
+          "quantity": 8,
+          "unit": "each",
+          "note": "Raw black tiger prawns, peeled and deveined."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "garlic",
+          "quantity": 3,
+          "unit": "cloves"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "fresh-chili",
+          "quantity": 1,
+          "unit": "each"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "olive-oil",
+          "quantity": 50,
+          "unit": "ml"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "smoked-paprika",
+          "quantity": 0.5,
+          "unit": "tsp"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "parsley",
+          "quantity": 5,
+          "unit": "g",
+          "note": "Estimated garnish."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "lemon",
+          "quantity": 1,
+          "unit": "each"
+        }
+      ],
+      "method": [
+        "Briefly cook chopped garlic and chilli in the oil, then add paprika.",
+        "Cook the prawns through; finish with lemon and parsley."
+      ],
+      "source": {
+        "title": "Adapted from Jamie Oliver · garlic and chilli prawns",
+        "url": "https://www.jamieoliver.com/recipes/seafood/patsy-s-garlic-chilli-prawns/"
+      }
+    },
+    {
+      "id": "portobello-al-ajillo",
+      "name": "Portobello al Ajillo",
+      "description": "Mushroom adaptation; quantities and yield are starting estimates.",
+      "output_preparation_id": "portobello-al-ajillo",
+      "yield": {
+        "quantity": 4,
+        "unit": "tapas portions"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "flat-mushroom",
+          "quantity": 400,
+          "unit": "g",
+          "note": "Portobello, sliced."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "garlic",
+          "quantity": 3,
+          "unit": "cloves"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "fresh-chili",
+          "quantity": 0.5,
+          "unit": "each"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "olive-oil",
+          "quantity": 30,
+          "unit": "ml"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "parsley",
+          "quantity": 5,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "lemon",
+          "quantity": 0.5,
+          "unit": "each"
+        }
+      ],
+      "method": [
+        "Brown mushrooms in oil, then stir in garlic and chilli.",
+        "Finish with parsley and lemon."
+      ],
+      "source": {
+        "title": "Adapted from Jamie Oliver · garlic and chilli prawns",
+        "url": "https://www.jamieoliver.com/recipes/seafood/patsy-s-garlic-chilli-prawns/"
+      }
+    },
+    {
+      "id": "romesco",
+      "name": "Romesco",
+      "description": "Almond and roasted pepper sauce for the smashburger.",
+      "output_preparation_id": "romesco",
+      "yield": {
+        "quantity": 8,
+        "unit": "dip portions"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "almonds",
+          "quantity": 100,
+          "unit": "g",
+          "note": "Blanched."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "red-pepper",
+          "quantity": 200,
+          "unit": "g",
+          "note": "Roasted and drained before weighing."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "garlic",
+          "quantity": 1,
+          "unit": "clove"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "sherry-vinegar",
+          "quantity": 1,
+          "unit": "tbsp"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "smoked-paprika",
+          "quantity": 1,
+          "unit": "tsp"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "olive-oil",
+          "quantity": 50,
+          "unit": "ml"
+        }
+      ],
+      "method": [
+        "Toast the almonds and allow to cool.",
+        "Process with peppers, garlic, vinegar and paprika; gradually incorporate the oil."
+      ],
+      "source": {
+        "title": "Anna Glover · Good Food",
+        "url": "https://www.bbcgoodfood.com/recipes/romesco-sauce"
+      }
+    },
+    {
+      "id": "chimichurri",
+      "name": "Chimichurri",
+      "description": "Herb sauce for grilled Pulpo; expected batch yield is estimated.",
+      "output_preparation_id": "chimichurri",
+      "yield": {
+        "quantity": 450,
+        "unit": "g"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "parsley",
+          "quantity": 50,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "garlic",
+          "quantity": 3,
+          "unit": "cloves"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "oregano",
+          "quantity": 1,
+          "unit": "tbsp",
+          "note": "Fresh, chopped."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "smoked-paprika",
+          "quantity": 1,
+          "unit": "tbsp"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "lemon",
+          "quantity": 1,
+          "unit": "each",
+          "note": "Juice."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "olive-oil",
+          "quantity": 250,
+          "unit": "ml"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "sherry-vinegar",
+          "quantity": 100,
+          "unit": "ml"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "sea-salt",
+          "quantity": 2,
+          "unit": "g",
+          "note": "Starting seasoning estimate."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "black-pepper",
+          "quantity": 1,
+          "unit": "g",
+          "note": "Starting seasoning estimate."
+        }
+      ],
+      "method": [
+        "Finely chop herbs and garlic; combine with vinegar, lemon and spices.",
+        "Stir in the oil and adjust seasoning."
+      ],
+      "source": {
+        "title": "Rosana McPhee · Great British Chefs",
+        "url": "https://www.greatbritishchefs.com/recipes/chimichurri-sauce-recipe"
+      }
+    },
+    {
+      "id": "spicy-hummus",
+      "name": "Spicy hummus",
+      "description": "Starting adaptation with olive oil instead of yogurt; chilli and yield are estimated.",
+      "output_preparation_id": "spicy-hummus",
+      "yield": {
+        "quantity": 400,
+        "unit": "g"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "chickpeas",
+          "quantity": 240,
+          "unit": "g",
+          "note": "Cooked, drained; reserve cooking liquid."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "tahini",
+          "quantity": 30,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "garlic",
+          "quantity": 1,
+          "unit": "clove"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "lemon",
+          "quantity": 30,
+          "unit": "ml",
+          "note": "Juice."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "olive-oil",
+          "quantity": 40,
+          "unit": "ml"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "chilli-powder",
+          "quantity": 0.5,
+          "unit": "tsp"
+        }
+      ],
+      "method": [
+        "Blend chickpeas, tahini, garlic, lemon, oil and chilli.",
+        "Use reserved chickpea liquid to loosen; adjust seasoning."
+      ],
+      "source": {
+        "title": "Adapted from Sarah Cook · Good Food",
+        "url": "https://www.bbcgoodfood.com/recipes/1940690/healthy-homemade-houmous-"
+      }
+    },
+    {
+      "id": "jamon-croquette-filling",
+      "name": "Jamón croquette filling",
+      "description": "Serrano and Manchego adaptation; cooked filling yield is estimated.",
+      "output_preparation_id": "jamon-croquette-filling",
+      "yield": {
+        "quantity": 700,
+        "unit": "g"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "butter",
+          "quantity": 25,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "onion",
+          "quantity": 0.5,
+          "unit": "each"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "flour",
+          "quantity": 50,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "milk",
+          "quantity": 250,
+          "unit": "ml"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "jamon",
+          "quantity": 140,
+          "unit": "g",
+          "note": "Serrano, diced."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "manchego",
+          "quantity": 100,
+          "unit": "g",
+          "note": "Grated."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "mustard",
+          "quantity": 1,
+          "unit": "tsp",
+          "note": "Dijon."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "cream",
+          "quantity": 30,
+          "unit": "ml"
+        }
+      ],
+      "method": [
+        "Soften onion in butter; cook in the flour.",
+        "Whisk in milk until thick; add ham, cheese, mustard and cream.",
+        "Chill the filling until firm enough to shape."
+      ],
+      "source": {
+        "title": "Adapted from Justine Pattison · Good Food",
+        "url": "https://www.bbcgoodfood.com/recipes/ham-cheese-croquetas"
+      }
+    },
+    {
+      "id": "jamon-croquettes",
+      "name": "Jamón croquettes",
+      "description": "Starting 24-piece batch; coating and retained oil are estimates.",
+      "output_preparation_id": "jamon-croquettes",
+      "yield": {
+        "quantity": 24,
+        "unit": "pieces"
+      },
+      "inputs": [
+        {
+          "kind": "preparation",
+          "reference_id": "jamon-croquette-filling",
+          "quantity": 700,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "flour",
+          "quantity": 50,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "egg",
+          "quantity": 2,
+          "unit": "each"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "breadcrumbs",
+          "quantity": 140,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "sunflower-oil",
+          "quantity": 80,
+          "unit": "ml",
+          "note": "Estimated retained oil; fryer fill is separate."
+        }
+      ],
+      "method": [
+        "Form the chilled filling into 24 portions.",
+        "Coat with flour, egg and breadcrumbs.",
+        "Fry until golden and hot in the centre; drain."
+      ],
+      "source": {
+        "title": "Adapted from Justine Pattison · Good Food",
+        "url": "https://www.bbcgoodfood.com/recipes/ham-cheese-croquetas"
+      }
+    },
+    {
+      "id": "tomato-chilli-jam",
+      "name": "Tomato chilli jam",
+      "description": "For Camembert and hot dogs; finished yield is estimated.",
+      "output_preparation_id": "tomato-chilli-jam",
+      "yield": {
+        "quantity": 400,
+        "unit": "g"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "tomato",
+          "quantity": 300,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "fresh-chili",
+          "quantity": 1,
+          "unit": "each"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "red-onion",
+          "quantity": 1,
+          "unit": "each"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "garlic",
+          "quantity": 4,
+          "unit": "cloves"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "brown-sugar",
+          "quantity": 100,
+          "unit": "g",
+          "note": "Demerara if available."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "red-wine-vinegar",
+          "quantity": 100,
+          "unit": "ml"
+        }
+      ],
+      "method": [
+        "Chop the vegetables and combine with sugar and vinegar.",
+        "Simmer, stirring, until thick; cool before use."
+      ],
+      "source": {
+        "title": "Adapted from Justine Pattison · Good Food",
+        "url": "https://www.bbcgoodfood.com/recipes/ham-cheese-croquetas"
+      }
+    },
+    {
+      "id": "chocolate-dipping-sauce",
+      "name": "Chocolate dipping sauce",
+      "description": "For Churro Bites; finished yield is estimated.",
+      "output_preparation_id": "chocolate-dipping-sauce",
+      "yield": {
+        "quantity": 450,
+        "unit": "g"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "chocolate",
+          "quantity": 200,
+          "unit": "g",
+          "note": "Dark chocolate."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "cream",
+          "quantity": 100,
+          "unit": "ml"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "milk",
+          "quantity": 100,
+          "unit": "ml"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "golden-syrup",
+          "quantity": 60,
+          "unit": "g",
+          "note": "Estimated equivalent of three tablespoons."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "vanilla",
+          "quantity": 0.5,
+          "unit": "tsp"
+        }
+      ],
+      "method": ["Warm the sauce ingredients gently, stirring until smooth."],
+      "source": {
+        "title": "Adapted from Alice Shields · Good Food",
+        "url": "https://www.bbcgoodfood.com/recipes/churros-chocolate-dipping-sauce"
+      }
+    },
+    {
+      "id": "churro-bites",
+      "name": "Churro Bites",
+      "description": "Bite-size adaptation; yield, retained oil and sauce portions are estimates.",
+      "output_preparation_id": "churro-bites",
+      "yield": {
+        "quantity": 20,
+        "unit": "pieces"
+      },
+      "inputs": [
+        {
+          "kind": "ingredient",
+          "reference_id": "water",
+          "quantity": 300,
+          "unit": "ml",
+          "note": "Boiling."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "butter",
+          "quantity": 50,
+          "unit": "g",
+          "note": "Melted."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "vanilla",
+          "quantity": 0.5,
+          "unit": "tsp"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "flour",
+          "quantity": 250,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "baking-powder",
+          "quantity": 1,
+          "unit": "tsp"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "sunflower-oil",
+          "quantity": 80,
+          "unit": "ml",
+          "note": "Estimated retained oil; fryer fill is separate."
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "sugar",
+          "quantity": 100,
+          "unit": "g"
+        },
+        {
+          "kind": "ingredient",
+          "reference_id": "cinnamon",
+          "quantity": 2,
+          "unit": "tsp"
+        },
+        {
+          "kind": "preparation",
+          "reference_id": "chocolate-dipping-sauce",
+          "quantity": 200,
+          "unit": "g"
+        }
+      ],
+      "method": [
+        "Beat hot water, butter and vanilla into flour and baking powder; rest briefly.",
+        "Pipe short pieces into the fryer and cook through until golden.",
+        "Drain, roll in cinnamon sugar and serve with sauce."
+      ],
+      "source": {
+        "title": "Adapted from Alice Shields · Good Food",
+        "url": "https://www.bbcgoodfood.com/recipes/churros-chocolate-dipping-sauce"
+      }
+    }
+  ],
+  "ingredients": [
+    {
+      "id": "padron-peppers",
+      "name": "Padrón Peppers",
+      "category": "vegetables"
+    },
+    {
+      "id": "almonds",
+      "name": "Almonds",
+      "category": "nuts-seeds"
+    },
+    {
+      "id": "sherry-vinegar",
+      "name": "Sherry Vinegar",
+      "category": "sauces-condiments"
+    },
+    {
+      "id": "chickpeas",
+      "name": "Chickpeas",
+      "category": "grains-pasta-pulses"
+    },
+    {
+      "id": "tahini",
+      "name": "Tahini",
+      "category": "sauces-condiments"
+    },
+    {
+      "id": "red-onion",
+      "name": "Red Onion",
+      "category": "vegetables"
+    },
+    {
+      "id": "red-wine-vinegar",
+      "name": "Red Wine Vinegar",
+      "category": "sauces-condiments"
+    },
+    {
+      "id": "golden-syrup",
+      "name": "Golden Syrup",
+      "category": "sugar-baking"
+    },
+    {
+      "id": "cinnamon",
+      "name": "Cinnamon",
+      "category": "herbs-spices"
+    },
+    {
+      "id": "water",
+      "name": "Water",
+      "category": "drinks-cooking-liquids"
+    }
+  ]
+}

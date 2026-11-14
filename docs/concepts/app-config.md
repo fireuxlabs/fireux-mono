@@ -45,6 +45,44 @@ Its native layer owns `/search-demand` review routes and `/api/app/search-demand
 static review does not depend on AI execution being enabled. Research proposals
 do not enable runtime capabilities.
 
+## App content and styles
+
+Concrete Apps keep authored page copy, contact details and presentation
+catalogues in `app/content`, with supporting types beside that content when
+only those consumers need them. These modules are explicitly imported; they
+are not Nuxt Content collections or an Entity model. Do not collect them in an
+`app/config` directory merely because their values are static.
+
+Native `app.config.ts` retains App settings, including UI and presentation
+palette metadata. Static CSS lives in `app/assets/styles/main.css`, already
+loaded by Core `configureCoreCss`; root App components do not inject CSS strings
+through `useHead`. Preserve existing selectors, declarations and palette values
+when changing file placement. Brand asset provenance belongs in App documentation,
+as in Holzworm's `docs/brand-assets.md`.
+
+Bären's selected public Menu ID lives with its site content and feeds both
+its Home link and Menu redirect. This is presentation selection, not authority
+over Kitchen or Menu records.
+
+## Environment inputs
+
+`templates/.env.app.template` declares deployment origin, Firebase Web App inputs
+and the optional authenticated developer UID once each. App identity comes from
+`nuxt.config.ts`; `APP_ID`, `APP_NAME` and `APP_SHORT_NAME` are not environment
+inputs. Developer access uses authenticated UID checks, not `DEVELOPER_PIN`.
+The current Firebase integration does not configure Analytics or consume
+`NUXT_FIREBASE_MEASUREMENT_ID`.
+
+Current hosted Stripe Checkout uses the existing server credentials; generated
+Ignition examples do not advertise `NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` without
+a browser Stripe consumer. Server secret and webhook settings remain unchanged.
+
+FireUX AI reads its credential from `FIREUX_AI_API_KEY`, including Sproochli's
+App-owned environment. `OPENAI_API_KEY` is not a fallback. Renaming the key must
+not change its value, enable AI or change provider/mode. The local Codex transport
+strips both credential names from its child process and leaves the parent
+environment intact; see AI's `src/test/codex-environment.test.mjs`.
+
 ## Configuration source names
 
 - `nuxt-defaults.ts` applies shared Nuxt defaults.

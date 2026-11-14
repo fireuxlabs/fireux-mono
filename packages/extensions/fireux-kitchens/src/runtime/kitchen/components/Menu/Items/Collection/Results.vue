@@ -112,7 +112,7 @@ import {
   priceItemChoices,
 } from '../../../../utils/item-choices'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
-import type { Item } from '../../../../models/item.model'
+import type { ItemCollectionRow } from '../../../../utils/item'
 import { useKitchenItemsContext } from '../../../../composables/workspace/items/useKitchenItemsContext'
 import { useItemCatalogueContext } from '../../../../composables/workspace/items/useItemCatalogue'
 const {
@@ -135,7 +135,7 @@ const {
 } = useItemCatalogueContext()
 const emit = defineEmits<{ create: [kind: 'food' | 'drink'] }>()
 const currency = computed(() => readPlaceCurrencyCode(selectedKitchen.value))
-function choiceSummary(dish: Item) {
+function choiceSummary(dish: ItemCollectionRow) {
   return readItemChoiceGroups(dish)
     .map(
       (group) =>
@@ -143,10 +143,11 @@ function choiceSummary(dish: Item) {
     )
     .join(' / ')
 }
-function tileMeta(dish: Item) {
+function tileMeta(dish: ItemCollectionRow) {
   return dish.category || ''
 }
-function priceLabel(dish: Item) {
+function priceLabel(dish: ItemCollectionRow) {
+  if (dish.pricing_error) return 'Review price & choices'
   const groups = readItemChoiceGroups(dish)
   if (
     dish.price === undefined &&

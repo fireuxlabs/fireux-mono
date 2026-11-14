@@ -626,11 +626,9 @@ test('Identity fields pass real local completion predicates through credentials 
     isCurrent = capture(),
     flight = f.api.handleName('Submitted', isCurrent)
   await vue.nextTick()
-  assert.equal(
-    f.nodes('input').find((node) => node.props.label === 'Category').props
-      .disabled,
-    true
-  )
+  assert.equal(f.api.fieldSaving.value, true)
+  await f.api.handleImageUpload(new File(['photo'], 'photo.png'))
+  assert.equal(h.calls.length, 0)
   h.auth.resolve(h.user)
   await drain()
   draft.value = 'Replacement'

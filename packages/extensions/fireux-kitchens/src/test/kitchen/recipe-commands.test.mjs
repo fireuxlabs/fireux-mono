@@ -1,3 +1,4 @@
+import { readRecipeChanges } from '../../runtime/kitchen/recipe/changes.ts'
 import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import assert from 'node:assert/strict'
@@ -86,6 +87,7 @@ function harness() {
   ])
   let before = () => {}
   const dependencies = {
+    readRecipeChanges,
     requireUnusedKitchenRecipe: async () => {},
     createError,
     requireFirestoreDocumentId,

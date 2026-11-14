@@ -5,9 +5,9 @@ import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
 } from 'fireux-core/config/app/seo-config'
-import { configureComponents } from './config/module/components-config'
-import { configurePages } from './config/module/pages-config'
-import { configureServer } from './config/module/server-config'
+import { configureComponents } from './config/module/components-config.ts'
+import { requireNativeRuntimeLayer } from 'fireux-core/config/module/runtime-layer'
+import { configureServer } from './config/module/server-config.ts'
 
 export type FireuxBlogsModuleOptions = {
   enabled?: boolean
@@ -76,7 +76,7 @@ export default defineNuxtModule({
       composables: (resolver) =>
         registerComposablesDirs(resolver, ['./runtime/blog/composables']),
       components: configureComponents,
-      pages: configurePages,
+      pages: requireNativeRuntimeLayer,
       server: configureServer,
     })
   },

@@ -1,3 +1,4 @@
+import { readItemIdentity } from '../runtime/kitchen/item/identity.ts'
 import { ItemStorage } from '../runtime/kitchen/item/storage.ts'
 import { readItemReferenceIds } from '../runtime/kitchen/utils/item-preparation.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
@@ -51,7 +52,7 @@ function load(path, result, deps) {
 const { normalizeItem, normalizeLegacyItemKind } = load(
   'kitchen/utils/item.ts',
   '({ normalizeItem, normalizeLegacyItemKind })',
-  { readItemReferenceIds, ...itemPricingHelpers }
+  { readItemReferenceIds, readItemIdentity, ...itemPricingHelpers }
 )
 const { resolveKitchenChildCollectionBasePath } = load(
   'kitchen/utils/kitchen-collection-path.ts',
@@ -151,6 +152,8 @@ function lowerReader(f) {
       useFirestoreRead: () => f.read,
       ItemStorage,
       normalizeItem,
+      readItemIdentity,
+      readItemOffer: itemPricingHelpers.readItemOffer,
       resolveKitchenChildCollectionBasePath,
       useFirestoreCollectionState,
     }
@@ -356,6 +359,8 @@ test('Item record route stays reactive across both kinds while catalogues retain
       toValue,
       ItemStorage,
       normalizeItem,
+      readItemIdentity,
+      readItemOffer: itemPricingHelpers.readItemOffer,
       useKitchenAccess: () => access,
       useFirestoreRead: () => f.read,
       readRuntimeFirestoreDatabaseId: () => 'misebox',
@@ -544,14 +549,14 @@ function recordView(overrides = {}) {
   return {
     catalogue,
     outcome: 'ready',
-    dish: { id: 'soup', name: 'Soup' },
+    item: { id: 'soup', name: 'Soup' },
     pending: false,
     error: null,
     canWrite: true,
     selectedKitchen: { id: 'mine', name: 'Mine' },
     kitchenId: 'mine',
     storageKitchenId: 'mine',
-    dishId: 'soup',
+    itemId: 'soup',
     catalogueReturn: catalogue.path,
     menuReturn: '',
     manage: false,
@@ -610,15 +615,15 @@ test('actual Item collection hides premature counts, categories, filters and Cre
 test('actual Item record error does not render not-found, old read header or editable management', async () => {
   const html = await render(
     'kitchen/components/Menu/Items/Detail/Index.vue',
-    recordView({ dish: null, outcome: 'error', error: new Error('Failed') })
+    recordView({ item: null, outcome: 'error', error: new Error('Failed') })
   )
-  assert.match(html, /dish unavailable/)
+  assert.match(html, /Item unavailable/)
   assert.doesNotMatch(html, /not found|Item actions|Soup/)
   const empty = await render(
     'kitchen/components/Menu/Items/Detail/Index.vue',
-    recordView({ dish: null, outcome: 'empty' })
+    recordView({ item: null, outcome: 'empty' })
   )
-  assert.match(empty, /dish not found/)
+  assert.match(empty, /Item not found/)
   assert.doesNotMatch(empty, /Specification editor/)
 })
 test('Item linked read perspectives bind exact ready storage owner instead of remembered Kitchen selection', () => {
@@ -1013,6 +1018,8 @@ function flagshipFixture({ exists = true, rows = [], selectedRows } = {}) {
       ItemStorage,
       normalizeLegacyItemKind,
       normalizeItem,
+      readItemIdentity,
+      readItemOffer: itemPricingHelpers.readItemOffer,
       getRuntimeFirestore: () => db,
       requireFirestoreDocumentId: (value) => {
         if (typeof value !== 'string' || !value.trim() || value.includes('/'))
@@ -1130,7 +1137,7 @@ test('organisation fields keep historical Items readable without inventing group
   assert.equal(old.item_kind, undefined)
   assert.deepEqual(old.group_ids, [])
   assert.equal(old.preparation_station_ids, undefined)
-  assert.equal(old.spec.station, 'Bar')
+  assert.equal(Object.hasOwn(old, 'spec'), false)
   assert.equal(
     normalizeItem({ id: 'old', group_ids: ['renamed-group'] }).item_kind,
     undefined

@@ -1,7 +1,7 @@
 # FireUX Ignite context
 
-Updated: 2026-11-05
-Ref: d6240d394
+Updated: 2026-11-14
+Ref: 5916a6874
 Role: living context
 Scope: reusable FireUX app ignition and reconciliation
 
@@ -41,6 +41,17 @@ subscriptions. This supported foundation is not a claim of general industry
 generation or a completed paid-billing journey. See its [intake
 context](../../../../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md)
 and [operator entrypoint](../../../../../projects/fireux/fireux-app/ignition/README.md).
+The recipe also prepares a development-task handoff named from the generated
+App's manifest identity and source path. Accepted FireUX App requests and the
+Codex operator enter the same App-owned Conversation delivery queue. The App's
+admin-guarded command owns approval, canonical project build identity, worker
+claims and its immutable task link. The local operator worker owns source
+materialization and calls `tools/ide/codex-task.mjs` afterwards; Codex owns thread
+persistence. One claiming worker and ignored local receipts prevent duplicate
+external effects across retries. Unknown task outcomes require reconciliation,
+not automatic claim expiry/takeover. The website never connects to a personal
+Codex daemon. Prepared source/task handoff, operational product readiness and
+visibility in a particular desktop project remain distinct evidence.
 Prove each supported path through its actual commands and preview before
 claiming it is shared. The
 [priority list](../../../../../docs/roadmaps/fireux-priorities.md) gates this work
@@ -119,6 +130,10 @@ research, crawl sites, generate pages or certify rankings automatically.
 - `src/runtime/models/ignition.ts`: brief, search-plan, assembly and evidence contracts.
 - `src/runtime/utils/review-search-plan.ts` and `src/test/search-plan.test.mjs`: declared origin, page/journey and indexing-policy review.
 - `src/runtime/utils/ignition-method.ts`: reusable evidence-led build/reconciliation loop.
+- Its `development-task` step requires the owning task after local creation,
+  with source, scope, consumers and acceptance in the handoff. The App recipe
+  and local operator adapter provide the implementation; this method does not
+  open desktop connections itself.
 - `src/runtime/utils/reconcile-ignition.ts`: declared coverage and dependency validation.
 - `src/test/reconciliation.test.mjs`: absent-proposal, invalid-reference, cycle, evidence and reference-source checks.
 - `src/test/package-artifact.test.mjs`: packed root/subpath exports execute under plain Node outside the workspace.

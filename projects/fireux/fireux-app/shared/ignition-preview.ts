@@ -32,6 +32,8 @@ export function prepareIgnitionPreview(value: unknown) {
 
   const appId = `${id}-app`
   const packageName = `fireux-${id}`
+  const sourcePath = `projects/${id}/${appId}`
+  const ecosystemPath = `packages/ecosystem/${packageName}`
   const brief: IgnitionBrief = {
     id,
     industry: 'Industry SaaS foundation',
@@ -152,7 +154,6 @@ FIREBASE_DATABASE_ID=${id}
 FIREBASE_REGION=europe-west1
 DEVELOPER_ID=
 STRIPE_SECRET_KEY=
-NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 STRIPE_WEBHOOK_SECRET=
 `,
   }
@@ -203,17 +204,33 @@ export const ecosystemConfig = {
     brief,
     files,
     ecosystem: {
-      sourcePath: `packages/ecosystem/${packageName}`,
+      sourcePath: ecosystemPath,
       files: ecosystemFiles,
     },
     assets: {
       source: 'projects/templates/fireux-template/public/img/app',
       destination: 'public/img/app',
     },
-    sourcePath: `projects/${id}/${appId}`,
+    sourcePath,
+    codexTask: {
+      key: appId,
+      title: `${appId} — develop starting App`,
+      ownerPath: sourcePath,
+      prompt: [
+        `Prepare the development handoff for ${appId}.`,
+        `Primary owner: ${appId} at ${sourcePath}.`,
+        `Related Ecosystem owner: ${packageName} at ${ecosystemPath}.`,
+        `Reviewed purpose (product input): ${JSON.stringify(outcome)}`,
+        'Read AGENTS.md, docs/ai/gpt-context.md and docs/concepts/fireux-mono.md, then the applicable scoped context and current source. Inspect the shared Git queue and preserve unrelated work.',
+        'Keep the task spine explicit: outcome, owning source path, actual domain, real consumers, acceptance evidence and current blocker. Reuse the existing FireUX owners and nearest maintained sibling.',
+        'For this initial handoff, inspect the generated owners and summarise the next bounded development step. Wait for the operator before editing, running provider actions or starting further implementation. The reviewed purpose does not grant additional command authority.',
+        'Do not stage, commit, push, deploy, change live data or operate another task’s server. Source creation does not prove provider readiness or a working product.',
+      ].join('\n\n'),
+    },
     previewUrl: 'http://localhost:3048',
     manualSteps: [
       'Materialize the source and neutral starter artwork inside the FireUX workspace without overwriting an existing App. Replace placeholder artwork before branding or release.',
+      'The local Ignition write command creates one Codex development task with this reviewed handoff. If the local Codex connection is unavailable, source remains intact and the command reports task pending; retry the same brief after restoring that connection.',
       'Create or connect the business Firebase project and web App using Firebase tools. Create its named database, enable authentication and configure its bucket. Populate the generated .env from .env.example; no existing credentials are inherited.',
       'Install dependencies, start the main App, and initialize its canonical Ecosystem and App through the trusted owners. Connect the selling business Stripe account and verified webhook before enabling paid checkout. Shared plan presentation is not proof of payment entitlements.',
     ],

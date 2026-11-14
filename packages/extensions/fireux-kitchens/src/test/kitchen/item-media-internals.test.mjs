@@ -382,3 +382,13 @@ test('flagship promotion reads every existing page before clearing other flags a
     0
   )
 })
+
+test('minimal Item image and Kitchen flagship actions use path identity without a copied Kitchen id', async () => {
+  for (const action of ['image', 'flagship']) {
+    const h = harness()
+    delete h.records.get(h.itemPath).kitchen_id
+    await h[action]({ body: { is_flagship: true } })
+    assert.ok(h.writes.length > 0)
+    assert.equal(Object.hasOwn(h.records.get(h.itemPath), 'kitchen_id'), false)
+  }
+})

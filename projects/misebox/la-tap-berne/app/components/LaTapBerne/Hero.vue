@@ -13,16 +13,19 @@
 </template>
 
 <script setup lang="ts">
-import { laTapBerneContent } from '../../config/content.config'
+import { laTapBerneContent } from '../../content/site'
 
-withDefaults(defineProps<{
-  title: string
-  subtitle?: string
-  eyebrow?: string
-}>(), {
-  subtitle: '',
-  eyebrow: laTapBerneContent.brand.name,
-})
+withDefaults(
+  defineProps<{
+    title: string
+    subtitle?: string
+    eyebrow?: string
+  }>(),
+  {
+    subtitle: '',
+    eyebrow: laTapBerneContent.brand.name,
+  }
+)
 </script>
 
 <style scoped>
@@ -60,7 +63,10 @@ withDefaults(defineProps<{
 }
 
 .latap-hero__subtitle {
-  color: var(--latap-page-copy-fg, color-mix(in srgb, var(--brand-canvas) 84%, transparent));
+  color: var(
+    --latap-page-copy-fg,
+    color-mix(in srgb, var(--brand-canvas) 84%, transparent)
+  );
   font-size: clamp(1rem, 2vw, 1.2rem);
   line-height: 1.55;
 }

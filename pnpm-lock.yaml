@@ -449,9 +449,6 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
-      fireux-demo:
-        specifier: workspace:*
-        version: link:../fireux-demo
       fireux-places:
         specifier: workspace:*
         version: link:../fireux-places
@@ -482,20 +479,6 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
-  packages/extensions/fireux-demo:
-    devDependencies:
-      '@nuxt/kit':
-        specifier: 4.6.1
-        version: 4.6.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(mlly@1.8.2)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)))
-      '@nuxt/module-builder':
-        specifier: ^1.0.2
-        version: 1.0.2(@nuxt/cli@3.37.0(@nuxt/schema@4.6.1)(cac@6.7.14)(magicast@0.5.5))(@vue/compiler-core@3.5.43)(esbuild@0.28.0)(sass@1.96.0)(typescript@5.9.2)(vue-tsc@3.3.0(typescript@5.9.2))(vue@3.5.43(typescript@5.9.2))
-      '@nuxt/schema':
-        specifier: 4.6.1
-        version: 4.6.1
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
 
   packages/extensions/fireux-docs:
     dependencies:
@@ -630,9 +613,6 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
-      fireux-demo:
-        specifier: workspace:*
-        version: link:../fireux-demo
       fireux-finance:
         specifier: workspace:*
         version: link:../fireux-finance
@@ -795,9 +775,6 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
-      fireux-demo:
-        specifier: workspace:*
-        version: link:../fireux-demo
       fireux-places:
         specifier: workspace:*
         version: link:../fireux-places
@@ -1955,9 +1932,6 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
-      fireux-demo:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-demo
       fireux-ecosystem:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-ecosystem
@@ -2114,9 +2088,6 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
-      fireux-ignite:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-ignite
       fireux-notifications:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-notifications

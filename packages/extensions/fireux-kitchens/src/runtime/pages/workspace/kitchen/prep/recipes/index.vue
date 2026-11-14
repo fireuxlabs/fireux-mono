@@ -1,33 +1,20 @@
 <template>
-  <div>
-    <KitchenPrepAndProductionRecipes />
-  </div>
+  <KitchenPrepAndProductionLibraryRead view="recipes" />
 </template>
-
 <script setup lang="ts">
-import { provideKitchenRecipesContext } from '../../../../../kitchen/composables/workspace/recipes/useKitchenRecipesContext'
-provideKitchenRecipesContext()
 definePageMeta({
   layout: false,
   workspacePage: true,
+  workspaceHeader: 'content',
   workspaceSurface: 'browse',
-  workspaceAccess: 'public-entry',
+  requiresAuth: true,
+  requiresSelection: true,
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-recipes',
     label: 'Recipes',
     group: 'Prep & Production',
     hidden: true,
-    groupDisplay: 'nested',
-    groupIcon: 'i-lucide-cooking-pot',
-    icon: 'i-lucide-notebook-tabs',
-    position: 'top',
-    order: 32,
-    desktop: true,
-    mobile: true,
-    layouts: ['workspace'],
   },
-  requiresAuth: false,
-  requiresSelection: false,
 })
 </script>

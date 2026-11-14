@@ -60,11 +60,12 @@ export async function saveKitchenPromotion(event: H3Event, input: unknown) {
       dishes.some(
         (dish) =>
           !dish.exists ||
-          dish.data?.kitchen_id !== kitchenId ||
+          (dish.data?.kitchen_id != null &&
+            dish.data.kitchen_id !== kitchenId) ||
           dish.data?.status === 'archived'
       )
     )
-      throw bad('Choose food and drinks from this Kitchen.')
+      throw bad('Choose Items from this Kitchen.')
     if (promotion.status === 'active' && 'dishes' in promotion) {
       const others = await tx.query(target, {
         field: 'status',

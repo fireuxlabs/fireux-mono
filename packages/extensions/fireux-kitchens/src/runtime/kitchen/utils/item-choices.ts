@@ -1,7 +1,4 @@
-import type {
-  ItemChoiceGroup,
-  ItemChoiceSelection,
-} from '../models/item-choice.model'
+import type { ItemChoiceGroup, ItemChoiceSelection } from '../item/offer'
 const record = (value: unknown): value is Record<string, any> =>
   Boolean(value && typeof value === 'object' && !Array.isArray(value))
 const id = (value: unknown): value is string =>

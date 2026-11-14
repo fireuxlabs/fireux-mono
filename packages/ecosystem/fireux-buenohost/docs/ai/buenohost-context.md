@@ -74,7 +74,9 @@ App identity, policy and optional capabilities remain App-owned.
   Public discovery does not advertise an unavailable creation action; the
   creation UI remains a capability and Tool gap.
 - Tenant apps own their property-specific presentation, copy, and
-  contact/booking-channel configuration. Each root Property owns
+  contact/booking-channel configuration. Authored stay descriptions and contact
+  copy live in App `app/content/site.ts`, imported by their existing pages; they
+  are presentation data, not canonical Property or Reservation records. Each root Property owns
   `team/{memberId}`, Team requests, Reservations, Calendar records, and protected
   support; root management plus AppUser membership and explicit Property association bound tenant targets.
   Property and Portfolio Team use the shared `name`, `user_id`, `role_ids`

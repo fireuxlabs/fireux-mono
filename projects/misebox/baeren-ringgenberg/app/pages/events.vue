@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { baerenRinggenbergContent } from '../config/content.config'
+import { baerenRinggenbergContent } from '../content/site'
 
 const page = baerenRinggenbergContent.pages.events
 const eventsContact = baerenRinggenbergContent.contacts.events

@@ -1,14 +1,12 @@
 import type { NuxtConfig } from '@nuxt/schema'
-import type { FireuxSeoConfig } from './seo-config'
-import type { FireuxMetaContent } from '../../runtime/app/literature/types'
-import type { AppRole } from '../../runtime/app/models/model'
+import type { FireuxSeoConfig } from './seo-config.ts'
+import type { FireuxMetaContent } from '../../runtime/app/literature/types.ts'
+import type { AppRole } from '../../runtime/app/models/model.ts'
 
 export type FireuxWorkspaceFamilyConfig = {
   /** Optional App-owned origin for this Workspace entrance. Home remains route-owned. */
   origin?: string
   canCreate?: boolean
-  /** Whether this App exposes the shared Demo target catalogue for this Workspace. */
-  allowDemo?: boolean
 }
 
 export type FireuxWorkspaceConfig = Record<string, FireuxWorkspaceFamilyConfig>

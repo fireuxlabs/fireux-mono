@@ -5,6 +5,7 @@
 definePageMeta({
   layout: false,
   workspacePage: true,
+  workspaceHeader: 'content',
   workspace: 'kitchen',
   workspaceSurface: 'browse',
   requiresAuth: true,
@@ -14,7 +15,7 @@ definePageMeta({
     key: 'workspace-kitchen-prep',
     label: 'Prep & Production',
     description:
-      'Manage recipes, ingredients, preparation, stations and batch records.',
+      'Manage preparations, recipes, prep plans, batches, ingredients and stations.',
     groupIndex: true,
     icon: 'i-lucide-cooking-pot',
     order: 20,
@@ -23,6 +24,11 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
     children: [
+      {
+        label: 'Preparations',
+        to: '/workspace/kitchen/prep/preparations',
+        icon: 'i-lucide-cooking-pot',
+      },
       {
         label: 'Prep plan',
         to: '/workspace/kitchen/prep/plan',

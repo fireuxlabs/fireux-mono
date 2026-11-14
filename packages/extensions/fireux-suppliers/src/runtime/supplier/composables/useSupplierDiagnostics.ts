@@ -24,7 +24,7 @@ export function useSupplierDiagnostics() {
   type SupplierIngredientStateFilter = 'all' | 'active' | 'inactive'
 
   const supplierModelRuntime = SupplierModelRuntime
-  const sourceMode = ref<SupplierCollectionSource>('demo')
+  const sourceMode = ref<SupplierCollectionSource>('live')
   const selectedSupplierId = ref('')
   const supplierIngredientQuery = ref('')
   const supplierIngredientStateFilter =

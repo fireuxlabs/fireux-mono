@@ -3,9 +3,9 @@ import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerComposablesDirs } from 'fireux-core/config/module/module-helpers'
 import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo-config'
 import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
-import { configureComponents } from './config/module/components-config'
-import { configurePages } from './config/module/pages-config'
-import { configureServer } from './config/module/server-config'
+import { configureComponents } from './config/module/components-config.ts'
+import { requireNativeRuntimeLayer } from 'fireux-core/config/module/runtime-layer'
+import { configureServer } from './config/module/server-config.ts'
 
 export interface ModuleOptions {
   prefix?: string
@@ -46,7 +46,7 @@ export default defineNuxtModule<ModuleOptions>({
       composables: (resolver) =>
         registerComposablesDirs(resolver, ['./runtime/business/composables']),
       components: configureComponents,
-      pages: configurePages,
+      pages: requireNativeRuntimeLayer,
       server: configureServer,
     })
   },

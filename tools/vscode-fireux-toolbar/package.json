@@ -16,6 +16,11 @@
   "contributes": {
     "commands": [
       {
+        "command": "fireuxToolbar.focusRepositoryTree",
+        "title": "Focus Packages and Projects",
+        "category": "FireUX"
+      },
+      {
         "command": "fireuxToolbar.openServersView",
         "title": "Open FireUX Servers",
         "icon": "$(server-process)",

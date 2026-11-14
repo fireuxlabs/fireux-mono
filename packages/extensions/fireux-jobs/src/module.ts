@@ -6,7 +6,7 @@ import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import {
   defaultFireuxJobsConfig,
   type FireuxJobCategorySelection,
-} from './config/jobs.config'
+} from './config/jobs.config.ts'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerComposablesDirs } from 'fireux-core/config/module/module-helpers'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
@@ -15,10 +15,10 @@ import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
 } from 'fireux-core/config/app/seo-config'
-import { configureComponents } from './config/module/components-config'
-import { configurePages } from './config/module/pages-config'
-import { configureAssets } from './config/module/assets-config'
-import { configureServer } from './config/module/server-config'
+import { configureComponents } from './config/module/components-config.ts'
+import { configurePages } from './config/module/pages-config.ts'
+import { configureAssets } from './config/module/assets-config.ts'
+import { configureServer } from './config/module/server-config.ts'
 
 export interface ModuleOptions {
   prefix?: string

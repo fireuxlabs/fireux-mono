@@ -96,7 +96,7 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
-import { ausfinnContent } from '../config/content.config'
+import { ausfinnContent } from '../content/site'
 
 definePageMeta({ layout: 'ausfinn-default' })
 

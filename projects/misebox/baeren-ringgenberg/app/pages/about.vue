@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { baerenRinggenbergContent } from '../config/content.config'
+import { baerenRinggenbergContent } from '../content/site'
 
 const page = baerenRinggenbergContent.pages.about
 const contacts = Object.values(baerenRinggenbergContent.contacts)

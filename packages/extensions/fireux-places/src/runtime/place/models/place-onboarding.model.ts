@@ -1,6 +1,5 @@
 // Concurrent edit — 2026-07-21 16:25 CEST — Place onboarding enrichment: define the bounded preview and completion contract.
 // Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: stage one optional sparse brand palette.
-import type { Place } from '../models/place.model'
 import type { Place } from './place.model.ts'
 
 export type PlaceUpsertInput = Partial<Place> &

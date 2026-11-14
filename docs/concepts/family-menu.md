@@ -32,8 +32,11 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 
 The Item identity foundation is `kitchen/item/models/model.ts`. Its reader and
 read adapter live in that same Item spine and retain the existing `dishes`
-collection path. They expose only identity; pricing/choices, preparation and
-Kitchen-selected presentation are separate responsibilities. Historical editor
+collection path. The canonical model exposes only identity. The same document listener exposes
+selling defaults separately through `item/offer.ts`; `item/identity.ts` selects
+identity without adding those values to Item. Preparation and Kitchen-selected
+presentation retain separate ownership. Menu editors share this reader rather
+than acquiring the whole catalogue for labels. Historical editor
 fields do not expand this canonical model. See the foundation reader tests in
 `src/test/kitchen/item/foundation.test.mjs`.
 
@@ -53,7 +56,13 @@ does not reset a restored page, and settled results clamp an obsolete page.
 `item-reader-internals.test.mjs` covers the round trip and delayed Kitchen/data
 resolution. Item detail has two views: Details and Appears on. Preparation specification,
 prep requirements and Station management belong to Prep & Production; the Menu
-Item route does not acquire their readers. Old preparation/spec view queries
+Item route does not acquire their readers. Preparation owns reusable output
+identity in `kitchen/preparation/models/model.ts`; Recipe owns inputs, method
+and expected yield in `kitchen/recipe/models/model.ts`. Their library lives under
+`/workspace/kitchen/prep`, with historical `prep-items` and `recipes` storage
+paths retained by their owning readers. See the Misebox context’s
+[production boundary](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md#preparations-recipes-and-production).
+Old preparation/spec view queries
 resolve to Details. Stored preparation data is not migrated or deleted.
 Removal stays under Item actions. Kind-specific editors retain their existing authority. Named services reference stable
 Menu IDs and own eligibility and serving schedules.
@@ -818,7 +827,7 @@ Item-owned `choice_groups` extends flat variants/extras with stable identifiers,
 selection minimum/maximum and full-price versus additional-charge pricing.
 `kitchen/utils/item-choices.ts` owns strict definitions and selection pricing;
 old flat records project to groups on read without being rewritten. An explicit
-Price & choices save writes groups and clears flat terms. Public previews and
+Price & choices saves explicit groups and retains historical flat terms; explicit groups govern selection. Public previews and
 ordering use the same rules; the submission transaction resolves canonical Item
 terms and validates group selections. Choice groups remain distinct from
 Promotion meal-deal groups and carry no Menu-placement ownership. Import

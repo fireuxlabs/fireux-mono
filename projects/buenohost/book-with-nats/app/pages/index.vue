@@ -68,7 +68,7 @@
 import {
   bookWithNatsContent,
   primaryNatsProperty as property,
-} from '../config/content.config'
+} from '../content/site'
 
 definePageMeta({
   layout: 'nats-default',

@@ -12,24 +12,31 @@
     />
     <div v-else class="latap-map__gate">
       <p>Google Maps loads only when you ask to view it.</p>
-      <UButton icon="i-lucide-map" label="Load Google Maps" @click="mapRequested = true" />
+      <UButton
+        icon="i-lucide-map"
+        label="Load Google Maps"
+        @click="mapRequested = true"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { laTapBerneContent } from '../../config/content.config'
+import { laTapBerneContent } from '../../content/site'
 
 const mapRequested = ref(false)
 
-withDefaults(defineProps<{
-  title?: string
-  src?: string
-}>(), {
-  title: `Map to ${laTapBerneContent.brand.name}`,
-  src: laTapBerneContent.links.googleMapEmbed,
-})
+withDefaults(
+  defineProps<{
+    title?: string
+    src?: string
+  }>(),
+  {
+    title: `Map to ${laTapBerneContent.brand.name}`,
+    src: laTapBerneContent.links.googleMapEmbed,
+  }
+)
 </script>
 
 <style scoped>

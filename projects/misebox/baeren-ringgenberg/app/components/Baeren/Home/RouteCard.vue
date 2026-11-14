@@ -12,7 +12,9 @@
 
     <span class="baeren-home-route-card__body">
       <span class="baeren-home-route-card__eyebrow">{{ surface.label }}</span>
-      <strong :id="titleId" class="baeren-home-route-card__title">{{ surface.title }}</strong>
+      <strong :id="titleId" class="baeren-home-route-card__title">{{
+        surface.title
+      }}</strong>
       <span class="baeren-home-route-card__copy">{{ surface.copy }}</span>
 
       <span v-if="surface.facts?.length" class="baeren-home-route-card__facts">
@@ -20,12 +22,16 @@
       </span>
     </span>
 
-    <UIcon class="baeren-home-route-card__arrow" name="i-lucide-arrow-up-right" aria-hidden="true" />
+    <UIcon
+      class="baeren-home-route-card__arrow"
+      name="i-lucide-arrow-up-right"
+      aria-hidden="true"
+    />
   </NuxtLink>
 </template>
 
 <script setup lang="ts">
-import type { BaerenHomeRoute } from '../../../config/content.config'
+import type { BaerenHomeRoute } from '../../../content/site'
 
 const props = defineProps<{
   surface: BaerenHomeRoute
@@ -49,7 +55,10 @@ const titleId = `baeren-home-route-${props.surface.key}`
   color: var(--baeren-ink);
   box-shadow: 0 0.7rem 1.8rem rgb(var(--baeren-card-shadow-rgb) / 8%);
   text-decoration: none;
-  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
 }
 
 .baeren-home-route-card--featured {

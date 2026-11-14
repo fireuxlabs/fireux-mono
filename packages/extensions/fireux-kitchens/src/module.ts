@@ -3,8 +3,8 @@ import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import {
   configureRuntime,
   configureOrdering,
-} from './config/module/runtime-config'
-import type { OrderingConfiguration } from './types/ordering'
+} from './config/module/runtime-config.ts'
+import type { OrderingConfiguration } from './types/ordering.ts'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import {
   registerComposablesDirs,
@@ -15,9 +15,9 @@ import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
 } from 'fireux-core/config/app/seo-config'
-import { configureComponents } from './config/module/components-config'
-import { configurePages } from './config/module/pages-config'
-import { configureAssets } from './config/module/assets-config'
+import { configureComponents } from './config/module/components-config.ts'
+import { configurePages } from './config/module/pages-config.ts'
+import { configureAssets } from './config/module/assets-config.ts'
 
 export interface ModuleOptions {
   prefix?: string

@@ -1,4 +1,4 @@
-import type { Item } from '../models/item.model'
+import type { ItemCollectionRow } from './item'
 import type { Menu } from '../../menu/models/menu.model'
 import type { KitchenPromotion } from '../models/promotion.model'
 
@@ -9,7 +9,9 @@ const missingName = (row: { name?: string }) => !row.name?.trim()
 const countFlag = (count: number, message: string) =>
   count ? [`${count} ${message}`] : []
 
-export function foodItemSummary(items: Partial<Item>[]): FoodSummary {
+export function foodItemSummary(
+  items: Partial<ItemCollectionRow>[]
+): FoodSummary {
   return {
     status: items.length ? `${items.length} items` : 'No items yet',
     flags: [
@@ -45,7 +47,7 @@ export function foodMenuSummary(menus: Menu[]): FoodSummary {
 
 export function foodPromotionSummary(
   promotions: KitchenPromotion[],
-  dishes: Partial<Item>[]
+  dishes: Partial<ItemCollectionRow>[]
 ): FoodSummary {
   const active = promotions.filter(
     (promotion) => promotion.status === 'active'

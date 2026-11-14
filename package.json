@@ -65,6 +65,7 @@
     "gitsave": "bash .github/gitsave.sh",
     "dev:richies": "pnpm --dir projects/werkbox/richies-reinigung dev",
     "ide:sync": "node tools/ide/sync.mjs",
+    "codex:map": "node tools/ide/codex-map.mjs",
     "ide:check": "node tools/ide/sync.mjs --check",
     "check:changed": "node tools/ide/check.mjs check",
     "check:assets": "node tools/ide/assets.mjs",

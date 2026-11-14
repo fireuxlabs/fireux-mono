@@ -98,9 +98,6 @@ function toWorkspaceConfig(v: unknown): FireuxWorkspaceConfig {
     if (typeof config.canCreate === 'boolean') {
       normalized.canCreate = config.canCreate
     }
-    if (typeof config.allowDemo === 'boolean') {
-      normalized.allowDemo = config.allowDemo
-    }
     if (Object.keys(normalized).length) entries.push([key, normalized])
   }
   return Object.fromEntries(entries)

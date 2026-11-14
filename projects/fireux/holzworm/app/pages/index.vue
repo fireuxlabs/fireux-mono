@@ -181,7 +181,7 @@ import {
   holzwormCategories,
   holzwormProducts,
   type HolzwormCategory,
-} from '../config/holzworm-catalogue'
+} from '../content/catalogue'
 
 definePageMeta({
   layout: 'landing',

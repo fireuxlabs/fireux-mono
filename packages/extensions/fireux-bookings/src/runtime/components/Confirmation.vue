@@ -11,6 +11,12 @@
       :end-at="booking.slot.endAt"
     />
     <p>Booked for {{ booking.contact.name }} · {{ booking.contact.email }}</p>
+    <dl v-if="booking.receipt.details?.length">
+      <div v-for="(detail, index) in booking.receipt.details" :key="index">
+        <dt>{{ detail.label }}</dt>
+        <dd>{{ detail.value }}</dd>
+      </div>
+    </dl>
     <UButton color="neutral" variant="outline" @click="$emit('restart')"
       >Make another booking</UButton
     >

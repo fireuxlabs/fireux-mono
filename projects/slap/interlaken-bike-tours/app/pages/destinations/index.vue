@@ -12,7 +12,7 @@ import {
   useSeo,
   buildPublicPageJsonLd,
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { searchPage } from '~/ignition/search'
+import { pageSeo } from '~/content/seo'
 definePageMeta({
   layout: 'default',
   nav: {
@@ -24,7 +24,7 @@ definePageMeta({
     layouts: ['default'],
   },
 })
-const page = searchPage('/destinations')
+const page = pageSeo('/destinations')
 useSeo({
   title: page.title,
   description: page.description,

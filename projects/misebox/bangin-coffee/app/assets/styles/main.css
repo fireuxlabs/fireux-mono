@@ -3,8 +3,16 @@
   overflow: hidden;
   color: var(--bangin-ink);
   background:
-    radial-gradient(circle at 18% 18%, rgba(242, 184, 75, 0.26), transparent 26rem),
-    radial-gradient(circle at 78% 6%, rgba(196, 106, 42, 0.22), transparent 22rem),
+    radial-gradient(
+      circle at 18% 18%,
+      rgba(242, 184, 75, 0.26),
+      transparent 26rem
+    ),
+    radial-gradient(
+      circle at 78% 6%,
+      rgba(196, 106, 42, 0.22),
+      transparent 22rem
+    ),
     linear-gradient(145deg, #17110d 0%, #24140d 48%, #0f0b08 100%);
 }
 
@@ -75,7 +83,11 @@
   border-radius: calc(var(--ui-radius) * 6);
   padding: calc(var(--spacing) * 5);
   background:
-    linear-gradient(160deg, rgba(255, 247, 229, 0.14), rgba(255, 247, 229, 0.04)),
+    linear-gradient(
+      160deg,
+      rgba(255, 247, 229, 0.14),
+      rgba(255, 247, 229, 0.04)
+    ),
     rgba(19, 12, 8, 0.72);
   box-shadow: 0 2rem 7rem rgba(0, 0, 0, 0.38);
 }
@@ -152,4 +164,16 @@
   .bangin-card-grid {
     grid-template-columns: 1fr;
   }
+}
+
+:root {
+  --bangin-bg: #17110d;
+  --bangin-ink: #fff7e5;
+  --bangin-muted: #d6b77a;
+  --bangin-cream: #fff2cc;
+  --bangin-roast: #5b341c;
+  --bangin-gold: #f2b84b;
+  --bangin-copper: #c46a2a;
+  --bangin-card: rgba(255, 247, 229, 0.09);
+  --bangin-border: rgba(255, 247, 229, 0.18);
 }

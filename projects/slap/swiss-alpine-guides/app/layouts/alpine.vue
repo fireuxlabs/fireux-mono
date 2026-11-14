@@ -5,29 +5,51 @@
     <slot />
     <footer class="alpine-footer">
       <span>SWISS ALPINE GUIDES</span>
-      <p>{{ operator.address }}<br /><a :href="`tel:${operator.telephone}`">{{ operator.phoneLabel }}</a><br /><a :href="`mailto:${operator.email}`">{{ operator.email }}</a></p>
-      <nav class="alpine-footer__links" aria-label="Footer navigation"><NuxtLink to="/activities">All activities</NuxtLink><NuxtLink to="/summer">Summer</NuxtLink><NuxtLink to="/winter">Winter</NuxtLink><NuxtLink to="/courses">Courses</NuxtLink><NuxtLink to="/rentals">Rentals</NuxtLink><NuxtLink to="/vouchers">Vouchers</NuxtLink><NuxtLink to="/about">About</NuxtLink><NuxtLink to="/news">Programme updates</NuxtLink><NuxtLink to="/resources">Resources</NuxtLink><NuxtLink to="/terms">Terms</NuxtLink><NuxtLink to="/contact">Contact</NuxtLink></nav>
+      <p>
+        {{ operator.address }}<br /><a :href="`tel:${operator.telephone}`">{{
+          operator.phoneLabel
+        }}</a
+        ><br /><a :href="`mailto:${operator.email}`">{{ operator.email }}</a>
+      </p>
+      <nav class="alpine-footer__links" aria-label="Footer navigation">
+        <NuxtLink to="/activities">All activities</NuxtLink
+        ><NuxtLink to="/summer">Summer</NuxtLink
+        ><NuxtLink to="/winter">Winter</NuxtLink
+        ><NuxtLink to="/courses">Courses</NuxtLink
+        ><NuxtLink to="/rentals">Rentals</NuxtLink
+        ><NuxtLink to="/vouchers">Vouchers</NuxtLink
+        ><NuxtLink to="/about">About</NuxtLink
+        ><NuxtLink to="/news">Programme updates</NuxtLink
+        ><NuxtLink to="/resources">Resources</NuxtLink
+        ><NuxtLink to="/terms">Terms</NuxtLink
+        ><NuxtLink to="/contact">Contact</NuxtLink>
+      </nav>
       <small
-        >Client review prototype · Opening mountain animation is AI-generated. Activity photographs and programme references come from the original operator website. Current arrangements require operator confirmation.</small
+        >Client review prototype · Opening mountain animation is AI-generated.
+        Activity photographs and programme references come from the original
+        operator website. Current arrangements require operator
+        confirmation.</small
       >
     </footer>
   </div>
 </template>
 <script setup lang="ts">
+import { useAppConfig } from '#imports'
 import { operator } from '~/content/operator'
+const palette = useAppConfig().theme!.palette
 </script>
 <style scoped>
 .alpine-shell {
-  background: #f3f3ef;
-  color: #142d35;
+  background: v-bind('palette.canvas');
+  color: v-bind('palette.text');
   min-height: 100svh;
 }
 .alpine-skip {
   position: fixed;
   top: -100px;
   left: 16px;
-  background: white;
-  color: #142d35;
+  background: v-bind('palette.surface');
+  color: v-bind('palette.text');
   padding: 12px;
   z-index: 100;
 }
@@ -36,7 +58,7 @@ import { operator } from '~/content/operator'
 }
 .alpine-footer {
   padding: 50px clamp(24px, 6vw, 96px) 30px;
-  background: #142d35;
+  background: v-bind('palette.canvas_inverted');
   color: #e3e9e6;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -75,9 +97,9 @@ import { operator } from '~/content/operator'
     grid-template-columns: 1fr;
   }
   .alpine-footer__links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
     grid-row: auto;
     grid-column: 1;
     justify-self: start;

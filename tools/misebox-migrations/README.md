@@ -248,3 +248,16 @@ It does not claim to discover external bookmarks or arbitrary unknown fields.
 Offline safety checks:
 `python3 -m unittest discover -s tools/misebox-migrations -p
  'test_retire_baeren_drink_products.py'`.
+
+
+## La Tap preparation and recipe import
+
+The `la-tap-prep/import.mjs` runner is retired and refuses execution before
+credentials or Firebase access. Its JSON inputs and pure validation tests remain
+historical evidence, not approved La Tap recipes. They contain internet-derived
+guesses that must not be reapplied as venue facts.
+
+La Tap's retained `menu-uploads/main` source images establish Menu names and
+customer descriptions. They do not establish complete recipes, quantities,
+methods, yields or allergen-free claims. Venue-approved recipes are required
+before configuring those facts. No App runtime reads these migration inputs.

@@ -254,7 +254,7 @@ records. Public meal-deal projection remains read-only.
   Core App, AppUser, User and Ecosystem own their definitions; no global target registry
   or compatibility barrel imports domains into Core. FireUX-specific named-database
   Project and App-membership bindings live in `fireux-projects/runtime/project/server`.
-  FireUX platform coordination targets live in `fireux-fireux/runtime/platform/targets.ts`.
+  FireUX platform coordination targets live in `fireux-fireux/runtime/project/server/app-targets.ts`.
 - Target validation and dynamic Server target factories:
   `packages/core/fireux-core/src/runtime/utils/firestore-mutations/target-definition.ts`
   while Core-owned definitions live beneath App, User and Ecosystem. Domain-specific

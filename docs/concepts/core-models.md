@@ -367,6 +367,12 @@ Core's `runtime/ecosystem/server/identity/read.ts` owns the canonical root read.
 directory derives detail links from the document ID and supplies the App count
 from related Apps.
 
+Navigation is a shared runtime contract at `runtime/types/navigation.ts`, not an
+Entity model. `NavMeta` describes authored route navigation, `NavItem` is its
+normalized consumer shape, and `NavigationConfig` describes App overrides.
+Dashboard, Workspace, visibility middleware and domain presentation reuse those
+contracts. The Nuxt App-config augmentation stays beside its configuration type.
+
 Place owns its two-colour `brand_palette` directly in its model. Consumers
 reference `Place['brand_palette']`; boundary validation lives in
 `runtime/place/utils/brand-palette.ts`. Core retains the scalar

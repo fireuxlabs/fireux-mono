@@ -3,7 +3,7 @@
     <UPageCard
       v-for="capability in capabilities"
       :key="capability.to"
-      :title="capability.label"
+      :title="capability.title"
       :description="capability.description"
       :icon="capability.icon"
       :to="capability.to"
@@ -13,5 +13,5 @@
 </template>
 
 <script setup lang="ts">
-import { workspacePreviewLinks as capabilities } from '~/content/landing'
+import { kitchenCapabilityLinks as capabilities } from '~/content/landing'
 </script>

@@ -6,7 +6,7 @@ import {
   useSeo,
   buildPublicPageJsonLd,
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { searchPage } from '~/ignition/search'
+import { pageSeo } from '~/content/seo'
 import { destinations } from '~/content/destinations'
 definePageMeta({ layout: 'default' })
 const route = useRoute()
@@ -21,7 +21,7 @@ if (!destination.value)
 useSeo({
   title: () =>
     destination.value
-      ? searchPage(`/destinations/${destination.value.slug}`).title
+      ? pageSeo(`/destinations/${destination.value.slug}`).title
       : 'Destination not found',
   description: () => destination.value?.summary,
   path: () =>

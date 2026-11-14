@@ -3,7 +3,7 @@ import type { NuxtConfig } from '@nuxt/schema'
 import { existsSync, readdirSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, resolve } from 'node:path'
-import { moduleName } from './modules'
+import { moduleName } from './modules.ts'
 
 export const FIREUX_PAGE_TRANSITION = {
   name: 'fx-page',

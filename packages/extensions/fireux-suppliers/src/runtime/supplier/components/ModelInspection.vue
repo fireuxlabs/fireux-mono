@@ -91,13 +91,6 @@
                 Live
               </UButton>
               <UButton
-                :variant="sourceMode === 'demo' ? 'solid' : 'ghost'"
-                color="neutral"
-                @click="setSourceMode('demo')"
-              >
-                Demo
-              </UButton>
-              <UButton
                 :variant="sourceMode === 'test' ? 'solid' : 'ghost'"
                 color="neutral"
                 @click="setSourceMode('test')"

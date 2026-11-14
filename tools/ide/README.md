@@ -27,6 +27,14 @@ use Add to Codex Chat for a selection or Add File to Codex Chat for a whole file
 A chat kept under the old IDE Management project must be moved by the human in
 the desktop sidebar if the app requests source-folder consent.
 
+## Explorer focus
+
+The toolbar command **FireUX: Focus Packages and Projects** resets the
+`packages` and `projects` subtrees, then opens those two folders to show their
+immediate children. It preserves the repository root and other branches. It uses the current repository workspace and leaves files and editor
+tabs unchanged. Assign a personal keyboard shortcut in VS Code; Daniel uses
+`Cmd+9`, while his existing `Cmd+0` remains Collapse All.
+
 ## Everyday checks
 
 - `pnpm check:changed`: lint and check formatting of staged, unstaged and
@@ -127,3 +135,46 @@ ownership. Existing dev tasks remain available for ordinary terminal use.
 The local toolbar is linked to this source directory on the current machine.
 Reload the VS Code window to load its changes. Other installations need an
 updated extension package or an Extension Development Host.
+
+## Repository and Codex map
+
+`node tools/ide/codex-map.mjs` prints the source-owner inventory and a second,
+cross-cutting concept view as JSON. Owner nodes cover the repository, libraries,
+concrete Apps, tools (including tools without a package manifest), and the
+explicit static embed harness. Concept nodes are derived from each Markdown map
+under `docs/concepts/`: the map is the parent concept and its headings are
+sub-concepts. Existing context and README links connect owners to map nodes or
+specific heading anchors. The generator also reads current manifests, internal
+dependencies, source entrypoints, observed runtime spines, contexts, and
+available source-owned check commands. The launcher enriches runnable Apps
+with their manifest-owned dev port; Apps without a dev command remain in the
+inventory.
+
+Use `--output /tmp/fireux-codex-map.html` for a self-contained searchable map,
+or a `.json` output path for structured data. Without `--output`, generation is
+read-only and writes nothing. The map does not run checks or create Codex chats.
+
+An optional `--threads /tmp/fireux-threads.json` joins a separately exported
+array of open thread metadata, or an object with `threads` and `pinnedThreads`
+arrays. Use exact package/App names before `—` in titles, or an explicit
+repository-relative `ownerPath`. Use `ownerPaths` for a task spanning several
+owners and `conceptPaths` for exact concept IDs such as
+`docs/concepts/app-config.md` or
+`docs/concepts/app-config.md#tenant-and-standalone-apps`. IDs are the map path,
+optionally followed by a heading anchor. The exporter must include these
+explicit metadata fields; titles alone never guess concepts or sub-concepts.
+A real domain suffix such as `fireux-kitchens / recipe — verify editing` is
+matched to an existing source spine when unambiguous. Multiple outcome chats
+can bind to the same owner or concept. Unknown owners and concept IDs remain
+visible as unmatched metadata; a title cannot manufacture a source spine or
+grant edit authority.
+
+“No active task” means no assignment in that export. Without a thread export,
+live task state is unknown. Concept maps and headings are navigable context, not
+an additional ownership registry; task links are only as complete as the
+metadata supplied by the thread export. Keep exported task IDs, statuses and
+generated reports outside durable repository context. `AGENTS.md` remains the
+scope router; discovered related context files are navigation candidates for
+the actual task, not an additional mandatory routing table. Inspect current
+source before treating an observed folder as an Entity or choosing a task's
+edit scope.

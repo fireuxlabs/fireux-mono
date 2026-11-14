@@ -15,7 +15,6 @@ import {
   requireKitchenPrepItemReferences,
   requireKitchenRecipeReference,
 } from '../core/preparation-references'
-import type { ItemSpec } from '../../models/item.model'
 import { validateItemSpecification } from '../../utils/item-specification'
 import { itemFields, itemText, validateItemInput } from './record-input'
 
@@ -41,7 +40,9 @@ export async function updateItem(event: H3Event, input: unknown) {
       statusCode: 400,
       statusMessage: 'Provide a Item change.',
     })
-  const patch: Record<string, unknown> & { spec?: ItemSpec } = {}
+  const patch: Record<string, unknown> & {
+    spec?: ReturnType<typeof validateItemSpecification>
+  } = {}
   for (const key of ['preparation_station_ids']) {
     if (key in changes)
       patch[key] =
@@ -78,7 +79,10 @@ export async function updateItem(event: H3Event, input: unknown) {
       const existing = await transaction.read(target, dishId)
       if (!existing.exists)
         throw createError({ statusCode: 404, statusMessage: 'Item not found.' })
-      if (existing.data?.kitchen_id !== kitchenId)
+      if (
+        existing.data?.kitchen_id != null &&
+        existing.data.kitchen_id !== kitchenId
+      )
         throw createError({
           statusCode: 409,
           statusMessage: 'The stored Item identity is invalid.',

@@ -4,7 +4,7 @@ import {
   isNavVisibleForScope,
   normaliseNavVisibility,
 } from '../utils/navigation/visibility'
-import type { NavMeta, NavVisibility } from '../models/navigation'
+import type { NavMeta, NavVisibility } from '../types/navigation'
 import type { AppRole } from '../app/models/model'
 
 type RouteMetaWithVisibility = {

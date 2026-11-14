@@ -1,13 +1,13 @@
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import { existsSync } from 'fs'
-import type { FireuxEcosystemConfig } from '../../types/ecosystem'
-import { setRuntimeFirebaseEcosystem } from '../app/runtime'
+import type { FireuxEcosystemConfig } from '../../types/ecosystem.ts'
+import { setRuntimeFirebaseEcosystem } from '../app/runtime.ts'
 import {
   registerComposablesDir,
   registerLayoutComponents,
-} from './module-helpers'
-import { configurePages } from './pages-config'
+} from './module-helpers.ts'
+import { configurePages } from './pages-config.ts'
 
 type EcosystemResolverStep = (resolver: Resolver, nuxt: Nuxt) => void
 type EcosystemNuxtStep = (nuxt: Nuxt) => void

@@ -1,11 +1,11 @@
 <template>
   <div class="baeren-home-backdrop" aria-hidden="true">
-    <img :src="backdrop.src" alt="">
+    <img :src="backdrop.src" alt="" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { baerenRinggenbergContent } from '../../../config/content.config'
+import { baerenRinggenbergContent } from '../../../content/site'
 
 defineOptions({ name: 'BaerenHomeBackdrop' })
 

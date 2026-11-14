@@ -3,16 +3,6 @@ import type {
   LandingProductIndexContent,
 } from 'fireux-app/runtime/models/landing/product'
 
-export type WorkspaceSurfaceCopy = {
-  action: string
-  description?: string
-  eyebrow: string
-  items?: readonly string[]
-  supporting?: string
-  title: string
-  to: string
-}
-
 export const featuredAppIds = [
   'baeren-ringgenberg',
   'interlaken-essen',
@@ -36,7 +26,7 @@ export const featuredAppMedia = {
   },
 } as const
 
-export const workspaceSurfaceCopy = {
+const kitchenCapabilityCopy = {
   'kitchen.dishes': {
     eyebrow: 'Kitchen Workspace · Items',
     title: 'Develop your dishes.',
@@ -124,9 +114,9 @@ export const workspaceSurfaceCopy = {
     action: 'Open Kitchen Finance',
     to: '/workspace/kitchen/reports/finance',
   },
-} as const satisfies Record<string, WorkspaceSurfaceCopy>
+} as const
 
-export const workspacePreviewLinks = Object.entries(workspaceSurfaceCopy).map(
+export const kitchenCapabilityLinks = Object.entries(kitchenCapabilityCopy).map(
   ([id, content]) => ({
     id,
     title: content.action.replace(/^Open /, ''),

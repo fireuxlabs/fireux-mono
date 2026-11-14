@@ -1,6 +1,6 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
-import { configureComponents } from './config/module/components-config'
+import { configureComponents } from './config/module/components-config.ts'
 
 export type FireuxGoQrModuleOptions = {
   enabled?: boolean
@@ -26,9 +26,7 @@ function setGoQrRuntime(nuxt: any, options: FireuxGoQrModuleOptions) {
       process.env.NUXT_PUBLIC_GO_QR_PROVIDER_BASE_URL ||
       process.env.GO_QR_PROVIDER_BASE_URL ||
       current.providerBaseUrl ||
-      (nuxt.options.dev
-        ? 'http://localhost:3013'
-        : 'https://go-qr.web.app'),
+      (nuxt.options.dev ? 'http://localhost:3013' : 'https://go-qr.web.app'),
   }
 }
 

@@ -263,15 +263,15 @@ test('food and drink create atomically; duplicate cannot overwrite; media and fl
         {},
         {
           kitchenId: 'k',
-          draft: { name: 'Cola', item_kind, is_flagship: true },
+          draft: { name: 'Cola', item_kind },
         }
       ),
       { id: 'cola' }
     )
     const data = h.writes[0][3]
     assert.equal(data.item_kind, item_kind)
-    assert.equal(data.image, '')
-    assert.equal(data.is_flagship, false)
+    assert.equal(Object.hasOwn(data, 'image'), false)
+    assert.equal(Object.hasOwn(data, 'is_flagship'), false)
     assert.deepEqual(data.created, { by: 'u', appId: 'app' })
     await assert.rejects(
       h.createItem({}, { kitchenId: 'k', draft: { name: 'Cola' } }),
@@ -500,23 +500,21 @@ test('existing three public adapters retain caller signatures and choose exact c
   ])
 })
 
-test('Item creates snapshot validated flags and text before credentials and do not require a Place', async () => {
+test('Item creation snapshots text before credentials and does not require a Place', async () => {
   const wait = deferred(),
     h = harness({ wait })
   const draft = {
     name: 'Cola',
     description: 'Drink',
     item_kind: 'drink',
-    is_flagship: true,
   }
   const pending = h.createItem({}, { kitchenId: 'k', draft })
-  draft.is_flagship = { corrupt: true }
   draft.description = 'Wrong'
   draft.item_kind = 'food'
   wait.resolve()
   await pending
   assert.equal(Object.hasOwn(h.writes[0][3], 'is_deal'), false)
-  assert.equal(h.writes[0][3].is_flagship, false)
+  assert.equal(Object.hasOwn(h.writes[0][3], 'is_flagship'), false)
   assert.equal(h.writes[0][3].description, 'Drink')
   assert.equal(h.writes[0][3].item_kind, 'drink')
   assert.equal(
@@ -929,7 +927,7 @@ test('new Items need no Food/Drink type; group and Station references are checke
     }
   )
   const created = h.writes.at(-1)[3]
-  assert.equal(created.item_kind, null)
+  assert.equal(Object.hasOwn(created, 'item_kind'), false)
   assert.deepEqual(created.preparation_station_ids, [])
   await h.updateItem(
     {},
@@ -1003,4 +1001,33 @@ test('choice groups use the existing authorized Item update and derive a full-pr
     )
   )
   assert.equal(denied.writes.length, 0)
+})
+
+test('minimal Item creation composes selling defaults without redundant identity or Kitchen flags', async () => {
+  const h = harness()
+  await h.createItem({}, { kitchenId: 'k', draft: { name: 'Aioli' } })
+  const data = h.writes.at(-1)[3]
+  assert.deepEqual(
+    Object.keys(data).sort(),
+    ['name', 'description', 'choice_groups', 'created', 'updated'].sort()
+  )
+  assert.deepEqual(data.choice_groups, [])
+  assert.deepEqual(data.created, data.updated)
+  h.records.set('dishes/k/minimal', { name: 'Minimal' })
+  await h.updateItem(
+    {},
+    {
+      kitchenId: 'k',
+      dishId: 'minimal',
+      changes: { description: 'Updated identity' },
+    }
+  )
+  assert.equal(h.writes.at(-1)[3].description, 'Updated identity')
+  await assert.rejects(
+    h.createItem(
+      {},
+      { kitchenId: 'k', draft: { name: 'Flagged', is_flagship: true } }
+    ),
+    { statusCode: 400 }
+  )
 })

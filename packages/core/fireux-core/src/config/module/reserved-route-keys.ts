@@ -1,7 +1,7 @@
 import {
   BASE_RESERVED_ROUTE_KEYS,
   normalizeReservedRouteKey,
-} from '../../utils/public-slug-policy'
+} from '../../utils/public-slug-policy.ts'
 
 const ROOT_REGISTRY_KEY = '__fireux_reserved_route_keys__'
 

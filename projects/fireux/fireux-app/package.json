@@ -7,6 +7,7 @@
   },
   "scripts": {
     "ignition:prepare": "node --experimental-strip-types ignition/prepare.mjs",
+    "ignition:deliver": "node --experimental-strip-types ignition/delivery.mjs",
     "dev": "nuxi dev --port 3000",
     "build": "nuxi build",
     "generate": "nuxi generate",

@@ -7,7 +7,6 @@ type ItemCreateDraft = {
   description?: string
   item_kind?: string
   preparation_station_ids?: string[]
-  is_flagship?: boolean
 }
 export type ItemCreateResult = { id: string }
 

@@ -12,12 +12,27 @@ import {
   mergeRecipeUpdate,
 } from '../../utils/recipe-update-input'
 import { recipeFields, recipeTarget, validateRecipeInput } from './record-input'
+import { readRecipeChanges } from '../../recipe/changes'
+import { requireRecipeDefinitionReferences } from '../../recipe/server/references'
 
 export async function updateRecipe(event: H3Event, input: unknown) {
   const value = recipeFields(input, ['kitchenId', 'recipeId', 'changes'])
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
   const recipeId = requireFirestoreDocumentId(value.recipeId, 'Recipe id')
-  const patch = validateRecipeInput(() => readRecipeUpdate(value.changes))
+  const changeRecord =
+    value.changes && typeof value.changes === 'object'
+      ? (value.changes as Record<string, unknown>)
+      : {}
+  const canonical =
+    ['inputs', 'method', 'yield', 'output_preparation_id', 'source'].some(
+      (key) => key in changeRecord
+    ) ||
+    !['names', 'descriptions', 'preparation'].some((key) => key in changeRecord)
+  const patch = validateRecipeInput(() =>
+    canonical
+      ? readRecipeChanges(value.changes)
+      : readRecipeUpdate(value.changes)
+  )
   const actor = await readKitchenMutationActor(event)
 
   return runGuardedServerTransaction(
@@ -31,13 +46,22 @@ export async function updateRecipe(event: H3Event, input: unknown) {
           statusCode: 404,
           statusMessage: 'Recipe not found.',
         })
-      if (patch.preparation)
+      if (canonical && ('inputs' in patch || 'output_preparation_id' in patch))
+        await requireRecipeDefinitionReferences(
+          transaction,
+          kitchenId,
+          patch,
+          existing.data ?? {}
+        )
+      if ('preparation' in patch && patch.preparation)
         await requireRecipePreparationReferences(
           transaction,
           kitchenId,
           patch.preparation
         )
-      const changes = mergeRecipeUpdate(existing.data ?? {}, patch)
+      const changes = canonical
+        ? patch
+        : mergeRecipeUpdate(existing.data ?? {}, patch)
       transaction.update(target, recipeId, {
         ...changes,
         updated: serverAuditStamp({ by: actor.uid }),

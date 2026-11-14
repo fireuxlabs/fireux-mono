@@ -30,10 +30,22 @@ export const ignitionMethod = [
       'Use identical architectural terms for shared responsibilities. Separate domain substitutions from configuration, composition and genuinely new behaviour. Assess source availability and journey proof independently. Start from a shared-structure hypothesis; keep justified exceptions rather than forcing every industry into the reference domain.',
   },
   {
+    id: 'delivery',
+    title: 'Approve and queue the build',
+    instruction:
+      'Use the consuming App’s existing delivery queue for approved website and Codex requests. The App owns acceptance, administrator authority and canonical build identity; the local worker owns source materialization. Freeze the reviewed input, claim the build before external effects and persist one linked development task. Reuse the same claim and task on retry. A conflicting worker or unknown external outcome requires reconciliation rather than an automatic takeover. Queue acceptance is not a source build or product launch.',
+  },
+  {
     id: 'build',
     title: 'Implement a bounded journey',
     instruction:
       'Build FireUX Apps on the actual framework from the first implementation: consume defineFireuxApp or defineFireuxEcosystem for a Main App, the owning native runtime layers and Core FireuxApp (or FireuxWorkspaceApp when Workspaces are declared). Reuse shared platform attribution and legal/account entrances, Core SEO metadata and indexing policy, and the Core App manifest with the owning brand assets. A prototype still uses the framework; an Ignite brief or type dependency alone does not establish a FireUX App. Compose in FireUX style from the first implementation: map named user responsibilities to a readable parent, a clear state/lifecycle owner and focused controls. Reuse supported Core and domain primitives and commands without duplicating reads or authority. Keep cohesive controls local; avoid forwarding wrappers and premature abstractions. Record consequential decisions and their evidence rather than storing chat history. Supply the reviewed context to the owning App creation command. For a configured App, declare context in its App bundle config; Core passes this seed through server-only runtime configuration and persists it only on first creation. Project-owned App creation accepts context directly. Never overwrite subsequently edited context on initialization or retry.',
+  },
+  {
+    id: 'development-task',
+    title: 'Create the owning development task',
+    instruction:
+      'After successful local source creation, create one persistent Codex development task named from the actual App package and bounded outcome. Carry its owning source path, related Ecosystem, reviewed purpose, applicable context, real consumers, acceptance evidence and current blocker into a concise handoff. The local operator adapter owns the desktop connection and retry receipt; the public website only prepares the same handoff. Reuse the recorded task on retries. Preserve created source and report task pending when Codex is unavailable; never claim a prepared handoff is a created task. Start with context review and wait for operator direction before further implementation or provider actions.',
   },
   {
     id: 'verify',

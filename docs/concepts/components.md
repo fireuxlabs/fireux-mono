@@ -1,6 +1,6 @@
 # Components spine map
 
-Updated: 2026-11-12
+Updated: 2026-11-13
 Ref: 83b341600
 Role: map, not canon
 
@@ -49,7 +49,9 @@ frame supplies platform structure. Domain sections supply domain meaning.
 Focused controls consume one coordinator and supported domain commands.
 
 Give every child a real responsibility. Keep small cohesive controls local when
-extraction adds no useful boundary. Do not create a wrapper for every Nuxt UI
+extraction adds no useful boundary. A named section may own authored content and
+presentation as a separation of concerns, without reactive state or reuse across
+consumers. Do not create a wrapper for every Nuxt UI
 control, forwarding-only components or empty controllers. A visible component
 does not own mutation authority. Preserve its reader, lifecycle, accessibility,
 pending/error states and stale-completion behavior.

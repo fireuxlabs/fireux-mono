@@ -44,7 +44,10 @@ export default defineEventHandler(async (event) => {
       const current = await transaction.read(target, dishId)
       if (!current.exists)
         throw createError({ statusCode: 404, statusMessage: 'Item not found.' })
-      if (readString(current.data?.kitchen_id) !== kitchenId)
+      if (
+        current.data?.kitchen_id != null &&
+        readString(current.data.kitchen_id) !== kitchenId
+      )
         throw createError({
           statusCode: 409,
           statusMessage: 'The stored Item identity is invalid.',

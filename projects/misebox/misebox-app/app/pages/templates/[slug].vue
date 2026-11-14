@@ -33,11 +33,9 @@ import {
   findLandingTemplateBrand,
   isLandingTemplateBrandId,
 } from 'fireux-misebox/runtime/content/template-one-fixtures'
-import { useTemplateOneProductDemo } from '~/composables/product-demo/useTemplateOneProductDemo'
 import type { MenuDetailPayload } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import type { KitchenFlagshipItemResult } from 'fireux-kitchens/runtime/kitchen/server/items/flagship-projection'
 import type { TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/models/template-one'
-import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/utils/media/misebox'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 const route = useRoute<'MiseboxTemplateDetailPage'>()
@@ -51,7 +49,7 @@ if (!presentation)
 const kitchenId = String(route.query.kitchen || '')
 const kitchen: TemplateOneKitchenSpecimen = isLandingTemplateBrandId(kitchenId)
   ? findLandingTemplateBrand(kitchenId)!
-  : findLandingTemplateBrand('seehotel-bonigen')!
+  : findLandingTemplateBrand('friiites')!
 const rank = { root: 0, workspace: 1, app: 2 } as const
 if (rank[kitchen.tier] < rank[presentation.minimumTier])
   throw createError({
@@ -61,16 +59,12 @@ if (rank[kitchen.tier] < rank[presentation.minimumTier])
 
 const isTemplateOne =
   presentation.slug === 'template-one' && Boolean(kitchen.appProps)
-const deanosData =
-  isTemplateOne && kitchen.id === 'deanos'
-    ? await useTemplateOneProductDemo()
-    : null
 const [{ data: flagship }, { data: menuResult }] = await Promise.all([
   useAsyncData(
     `template-flagship-${kitchen.id}`,
     async (_nuxtApp, { signal }) => {
       const fetchRead = $fetch.create({ signal, cache: 'no-store' })
-      return isTemplateOne && kitchen.id !== 'deanos'
+      return isTemplateOne
         ? fetchRead<KitchenFlagshipItemResult>(
             `/api/kitchens/${kitchen.appProps!.kitchenId}/flagship-dish`,
             { query: { appId: kitchen.appProps!.appId } }
@@ -80,7 +74,7 @@ const [{ data: flagship }, { data: menuResult }] = await Promise.all([
   ),
   useAsyncData(`template-menu-${kitchen.id}`, async (_nuxtApp, { signal }) => {
     const fetchRead = $fetch.create({ signal, cache: 'no-store' })
-    return isTemplateOne && kitchen.id !== 'deanos'
+    return isTemplateOne
       ? fetchRead<MenuDetailPayload>('/api/menus/friiites')
       : null
   }),
@@ -89,15 +83,6 @@ const storageUrl = (path: string) =>
   `https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/${encodeURIComponent(`apps/friiites/img/app/${path}`)}?alt=media`
 const projection = computed(() => {
   if (!isTemplateOne) return null
-  if (kitchen.id === 'deanos') {
-    return createTemplateOneFixtureProjection({
-      kitchen,
-      menu: deanosData!.menu,
-      flagshipItem: deanosData!.flagshipItem,
-      media: (path) => miseboxDemoMediaUrl(`kitchens/deanos/${path}`),
-      wordmarkSrc: miseboxDemoMediaUrl('kitchens/deanos/logo.png'),
-    })
-  }
   if (menuResult.value?.kind !== 'manifest') return null
   return createTemplateOneFixtureProjection({
     kitchen,

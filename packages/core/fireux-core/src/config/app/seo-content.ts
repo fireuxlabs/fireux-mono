@@ -1,7 +1,7 @@
 /** Derive public solution/operation routes and the default description from App literature. */
-import type { FireuxMetaContent } from '../../runtime/app/literature/types'
-import type { FireuxSeoConfig } from './seo-config'
-import { normalizePaths } from './seo-routes'
+import type { FireuxMetaContent } from '../../runtime/app/literature/types.ts'
+import type { FireuxSeoConfig } from './seo-config.ts'
+import { normalizePaths } from './seo-routes.ts'
 
 const NON_INDEXABLE_SOLUTION_STATUSES = new Set([
   'coming-soon',

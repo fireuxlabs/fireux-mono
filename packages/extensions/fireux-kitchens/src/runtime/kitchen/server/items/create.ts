@@ -21,7 +21,6 @@ export async function createItem(event: H3Event, input: unknown) {
     'description',
     'item_kind',
     'preparation_station_ids',
-    'is_flagship',
     'price',
     'price_options',
     'add_ons',
@@ -36,12 +35,6 @@ export async function createItem(event: H3Event, input: unknown) {
       statusCode: 400,
       statusMessage: 'Choose food or drink.',
     })
-  for (const key of ['is_flagship'])
-    if (draft[key] !== undefined && typeof draft[key] !== 'boolean')
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Item flags must be booleans.',
-      })
   const description = itemText(
     draft.description === undefined ? '' : draft.description
   )
@@ -51,8 +44,15 @@ export async function createItem(event: H3Event, input: unknown) {
       ...(Object.hasOwn(draft, 'choice_groups')
         ? { choice_groups: draft.choice_groups }
         : {}),
-      price_options: draft.price_options ?? [],
-      add_ons: draft.add_ons ?? [],
+      ...(Object.hasOwn(draft, 'price_options')
+        ? { price_options: draft.price_options }
+        : {}),
+      ...(Object.hasOwn(draft, 'add_ons') ? { add_ons: draft.add_ons } : {}),
+      ...(!Object.hasOwn(draft, 'choice_groups') &&
+      !Object.hasOwn(draft, 'price_options') &&
+      !Object.hasOwn(draft, 'add_ons')
+        ? { choice_groups: [] }
+        : {}),
       ...(draft.bottle_deposit !== undefined
         ? { bottle_deposit: draft.bottle_deposit }
         : {}),
@@ -96,14 +96,9 @@ export async function createItem(event: H3Event, input: unknown) {
       transaction.create(target, id, {
         name,
         ...pricing,
-        slug: id,
         description,
-        item_kind: itemKind ?? null,
+        ...(itemKind ? { item_kind: itemKind } : {}),
         ...organisation,
-        // Flagship selection remains a separate trusted action.
-        is_flagship: false,
-        image: '',
-        kitchen_id: kitchenId,
         created: stamp,
         updated: stamp,
       })

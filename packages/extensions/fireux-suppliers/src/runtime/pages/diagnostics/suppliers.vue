@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       title="Diagnostics · Suppliers"
-      description="Supplier model, demo catalogue state, collection, and linked ingredient diagnostics."
+      description="Supplier model, catalogue state, collection, and linked ingredient diagnostics."
     />
 
     <UPageBody class="pagebody">

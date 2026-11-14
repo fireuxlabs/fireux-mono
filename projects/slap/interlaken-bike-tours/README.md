@@ -1,8 +1,9 @@
 # Interlaken Bike Tours prototype
 
-FireUX visitor App assembled using the FireUX Ignite method. The App-owned
-[brief and assembly](app/ignition/brief.ts) define the bounded journey and configured
-Apps That Slap identity consumed by `defineFireuxApp`.
+FireUX visitor App. `nuxt.config.ts` owns its Apps That Slap identity, selected
+capabilities and preview indexing policy. Authored tour/destination facts and
+page metadata live in `app/content`; the website has no runtime Ignition brief
+or assembly.
 
 - `pnpm dev`: local preview on port 3035.
 - `pnpm build`: compile the FireUX runtime for Firebase SSR.
@@ -87,9 +88,10 @@ pages use Core SEO composables for canonical URLs, social previews and JSON-LD.
 The prototype deliberately configures noindex/disallow policy; Core filters its
 sitemap accordingly. Indexability is a release choice, not a claim about ranking.
 
-The App-owned `app/ignition/search.ts` is consumed by the brief, Nuxt SEO config
-and public page metadata. Ignition reviews its declared origin, journeys and
-index/sitemap consistency. The reviewed prototype origin is
+App-owned `app/content/seo.ts` supplies route titles and descriptions from
+the same tour/destination content. Core owns canonical, social, JSON-LD, robots
+and sitemap transport. The preview origin and noindex/disallow policy are
+explicit in `nuxt.config.ts`. The prototype origin is
 `https://interlaken-bike-tours-prototype.web.app`; it must not inherit a local
 APP_DOMAIN into canonical identity. English is the sole crawlable language;
 spoken guide languages do not establish translated pages. Search measurement

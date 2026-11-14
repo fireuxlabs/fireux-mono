@@ -1,10 +1,21 @@
 import { normalizeItemChoiceGroups } from './item-choices'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
-import type {
-  ItemPriceOption,
-  ItemAddOnOption,
-  ItemPricing,
-} from '../models/item.model'
+import type { ItemOffer } from '../item/offer'
+import { readItemChoiceGroups } from './item-choices'
+
+/** Historical storage/read shapes, not the canonical Item model. */
+export type ItemPriceOption = {
+  label: string
+  quantity: number
+  unit: string
+  price: number
+}
+export type ItemAddOnOption = { id: string; label: string; price: number }
+export type ItemPricing = Partial<ItemOffer> & {
+  price?: number
+  price_options: ItemPriceOption[]
+  add_ons: ItemAddOnOption[]
+}
 const text = (value: unknown) => String(value ?? '').trim()
 const number = (value: unknown) =>
   Number.isFinite(Number(value)) ? Number(value) : 0
@@ -182,7 +193,9 @@ export function normalizeItemPricingPatch(
   return normalized
 }
 
-export function readItemPricing(data: Record<string, unknown>): ItemPricing {
+export function readItemPricing(
+  data: Record<string, unknown>
+): ItemPricing & { price: number } {
   if (!Object.hasOwn(data, 'price'))
     throw new Error(
       'Set the Item normal price before using it on a published Menu.'
@@ -198,5 +211,27 @@ export function readItemPricing(data: Record<string, unknown>): ItemPricing {
       ? { bottle_deposit: data.bottle_deposit }
       : {}),
   } as ItemPricing)
-  return patch as ItemPricing
+  return patch as ItemPricing & { price: number }
+}
+
+/** Read selling defaults without inventing a price or writing historical choices. */
+export function readItemOffer(data: Record<string, unknown>): ItemOffer {
+  const pricing = normalizeItemPricingPatch({
+    ...(Object.hasOwn(data, 'price') ? { price: data.price } : {}),
+    ...(Object.hasOwn(data, 'choice_groups')
+      ? { choice_groups: data.choice_groups }
+      : {}),
+    price_options: data.price_options ?? [],
+    add_ons: data.add_ons ?? [],
+    ...(Object.hasOwn(data, 'bottle_deposit')
+      ? { bottle_deposit: data.bottle_deposit }
+      : {}),
+  })
+  return {
+    ...(pricing.price !== undefined ? { price: pricing.price } : {}),
+    choice_groups: normalizeItemChoiceGroups(readItemChoiceGroups(pricing)),
+    ...(pricing.bottle_deposit !== undefined
+      ? { bottle_deposit: pricing.bottle_deposit }
+      : {}),
+  }
 }

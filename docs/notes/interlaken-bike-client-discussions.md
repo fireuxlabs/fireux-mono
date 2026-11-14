@@ -7,7 +7,7 @@ Status: discussion notes, not implementation specification.
 
 The current checkout contains the dedicated App at
 [`projects/slap/interlaken-bike-tours`](../../projects/slap/interlaken-bike-tours/package.json)
-and its [Ignition brief](../../projects/slap/interlaken-bike-tours/app/ignition/brief.ts).
+and its [App scope and current implementation](../../projects/slap/interlaken-bike-tours/README.md).
 The older absence observation below is historical and has been superseded.
 Further delivery and launch work is parked under the
 [single priority list](../roadmaps/fireux-priorities.md); this note preserves

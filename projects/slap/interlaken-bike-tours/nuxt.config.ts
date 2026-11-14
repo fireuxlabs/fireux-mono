@@ -3,11 +3,21 @@ import type { NuxtConfig } from '@nuxt/schema'
 import type { ModuleOptions as IconOptions } from '@nuxt/icon'
 import type { ModuleOptions as UIOptions } from '@nuxt/ui'
 import { defineFireuxApp } from 'fireux-app/config'
-import { identity } from './app/ignition/brief'
-import { searchPlan } from './app/ignition/search'
 
 const fireux = defineFireuxApp({
-  ...identity,
+  id: 'interlaken-bike-tours',
+  ecosystem: 'slap',
+  ecosystemId: 'slap',
+  projectId: 'slap',
+  name: 'Interlaken Bike Tours',
+  shortName: 'Bike Tours',
+  role: 'tenant',
+  modules: [
+    'fireux-businesses',
+    ['fireux-bookings', { businessWorkspace: true }],
+  ],
+  context:
+    'A customer-facing prototype for premium private guided rides. Visitors can check the configured departure against working days, closed dates and Ben’s Google Calendar and confirm one private tour per day at the catalog price per person; the App stores a booking record and the shared FireUX Bookings package owns confirmation orchestration and Calendar transport. The Business Workspace provides profile/contact details, linked locations, a Team roster, availability settings and private booking records. Public bookings require a server-configured Business id and Calendar credentials. No payment, outbound confirmation email or cancellation flow is implemented. Prices and operating capacity require operator review before release.',
   extends: [
     'fireux-core/layer',
     'fireux-slap/layer',
@@ -22,17 +32,10 @@ const fireux = defineFireuxApp({
   },
   contactEmail: 'info@interlakenbiketours.com',
   seo: {
-    siteUrl: searchPlan.origin,
-    disallowPaths: searchPlan.mode === 'public' ? [] : ['/'],
-    noindexPaths:
-      searchPlan.mode === 'public'
-        ? searchPlan.pages
-            .filter((page) => !page.index)
-            .map((page) => page.path)
-        : ['/', '/**'],
-    staticPaths: searchPlan.pages
-      .filter((page) => page.sitemap)
-      .map((page) => page.path),
+    siteUrl: 'https://interlaken-bike-tours-prototype.web.app',
+    disallowPaths: ['/'],
+    noindexPaths: ['/', '/**'],
+    staticPaths: [],
   },
 })
 

@@ -47,16 +47,20 @@ const withMjsExtensions = (code) =>
       dynamicSuffix
     ) => {
       if (fromSpecifier) {
-        const next = hasExtension(fromSpecifier)
-          ? fromSpecifier
-          : `${fromSpecifier}.mjs`
+        const next = fromSpecifier.endsWith('.ts')
+          ? `${fromSpecifier.slice(0, -3)}.mjs`
+          : hasExtension(fromSpecifier)
+            ? fromSpecifier
+            : `${fromSpecifier}.mjs`
         return `${fromPrefix}${next}${fromSuffix}`
       }
 
       if (dynamicSpecifier) {
-        const next = hasExtension(dynamicSpecifier)
-          ? dynamicSpecifier
-          : `${dynamicSpecifier}.mjs`
+        const next = dynamicSpecifier.endsWith('.ts')
+          ? `${dynamicSpecifier.slice(0, -3)}.mjs`
+          : hasExtension(dynamicSpecifier)
+            ? dynamicSpecifier
+            : `${dynamicSpecifier}.mjs`
         return `${dynamicPrefix}${next}${dynamicSuffix}`
       }
 

@@ -9,7 +9,7 @@ import type {
   NavPosition,
   NavVisibility,
   NavigationConfig,
-} from '../../models/navigation'
+} from '../../types/navigation'
 import {
   isNavVisibleForScope,
   normaliseNavVisibility,

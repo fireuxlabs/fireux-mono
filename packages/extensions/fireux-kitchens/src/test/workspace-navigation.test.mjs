@@ -141,7 +141,7 @@ test('Identity and brand is top level, separate from technical Settings', () => 
   )
 })
 
-test('Menu record, import and research routes all live in the direct Menu subtree', () => {
+test('Menu record and import routes live in the direct Menu subtree', () => {
   const expected = [
     'index.vue',
     'uploads/[uploadId].vue',
@@ -150,9 +150,6 @@ test('Menu record, import and research routes all live in the direct Menu subtre
     '[menuSlug]/publishing.vue',
     '[menuSlug]/source.vue',
     '[menuSlug]/[sectionId].vue',
-    'search-demand/index.vue',
-    'search-demand/analysis.vue',
-    'search-demand/tools.vue',
   ]
   for (const file of expected)
     assert.ok(existsSync(join(root, 'menu/menus', file)), file)
@@ -255,9 +252,10 @@ test('Orders retains its board and Services belongs to Menus', () => {
     assert.equal(existsSync(join(root, old)), false, old)
 })
 
-test('Recipes and Ingredients are production children outside the Menus group', () => {
+test('Preparations, Recipes and Ingredients are production children outside the Menus group', () => {
   const prep = navigation(join(root, 'prep/index.vue'))
   for (const [label, path] of [
+    ['Preparations', 'preparations'],
     ['Recipes', 'recipes'],
     ['Ingredients', 'ingredients'],
   ]) {

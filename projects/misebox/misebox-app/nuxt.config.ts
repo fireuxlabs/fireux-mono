@@ -17,14 +17,7 @@ export default defineFireuxEcosystem({
   profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],
   seo: {
     noindexPaths: ['/'],
-    staticPaths: [
-      '/home',
-      '/product',
-      '/get-started',
-      '/programme',
-      '/demo',
-      '/demo/menu',
-    ],
+    staticPaths: ['/home', '/product', '/get-started', '/programme'],
   },
   modules: [
     ['fireux-core', { componentCatalogue: true }],

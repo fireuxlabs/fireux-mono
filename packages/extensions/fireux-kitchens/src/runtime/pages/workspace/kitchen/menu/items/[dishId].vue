@@ -4,10 +4,6 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenItemsContext } from '../../../../../kitchen/composables/workspace/items/useKitchenItemsContext'
-
-provideKitchenItemsContext('all')
-
 definePageMeta({
   layout: false,
   workspacePage: true,

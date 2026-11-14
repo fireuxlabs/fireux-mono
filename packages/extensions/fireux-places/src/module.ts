@@ -1,14 +1,14 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import { configurePlaces } from './config/module/places-config'
+import { configurePlaces } from './config/module/places-config.ts'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerComposablesDirs } from 'fireux-core/config/module/module-helpers'
 import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
 } from 'fireux-core/config/app/seo-config'
-import { configureComponents } from './config/module/components-config'
-import { configurePages } from './config/module/pages-config'
-import { configureServer } from './config/module/server-config'
+import { configureComponents } from './config/module/components-config.ts'
+import { requireNativeRuntimeLayer } from 'fireux-core/config/module/runtime-layer'
+import { configureServer } from './config/module/server-config.ts'
 
 export interface ModuleOptions {
   debug?: boolean
@@ -73,7 +73,7 @@ export default defineNuxtModule<ModuleOptions>({
       composables: (resolver) =>
         registerComposablesDirs(resolver, ['./runtime/place/composables']),
       components: configureComponents,
-      pages: configurePages,
+      pages: requireNativeRuntimeLayer,
       server: configureServer,
     })
   },

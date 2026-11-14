@@ -1,4 +1,4 @@
-import type { NavItem, NavPosition } from '../../models/navigation'
+import type { NavItem, NavPosition } from '../../types/navigation'
 import { useMounted } from '@vueuse/core'
 import { useUserSession } from '../../user/composables/session/useUserSession'
 import { useDeveloperAccess } from '../../app/composables/useDeveloperAccess'

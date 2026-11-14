@@ -53,7 +53,7 @@ import {
   readItemChoiceGroups,
   priceItemChoices,
 } from '../../../kitchen/utils/item-choices'
-import type { ItemChoiceSelection } from '../../../kitchen/models/item-choice.model'
+import type { ItemChoiceSelection } from '../../../kitchen/item/offer'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import { formatCurrencyAmount } from '../../../utils/currency-display'
 import type { PublicMenuItem } from '../../models/menu-detail.model.ts'

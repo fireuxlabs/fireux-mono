@@ -85,7 +85,6 @@ test('The App layer supplies public presentation without adding commercial surfa
         'FireLandingProductIndex',
         'FireLandingProductPricingStrip',
         'FireLandingPricingStrip',
-        'FireLandingWorkspacePreviewFrame',
       ]) {
         const registered = components.filter(
           (entry) => entry.pascalName === name

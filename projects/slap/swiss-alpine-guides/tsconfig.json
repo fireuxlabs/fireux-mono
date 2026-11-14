@@ -20,11 +20,6 @@
       "fireux-finance/runtime/*": [
         "../../../packages/extensions/fireux-finance/src/runtime/*"
       ],
-      "fireux-demo": ["../../../packages/extensions/fireux-demo/src/module.ts"],
-      "fireux-demo/*": ["../../../packages/extensions/fireux-demo/src/*"],
-      "fireux-demo/runtime/*": [
-        "../../../packages/extensions/fireux-demo/src/runtime/*"
-      ],
       "fireux-go-qr": [
         "../../../packages/extensions/fireux-go-qr/src/module.ts"
       ],

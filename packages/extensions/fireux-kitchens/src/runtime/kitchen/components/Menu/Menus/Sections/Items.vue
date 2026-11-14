@@ -21,11 +21,11 @@
 <script setup lang="ts">
 import { computed, toRef } from 'vue'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
-import type { Item } from '../../../../utils/item'
+import type { ItemCollectionRow } from '../../../../utils/item'
 import { useMenuSectionItemCollection } from '../../../../../menu/composables/useMenuSectionItemCollection'
 const props = defineProps<{
   sectionId: string
-  dishes: Item[]
+  dishes: ItemCollectionRow[]
   dishesPending: boolean
   dishesError?: unknown
 }>()

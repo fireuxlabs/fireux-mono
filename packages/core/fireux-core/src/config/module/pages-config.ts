@@ -1,6 +1,6 @@
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
-import { requireNativeRuntimeLayer } from './runtime-layer'
+import { requireNativeRuntimeLayer } from './runtime-layer.ts'
 
 export function configurePages(resolver: Resolver, nuxt: Nuxt) {
   requireNativeRuntimeLayer(resolver, nuxt)

@@ -6,7 +6,7 @@ import {
   isActiveIngredient,
   normalizeIngredient,
 } from '../../../ingredient/server/normalize'
-import type { RecipePreparation } from '../../models/recipe-preparation'
+import type { RecipePreparation } from '../../recipe/models/preparation.ts'
 import { serverKitchenItemsTarget } from '../mutation-targets'
 import { normalizeKitchenPrepItem } from '../../utils/prep-item'
 

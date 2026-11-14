@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useKitchenItemCollection } from '../../useKitchenItemCollection'
-import { type Item } from '../../../utils/item'
+import { type ItemCollectionRow } from '../../../utils/item'
 import { useKitchenAccess } from '../../useKitchenAccess'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
@@ -54,7 +54,7 @@ export function useKitchenWorkspaceItems() {
         access.ids.value.includes(kitchenId.value)
       )
   )
-  const page = useKitchenWorkspaceReadPage<Item>({
+  const page = useKitchenWorkspaceReadPage<ItemCollectionRow>({
     collectionName: ItemStorage.collection,
     selectedKitchen,
     kitchenId,

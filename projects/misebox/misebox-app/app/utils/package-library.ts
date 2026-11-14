@@ -4,7 +4,6 @@ import package0 from 'fireux-ai/package.json'
 import package1 from 'fireux-blogs/package.json'
 import package2 from 'fireux-businesses/package.json'
 import package3 from 'fireux-core/package.json'
-import package4 from 'fireux-demo/package.json'
 import package5 from 'fireux-go-qr/package.json'
 import package6 from 'fireux-jobs/package.json'
 import package7 from 'fireux-kitchens/package.json'
@@ -20,7 +19,6 @@ const packageMetadata: Record<string, { name: string; description?: string }> =
     'fireux-blogs': package1,
     'fireux-businesses': package2,
     'fireux-core': package3,
-    'fireux-demo': package4,
     'fireux-go-qr': package5,
     'fireux-jobs': package6,
     'fireux-kitchens': package7,

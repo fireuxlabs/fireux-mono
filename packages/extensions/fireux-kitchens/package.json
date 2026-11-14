@@ -64,7 +64,6 @@
     "@lottiefiles/dotlottie-vue": "^0.11.25",
     "fireux-ai": "workspace:*",
     "fireux-core": "workspace:*",
-    "fireux-demo": "workspace:*",
     "fireux-finance": "workspace:*",
     "fireux-places": "workspace:*",
     "fireux-sproochli": "workspace:*",

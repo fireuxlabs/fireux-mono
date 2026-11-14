@@ -13,12 +13,12 @@
 
         <dl class="yv-shop-hero__stats">
           <div>
-            <dt>In the shop</dt>
-            <dd>{{ productReads.length }}</dd>
+            <dt>In the catalogue</dt>
+            <dd>{{ outcome === 'ready' ? productReads.length : '—' }}</dd>
           </div>
           <div>
             <dt>Bicycles</dt>
-            <dd>{{ bicycleCount }}</dd>
+            <dd>{{ outcome === 'ready' ? bicycleCount : '—' }}</dd>
           </div>
           <div>
             <dt>Based in</dt>
@@ -49,7 +49,7 @@
             @click="activeCategory = category.value"
           >
             {{ category.label }}
-            <span>{{ category.count }}</span>
+            <span>{{ outcome === 'ready' ? category.count : '—' }}</span>
           </UButton>
         </div>
       </section>
@@ -57,11 +57,18 @@
       <div class="yv-shop-results">
         <div>
           <p class="yv-eyebrow">{{ activeCategoryLabel }}</p>
-          <h2>
+          <h2 v-if="outcome === 'ready'">
             {{ filteredProducts.length }}
             {{ filteredProducts.length === 1 ? 'thing' : 'things' }} worth
             riding with
           </h2>
+          <h2 v-else-if="outcome === 'error'">
+            The shop is temporarily unavailable.
+          </h2>
+          <h2 v-else-if="outcome === 'empty'">
+            The online catalogue is being prepared.
+          </h2>
+          <h2 v-else>Loading the shop…</h2>
         </div>
         <p>Prices and availability follow the Yellow Velo shop.</p>
       </div>
@@ -122,8 +129,14 @@
 
       <UAlert
         v-else
-        title="Nothing found"
-        description="Try another search or category."
+        :title="
+          outcome === 'empty' ? 'No published products yet' : 'Nothing found'
+        "
+        :description="
+          outcome === 'empty'
+            ? 'Browse Yellow Velo on Instagram or visit the shop to ask about current bikes and parts.'
+            : 'Try another search or category.'
+        "
         color="neutral"
         variant="soft"
         role="status"
@@ -141,6 +154,7 @@ import type { ProductPrice } from 'fireux-products/runtime/product/models/produc
 
 definePageMeta({
   layout: 'landing',
+  colorMode: 'light',
   title: 'Shop',
   description: 'Shop Yellow Velo bicycles, parts, apparel, and ride goods.',
   nav: {
@@ -161,7 +175,7 @@ useSeoMeta({
 })
 
 const fetched = useProductCollection({ prices: true })
-const { productReads } = fetched
+const { productReads, outcome } = fetched
 const pending = computed(() => fetched.pending.value)
 const error = computed(() => fetched.error.value)
 const search = ref('')
@@ -256,7 +270,13 @@ const productSummary = (product: Product) => {
 }
 
 const formatPrice = (price: ProductPrice | null) => {
-  const amount = Number(price?.unit_amount ?? 0)
+  if (
+    !price ||
+    !Number.isFinite(price.unit_amount) ||
+    !/^[a-z]{3}$/i.test(price.currency)
+  )
+    return 'Ask in the shop'
+  const amount = price.unit_amount
   const currency = String(price?.currency || 'CHF').toUpperCase()
   return new Intl.NumberFormat('de-CH', {
     style: 'currency',

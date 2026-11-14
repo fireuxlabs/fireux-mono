@@ -1,0 +1,647 @@
+[
+  {
+    "slug": "heliskiing",
+    "original": "brand/activity-originals/heliskiing.jpg",
+    "source": "https://www.swissalpineguides.ch/images/Heliskiing%20-me.jpg",
+    "sha256": "3c28c4e7c1b91f20ef24a429b8ce06679ae86134dfd79a72121c0b6fddf1cfa7",
+    "width": 1000,
+    "height": 400,
+    "development": {
+      "brightness": 1.012,
+      "saturation": 1.065,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  },
+  {
+    "slug": "ski-guiding",
+    "original": "brand/activity-originals/ski-guiding.png",
+    "source": "https://www.swissalpineguides.ch/images/img/Powder%20Heliski.png",
+    "sha256": "f4bcd02b6bd437bb2f6585db538e1ad4228dddd73cbbbe879c0d0edd2a1e3705",
+    "width": 1000,
+    "height": 400,
+    "development": {
+      "brightness": 1.012,
+      "saturation": 1.065,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  },
+  {
+    "slug": "avalanche-courses",
+    "original": "brand/activity-originals/avalanche-courses.jpg",
+    "source": "https://www.swissalpineguides.ch/images/avalanche.jpg",
+    "sha256": "e8e3b9eb585d0dda3b81127a4dadd4f4f99dcebc8b004715013eaba120eb062c",
+    "width": 1000,
+    "height": 400,
+    "development": {
+      "brightness": 1.012,
+      "saturation": 1.065,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  },
+  {
+    "slug": "freeride",
+    "original": "brand/activity-originals/freeride.png",
+    "source": "https://www.swissalpineguides.ch/english/Freeride/images/freeride%201.png",
+    "sha256": "0d44df179e6db2b91320871a8ea79219d6fc9aebfa475a5c9a0575c3f8099444",
+    "width": 1000,
+    "height": 399,
+    "development": {
+      "brightness": 1.012,
+      "saturation": 1.065,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  },
+  {
+    "slug": "snowshoe-trekking",
+    "original": "brand/activity-originals/snowshoe-trekking.jpg",
+    "source": "https://www.swissalpineguides.ch/images/sunset%202.jpg",
+    "sha256": "7e8ab1178bf4d6f3671ba87124dc97493de494e5e2d0151f337935a48784a343",
+    "width": 1000,
+    "height": 400,
+    "development": {
+      "brightness": 1.012,
+      "saturation": 1.025,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  },
+  {
+    "slug": "waterfall-ice-climbing",
+    "original": "brand/activity-originals/waterfall-ice-climbing.jpg",
+    "source": "https://www.swissalpineguides.ch/english/IcefallClimbing/images/icefallclimb.jpg",
+    "sha256": "377167a18c8cfca4bf55874b2f4ad253a95ac5e53aeb98e66600cc19d12ccb50",
+    "width": 1000,
+    "height": 400,
+    "development": {
+      "brightness": 1.035,
+      "saturation": 1.065,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  },
+  {
+    "slug": "ski-touring",
+    "original": "brand/activity-originals/ski-touring.jpg",
+    "source": "https://www.swissalpineguides.ch/images/Freeride.jpg",
+    "sha256": "31beea480ce0f22f50ef65a06cd22f732a2df4780391ad3aca23b6eeb776850a",
+    "width": 1000,
+    "height": 400,
+    "development": {
+      "brightness": 1.012,
+      "saturation": 1.065,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  },
+  {
+    "slug": "glacier-ice-climbing",
+    "original": "brand/activity-originals/glacier-ice-climbing.jpg",
+    "source": "https://www.swissalpineguides.ch/english/IceClimbing/images/Ice%20ClimbingSommer%20b.jpg",
+    "sha256": "558fd9177dfd481f5b1a45f35dd092b801578b279008423b36d9695457561327",
+    "width": 1000,
+    "height": 400,
+    "development": {
+      "brightness": 1.012,
+      "saturation": 1.065,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  },
+  {
+    "slug": "via-ferrata",
+    "original": "brand/activity-originals/via-ferrata.jpg",
+    "source": "https://www.swissalpineguides.ch/images/via%20Ferrata%20M%C3%BCrren/via%20Ferrata%20m%C3%BCrren%20good.jpg",
+    "sha256": "f315803ef34cb7d0ac76e0b081e30c5765617af52334cedb6229fa2120d3fa53",
+    "width": 1000,
+    "height": 400,
+    "development": {
+      "brightness": 1.012,
+      "saturation": 1.065,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  },
+  {
+    "slug": "heli-hiking",
+    "original": "brand/activity-originals/heli-hiking.jpg",
+    "source": "https://www.swissalpineguides.ch/english/HeliHiking/images/helihike_Petersgrat.jpg",
+    "sha256": "fda9ba9f0ff101b80d2342d8c0cc2a8baeac44587dae2ba2afc7b5219f293b01",
+    "width": 1000,
+    "height": 400,
+    "development": {
+      "brightness": 1.012,
+      "saturation": 1.065,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  },
+  {
+    "slug": "glacier-trekking",
+    "original": "brand/activity-originals/glacier-trekking.jpg",
+    "source": "https://www.swissalpineguides.ch/images/Inside%20a%20glacier.jpg",
+    "sha256": "857781f64b33404ae15a9fec13f0de75eb20a7cb5f196ea01a61bd7df68c4a61",
+    "width": 1000,
+    "height": 400,
+    "development": {
+      "brightness": 1.035,
+      "saturation": 1.065,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  },
+  {
+    "slug": "rock-climbing",
+    "original": "brand/activity-originals/rock-climbing.jpg",
+    "source": "https://www.swissalpineguides.ch/images/Rock%20guy.jpg",
+    "sha256": "33416a7d8bf59eea0ff4ca0b98bef1e32a31e771833fb19e62bfd509f033bdc4",
+    "width": 1000,
+    "height": 400,
+    "development": {
+      "brightness": 1.012,
+      "saturation": 1.065,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  },
+  {
+    "slug": "mountaineering",
+    "original": "brand/activity-originals/mountaineering.jpg",
+    "source": "https://www.swissalpineguides.ch/english/Mountaineering/images/Monch.jpg",
+    "sha256": "5ecc105cce24283c2b50441c6c649061f926201ad2cdf8ba8201cb348b60707e",
+    "width": 1000,
+    "height": 400,
+    "development": {
+      "brightness": 1.035,
+      "saturation": 1.065,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  },
+  {
+    "slug": "paragliding",
+    "original": "brand/activity-originals/paragliding.jpg",
+    "source": "https://www.swissalpineguides.ch/english/Paragliding/Paraglide%20nr%201.jpg",
+    "sha256": "4bc0ae39512bd02be2427699f3137e89a1c806019cddd0b02ad49d1b059c135a",
+    "width": 1000,
+    "height": 400,
+    "development": {
+      "brightness": 1.012,
+      "saturation": 1.065,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  },
+  {
+    "slug": "team-events",
+    "original": "brand/activity-originals/team-events.jpg",
+    "source": "https://www.swissalpineguides.ch/Deutsch/Teamevents/images/helihike_petersgrat.jpg",
+    "sha256": "fda9ba9f0ff101b80d2342d8c0cc2a8baeac44587dae2ba2afc7b5219f293b01",
+    "width": 1000,
+    "height": 400,
+    "development": {
+      "brightness": 1.012,
+      "saturation": 1.065,
+      "linear": [
+        1.025,
+        -3
+      ],
+      "sharpen": {
+        "sigma": 0.45,
+        "m1": 0.35,
+        "m2": 0.8,
+        "x1": 2,
+        "y2": 8,
+        "y3": 12
+      },
+      "format": "webp",
+      "quality": 92,
+      "widths": [
+        500,
+        750,
+        1000
+      ],
+      "withoutEnlargement": true,
+      "deliveryFormats": {
+        "webp": {
+          "quality": 92,
+          "effort": 6
+        },
+        "avif": {
+          "quality": 65,
+          "effort": 6,
+          "chromaSubsampling": "4:4:4"
+        }
+      }
+    }
+  }
+]

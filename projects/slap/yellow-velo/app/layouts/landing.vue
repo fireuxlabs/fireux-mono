@@ -9,6 +9,7 @@
         <NuxtLink to="/products">Shop</NuxtLink>
         <NuxtLink to="/products?category=Bicycles">Bicycles</NuxtLink>
         <NuxtLink to="/products?category=Apparel">Apparel</NuxtLink>
+        <NuxtLink to="/#tours">Tours</NuxtLink>
         <NuxtLink to="/blog">Journal</NuxtLink>
       </nav>
 
@@ -39,6 +40,7 @@
         <div>
           <span>Explore</span>
           <NuxtLink to="/products">The shop</NuxtLink>
+          <NuxtLink to="/#tours">Tours</NuxtLink>
           <NuxtLink to="/blog">The journal</NuxtLink>
           <a
             href="https://www.instagram.com/yellow.velo.interlaken/"
@@ -57,14 +59,16 @@
 </template>
 
 <script setup lang="ts">
+import { useAppConfig } from '#imports'
 defineOptions({ name: 'yellow-velo-landing' })
+const palette = useAppConfig().theme!.palette
 </script>
 
-<style>
+<style scoped>
 .yv-site {
   min-height: 100svh;
-  background: #f2f0e8;
-  color: #11110f;
+  background: v-bind('palette.canvas');
+  color: v-bind('palette.text');
   font-family: var(--font-sans);
 }
 
@@ -78,7 +82,7 @@ defineOptions({ name: 'yellow-velo-landing' })
   padding: calc(var(--spacing) * 4)
     clamp(calc(var(--spacing) * 5), 4vw, calc(var(--spacing) * 18));
   border-bottom: 1px solid rgb(17 17 15 / 0.18);
-  background: #f2f0e8;
+  background: v-bind('palette.canvas');
 }
 
 .yv-brand {
@@ -99,7 +103,7 @@ defineOptions({ name: 'yellow-velo-landing' })
 
 .yv-header nav a,
 .yv-instagram {
-  color: #11110f;
+  color: v-bind('palette.text');
   font-size: 0.72rem;
   font-weight: var(--font-weight-black);
   letter-spacing: 0.12em;
@@ -127,14 +131,14 @@ defineOptions({ name: 'yellow-velo-landing' })
   gap: clamp(calc(var(--spacing) * 12), 8vw, calc(var(--spacing) * 36));
   padding: clamp(calc(var(--spacing) * 16), 9vw, calc(var(--spacing) * 32))
     clamp(calc(var(--spacing) * 5), 5vw, calc(var(--spacing) * 20));
-  background: #11110f;
-  color: #f2f0e8;
+  background: v-bind('palette.canvas_inverted');
+  color: v-bind('palette.canvas');
 }
 
 .yv-footer__lead > p,
 .yv-footer__details span {
   margin: 0 0 calc(var(--spacing) * 5);
-  color: #e7d90b;
+  color: v-bind('palette.accent');
   font-size: 0.7rem;
   font-weight: var(--font-weight-black);
   letter-spacing: 0.16em;
@@ -169,7 +173,7 @@ defineOptions({ name: 'yellow-velo-landing' })
 }
 
 .yv-footer__details a:hover {
-  color: #e7d90b;
+  color: v-bind('palette.accent');
 }
 
 .yv-footer__signoff {

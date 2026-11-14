@@ -2,7 +2,7 @@
 import {
   normalizeSeoPath as normalizePath,
   matchesSeoPath as patternMatchesPath,
-} from '../../utils/seo-indexing'
+} from '../../utils/seo-indexing.ts'
 const AUTO_EXCLUDED_PREFIXES = [
   '/api',
   '/_nuxt',

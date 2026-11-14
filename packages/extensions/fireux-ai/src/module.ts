@@ -1,11 +1,10 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerComposablesDir } from 'fireux-core/config/module/module-helpers'
-import { configurePages } from './config/module/pages-config'
-import { configureRuntime } from './config/module/runtime-config'
-import { configureServer } from './config/module/server-config'
-import { configureComponents } from './config/module/components-config'
-import type { FireuxAiMode, FireuxAiProvider } from './runtime/types/ai'
+import { requireNativeRuntimeLayer } from 'fireux-core/config/module/runtime-layer'
+import { configureRuntime } from './config/module/runtime-config.ts'
+import { configureComponents } from './config/module/components-config.ts'
+import type { FireuxAiMode, FireuxAiProvider } from './runtime/types/ai.ts'
 
 export interface ModuleOptions {
   /** Controls AI execution; static App research remains available. */
@@ -44,8 +43,7 @@ export default defineNuxtModule<ModuleOptions>({
       runtime: (nuxt) => configureRuntime(nuxt, options),
       composables: registerComposablesDir,
       components: configureComponents,
-      pages: configurePages,
-      server: configureServer,
+      pages: requireNativeRuntimeLayer,
     })
   },
 })

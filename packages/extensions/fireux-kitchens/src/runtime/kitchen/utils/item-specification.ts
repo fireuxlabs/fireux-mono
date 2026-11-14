@@ -1,7 +1,8 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
-import type { ItemSpec } from '../models/item.model'
 
-export const emptyItemSpecification = (): ItemSpec => ({
+export const emptyItemSpecification = (): ReturnType<
+  typeof validateItemSpecification
+> => ({
   portion: 1,
   station: '',
   ingredients: [],
@@ -55,7 +56,7 @@ function rows<Key extends 'ingredient_id' | 'prep_item_id'>(
 }
 
 /** Validate and detach authored input; defaults apply only to omitted text. */
-export function validateItemSpecification(value: unknown): ItemSpec {
+export function validateItemSpecification(value: unknown) {
   const source = fields(value, [
     'portion',
     'station',

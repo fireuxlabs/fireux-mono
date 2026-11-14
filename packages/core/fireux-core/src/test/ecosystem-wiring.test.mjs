@@ -47,7 +47,6 @@ for (const [lane, name, workspace] of [
           createResolver: () => ({ resolve: (path) => resolve(source, path) }),
           defineNuxtModule: (definition) => definition,
           ecosystemConfig: {},
-          configureRuntimeConfig: () => {},
           configureComponents: () => {},
           configureModulePages: () => {},
           configureFireuxEcosystemModule: (_resolver, _nuxt, options) => {

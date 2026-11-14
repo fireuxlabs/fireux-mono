@@ -1,5 +1,8 @@
 import type { Nuxt } from '@nuxt/schema'
-import { OrderChannels, type OrderingConfiguration } from '../../types/ordering'
+import {
+  OrderChannels,
+  type OrderingConfiguration,
+} from '../../types/ordering.ts'
 import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
 
 export function configureRuntime(

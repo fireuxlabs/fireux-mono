@@ -26,7 +26,7 @@
             "
           >
             <strong>{{ kitchen.name }}</strong>
-            <small>{{ kitchen.tier }}{{ kitchen.demo ? ' · Demo' : '' }}</small>
+            <small>{{ kitchen.tier }}</small>
           </NuxtLink>
         </nav>
       </section>
@@ -117,8 +117,7 @@ const { data: flagship } = await useAsyncData(
   flagshipKey,
   async (_nuxtApp, { signal }) => {
     const fetchRead = $fetch.create({ signal, cache: 'no-store' })
-    return selectedKitchen.value.appProps &&
-      selectedKitchen.value.id !== 'deanos'
+    return selectedKitchen.value.appProps
       ? fetchRead<KitchenFlagshipItemResult>(
           `/api/kitchens/${selectedKitchen.value.appProps.kitchenId}/flagship-dish`,
           { query: { appId: selectedKitchen.value.appProps.appId } }
@@ -170,13 +169,11 @@ const readiness = computed(() => {
     })),
     {
       label: 'Exactly one flagship Item',
-      ready:
-        kitchen.id === 'deanos' ||
-        flagship.value?.contentReadiness.uniqueFlagship === true,
+      ready: flagship.value?.contentReadiness.uniqueFlagship === true,
     },
     {
       label: 'Flagship Item image',
-      ready: kitchen.id === 'deanos' || flagship.value?.ready === true,
+      ready: flagship.value?.ready === true,
     },
   ]
   return { ready: items.every((item) => item.ready), items }

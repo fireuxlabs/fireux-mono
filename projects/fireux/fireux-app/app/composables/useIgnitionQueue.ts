@@ -33,6 +33,12 @@ export function useIgnitionQueue() {
     origin: IgnitionOrigin | null
     delivery: Record<ChecklistKey, boolean>
     created_at: string
+    build: {
+      id: string
+      state: string
+      sourcePath: string
+      task: { url: string } | null
+    } | null
   }
 
   type IgnitionCollectionResponse = {
@@ -231,7 +237,30 @@ export function useIgnitionQueue() {
     })
   }
 
+  async function prepareBuild(
+    request: IgnitionRequest,
+    input: { id: string; name: string; outcome: string }
+  ) {
+    const user = currentUser.value
+    if (!user) return
+    mutationError.value = ''
+    try {
+      const token = await user.getIdToken()
+      if (currentUser.value !== user) return
+      await $fetch('/api/internal/control/ignition-requests/build', {
+        method: 'POST',
+        headers: { authorization: `Bearer ${token}` },
+        body: { action: 'enqueue', requestId: request.id, input },
+        retry: 0,
+      })
+      if (currentUser.value === user) await refresh()
+    } catch (error) {
+      if (currentUser.value === user) mutationError.value = errorMessage(error)
+    }
+  }
+
   return {
+    prepareBuild,
     brandingLabel,
     checklist,
     completedCount,

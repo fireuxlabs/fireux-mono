@@ -1,6 +1,6 @@
 # Swiss Alpine Guides context
 
-Updated: 2026-11-13
+Updated: 2026-11-14
 Role: living context
 Scope: Swiss Alpine Guides App
 
@@ -21,26 +21,55 @@ The App-local `alpine` layout composes `NavigationHeader`, the accessible skip
 link, native content slot and footer. The public header reuses native `UHeader`
 and `UNavigationMenu` with Home, the seasonal activity catalogue, rentals,
 vouchers, About and Contact;
-Nuxt UI owns its mobile overlay and focus handling. The image-led opening
-retains its small summit padding below the sticky header. Hero text appears
+Nuxt UI owns its mobile overlay and focus handling. The header overlays image-led
+routes with a transparent background and light navigation. Its local scroll/resize
+coordinator changes contrast after the image section; listeners, animation frames
+and the page-finish hook are cleaned up with the header. Content-only routes
+retain ordinary header spacing. The image-led opening retains its small summit
+padding within the full viewport, behind the transparent header. Hero text appears
 after scrolling; reduced motion presents that copy below the static image.
-The motion coordinator accounts for the native header’s sticky inset, and
-landing anchors retain space below it. Internal operator controls are not
+The motion coordinator reads the scene’s computed sticky inset; content
+anchors retain space for the navigation. Internal operator controls are not
 part of this public navigation.
 Core and reusable Bookings architecture remain with their package owners and
 fireux-main; this App does not implement the architectural-reset handoff.
 
-`app/pages/index.vue` composes Hero, the featured Activities Collection and
-Landing Explore. The rounded activity panel overlaps the closing mountain
+`app/pages/index.vue` delegates its sections to `LandingHome`, which composes
+Hero, the featured Activities Collection and Landing Explore. The rounded activity panel overlaps the closing mountain
 scene; the motion coordinator fades the closing copy as the panel arrives.
 The opening animation and summit framing remain App-owned. Reduced motion
 uses a normal document flow.
+
+`Landing/Hero.vue` owns the scene frame and the single `useMountainMotion`
+lifecycle. Its `Hero/Media` child exposes the native video element to that
+coordinator; `Hero/Introduction`, `Hero/Closing` and `Hero/Scroll` own their
+content and scoped presentation. Motion custom properties cascade from the
+scene root into these children. The split adds no scene wrappers or independent
+scroll listeners; each child's responsive and reduced-motion rules remain with
+its markup.
 
 `app/content/activities.json` owns the sourced activity families, programme
 facts, original photo provenance, published date references and source warnings.
 `activities.ts` exposes their types and featured selection. `Activities/Collection`
 owns seasonal filtering and search; `Activities/Card` owns each catalogue item;
-`Activities/Detail` owns programme presentation. The thin `/activities/[slug]`
+`Activities/Detail` owns programme presentation. `Activities/Hero` shares the
+photo-led introduction between activity indexes, activity details and heli route
+details. It uses developed copies of the original operator photography; it does
+not reuse or recreate the landing ascent video. Untouched photographic masters
+and exact development settings/hashes live in `brand/activity-originals`.
+AI-assisted photographic restorations and their provider provenance live in
+`brand/activity-restored`; untouched source files remain in `brand/activity-originals`.
+The restored delivery family under `public/img/activities/restored-v1` has
+AVIF and WebP exports at 500, 1000, 2000 and 4000 pixels. These are enhancements
+of the supplied photographs, not replacement scenes or verified recovered detail.
+Do not treat AI-assisted restoration as an exact pixel-preservation guarantee.
+`activityImageSources` supplies small card variants and larger hero variants.
+Native picture selection accounts for the cover crop's effective image width;
+headers retain source-owned focal points and no image zoom animation.
+Details retain visible programme facts, an anchored
+programme guide and context-preserving enquiry links. `Activities/Related`
+projects the same catalogue into related activities and rental/voucher links;
+it owns no separate data reader or booking state. The thin `/activities/[slug]`
 route validates source-owned slugs. Summer, Winter and Courses are bounded
 catalogue projections, not new data readers. Older rafting and canyoning
 references remain labelled as unconfirmed original-site listings. They do not

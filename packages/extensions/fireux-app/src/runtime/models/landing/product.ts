@@ -98,9 +98,3 @@ export type LandingProductSurface = {
   items?: readonly string[]
   supporting?: string
 }
-
-export type LandingWorkspacePreviewItem = {
-  id: string
-  title: string
-  icon: string
-}

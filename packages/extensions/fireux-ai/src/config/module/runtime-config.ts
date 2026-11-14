@@ -1,5 +1,5 @@
 import type { Nuxt } from '@nuxt/schema'
-import type { ModuleOptions } from '../../module'
+import type { ModuleOptions } from '../../module.ts'
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 

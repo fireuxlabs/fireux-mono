@@ -6,8 +6,6 @@ import {
 import type { AppPalette } from 'fireux-core/types/theme'
 export { createTemplateOneFixtureProjection } from '../utils/template-one-fixture-projection'
 
-const TEMPLATE_ONE_PRIMARY_COLOR = '#2563eb'
-
 const rootProps = (
   placePrimaryColor: string,
   source: string,
@@ -40,21 +38,6 @@ const defaultMenuPageStyle = {
   title_font_source: 'system',
 } as const
 
-const pizzaTheActionMenuPageStyle = {
-  background_color_light: '#fff7d6',
-  background_color_dark: '#102d20',
-  font_color_light: '#345442',
-  font_color_dark: '#fff8dc',
-  title_color_light: '#123f2a',
-  title_color_dark: '#fffbe8',
-  primary_color: '#1f6b45',
-  secondary_color: '#f2c94c',
-  font_source: 'google',
-  font_family: 'Inter',
-  title_font_source: 'google',
-  title_font_family: 'Montserrat',
-} as const
-
 const friiitesAppPalette = {
   canvas: '#181817',
   surface: '#242321',
@@ -66,64 +49,13 @@ const friiitesAppPalette = {
   accent_contrast: '#181817',
 } as const satisfies AppPalette
 
-const deanosAppPalette = {
-  canvas: '#0b0b0a',
-  surface: '#211916',
-  canvas_inverted: '#f6ead8',
-  text: '#f6ead8',
-  text_muted: '#c7b6aa',
-  ink: '#0b0b0a',
-  accent: '#ff4f2e',
-  accent_contrast: '#0b0b0a',
-} as const satisfies AppPalette
-
 const friiitesWorkspacePalette = workspacePaletteFromApp(friiitesAppPalette)
-const deanosWorkspacePalette = workspacePaletteFromApp(deanosAppPalette)
 
 export const landingTemplateBrands = [
-  {
-    id: 'seehotel-bonigen',
-    name: 'Seehotel Bönigen',
-    tier: 'root',
-    demo: false,
-    assetSources: {},
-    rootProps: rootProps(
-      TEMPLATE_ONE_PRIMARY_COLOR,
-      'Misebox Basic default primary colour'
-    ),
-  },
-  {
-    id: 'pizza-the-action',
-    name: 'Pizza the Action',
-    tier: 'workspace',
-    demo: true,
-    assetSources: {
-      logo: 'demo:kitchens/pizza-the-action/logo.png',
-    },
-    rootProps: rootProps(
-      TEMPLATE_ONE_PRIMARY_COLOR,
-      'Misebox Basic default primary colour',
-      '',
-      '',
-      'Pizza, pasta and neighbourhood hospitality.'
-    ),
-    workspaceProps: {
-      source: 'Pizza the Action Demo Kitchen.menus.style',
-      pageStyle: pizzaTheActionMenuPageStyle,
-      palette: {
-        canvas: '#fff7d6',
-        text: '#345442',
-        accent: '#1f6b45',
-        accent_contrast: '#fff8dc',
-      },
-      values: workspaceValues,
-    },
-  },
   {
     id: 'friiites',
     name: 'Friiites',
     tier: 'app',
-    demo: false,
     assetSources: {
       logo: 'apps/friiites/img/app/logo.png',
       wordmarkLight: 'apps/friiites/img/app/wordmark-light.png',
@@ -183,75 +115,6 @@ export const landingTemplateBrands = [
           {
             title: 'Triple-fried',
             body: 'They are fried three times in beef tallow.',
-          },
-        ],
-      },
-    },
-  },
-  {
-    id: 'deanos',
-    name: "Deano's Smash",
-    tier: 'app',
-    demo: true,
-    assetSources: {
-      logo: 'demo:apps/deanos/img/app/logo.png',
-      wordmarkLight: 'demo:apps/deanos/img/app/wordmark-light.png',
-      wordmarkDark: 'demo:apps/deanos/img/app/wordmark-dark.png',
-      cover: 'demo:apps/deanos/img/app/cover.png',
-      thumbnail: 'demo:apps/deanos/img/app/thumbnail.png',
-    },
-    rootProps: rootProps(
-      '#ff4f2e',
-      "Deano's Demo Place primary colour",
-      'demo:apps/deanos/img/app/wordmark-dark.png',
-      '',
-      'Smashed. Seared. Stacked. Served hot.'
-    ),
-    workspaceProps: {
-      source: "Deano's Demo Workspace palette derived from its App",
-      pageStyle: defaultMenuPageStyle,
-      palette: deanosWorkspacePalette,
-      values: workspaceValues,
-    },
-    appProps: {
-      source: "Deano's incremental App preview fixture",
-      appId: 'deanos',
-      kitchenId: 'deanos',
-      template: 'template-one',
-      note: 'Demo App emulation; App presentation data can be extended incrementally.',
-      palette: compactAppPalette(deanosAppPalette, deanosWorkspacePalette),
-      typography: {
-        display_family: 'Montserrat, Arial, sans-serif',
-        body_family: 'Inter, Arial, sans-serif',
-      },
-      sceneOne: {
-        present: 'wordmark',
-        identityAlignment: 'center',
-        tagline: ['Smashed.', 'Seared.', 'Stacked.', 'Served hot.'],
-        productCrop: {
-          visibleAspect: 1.6,
-          scale: 1,
-          offsetX: 0,
-          offsetY: 0,
-        },
-      },
-      process: {
-        eyebrow: 'The build',
-        title: 'Smashed. Seared. Stacked.',
-        description:
-          'Neutral Demo copy proves that the same process anatomy can carry a different Kitchen identity.',
-        steps: [
-          {
-            title: 'Smash',
-            body: 'A fresh portion is pressed onto the hot grill.',
-          },
-          {
-            title: 'Sear',
-            body: 'Direct heat builds a deeply browned edge.',
-          },
-          {
-            title: 'Stack',
-            body: 'The finished layers are assembled and served hot.',
           },
         ],
       },

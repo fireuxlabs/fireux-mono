@@ -1,5 +1,5 @@
 import type { FireUXConfig } from '../../app/composables/config/FireUXConfig'
-import type { NavVisibility } from '../../models/navigation'
+import type { NavVisibility } from '../../types/navigation'
 
 // Visibility is an app-scope display/access filter for route meta. It should
 // stay about consumed surfaces, not path construction or user authorization.

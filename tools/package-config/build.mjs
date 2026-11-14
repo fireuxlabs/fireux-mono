@@ -22,7 +22,11 @@ for (const file of await readdir(source)) {
   const code = result.outputText.replace(
     /from (['"])(\.\.?\/[^'"]+)\1/g,
     (match, quote, path) =>
-      /\.[a-z]+$/i.test(path) ? match : `from ${quote}${path}.mjs${quote}`
+      path.endsWith('.ts')
+        ? `from ${quote}${path.slice(0, -3)}.mjs${quote}`
+        : /\.[a-z]+$/i.test(path)
+          ? match
+          : `from ${quote}${path}.mjs${quote}`
   )
   await writeFile(resolve(output, file.replace(/\.ts$/, '.mjs')), code)
 }

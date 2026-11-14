@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { bookWithNatsContent } from '../config/content.config'
+import { bookWithNatsContent } from '../content/site'
 
 definePageMeta({ layout: 'nats-default' })
 

@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: validate and preserve pricing, solution, and App entry points.
 import { createError } from 'h3'
+import { buildView } from './ignition-build'
 
 export const IGNITION_PAGE_OPTIONS = [
   'home',
@@ -354,6 +355,7 @@ export function serializeIgnitionRequest(
 
   return {
     id,
+    build: ignition.build ? buildView(id, nestedRecord(ignition.build)) : null,
     status: IGNITION_STATUSES.includes(status as never)
       ? (status as IgnitionStatus)
       : ('new' as const),

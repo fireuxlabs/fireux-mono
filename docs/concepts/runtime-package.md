@@ -66,7 +66,17 @@ Shared rules:
   supported Nuxt Kit helpers; do not build an entity discovery framework.
 - Use the Core module-wiring helper for existing module registration steps;
   it does not replace config-time native layers.
+- Modules that only require native discovery pass `requireNativeRuntimeLayer`
+  directly to their `pages` step. Do not create package-local `configurePages`
+  forwarders for that guard. Keep conditional calls conditional, including
+  Supplier product ownership. Jobs, Kitchens, Projects and Misebox retain their
+  page helpers for actual filtering or Workspace-specific policy.
 - Keep only registration hooks that perform real work.
+  AI, Products and Compliance have no separate server-registration callback:
+  their native layers retain conventional server discovery. Do not add an empty
+  handler array or a forwarding hook to make their module trees symmetrical.
+  Granite publishes its Ecosystem binding and selected Portfolio composition;
+  it does not inject an unused public branding/enabled namespace.
 - Models, types, information helpers, and ordinary utilities are explicit
   imports; they do not need fake registration hooks.
 - Runtime TypeScript package imports are extensionless. Every runtime package
@@ -311,7 +321,7 @@ layouts, middleware, plugins and Nitro handlers when changing composition.
 Project Workspace. The host declares `fireux-projects/layer`. The existing
 Project data remains in the named `fireux` database; this package move changes
 no stored paths, scope or authority. FireUX-specific App creation stays in
-`fireux-fireux/runtime/platform/project-apps.ts`; owning-system Ecosystem
+`fireux-fireux/runtime/project/server/create-app.ts`; owning-system Ecosystem
 coordination stays in FireUX App. The Extension does not import an Ecosystem
 package.
 

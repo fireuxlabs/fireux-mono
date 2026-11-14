@@ -1,5 +1,5 @@
 import { addComponent, type Resolver } from '@nuxt/kit'
-import { registerComponentsDir } from './module-helpers'
+import { registerComponentsDir } from './module-helpers.ts'
 
 export function configureComponents(resolver: Resolver) {
   for (const name of ['FireuxApp', 'FireuxWorkspaceApp']) {

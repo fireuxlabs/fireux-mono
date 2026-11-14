@@ -25,7 +25,7 @@ injected owner data.
 ## Ownership boundaries
 
 - `fireux-misebox` owns Template One's contract, atom anatomy, reusable scene
-  compositions and catalogue fixtures.
+  compositions and the real-consumer catalogue.
 - Misebox owns Template One. The old FireUX detail URL redirects to the
   Misebox product page. FireUX's `/templates` index explains the neutral
   starter App.
@@ -79,8 +79,8 @@ injected owner data.
   presentation inputs, checks Kitchen-level template readiness, and lists
   compatible presentations. The readiness check reports supplied values and
   canonical asset roles; it does not validate asset binaries or inspect
-  Storage. Replacing the temporary specimens with canonical Kitchen
-  projections must not change this page anatomy.
+  Storage. The catalogue currently retains the real Friiites consumer only; fictional
+  brand choices and their demo adapter are retired.
 - Every Template One surface follows one canonical
   `TemplateOneKitchenProjection → TemplateOnePage` flow. The package owns all
   six scenes; tenant Apps and the catalogue inject Kitchen data and render the

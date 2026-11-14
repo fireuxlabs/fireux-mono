@@ -163,7 +163,6 @@ export type TemplateOneKitchenSpecimen = {
   id: 'seehotel-bonigen' | 'pizza-the-action' | 'friiites' | 'deanos'
   name: string
   tier: TemplateOneKitchenTier
-  demo: boolean
   assetSources: TemplateOneAssetSources
   rootProps: {
     placePrimaryColor: string

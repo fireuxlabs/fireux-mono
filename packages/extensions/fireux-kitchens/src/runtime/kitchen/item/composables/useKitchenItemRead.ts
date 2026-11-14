@@ -3,7 +3,8 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useKitchenAccess } from '../../composables/useKitchenAccess'
 import { ItemStorage } from '../storage'
-import type { Item } from '../models/model'
+import { readItemIdentity } from '../identity'
+import { readItemOffer } from '../../utils/item-pricing'
 
 /** Acquire one live Item in an accessible Kitchen; the caller owns its lifetime. */
 export function useKitchenItemRead(
@@ -40,9 +41,20 @@ export function useKitchenItemRead(
   })
   const item = computed(() =>
     outcome.value === 'ready' && source.value
-      ? normalizeItem(itemId.value, source.value)
+      ? readItemIdentity(itemId.value, source.value)
       : null
   )
+  const selling = computed(() => {
+    if (outcome.value !== 'ready' || !source.value)
+      return { offer: null, error: null }
+    try {
+      return { offer: readItemOffer(source.value), error: null }
+    } catch (error) {
+      return { offer: null, error }
+    }
+  })
+  const offer = computed(() => selling.value.offer)
+  const offerError = computed(() => selling.value.error)
   const canWrite = computed(
     () => outcome.value === 'ready' && Boolean(item.value)
   )
@@ -56,6 +68,8 @@ export function useKitchenItemRead(
     databaseId,
     collectionPath,
     item,
+    offer,
+    offerError,
     outcome,
     canWrite,
     readOnly: computed(() => !canWrite.value),
@@ -66,56 +80,5 @@ export function useKitchenItemRead(
       itemId: itemId.value,
       outcome: outcome.value,
     })),
-  }
-}
-
-const record = (value: unknown): Record<string, unknown> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {}
-const text = (value: unknown) => (typeof value === 'string' ? value.trim() : '')
-
-function normalizeStamp(
-  value: unknown
-): NonNullable<Item['created']> | undefined {
-  const source = record(value)
-  const at = record(source.at)
-  if (
-    typeof at.seconds !== 'number' ||
-    !Number.isInteger(at.seconds) ||
-    typeof at.nanoseconds !== 'number' ||
-    !Number.isInteger(at.nanoseconds) ||
-    at.nanoseconds < 0 ||
-    at.nanoseconds >= 1_000_000_000
-  )
-    return undefined
-  return {
-    at: { seconds: at.seconds, nanoseconds: at.nanoseconds },
-    ...(text(source.by) ? { by: text(source.by) } : {}),
-    ...(text(source.app_id) ? { app_id: text(source.app_id) } : {}),
-  }
-}
-
-/** Read only Item-owned identity from an existing document; path identity wins. */
-function normalizeItem(id: string, value: unknown): Item {
-  const source = record(value)
-  const description = text(source.description)
-  const image = text(source.image)
-  const created = normalizeStamp(source.created)
-  const updated = normalizeStamp(source.updated)
-  return {
-    id,
-    name: text(source.name),
-    ...(description ? { description } : {}),
-    ...(image ? { image } : {}),
-    ...(created ? { created } : {}),
-    ...(updated
-      ? {
-          updated: {
-            at: updated.at,
-            ...(updated.by ? { by: updated.by } : {}),
-          },
-        }
-      : {}),
   }
 }

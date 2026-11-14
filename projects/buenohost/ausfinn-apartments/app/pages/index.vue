@@ -97,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import { ausfinnContent, featuredAusfinnStays } from '../config/content.config'
+import { ausfinnContent, featuredAusfinnStays } from '../content/site'
 
 definePageMeta({ layout: 'ausfinn-default' })
 

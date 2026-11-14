@@ -17,7 +17,6 @@ export default defineFireuxApp({
   workspaceConfig: {
     kitchen: {
       canCreate: false,
-      allowDemo: false,
     },
   },
   modules: ['fireux-places', 'fireux-go-qr', 'fireux-sproochli'],

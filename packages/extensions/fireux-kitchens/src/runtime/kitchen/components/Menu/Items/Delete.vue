@@ -3,8 +3,8 @@
     <template #header>
       <div class="card__header">
         <div>
-          <h2>Delete {{ singularTitle }}</h2>
-          <p>Remove this Kitchen {{ catalogue.singular }} record.</p>
+          <h2>Delete Item</h2>
+          <p>Remove this Kitchen Item record.</p>
         </div>
       </div>
     </template>
@@ -13,8 +13,7 @@
     <p v-else-if="!usageReady" role="status">Checking where this is used…</p>
     <div v-else-if="usages.length" class="fx-card-body-stack">
       <p>
-        Remove this {{ catalogue.singular }} from these Menus and Promotions
-        before deleting it.
+        Remove this Item from these Menus and Promotions before deleting it.
       </p>
       <ul>
         <li
@@ -48,11 +47,9 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenItemsContext } from '../../../composables/workspace/items/useKitchenItemsContext'
-const { catalogue } = useKitchenItemsContext()
 import { useItemUsage } from '../../../composables/item/useItemUsage'
 import { useItemEditorScope } from '../../../composables/item/useItemEditorScope'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenItemContext } from '../../../item/composables/useKitchenItemContext'
@@ -74,10 +71,6 @@ const route = useRoute()
 const props = defineProps<{ remove: () => Promise<void> }>()
 const deleting = ref(false)
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const singularTitle = computed(
-  () =>
-    `${catalogue.singular.charAt(0).toUpperCase()}${catalogue.singular.slice(1)}`
-)
 
 const captureScope = useItemEditorScope(
   [kitchenId, dishId, () => route.fullPath, () => props.remove],
@@ -98,7 +91,7 @@ const deleteSelectedItem = async () => {
 
   const title = normalizeString(dish.value.name)
   const ok = window.confirm(
-    `Delete ${catalogue.singular} "${title}"?\n\nThis will only delete the ${catalogue.singular} document.`
+    `Delete Item "${title}"?\n\nThis will only delete the Item document.`
   )
   if (!ok) return
 
@@ -110,13 +103,11 @@ const deleteSelectedItem = async () => {
   } catch (error) {
     if (!isCurrent()) return
     const message = String(
-      (error as any)?.message ||
-        error ||
-        `Failed to delete ${catalogue.singular}`
+      (error as any)?.message || error || `Failed to delete Item`
     )
     if (!isCurrent()) return
     toast.add({
-      title: `${catalogue.singular} delete failed`,
+      title: `Item delete failed`,
       description: message,
       color: 'error',
       icon: 'i-heroicons-exclamation-triangle',

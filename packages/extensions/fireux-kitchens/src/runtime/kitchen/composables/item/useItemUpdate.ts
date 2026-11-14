@@ -1,12 +1,12 @@
 import type { WatchSource } from 'vue'
-import type { ItemUpdateInput } from '../../utils/item'
+import type { ItemIdentityChanges } from '../../item/identity'
 import { useItemMutation } from './useItemMutation'
 
 export function useItemUpdate(ownerSources: WatchSource[] = []) {
   const { mutate } = useItemMutation(ownerSources)
   const updateItem = (
     dishId: string,
-    changes: Partial<ItemUpdateInput> & Record<string, unknown>,
+    changes: ItemIdentityChanges & Record<string, unknown>,
     target: { kitchenId: string; isCurrent?: () => boolean }
   ) =>
     target.isCurrent

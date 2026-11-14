@@ -7,7 +7,11 @@ export type BookingSubmission = {
   slotId: string
   contact: BookingContact
 }
-export type BookingReceipt = { reference: string }
+export type BookingReceipt = {
+  reference: string
+  /** Host-owned confirmation information, displayed as plain text. */
+  details?: { label: string; value: string }[]
+}
 /** The host validates availability, authority and idempotency before returning. */
 export type BookingConfirmationHandler = (
   submission: BookingSubmission

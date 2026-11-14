@@ -15,8 +15,8 @@ export const sourceMeta = {
     },
     heroPrimaryLine:
       'Publish <strong>menus</strong>, organise prep and manage orders with Misebox.',
-    primaryCtaLabel: 'Try the interactive demo',
-    primaryCtaTo: '/demo',
+    primaryCtaLabel: 'Open Kitchen Workspace',
+    primaryCtaTo: '/workspace/kitchen',
     secondaryCtaLabel: 'See what works today',
     secondaryCtaTo: '/operations',
     workspaceBridgeLine:
@@ -330,8 +330,8 @@ User
         to: '/',
       },
       secondaryAction: {
-        label: 'Try the interactive demo',
-        to: '/demo',
+        label: 'Open Kitchen Workspace',
+        to: '/workspace/kitchen',
       },
     },
     snapshotTitle: 'What the setup connects',

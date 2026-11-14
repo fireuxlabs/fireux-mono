@@ -1,95 +1,22 @@
 # Demo data
 
-Updated: 2026-11-09
-Ref: e7b188cbf
+Updated: 2026-11-13
 Role: map, not canon
 
-## Purpose and ownership
+The fictional Misebox/Kitchen demo system is retired. This includes its Kitchen,
+Supplier and linked Business/Place scenarios, media URL package, finance and Item
+projections, public `/demo` routes, Cards specimens and simulated landing previews.
+Blank has no retained demo fixtures. No live records or remote media were deleted.
 
-Map the fictional, read-only examples used by Misebox's public Menu demo and
-landing previews. Inherit [AGENTS.md](../../AGENTS.md) and
-[global context](../ai/gpt-context.md). Real Entity models and supported
-presentation adapters define the contract; fixtures follow those owners.
+Ordinary Workspace reads and commands retain their domain authority. Template One
+retains its real Friiites consumer and existing canonical Menu/flagship readers;
+fictional catalogue choices are removed. Ignition's Menu reference links to actual
+Menus instead of importing demo scenarios.
 
-- Parent: [Workspace and Entities](family-workspace-entity.md).
-- Related: [pages](pages.md), [components](components.md),
-  [Firestore ownership](firestore-entity.md), and
-  [Misebox context](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md).
+Future user-facing sample data requires an agreed product purpose and owner. Do
+not restore a parallel model, fallback reader, seeding system or generic demo spine
+merely to populate an empty surface. Isolated unit-test fixtures and emulator
+project identifiers remain test concerns, outside runtime.
 
-## Retained examples
-
-| Owner              | Source                                                                                                         | Use                                                                                                   |
-| ------------------ | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Kitchen            | [scenarios](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/scenarios.ts)                   | Misebox Restaurant, Deanos and Pizza the Action; Menus, Dishes and their related operational examples |
-| Supplier           | [scenarios](../../packages/extensions/fireux-suppliers/src/runtime/supplier/demo/scenarios.ts)                 | Three Suppliers with Ingredient references, Items and Catalogues                                      |
-| Business and Place | [linked fixtures](../../packages/extensions/fireux-businesses/src/runtime/business/demo/business/scenarios.ts) | Required Supplier Business/Place relationships                                                        |
-| Demo media         | [URL contract](../../packages/extensions/fireux-demo/src/runtime/utils/media/misebox.ts)                       | Immutable owner-relative Misebox image URLs                                                           |
-
-Deanos carries the richer production and historical-order example. Its fixed
-sample period is declared by the [Order history owner](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Orders/history.ts),
-not the current clock. Historical examples must not be described as current
-customer activity. Production Specs, Prep and derived Finance are example
-projections, not permission to seed a parallel persisted model.
-
-Property, Portfolio, Reservation, Project and Blank have no retained Demo
-fixtures. Add an example only for a real consumer and its current model.
-
-## Runtime composition
-
-The App owns its named
-[Product Demo adapter](../../projects/misebox/misebox-app/app/composables/product-demo/useMiseboxProductDemo.ts)
-and [composition](../../projects/misebox/misebox-app/app/composables/product-demo/loadMiseboxProductDemo.ts).
-They dynamically compose domain fixtures and project them into existing Menu
-and landing components. The App's [Cards gallery](../../projects/misebox/misebox-app/app/components/Demo/Cards/Index.vue)
-uses illustrative [card inputs](../../projects/misebox/misebox-app/app/content/demo-cards.ts)
-for the real domain presentations; these are not operational records or a second
-Demo data reader.
-
-FireUX's [assisted Ignition source recipe](../../projects/fireux/fireux-app/shared/ignition-preview.ts)
-also consumes the existing Kitchen Menu manifest and catalogue in its generated
-starting App. It copies no fictional Kitchen records into Firestore. Canonical
-App initialization remains a separate, authenticated Core command; this is not
-a demo Workspace mode or a new fixture persistence system.
-
-Public demo routes are `/demo` and `/demo/menu`. Their
-[experience list](../../projects/misebox/misebox-app/app/composables/product-demo/misebox-product-demo-experiences.ts)
-and App sitemap advertise only available routes. Kiosk and order-board demo
-routes are absent; do not add links or inactive preview buttons for them.
-
-The showroom resolves stable Ingredient IDs through the supported public
-canonical Ingredient reader. It is read-only, but not an offline catalogue.
-
-## Boundaries
-
-- Demo fixtures create no live records, memberships, Orders or payments.
-- Workspace always reads its selected live Entity and owned collections. Demo
-  is not a Workspace mode, source override or fallback for empty live data.
-- Fixture modules own fictional records and pure validation. They import no
-  Firebase, Storage or server mutation SDK.
-- Ingredient identity remains canonical. Fixtures retain stable references,
-  not copied Ingredient names, taxonomy or image authority.
-- Supplier owns offers and Catalogues; Kitchen owns its usage links. Business
-  and Place remain separate linked records, not duplicated Supplier identity.
-- Firebase Storage owns demo images. `fireux-demo` supplies URL construction
-  only; it does not install a runtime surface or publish media.
-- Test and simulation storage are retired. Read-only examples do not establish
-  a writable test system or authorize database seeding.
-
-## Refresh and verification
-
-Refresh an affected fixture and consumer together when its real model changes.
-Keep scenario identity and historical dates deterministic. Preserve relationship
-and arithmetic validation at the domain owner rather than adding App-local joins.
-
-Run the source-owned checks:
-
-```sh
-node --test packages/extensions/fireux-kitchens/src/test/menu-demo-terms.test.mjs
-node --test projects/misebox/misebox-app/test/product-demo-foundations.test.mjs
-```
-
-Typecheck the affected App and inspect `/demo` and `/demo/menu`, including every
-advertised demo destination. Confirm current Workspace reads and trusted
-commands are unchanged. There is no `pnpm guard` or retained seed/publishing
-script for this dataset. A separate remote-media audit requires current Storage
-evidence; local fixture validation does not prove object availability.
+Inherit [AGENTS.md](../../AGENTS.md) and [global context](../ai/gpt-context.md).
+Refresh this map if a new sample-data responsibility is explicitly introduced.

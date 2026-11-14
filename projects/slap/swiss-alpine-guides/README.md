@@ -8,6 +8,10 @@ The App uses `FireuxApp`, native Nuxt UI and Core SEO transport. App content own
 17 activity families and 44 non-heli programmes, plus five heli routes. Original
 activity photographs, English/German source links and conflicting published facts
 are recorded in `app/content/activities.json` and `docs/content-sources.md`.
+The activity photos use 4× AI-assisted restorations retained with provider
+provenance in `brand/activity-restored`; untouched photographic masters remain
+in `brand/activity-originals`. Native picture delivery selects smaller card
+exports and larger header exports.
 `docs/original-source-inventory.json` records the source audit. Older rafting and
 canyoning references are retained as unconfirmed listings. Historical schedules
 and reference prices are distinguished from current quotes and availability.

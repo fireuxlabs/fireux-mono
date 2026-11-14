@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-11-12
-Ref: ac88daacf
+Updated: 2026-11-14
+Ref: 5916a6874
 Role: living context
 Scope: repository-wide
 
@@ -129,8 +129,10 @@ Do not preserve conflicting shapes as older/newer variants or add compatibility
 adapters for a completed migration without a proved external compatibility need.
 
 Composition is the default from the first implementation. Keep parents readable
-as named responsibilities. Add a child only when it owns real behavior; small
-cohesive controls may stay local. Do not add forwarding wrappers, empty
+as named responsibilities. A child may own a coherent section's content,
+presentation, styling or behavior, even with one consumer and no reactive state.
+Separation of concerns is sufficient reason for a component; reuse is not required.
+Small cohesive controls may stay local. Do not add forwarding wrappers, empty
 controllers or universal abstractions to make file trees look symmetrical.
 
 ### Mandatory composition checks
@@ -277,6 +279,33 @@ Configuration may consume these contracts, but runtime consumers do not import
 configuration loaders. `config/app/meta-content-loader.ts` alone owns the
 build-time TypeScript/Markdown loading for this literature.
 
+## FireUX source spine
+
+The FireUX source spine combines Nuxt technical roles, declared FireUX Entity
+owners, and the shared `workspace/` owner. Workspace is an explicit framework
+exception: it owns selection and management presentation, not domain records.
+Entities carry only the technical roles they need. Ignition, search-demand
+research and tests are legitimate responsibilities; their placement still follows
+ownership and runtime boundaries. App-authored copy and catalogue data belong
+in `app/content`; local CSS belongs in `app/assets/styles/main.css`, loaded by
+the shared App defaults. Native `nuxt.config.ts` and `app.config.ts` retain
+assembly and App settings. Do not introduce an `app/config/` bucket or inject
+static theme CSS through root-component JavaScript. Runtime `tools/` remains
+pending its own ownership cleanup.
+
+Blank has no demo fixture system. The fictional Misebox/Kitchen demo system,
+its public routes, Cards specimens and simulated landing previews are retired.
+Do not rebuild them as part of ordinary application work. Real Workspace readers,
+trusted commands and template consumers retain their existing authority; future
+user-facing sample data needs a separately agreed purpose and owner.
+
+App environment templates contain only consumed deployment/integration inputs;
+App identity remains in authored configuration. Do not reintroduce unused identity,
+PIN, Analytics or browser-payment variables without their actual consumer.
+FireUX AI uses `FIREUX_AI_API_KEY`; its development Codex transport strips both
+that name and `OPENAI_API_KEY` from child-process environments. Renaming a local
+credential must preserve its value and current provider/mode/enabled settings.
+
 ## Shared utility boundary
 
 `models/`, `types/` and `utils/` are not dumping grounds. A technical label does
@@ -303,6 +332,12 @@ Keep supporting types beside their implementation when they have no independent
 consumer. Remove unused contracts rather than relocating them. Do not create
 barrels, aliases, generic bags or symmetric folders merely to tidy the tree.
 Review ownership and consumers when changing these directories, not just names.
+
+Shared navigation contracts live in `runtime/types/navigation.ts`, including
+route metadata, normalized navigation items and App navigation configuration.
+The same contract file owns its Nuxt App-config augmentation; navigation readers
+and App-scope visibility middleware consume it without a model or forwarding alias.
+Visibility filtering never replaces user authorization or trusted command checks.
 
 Shared directory transport envelopes live in `runtime/types/directory.ts`;
 shared collection-cell presentation data lives in `runtime/types/collection-cell.ts`.
@@ -499,6 +534,15 @@ inspection or repair. Close accepted slices and reopen them only for a concrete
 regression or an explicit change of outcome. Report meaningful completed work
 and exact blockers; do not substitute repeated audits or optional symmetry
 cleanup for progress. Separate release-only gates from functional dependencies.
+
+Codex Main is the repository entry and coordination chat. Name bounded source
+tasks `<manifest-name>[/actual-domain] — <outcome>` and identify the exact owner
+path, real consumers, acceptance evidence and blocker in the handoff. Use a
+domain suffix only for a source-backed responsibility. Keep one implementation
+owner for overlapping paths and server processes; a package does not require a
+permanent chat. `pnpm codex:map` derives the repository inventory from current
+source, with an optional external thread snapshot. Generated task status stays
+outside living context; `AGENTS.md` remains the required-context router.
 
 - Work directly on `main` in the shared checkout. Preserve unrelated and
   concurrent work. Do not create branches or worktrees unless the user explicitly

@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { laTapBerneContent } from '../../config/content.config'
+import { laTapBerneContent } from '../../content/site'
 </script>
 
 <style scoped>

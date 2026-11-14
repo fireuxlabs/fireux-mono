@@ -1,10 +1,10 @@
-import type { FireuxSeoConfig, FireuxSeoResolved } from './seo-config'
-import type { FireuxMetaContent } from '../../runtime/app/literature/types'
+import type { FireuxSeoConfig, FireuxSeoResolved } from './seo-config.ts'
+import type { FireuxMetaContent } from '../../runtime/app/literature/types.ts'
 import type {
   FireuxAppConfig,
   FireuxWorkspaceConfig,
   FireuxAppSubscriptionCapacity,
-} from './types'
+} from './types.ts'
 
 // Build-only inputs never form part of the public App runtime contract.
 type RuntimeNormalizedFields =

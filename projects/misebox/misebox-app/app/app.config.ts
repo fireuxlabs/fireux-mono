@@ -13,7 +13,7 @@ export default defineAppConfig({
     ],
   },
   navigation: {
-    hiddenKeys: ['products', 'blog', 'operations', 'demo', 'apps', 'companies'],
+    hiddenKeys: ['products', 'blog', 'operations', 'apps', 'companies'],
     overrides: {
       kitchens: {
         order: 10,

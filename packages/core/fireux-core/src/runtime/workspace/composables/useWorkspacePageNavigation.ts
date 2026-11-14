@@ -3,7 +3,7 @@ import { useRoute } from '#imports'
 import { useWorkspaceNav } from './useWorkspaceNav'
 import { useWorkspaceEntryCta } from './useWorkspaceEntryCta'
 import { toWorkspaceFamilyLabel } from '../utils/routes'
-import type { NavItem } from '../../models/navigation'
+import type { NavItem } from '../../types/navigation'
 
 /** Route metadata describes the page; navigation supplies its named ancestors. */
 export function useWorkspacePageNavigation() {

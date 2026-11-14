@@ -70,9 +70,7 @@ mechanisms retain their conventional root folders.
 src/runtime/
 ├── components/       # shared across entities
 ├── composables/      # shared across entities
-├── models/           # shared across entities
 ├── content/          # shared cross-entity product content
-├── demo/             # shared cross-entity Demo composition
 ├── tools/            # shared capability and primitive definitions
 ├── types/            # shared runtime coordination contracts
 ├── utils/            # shared stateless value transformations and validators
@@ -83,7 +81,6 @@ src/runtime/
 │   ├── composables/
 │   ├── models/
 │   ├── server/
-│   ├── demo/
 │   ├── tools/
 │   └── utils/
 │
@@ -101,9 +98,10 @@ src/runtime/
 ```
 
 The examples are ownership shapes, not required folder symmetry. An entity
-carries only the technical roles it actually owns, chosen from the finite
-scoped Nuxt spine: `components`, `composables`, `models`, `server`, `utils`,
-and the optional `demo` and `tools` roles. Entity roots use the repository's
+carries only the technical roles it actually owns, chosen from the
+FireUX spine: `components`, `composables`, `models`, `server`, `utils`,
+and supporting contracts where needed. Runtime `tools` is pending ownership
+inspection; removed demo trees are not a supported scaffold. Entity roots use the repository's
 canonical entity name and do not become generic domain, feature, capability,
 content, AI, asset, or type buckets.
 
@@ -140,9 +138,9 @@ styles belong with `components`, AI orchestration belongs in `composables` or
 `server`, and actual operator tools belong in `tools`. This classification
 keeps the first level predictable without pretending those jobs do not exist.
 
-App-owned Demo modules are read-only product/world fixtures loaded through the
-deferred Demo adapters. Ordinary public product routes use canonical
-Entity readers; they do not import eager App-local imitation records.
+The former Blank and Misebox/Kitchen demo systems are retired. Public product
+routes use canonical Entity readers; they do not import App-local imitation
+records or fall back to fictional scenarios.
 `app/simulations` is retired filesystem vocabulary. Package tests live under
 `src/test`, outside projected `src/runtime`; static catalogues and presentation
 contracts stay with their owning capability, stateless delivery helpers in `utils`, and
@@ -291,13 +289,13 @@ commands do not move under Workspace merely because Workspace consumes them.
   package.
 - An entity's use of a shared primitive remains under that entity when it adds
   entity authority, policy, projection, or lifecycle.
-- AI follows its actual technical role: models define agent contracts,
+- AI follows its actual technical role: owner-local types define agent contracts,
   composables coordinate client state, server owns trusted execution, and
   tools owns genuine operator tools. An `ai` Entity-root bucket does not hide
   those different jobs.
-- Typed Entity catalogues stay outside Entity models with their capability; Entity-owned Demo Worlds belong
-  in `demo`. Root `runtime/content` and `runtime/demo` remain available only
-  for real cross-entity composition.
+- Typed Entity catalogues stay outside Entity models with their capability.
+  Shared authored content requires real cross-owner consumers. There is no
+  generic `runtime/demo` role.
 - A surface such as Workspace, Kiosk, Directory, Detail, or Admin may qualify a
   component or composable path; it does not become the owner of the entity.
 - A real entity keeps its own root even when another entity exposes it as an
@@ -389,8 +387,7 @@ routes own their record reads, read states, SEO and canonical-response behaviour
 Named Detail compositions receive the resolved records and own presentation and
 local actions; they do not reacquire those records.
 Nested components are registered by the owning module; no local component import
-is required. Properties demo scenarios live under `property/demo`, with their
-Portfolio context retained as explicit composition.
+is required. Retired example scenarios are not part of Entity registration.
 
 ## Shared utility boundary
 

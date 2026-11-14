@@ -83,13 +83,18 @@ export function useTourBooking() {
   }))
   const confirm = computed<BookingConfirmationHandler>(() => {
     const offer = configuration.value
-    const selectedTour = tourSlug.value
+    const selectedTour = tour.value
     const selectedDate = date.value
     const selectedGroup = Number(groupSize.value)
     const revision = data.value?.availabilityRevision
     // Retain an uncertain submission for this offer: the existing server does not
     // yet support durable request-id replay, so never silently resubmit it.
-    let submission: Promise<{ reference: string }> | undefined
+    let submission:
+      | Promise<{
+          reference: string
+          details: { label: string; value: string }[]
+        }>
+      | undefined
     let submittedRequestId: string | undefined
     return (input) => {
       if (!offer.slots.some((slot) => slot.id === input.slotId))
@@ -102,7 +107,7 @@ export function useTourBooking() {
       submission ??= $fetch<{ booking: { id: string } }>('/api/bookings', {
         method: 'POST',
         body: {
-          tourSlug: selectedTour,
+          tourSlug: selectedTour.slug,
           date: selectedDate,
           groupSize: selectedGroup,
           availabilityRevision: revision,
@@ -110,7 +115,12 @@ export function useTourBooking() {
           guestEmail: input.contact.email,
         },
       })
-        .then((result) => ({ reference: result.booking.id }))
+        .then((result) => ({
+          reference: result.booking.id,
+          details: [
+            { label: 'Meeting point', value: selectedTour.meetingPoint },
+          ],
+        }))
         .catch(() => {
           throw new Error(
             'We could not verify confirmation. Please contact Ben before trying again; your request may have been received.'

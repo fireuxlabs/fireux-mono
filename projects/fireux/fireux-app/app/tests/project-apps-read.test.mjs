@@ -110,7 +110,7 @@ test('Project authorization precedes all collection queries', async () => {
 test('App creation input requires an explicit role and rejects caller infrastructure', () => {
   const code = readFileSync(
     new URL(
-      '../../../../../packages/ecosystem/fireux-fireux/src/runtime/platform/project-apps.ts',
+      '../../../../../packages/ecosystem/fireux-fireux/src/runtime/project/server/create-app.ts',
       import.meta.url
     ),
     'utf8'

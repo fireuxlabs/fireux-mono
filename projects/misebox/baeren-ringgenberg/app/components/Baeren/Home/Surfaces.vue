@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
-import { baerenRinggenbergContent } from '../../../config/content.config'
+import { baerenRinggenbergContent } from '../../../content/site'
 
 defineOptions({ name: 'BaerenHomeSurfaces' })
 
@@ -42,29 +42,37 @@ let revealObserver: IntersectionObserver | null = null
 onMounted(() => {
   const section = sectionEl.value
 
-  if (!section || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (
+    !section ||
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ) {
     return
   }
 
-  const targets = Array.from(section.querySelectorAll('[data-scroll-reveal]')) as HTMLElement[]
+  const targets = Array.from(
+    section.querySelectorAll('[data-scroll-reveal]')
+  ) as HTMLElement[]
 
   section.classList.add('baeren-home-surfaces--motion-ready')
-  revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) {
-        return
-      }
+  revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) {
+          return
+        }
 
-      entry.target.classList.add('is-visible')
-      revealObserver?.unobserve(entry.target)
-    })
-  }, {
-    threshold: 0.14,
-    rootMargin: '0px 0px -7% 0px',
-  })
+        entry.target.classList.add('is-visible')
+        revealObserver?.unobserve(entry.target)
+      })
+    },
+    {
+      threshold: 0.14,
+      rootMargin: '0px 0px -7% 0px',
+    }
+  )
 
   requestAnimationFrame(() => {
-    targets.forEach(target => revealObserver?.observe(target))
+    targets.forEach((target) => revealObserver?.observe(target))
   })
 })
 
@@ -77,7 +85,11 @@ onBeforeUnmount(() => {
 .baeren-home-surfaces {
   overflow: clip;
   background:
-    radial-gradient(circle at 100% 0%, rgb(var(--baeren-accent-rgb) / 10%), transparent 28rem),
+    radial-gradient(
+      circle at 100% 0%,
+      rgb(var(--baeren-accent-rgb) / 10%),
+      transparent 28rem
+    ),
     var(--baeren-canvas);
   color: var(--baeren-ink);
   padding: 3.75rem 1rem calc(10rem + env(safe-area-inset-bottom));
@@ -153,11 +165,13 @@ onBeforeUnmount(() => {
   --reveal-x: 0;
 }
 
-.baeren-home-surfaces--motion-ready .baeren-home-surfaces__item:nth-child(even) {
+.baeren-home-surfaces--motion-ready
+  .baeren-home-surfaces__item:nth-child(even) {
   --reveal-x: 1rem;
 }
 
-.baeren-home-surfaces--motion-ready .baeren-home-surfaces__item:nth-child(3n + 2) {
+.baeren-home-surfaces--motion-ready
+  .baeren-home-surfaces__item:nth-child(3n + 2) {
   transition-delay: 45ms;
 }
 

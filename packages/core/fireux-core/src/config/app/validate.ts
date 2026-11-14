@@ -1,5 +1,5 @@
-import type { FireuxAppConfig } from './types'
-import { moduleName } from './modules'
+import type { FireuxAppConfig } from './types.ts'
+import { moduleName } from './modules.ts'
 
 export function validateFireuxAppConfig(app: FireuxAppConfig): void {
   if (

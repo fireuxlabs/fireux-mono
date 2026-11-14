@@ -1,23 +1,23 @@
 <!-- Tenant content-page component: docs/concepts/family-tenant-global.md -->
 <template>
   <div class="latap-gallery-preview">
-    <img
-      :src="src"
-      :alt="alt"
-    >
+    <img :src="src" :alt="alt" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { laTapBerneContent } from '../../config/content.config'
+import { laTapBerneContent } from '../../content/site'
 
-withDefaults(defineProps<{
-  src?: string
-  alt?: string
-}>(), {
-  src: laTapBerneContent.assets.galleryPreview.src,
-  alt: laTapBerneContent.assets.galleryPreview.alt,
-})
+withDefaults(
+  defineProps<{
+    src?: string
+    alt?: string
+  }>(),
+  {
+    src: laTapBerneContent.assets.galleryPreview.src,
+    alt: laTapBerneContent.assets.galleryPreview.alt,
+  }
+)
 </script>
 
 <style scoped>

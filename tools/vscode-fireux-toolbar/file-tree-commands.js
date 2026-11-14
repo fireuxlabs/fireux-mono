@@ -11,6 +11,32 @@ const {
 } = require('./toolbar-utils')
 
 function registerFileTreeCommands({ register, cwd, ensureNamedTerminal }) {
+  register('fireuxToolbar.focusRepositoryTree', async () => {
+    if (!cwd || !vscode.workspace.getWorkspaceFolder(vscode.Uri.file(cwd))) {
+      vscode.window.showErrorMessage('Open the FireUX repository root workspace first.')
+      return
+    }
+    const folders = ['packages', 'projects'].map((name) =>
+      vscode.Uri.file(path.join(cwd, name))
+    )
+    try {
+      for (const folder of folders) {
+        const stat = await vscode.workspace.fs.stat(folder)
+        if (!(stat.type & vscode.FileType.Directory)) {
+          throw new Error(`${folder.fsPath} is not a directory`)
+        }
+      }
+      await vscode.commands.executeCommand('workbench.view.explorer')
+      for (const folder of folders) {
+        await vscode.commands.executeCommand('revealInExplorer', folder)
+        await vscode.commands.executeCommand('list.collapseAllToFocus')
+        await vscode.commands.executeCommand('list.expand')
+      }
+    } catch (error) {
+      vscode.window.showErrorMessage(`Could not focus the repository tree: ${error.message}`)
+    }
+  })
+
   register('fireuxToolbar.catTree', async (uri, selectedUris) => {
     const targetUri =
       (Array.isArray(selectedUris) && selectedUris.length

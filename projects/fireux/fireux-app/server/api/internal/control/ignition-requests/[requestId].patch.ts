@@ -48,8 +48,31 @@ export default defineEventHandler(async (event: H3Event) => {
       }
       const ignition = (source.ignition || {}) as Record<string, unknown>
       const currentStatus = String(ignition.stage || '').trim()
+      if (ignition.forwarded_to)
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'Use the canonical build request.',
+        })
+      if (
+        patch.kind === 'status' &&
+        ['new', 'declined'].includes(patch.status) &&
+        (ignition.build as Record<string, unknown> | undefined)?.claim_hash
+      )
+        throw createError({
+          statusCode: 409,
+          statusMessage:
+            'Reconcile the worker claim before cancelling this build.',
+        })
       const timestamp = Timestamp.now()
-      const updates: UpdateData<{ updated: { at: Timestamp; by: string }; status: string; ignition: { stage: string; accepted: { at: Timestamp; by: string }; delivery: Record<string, boolean> } }> = {
+      const updates: UpdateData<{
+        updated: { at: Timestamp; by: string }
+        status: string
+        ignition: {
+          stage: string
+          accepted: { at: Timestamp; by: string }
+          delivery: Record<string, boolean>
+        }
+      }> = {
         updated: { at: timestamp, by: uid },
       }
 

@@ -70,11 +70,21 @@ test('confirmation uses a snapshot, prevents duplicate submission and retains th
   assert.equal(calls[0].contact.name, 'Sample Guest')
   // A host cannot mutate the customer-facing confirmation by mutating its payload.
   calls[0].contact.name = 'Changed by adapter'
-  finish({ reference: 'REF-001' })
+  const receipt = {
+    reference: 'REF-001',
+    details: [
+      { label: 'Arrival information', value: 'Use the main entrance.' },
+    ],
+  }
+  finish(receipt)
   await pending
+  receipt.details[0].value = 'Changed by adapter'
   assert.equal(flow.step.value, 3)
   assert.equal(flow.confirmed.value.contact.name, 'Sample Guest')
   assert.equal(flow.confirmed.value.receipt.reference, 'REF-001')
+  assert.deepEqual(flow.confirmed.value.receipt.details, [
+    { label: 'Arrival information', value: 'Use the main entrance.' },
+  ])
   stop()
 })
 

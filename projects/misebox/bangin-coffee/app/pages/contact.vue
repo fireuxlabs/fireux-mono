@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { banginCoffeeLinks as links } from '../config/content.config'
+import { banginCoffeeLinks as links } from '../content/site'
 
 definePageMeta({
   layout: 'landing',

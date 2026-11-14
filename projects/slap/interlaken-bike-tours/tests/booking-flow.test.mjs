@@ -8,6 +8,8 @@ const tours = [
   {
     slug: 'interlaken-panorama',
     name: 'Interlaken Panorama',
+    meetingPoint:
+      'Flexible location in Interlaken, agreed directly with your guide.',
     duration: '4 hours',
     durationHours: 4,
     price: 159,
@@ -15,21 +17,87 @@ const tours = [
   {
     slug: 'lauterbrunnen-valley',
     name: 'Lauterbrunnen Valley',
+    meetingPoint:
+      'Flexible location in Interlaken, agreed directly with your guide.',
     duration: '6 hours',
     durationHours: 6,
     price: 259,
   },
 ]
 
+const useTourBookingSource = readFileSync(
+  new URL('../app/composables/useTourBooking.ts', import.meta.url),
+  'utf8'
+)
+  .replace(/^import type \{[\s\S]*?\} from '[^']+'\r?\n/m, '')
+  .replace(/^import \{ tours \} from '[^']+'\r?\n/m, '')
+  .replace(/^export /gm, '')
+const useTourBooking = compileFunction(
+  `${stripTypeScriptTypes(useTourBookingSource)}; return useTourBooking`,
+  ['tours', 'ref', 'computed', 'watch', 'useFetch', 'useRoute', '$fetch']
+)(
+  tours,
+  (value) => ({ value }),
+  (get) => Object.defineProperty({}, 'value', { get }),
+  () => {},
+  () => ({
+    data: { value: { available: true, availabilityRevision: 4, startAt: '2026-11-18T09:00:00+01:00', endAt: '2026-11-18T15:00:00+01:00', timeZone: 'Europe/Zurich' } },
+    status: { value: 'success' },
+    error: { value: null },
+    execute: async () => {},
+    clear: () => {},
+  }),
+  () => ({ query: { tour: 'lauterbrunnen-valley' } }),
+  async () => ({ booking: { id: 'REF-001' } })
+)
+
+test('booking confirmation returns the selected tour meeting point in its receipt', async () => {
+  const flow = useTourBooking()
+  const slot = flow.configuration.value.slots[0]
+  const receipt = await flow.confirm.value({
+    requestId: 'request-001',
+    slotId: slot.id,
+    contact: { name: 'Sample Guest', email: 'guest@example.com' },
+  })
+
+  assert.deepEqual(receipt, {
+    reference: 'REF-001',
+    details: [
+      {
+        label: 'Meeting point',
+        value: tours[1].meetingPoint,
+      },
+    ],
+  })
+})
+
 const sharedSource = readFileSync(
-  new URL('../../../../packages/extensions/fireux-bookings/src/runtime/server/booking.ts', import.meta.url), 'utf8'
+  new URL(
+    '../../../../packages/extensions/fireux-bookings/src/runtime/server/booking.ts',
+    import.meta.url
+  ),
+  'utf8'
 ).replace(/^export /gm, '')
 const { BookingError, confirmBooking } = compileFunction(
   `${stripTypeScriptTypes(sharedSource)}; return { BookingError, confirmBooking }`
 )()
 
-const availabilitySource = readFileSync(new URL('../../../../packages/extensions/fireux-bookings/src/runtime/utils/availability.ts', import.meta.url), 'utf8').replace(/^import .*$/gm, '').replace(/^export /gm, '')
-const { defaultBookingAvailability, readBookingAvailability, isBookingDayOpen } = compileFunction(`${stripTypeScriptTypes(availabilitySource)}; return { defaultBookingAvailability, readBookingAvailability, isBookingDayOpen }`)()
+const availabilitySource = readFileSync(
+  new URL(
+    '../../../../packages/extensions/fireux-bookings/src/runtime/utils/availability.ts',
+    import.meta.url
+  ),
+  'utf8'
+)
+  .replace(/^import .*$/gm, '')
+  .replace(/^export /gm, '')
+const {
+  defaultBookingAvailability,
+  readBookingAvailability,
+  isBookingDayOpen,
+} = compileFunction(
+  `${stripTypeScriptTypes(availabilitySource)}; return { defaultBookingAvailability, readBookingAvailability, isBookingDayOpen }`
+)()
 
 const source = readFileSync(
   new URL('../server/utils/tour-booking.ts', import.meta.url),
@@ -50,14 +118,50 @@ const storeSource = readFileSync(
 )
   .replace(/^import[\s\S]*?from\s+['"][^'"]+['"]\r?\n/gm, '')
   .replace(/^export /gm, '')
-const sharedStoreSource = readFileSync(new URL('../../../../packages/extensions/fireux-bookings/src/runtime/server/business/store.ts', import.meta.url), 'utf8')
-  .replace(/^import[\s\S]*?from\s+['"][^'"]+['"]\r?\n/gm, '').replace(/^export /gm, '')
-function storeModule(runGuardedServerTransaction, getRuntimeFirestore, defineFirestoreMutationTarget, BookingError) {
-  const businessBookingTargets = (id) => ({ bookings: { collectionPath: `businesses/${id}/bookings` }, locks: { collectionPath: `businesses/${id}/booking-locks` }, settings: { collectionPath: `businesses/${id}/booking-settings` } })
-  const createBusinessBookingStore = compileFunction(`${stripTypeScriptTypes(sharedStoreSource)}; return createBusinessBookingStore`,
-    ['runGuardedServerTransaction', 'getRuntimeFirestore', 'businessBookingTargets', 'BUSINESS_MUTATION_TARGETS', 'readBookingAvailability', 'isBookingDayOpen', 'BookingError']
-  )(runGuardedServerTransaction, getRuntimeFirestore, businessBookingTargets, { businesses: { collectionPath: 'businesses' } }, readBookingAvailability, isBookingDayOpen, BookingError)
-  return compileFunction(`${stripTypeScriptTypes(storeSource)}; return { createInterlakenTourBookingStore }`, ['createBusinessBookingStore'])(createBusinessBookingStore)
+const sharedStoreSource = readFileSync(
+  new URL(
+    '../../../../packages/extensions/fireux-bookings/src/runtime/server/business/store.ts',
+    import.meta.url
+  ),
+  'utf8'
+)
+  .replace(/^import[\s\S]*?from\s+['"][^'"]+['"]\r?\n/gm, '')
+  .replace(/^export /gm, '')
+function storeModule(
+  runGuardedServerTransaction,
+  getRuntimeFirestore,
+  defineFirestoreMutationTarget,
+  BookingError
+) {
+  const businessBookingTargets = (id) => ({
+    bookings: { collectionPath: `businesses/${id}/bookings` },
+    locks: { collectionPath: `businesses/${id}/booking-locks` },
+    settings: { collectionPath: `businesses/${id}/booking-settings` },
+  })
+  const createBusinessBookingStore = compileFunction(
+    `${stripTypeScriptTypes(sharedStoreSource)}; return createBusinessBookingStore`,
+    [
+      'runGuardedServerTransaction',
+      'getRuntimeFirestore',
+      'businessBookingTargets',
+      'BUSINESS_MUTATION_TARGETS',
+      'readBookingAvailability',
+      'isBookingDayOpen',
+      'BookingError',
+    ]
+  )(
+    runGuardedServerTransaction,
+    getRuntimeFirestore,
+    businessBookingTargets,
+    { businesses: { collectionPath: 'businesses' } },
+    readBookingAvailability,
+    isBookingDayOpen,
+    BookingError
+  )
+  return compileFunction(
+    `${stripTypeScriptTypes(storeSource)}; return { createInterlakenTourBookingStore }`,
+    ['createBusinessBookingStore']
+  )(createBusinessBookingStore)
 }
 
 function loadRoute(path, injectedNames, injectedValues) {
@@ -83,8 +187,14 @@ const input = {
 }
 
 function harness(options = {}) {
-  const documents = new Map([['businesses/business-1', { name: 'Test operator' }]])
-  if (options.settings) documents.set('businesses/business-1/booking-settings/availability', options.settings)
+  const documents = new Map([
+    ['businesses/business-1', { name: 'Test operator' }],
+  ])
+  if (options.settings)
+    documents.set(
+      'businesses/business-1/booking-settings/availability',
+      options.settings
+    )
   const db = {
     collection: (collectionPath) => ({
       doc: (id) => ({
@@ -138,7 +248,8 @@ function harness(options = {}) {
   ).createInterlakenTourBookingStore('business-1')
   const records = {
     get: (id) => documents.get(`businesses/business-1/bookings/${id}`),
-    set: (id, value) => documents.set(`businesses/business-1/bookings/${id}`, value),
+    set: (id, value) =>
+      documents.set(`businesses/business-1/bookings/${id}`, value),
     get size() {
       return [...documents.keys()].filter((path) =>
         path.startsWith('businesses/business-1/bookings/')
@@ -153,7 +264,8 @@ function harness(options = {}) {
       documents.set(`businesses/business-1/booking-locks/${date}`, {
         booking_id: bookingId,
       }),
-    delete: (date) => documents.delete(`businesses/business-1/booking-locks/${date}`),
+    delete: (date) =>
+      documents.delete(`businesses/business-1/booking-locks/${date}`),
   }
   const events = []
   const busyCalls = []
@@ -369,6 +481,7 @@ test('availability HTTP route passes the request through and disables caching', 
 
 test('booking HTTP route sends the request body to the booking command', async () => {
   let inputReceived
+  let notifiedBooking
   const route = loadRoute(
     '../server/api/bookings/index.post.ts',
     [
@@ -376,6 +489,7 @@ test('booking HTTP route sends the request body to the booking command', async (
       'readBody',
       'getInterlakenTourBookingWorkflow',
       'asInterlakenBookingHttpError',
+      'notifyLocalTourBooking',
     ],
     [
       (handler) => handler,
@@ -387,14 +501,17 @@ test('booking HTTP route sends the request body to the booking command', async (
         },
       }),
       (error) => error,
+      async (booking) => {
+        notifiedBooking = booking
+      },
     ]
   )
 
   const response = await route({ body: input })
   assert.deepEqual(response, { booking: { status: 'confirmed' } })
   assert.deepEqual(inputReceived, input)
+  assert.deepEqual(notifiedBooking, response.booking)
 })
-
 
 test('closed dates and closed weekdays prevent public availability and bookings', async () => {
   for (const settings of [
@@ -403,14 +520,23 @@ test('closed dates and closed weekdays prevent public availability and bookings'
   ]) {
     const h = harness({ settings })
     assert.equal((await h.workflow.checkAvailability(input)).reason, 'closed')
-    await assert.rejects(h.workflow.book(input), (error) => error.statusCode === 409)
+    await assert.rejects(
+      h.workflow.book(input),
+      (error) => error.statusCode === 409
+    )
     assert.equal(h.events.length, 0)
     assert.equal(h.records.size, 0)
   }
 })
 
 test('saved departure time drives availability and the confirmed calendar event', async () => {
-  const h = harness({ settings: { ...defaultBookingAvailability(), revision: 3, departureTime: '10:30' } })
+  const h = harness({
+    settings: {
+      ...defaultBookingAvailability(),
+      revision: 3,
+      departureTime: '10:30',
+    },
+  })
   const available = await h.workflow.checkAvailability(input)
   assert.equal(available.startAt, '2026-11-05T10:30:00+01:00')
   const result = await h.workflow.book({ ...input, availabilityRevision: 3 })
@@ -418,18 +544,34 @@ test('saved departure time drives availability and the confirmed calendar event'
   assert.equal(h.events[0].startAt, available.startAt)
 })
 
-
 test('a departure in the spring clock-change gap is rejected instead of silently moving the tour', async () => {
-  const h = harness({ settings: { ...defaultBookingAvailability(), departureTime: '02:30' } })
-  await assert.rejects(h.workflow.checkAvailability({ tourSlug: input.tourSlug, date: '2027-03-28' }), (error) => error.code === 'invalid_departure_time')
+  const h = harness({
+    settings: { ...defaultBookingAvailability(), departureTime: '02:30' },
+  })
+  await assert.rejects(
+    h.workflow.checkAvailability({
+      tourSlug: input.tourSlug,
+      date: '2027-03-28',
+    }),
+    (error) => error.code === 'invalid_departure_time'
+  )
   assert.equal(h.events.length, 0)
 })
 
-
 test('checkout cannot silently adopt a departure changed after the guest checked availability', async () => {
   const h = harness()
-  assert.equal((await h.workflow.checkAvailability(input)).departureTime, '09:00')
-  h.documents.set('businesses/business-1/booking-settings/availability', { ...defaultBookingAvailability(), revision: 1, departureTime: '10:30' })
-  await assert.rejects(h.workflow.book(input), (error) => error.code === 'availability_changed')
+  assert.equal(
+    (await h.workflow.checkAvailability(input)).departureTime,
+    '09:00'
+  )
+  h.documents.set('businesses/business-1/booking-settings/availability', {
+    ...defaultBookingAvailability(),
+    revision: 1,
+    departureTime: '10:30',
+  })
+  await assert.rejects(
+    h.workflow.book(input),
+    (error) => error.code === 'availability_changed'
+  )
   assert.equal(h.events.length, 0)
 })

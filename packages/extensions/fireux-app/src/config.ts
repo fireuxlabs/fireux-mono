@@ -18,7 +18,7 @@ import {
   withDefaultAppLayers,
   withDefaultAppModules,
   DEFAULT_APP_LAYERS,
-} from './defaults'
+} from './defaults.ts'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import {

@@ -70,15 +70,14 @@ import {
   menuRoutePath,
   tenantMenuRouteScope,
 } from 'fireux-kitchens/runtime/menu/utils/navigation/route'
-import { baerenRinggenbergContent } from '../../../config/content.config'
-import kitchenConfig from '../../../config/kitchen.config'
+import { baerenRinggenbergContent } from '../../../content/site'
 
 defineOptions({ name: 'BaerenHomeHero' })
 
 const content = baerenRinggenbergContent
 const deliveryMenuPath = menuRoutePath({
   scope: tenantMenuRouteScope(),
-  menuId: kitchenConfig.primaryMenuId,
+  menuId: baerenRinggenbergContent.primaryMenuId,
   context: 'delivery',
 })
 const hotelPhoneHref = `tel:${content.contacts.hotel.phone.replace(/\s/g, '')}`

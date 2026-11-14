@@ -22,13 +22,20 @@ export default defineEventHandler(async (event: H3Event) => {
     .where('kind', '==', 'ignition')
     .limit(50)
     .get()
+  const originals = new Map(
+    snapshot.docs.map((document) => [document.id, document.data()])
+  )
   const items = snapshot.docs
-    .map((document) =>
-      serializeIgnitionRequest(
-        document.id,
-        (document.data() || {}) as Record<string, unknown>
-      )
-    )
+    .filter((document) => !document.data()?.ignition?.forwarded_to)
+    .map((document) => {
+      const source = document.data() || {}
+      const original = originals.get(source.ignition?.original_request_id)
+      return serializeIgnitionRequest(document.id, {
+        ...source,
+        guest_contact: original?.guest_contact ?? source.guest_contact,
+        ignition: { ...original?.ignition, ...source.ignition },
+      })
+    })
     .sort((left, right) => right.created_at.localeCompare(left.created_at))
 
   setResponseHeaders(event, {

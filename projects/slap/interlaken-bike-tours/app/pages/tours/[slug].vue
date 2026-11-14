@@ -6,7 +6,7 @@
 definePageMeta({ layout: 'default' })
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { tours } from '~/content/tours'
-import { searchPage } from '~/ignition/search'
+import { pageSeo } from '~/content/seo'
 import {
   useSeo,
   buildPublicPageJsonLd,
@@ -18,13 +18,9 @@ if (!tour.value)
   throw createError({ statusCode: 404, statusMessage: 'Tour not found' })
 useSeo({
   title: () =>
-    tour.value
-      ? searchPage(`/tours/${tour.value.slug}`).title
-      : 'Tour not found',
+    tour.value ? pageSeo(`/tours/${tour.value.slug}`).title : 'Tour not found',
   description: () =>
-    tour.value
-      ? searchPage(`/tours/${tour.value.slug}`).description
-      : undefined,
+    tour.value ? pageSeo(`/tours/${tour.value.slug}`).description : undefined,
   path: () => (tour.value ? `/tours/${tour.value.slug}` : route.path),
   image: () => tour.value?.image,
   jsonLdBuilder: (context) =>

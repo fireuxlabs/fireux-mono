@@ -35,3 +35,39 @@
     }
   }
 }
+
+/* La Tap theme spine: app chrome and local components share these tokens. */
+:root {
+  --brand-canvas: #f2e8d8;
+  --brand-canvas-rgb: 242 232 216;
+  --brand-ink: #171717;
+  --brand-ink-rgb: 23 23 23;
+  --brand-primary: #171717;
+  --brand-accent: #9a6500;
+  --brand-accent-rgb: 154 101 0;
+  --brand-accent-display: #9a6500;
+  --brand-accent-display-rgb: 154 101 0;
+  --latap-app-bg: #ff00cc;
+  --latap-page-fg: var(--brand-ink);
+  --latap-page-copy-fg: color-mix(
+    in srgb,
+    var(--latap-page-fg) 78%,
+    transparent
+  );
+  --latap-page-wash: #ff00cc;
+  --latap-landing-wash-rgb: var(--brand-ink-rgb);
+}
+
+:root.dark {
+  --brand-accent-display: #cfa85a;
+  --brand-accent-display-rgb: 207 168 90;
+  --latap-app-bg: #ffff00;
+  --latap-page-fg: var(--brand-canvas);
+  --latap-page-copy-fg: color-mix(
+    in srgb,
+    var(--latap-page-fg) 88%,
+    transparent
+  );
+  --latap-page-wash: #ffff00;
+  --latap-landing-wash-rgb: var(--brand-accent-display-rgb);
+}

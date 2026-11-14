@@ -1,21 +1,21 @@
 /** Resolve App SEO policy and collect extension-owned sitemap contributions. */
-import { resolveSeoRobots } from '../../utils/seo-indexing'
+import { resolveSeoRobots } from '../../utils/seo-indexing.ts'
 import {
   readSitemapPublicFilters,
   type SitemapPublicFilter,
-} from '../../utils/sitemap-public-filters'
+} from '../../utils/sitemap-public-filters.ts'
 import type { NuxtConfig } from '@nuxt/schema'
 import {
   normalizePaths,
   normalizePatterns,
   normalizeSiteUrl,
-} from './seo-routes'
+} from './seo-routes.ts'
 
 export {
   collectAutoSitemapPaths,
   mergeSitemapPaths,
   normalizeSiteUrl,
-} from './seo-routes'
+} from './seo-routes.ts'
 
 type AnyRecord = Record<string, any>
 

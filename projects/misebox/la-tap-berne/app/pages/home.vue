@@ -1,14 +1,8 @@
 <template>
   <LaTapBernePage>
-    <LaTapBerneHero
-      :title="pageTitle"
-      :subtitle="pageSubtitle"
-    >
+    <LaTapBerneHero :title="pageTitle" :subtitle="pageSubtitle">
       <LaTapBerneCopy>
-        <p
-          v-for="copy in page.copy"
-          :key="copy"
-        >
+        <p v-for="copy in page.copy" :key="copy">
           {{ copy }}
         </p>
       </LaTapBerneCopy>
@@ -17,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { laTapBerneContent } from '../config/content.config'
+import { laTapBerneContent } from '../content/site'
 
 // Tenant content page spine: docs/concepts/family-tenant-global.md
 const page = laTapBerneContent.pages.home

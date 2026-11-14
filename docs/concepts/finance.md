@@ -135,9 +135,7 @@ reports into one generic Finance workspace.
   Its thin Dashboard route owns a secondary `UDashboardToolbar`: Today, This
   week, This month and Last 90 days update one authoritative range, while a
   compact `UPopover` trigger opens `UCalendar` for a custom range of at most 93
-  days. When the selected source is Demo, a success marker identifies the
-  simulation date and all presets anchor to that deterministic date; Live
-  remains anchored to the actual Kitchen-local reporting date. The
+  days. Reporting anchors to the actual Kitchen-local reporting date. The
   `.workspace-surface` body loads the bounded gross-sales projection and lists
   one row per completed Sale in a source-neutral activity ledger. One signed
   amount column uses `+` for incoming and reserves red `−` presentation for
@@ -156,55 +154,11 @@ reports into one generic Finance workspace.
   planning estimates may use represented Recipe requirements and Supplier offer
   terms with explicit coverage and exclusions, but they do not establish the
   authoritative acquisition and period-usage chain required for a Cost report.
-- `KitchenFinanceSummary` is the Kitchen adapter over the shared Finance metric
-  summary. It retains gross-sale semantics and completed-service labels while
-  the Product Demo reuses the product-neutral layout and money formatter. Live
-  Workspace reporting remains composed under `Workspace/Finance`.
-- Live period totals, calendar and day detail are derived only from the same
-  bounded daily projection. Deanos Demo owns a deterministic Team fixture and
-  a Kitchen-owned 180-day Service history. Each dated Service contains
-  completed Orders with canonical Menu items/prices, contiguous service-local
-  numbers, placed/completed Zurich timestamps, and stable closer ids.
-  Finance derives one incoming transaction per Order with the same source id,
-  service identity, dates, status, signed minor-unit CHF amount,
-  counterparty/summary, closer, and line detail. From those transactions the
-  Kitchen projector derives current/prior 7, 30, and 90-day totals, grouped
-  trend points, best and quietest days, weekday averages, top items, and daily
-  averages.
-- The Deanos Orders operation reuses the latest three completed rows from that
-  same series. Scenario composition fails closed unless their order identity,
-  service, channel, item identity and quantities, total, and Team closer
-  reconcile exactly with Finance.
-- Completed sales are the only current Deanos Finance row family. Refunds have
-  no Order-owned refund producer. Supplier catalogue offers are not deliveries,
-  purchases, receipts, or invoices. Team membership is not rota/payroll. No
-  dated rent producer exists. Finance therefore does not manufacture supplier
-  invoice states, staff pay, recurring rent, expenses, wages, VAT, labour,
-  cashflow, profit, or P&L rows.
-- That ordered Demo series justifies the product-neutral
-  `FinancialReportTrendView` presentation contract. The shared component uses
-  native Vue/SVG and adds no React/Recharts or chart-library dependency.
-- P&L, cashflow, and accounting-cost views are absent until the required
-  producing domains exist. If introduced later they would be derived reports,
-  not Workspace Operations or separately editable stored truth.
-- A Demo Dish detail may show a read-only cost-of-sales planning estimate by
-  expanding its current Spec through represented prep/recipe yields and the
-  preferred Supplier offer terms. It must identify incomplete price coverage,
-  exclude unrepresented labour, energy, tax, oil, and waste, and remain an
-  estimate rather than a KitchenSale, expense, or FinancialFact. The pure
-  Kitchen estimator is shared by the real Workspace adapter and presentation-only
-  Demo projections so those surfaces cannot drift into competing arithmetic.
-- A Product Demo may pair that estimate with sold quantities derived from the
-  same completed Deanos Orders. Any displayed total sales must reconcile to
-  those quantities and the resolved selling price and must not be presented as
-  KitchenSales, FinancialFacts, or real customer performance. The surrounding
-  source selection distinguishes Demo from Live; reusable Finance field labels
-  remain source-agnostic.
-- A Product Demo may also expose the separate Kitchen Finance report from the
-  completed-Order-derived Demo projection. Workspace Demo and Product Demo share
-  the Kitchen-owned transaction/average/minor-unit projectors, and the landing
-  may keep a distinct Reports affordance while Finance remains in the Kitchen
-  Operation catalogue.
+- Workspace Finance retains its live bounded reporting projection and shared
+  money presentation. Fictional Deanos history, demo Item cost estimates and
+  Product Demo Finance projections are retired. They establish no cost authority.
+- P&L, cashflow and accounting-cost views remain absent until their producing
+  domains exist.
 - Kitchen Finance is a selected-Kitchen reporting Operation. There is no
   generic cross-entity Finance Workspace Operation in this pass; Suppliers,
   Projects, and Portfolios keep their own future producer operations.
@@ -228,13 +182,6 @@ reports into one generic Finance workspace.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/operator-access.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/reports/gross-sales.get.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/overview/useKitchenWorkspaceFinance.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/finance.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Orders/history.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/team.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-finance.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/item-finance.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-items.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Items/finance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Finance/Summary.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue`

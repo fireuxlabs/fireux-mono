@@ -38,7 +38,7 @@
   </fieldset>
 </template>
 <script setup lang="ts">
-import type { ItemPriceOption } from '../../../../models/item.model'
+import type { ItemPriceOption } from '../../../../utils/item-pricing'
 const options = defineModel<
   Array<Omit<ItemPriceOption, 'price'> & { price: string | number }>
 >({ required: true })

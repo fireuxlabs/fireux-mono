@@ -39,7 +39,7 @@ const assertItemIdentity = (
   if (!exists) {
     throw createError({ statusCode: 404, statusMessage: 'Item not found.' })
   }
-  if (readString(data.kitchen_id) !== kitchenId) {
+  if (data.kitchen_id != null && readString(data.kitchen_id) !== kitchenId) {
     throw createError({
       statusCode: 409,
       statusMessage: 'The stored Item identity is invalid.',
@@ -110,7 +110,8 @@ export default defineEventHandler(async (event: H3Event) => {
       const current = await itemRef.get()
       committed = Boolean(
         current.exists &&
-          readString(current.get('kitchen_id')) === kitchenId &&
+          (current.get('kitchen_id') == null ||
+            readString(current.get('kitchen_id')) === kitchenId) &&
           readString(current.get('image')) === saved.imageUrl
       )
     } catch {

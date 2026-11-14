@@ -1,6 +1,6 @@
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
-import { getReservedRootRouteKeys } from './reserved-route-keys'
+import { getReservedRootRouteKeys } from './reserved-route-keys.ts'
 
 export type FireuxRuntimeStep = (nuxt: Nuxt) => void
 export type FireuxResolverStep = (resolver: Resolver) => void
@@ -35,7 +35,10 @@ export function configureFireuxModule(
   steps.assets?.(resolver, nuxt)
   steps.server?.(resolver, nuxt)
 
-  const runtimeConfig = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
+  const runtimeConfig = ((nuxt.options as any).runtimeConfig ||= {}) as Record<
+    string,
+    any
+  >
   const pub = (runtimeConfig.public ||= {}) as Record<string, any>
   const fireux = (pub.fireux ||= {}) as Record<string, any>
   fireux.reservedRouteKeys = getReservedRootRouteKeys()

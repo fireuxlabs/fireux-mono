@@ -1,7 +1,7 @@
 # Spine
 
-Updated: 2026-11-09
-Ref: 2807ceca9
+Updated: 2026-11-14
+Ref: 5916a6874
 Role: map, not canon
 
 ## Purpose
@@ -18,6 +18,104 @@ mapped in `docs/concepts/place-kitchen-media.md`.
 
 The hard-cutover evidence required before an Entity migration is complete is
 mapped in [Entity canonical migration](entity-canonical-migration.md).
+
+## App and Ecosystem composition spine
+
+This cross-cutting spine connects a concrete App's choices to the selected
+bundles, named Ecosystem composition, extension modules and layers, and Core
+mechanics. It describes their collaboration; it does not create a new source
+owner or replace the App, package, and dependency boundaries.
+
+```text
+App nuxt.config.ts
+  ├─ tenant or standalone → defineFireuxApp
+  └─ Main App             → defineFireuxEcosystem → defineFireuxApp
+                                                    ↓
+                                         Nuxt App composition
+                           ├─ modules: Ecosystem, Core, defaults,
+                           │  App selections and module dependencies
+                           ├─ extends: App-selected native layers,
+                           │  Main App layer when applicable, defaults
+                           └─ runtime projection: identity, Workspaces,
+                              domain/profile selections and App policy
+```
+
+Module registration and native layer composition are complementary paths.
+Follow both from the App recipe into their owning packages. Core supplies
+neutral mechanics consumed by those owners.
+
+### Where capability choices belong
+
+| Choice                              | Selection point                                           | Owning implementation                                  |
+| ----------------------------------- | --------------------------------------------------------- | ------------------------------------------------------ |
+| Standard App capabilities           | App bundle defaults                                       | The selected extension modules and native layers       |
+| Main App surfaces                   | `defineFireuxEcosystem`, requiring role `global`          | Shared `fireux-ecosystem` runtime layer                |
+| Named Ecosystem                     | App's `ecosystem` value selects `fireux-<ecosystem>`      | Named Ecosystem module and its bindings                |
+| Workspace composition               | App's `workspaces` plus selected native Workspace layer   | Named Ecosystem composition and domain Workspace owner |
+| Additional capabilities and options | App's `modules` tuples and `extends`                      | Selected package's module options and runtime layer    |
+| Access to an operation              | Current membership, entitlement, target and domain policy | Owning readers, access checks and trusted commands     |
+
+Workspace declarations and layer selection must agree. For example, Misebox's
+module conditionally registers Kitchens for the `kitchen` Workspace, while
+`fireux-misebox/kitchen-layer` composes the Kitchen and Misebox native layers.
+Installing a module or exposing a route establishes availability; authorization
+remains with the owning access checks and trusted commands.
+
+### Responsibility and source
+
+- **Concrete App:** owns deployment, identity, role, its module/layer/workspace
+  selection, App policy, and App-specific presentation. Its `nuxt.config.ts`
+  is the actual composition recipe.
+- **`fireux-app`:** `defineFireuxApp` validates and assembles the standard App,
+  including shared modules, default layers, and runtime projection. Its defaults
+  select the standard capabilities; concrete Apps select additional capabilities
+  and package-owned options.
+- **`fireux-ecosystem`:** `defineFireuxEcosystem` requires a Main App role, adds
+  the shared Main App layer, and delegates standard assembly to `fireux-app`.
+- **Named Ecosystem package:** owns real cross-extension composition, bindings,
+  and Ecosystem-specific layers or module dependencies. Its module and layer
+  entrypoints are selected by concrete Apps; they do not replace the standard
+  App bundle.
+- **Extensions:** own their domain modules, registered runtime entrypoints,
+  layers, records, and trusted behavior.
+- **Core:** supplies product-neutral Nuxt and Firebase mechanics used by the
+  App and extension owners. It does not select a named Ecosystem or product.
+
+Current source to trace:
+
+- Builders: [`fireux-app/config`](../../packages/extensions/fireux-app/src/config.ts),
+  [`fireux-ecosystem/config`](../../packages/extensions/fireux-ecosystem/src/config.ts),
+  and [App defaults](../../packages/extensions/fireux-app/src/defaults.ts).
+- Runtime layers: [App layer](../../packages/extensions/fireux-app/src/runtime/nuxt.config.ts),
+  [Main App layer](../../packages/extensions/fireux-ecosystem/src/runtime/nuxt.config.ts),
+  and the selected named Ecosystem modules/layers.
+- Named composition example: [Misebox module](../../packages/ecosystem/fireux-misebox/src/module.ts)
+  and [Kitchen Workspace layer](../../packages/ecosystem/fireux-misebox/src/config/app/kitchen-layer.ts).
+- Concrete consumers: [Misebox Main App](../../projects/misebox/misebox-app/nuxt.config.ts),
+  [La Tap Berne tenant](../../projects/misebox/la-tap-berne/nuxt.config.ts),
+  and [Slap Main App](../../projects/slap/slap-app/nuxt.config.ts).
+- Companion maps: [App config](app-config.md),
+  [tenant/global/standalone roles](family-tenant-global.md),
+  [Nuxt 4 integration](nuxt4.md),
+  [runtime package contract](runtime-package.md), and
+  [runtime filesystem](runtime-filesystem.md).
+
+### Codex links
+
+Keep one durable concept anchor for this concern. Bounded outcome tasks can
+share that anchor over time; each task identifies the concrete App consumers
+and shared or named packages it will actually change. Use the exact concept ID
+`docs/concepts/spine.md#app-and-ecosystem-composition-spine`; add the relevant
+App config, role, or Nuxt sub-concept IDs when they are part of the outcome.
+Do not create one task per `nuxt.config.ts` when a single bounded change owns
+the cross-App composition contract. For a family-wide audit, enumerate the
+maintained consumers in that task's acceptance scope.
+
+The [Codex map workflow](../../tools/ide/README.md#repository-and-codex-map)
+joins task links only when supplied thread metadata includes exact `ownerPaths`
+and `conceptPaths`. This concept anchor provides durable navigation; live chat
+assignment and status require that external snapshot. Keep task IDs and status
+out of this map.
 
 ## Family growth lifecycle
 
@@ -154,6 +252,7 @@ as current enforcement or as evidence that a family is aligned.
 
 | Responsibility                  | Current map                                                                    | Source to inspect                                                                |
 | ------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| App and Ecosystem composition   | This section, `app-config.md`, `family-tenant-global.md`, `nuxt4.md`           | App configs, bundle builders, named Ecosystem module/layer entrypoints           |
 | Runtime discovery and ownership | `runtime-package.md`, `runtime-filesystem.md`                                  | Package manifests, modules, native layers, App configs and generated Nuxt output |
 | Entity classification and data  | `entities.md`, `firestore-entity.md`, `core-models.md`                         | Models, named readers/writers and authority checks                               |
 | Workspace and capabilities      | `family-workspace-entity.md`, `family-workspace-capability-tool.md`            | Domain Workspace compositions, selection readers and commands                    |

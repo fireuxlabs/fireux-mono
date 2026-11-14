@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { laTapBerneContent } from '../config/content.config'
+import { laTapBerneContent } from '../content/site'
 
 const page = laTapBerneContent.pages.index
 const home = laTapBerneContent.pages.home

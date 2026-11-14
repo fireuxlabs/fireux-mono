@@ -3,11 +3,11 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'
-import { ecosystemConfig } from './config/firebase/ecosystem.config'
-import { configureComponents } from './config/module/components-config'
-import { configureModulePages } from './config/module/pages-config'
-import { configurePlugins } from './config/module/plugins-config'
-import { configureRuntimeConfig } from './config/module/runtime-config'
+import { ecosystemConfig } from './config/firebase/ecosystem.config.ts'
+import { configureComponents } from './config/module/components-config.ts'
+import { configureModulePages } from './config/module/pages-config.ts'
+import { configurePlugins } from './config/module/plugins-config.ts'
+import { configureRuntimeConfig } from './config/module/runtime-config.ts'
 
 const WORKSPACE_MODULES = ['fireux-kitchens'] as const
 

@@ -1,5 +1,5 @@
 import { priceItemChoices } from '../../kitchen/utils/item-choices'
-import type { ItemChoiceSelection } from '../../kitchen/models/item-choice.model'
+import type { ItemChoiceSelection } from '../../kitchen/item/offer'
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import { useMenu } from './useMenu'

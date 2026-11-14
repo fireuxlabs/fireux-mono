@@ -8,7 +8,7 @@ import type {
 } from 'fireux-core/config/app/seo-config'
 import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
 import { configureComponents } from './config/module/components-config'
-import { configurePages } from './config/module/pages-config'
+import { requireNativeRuntimeLayer } from 'fireux-core/config/module/runtime-layer'
 import { configureServer } from './config/module/server-config'
 
 export interface ModuleOptions {
@@ -70,7 +70,7 @@ export default defineNuxtModule<ModuleOptions>({
           './runtime/property/composables',
         ]),
       components: configureComponents,
-      pages: configurePages,
+      pages: requireNativeRuntimeLayer,
       server: configureServer,
     })
   },

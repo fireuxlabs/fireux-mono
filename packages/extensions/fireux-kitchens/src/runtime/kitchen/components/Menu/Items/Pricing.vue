@@ -1,7 +1,14 @@
 <template>
   <UCard id="item-price-choices">
     <template #header><h2>Price & choices</h2></template>
-    <form class="fx-card-body-stack" @submit.prevent="save">
+    <UAlert
+      v-if="offerError"
+      title="Price & choices unavailable"
+      description="The saved selling configuration could not be read. Item details remain available."
+      color="error"
+      variant="soft"
+    />
+    <form v-else-if="offer" class="fx-card-body-stack" @submit.prevent="save">
       <UFormField
         v-if="!groups.some((group) => group.pricing === 'full')"
         :label="`Normal price (${currency})`"
@@ -51,14 +58,19 @@
         <FireCopyError :message="error" />
       </div>
     </form>
-    <KitchenMenuItemsDeposit
-      v-if="dish?.item_kind === 'drink'"
-      :value="dish.bottle_deposit"
-      :currency="currency"
-      :disabled="!canWrite || busy"
-      :capture-intent="captureIntent"
-      :update="updateDeposit"
-    />
+    <FireDisclosurePanel
+      v-if="offer && !offerError"
+      title="Bottle deposit"
+      :default-open="false"
+    >
+      <KitchenMenuItemsDeposit
+        :value="offer.bottle_deposit"
+        :currency="currency"
+        :disabled="!canWrite || busy"
+        :capture-intent="captureIntent"
+        :update="updateDeposit"
+      />
+    </FireDisclosurePanel>
   </UCard>
 </template>
 <script setup lang="ts">
@@ -67,25 +79,17 @@ const workspace = useKitchenWorkspace()
 const selectedKitchen = workspace.data
 import { computed, ref, watch } from 'vue'
 import { useKitchenItemContext } from '../../../item/composables/useKitchenItemContext'
-import { useItemUpdate } from '../../../composables/item/useItemUpdate'
+import { useItemOfferUpdate } from '../../../item/composables/useItemOfferUpdate'
 import { useItemEditorScope } from '../../../composables/item/useItemEditorScope'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
-import type {
-  ItemChoiceGroup,
-  ItemChoiceSelection,
-} from '../../../models/item-choice.model'
+import type { ItemChoiceGroup, ItemChoiceSelection } from '../../../item/offer'
 import {
-  readItemChoiceGroups,
   normalizeItemChoiceGroups,
   priceItemChoices,
 } from '../../../utils/item-choices'
 import { normalizeItemPricingPatch } from '../../../utils/item-pricing'
-const {
-  item: dish,
-  itemId: dishId,
-  kitchenId,
-  canWrite,
-} = useKitchenItemContext()
+const { offer, offerError, itemId, kitchenId, canWrite } =
+  useKitchenItemContext()
 const currency = computed(() => readPlaceCurrencyCode(selectedKitchen.value))
 const price = ref<string | number>('')
 const groups = ref<ItemChoiceGroup[]>([])
@@ -103,6 +107,11 @@ const formatMoney = (value: number) =>
     currency: currency.value,
   }).format(value)
 const previewPrice = computed(() => {
+  if (
+    String(price.value).trim() === '' &&
+    !validatedGroups.value?.some((group) => group.pricing === 'full')
+  )
+    return 'Set a normal price to preview.'
   try {
     return formatMoney(
       priceItemChoices(
@@ -119,31 +128,33 @@ const busy = ref(false),
   error = ref(''),
   message = ref('')
 const sourceKey = computed(() =>
-  JSON.stringify([
-    kitchenId.value,
-    dishId.value,
-    dish.value?.price,
-    dish.value?.price_options,
-    dish.value?.add_ons,
-    dish.value?.choice_groups,
-  ])
+  JSON.stringify([kitchenId.value, itemId.value, offer.value, offerError.value])
 )
+const baseline = ref('')
+const draftKey = computed(() => JSON.stringify([price.value, groups.value]))
+const dirty = computed(() => draftKey.value !== baseline.value)
 function resetDraft() {
-  price.value = dish.value?.price ?? ''
-  groups.value = dish.value ? readItemChoiceGroups(dish.value) : []
+  price.value = offer.value?.price ?? ''
+  groups.value = normalizeItemChoiceGroups(offer.value?.choice_groups || [])
   previewChoices.value = {}
+  baseline.value = draftKey.value
 }
-watch(sourceKey, resetDraft, { immediate: true })
-const captureIntent = useItemEditorScope([kitchenId, dishId, canWrite], () => {
+watch([kitchenId, itemId], resetDraft, { immediate: true })
+watch(sourceKey, () => {
+  if (!dirty.value && !busy.value) resetDraft()
+})
+const captureIntent = useItemEditorScope([kitchenId, itemId, canWrite], () => {
   busy.value = false
   error.value = ''
   message.value = ''
 })
-const { updateItem } = useItemUpdate([kitchenId, dishId, canWrite])
+const { updateOffer } = useItemOfferUpdate([kitchenId, itemId, canWrite])
 async function updateDeposit(value: string) {
   const current = captureIntent()
+  if (!canWrite.value || !offer.value || offerError.value || busy.value)
+    throw new Error('Price & choices are read-only.')
   const changes = normalizeItemPricingPatch({ bottle_deposit: Number(value) })
-  await updateItem(dishId.value, changes, {
+  await updateOffer(itemId.value, changes, {
     kitchenId: kitchenId.value,
     isCurrent: current,
   })
@@ -154,7 +165,7 @@ const amount = (value: string | number) => {
   return Number(value)
 }
 async function save() {
-  if (!canWrite.value || busy.value) return
+  if (!canWrite.value || !offer.value || offerError.value || busy.value) return
   const current = captureIntent()
   busy.value = true
   error.value = ''
@@ -165,14 +176,16 @@ async function save() {
         ? 0
         : amount(price.value),
       choice_groups: normalizeItemChoiceGroups(groups.value),
-      price_options: [],
-      add_ons: [],
     })
-    await updateItem(dishId.value, changes, {
+    await updateOffer(itemId.value, changes, {
       kitchenId: kitchenId.value,
       isCurrent: current,
     })
-    if (current()) message.value = 'Pricing saved.'
+    if (current()) {
+      price.value = changes.price ?? price.value
+      baseline.value = draftKey.value
+      message.value = 'Pricing saved.'
+    }
   } catch (cause) {
     if (current())
       error.value =

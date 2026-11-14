@@ -1,6 +1,6 @@
 // packages/core/fireux-core/src/config/pwa.ts
 import type { NuxtConfig } from '@nuxt/schema'
-import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
+import { resolveFireuxBrandAssets } from '../../utils/brandAssets.ts'
 
 export type FireUXPwaConfig = {
   id: string

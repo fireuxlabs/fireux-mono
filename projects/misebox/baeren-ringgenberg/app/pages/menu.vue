@@ -9,7 +9,8 @@ import {
   tenantMenuRouteScope,
 } from 'fireux-kitchens/runtime/menu/utils/navigation/route'
 import { normalizeMenuRouteContext } from 'fireux-kitchens/runtime/menu/utils/navigation/context'
-import kitchenConfig from '../config/kitchen.config'
+
+import { baerenRinggenbergContent } from '../content/site'
 
 const route = useRoute()
 const context = normalizeMenuRouteContext(route.query.context)
@@ -19,7 +20,7 @@ const target =
     ? menuRouteIndexPath(scope)
     : menuRoutePath({
         scope,
-        menuId: kitchenConfig.primaryMenuId,
+        menuId: baerenRinggenbergContent.primaryMenuId,
         context,
       })
 

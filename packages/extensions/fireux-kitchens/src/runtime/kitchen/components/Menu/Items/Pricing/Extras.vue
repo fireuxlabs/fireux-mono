@@ -37,7 +37,7 @@
   </fieldset>
 </template>
 <script setup lang="ts">
-import type { ItemAddOnOption } from '../../../../models/item.model'
+import type { ItemAddOnOption } from '../../../../utils/item-pricing'
 const extras = defineModel<
   Array<Omit<ItemAddOnOption, 'price'> & { price: string | number }>
 >({ required: true })

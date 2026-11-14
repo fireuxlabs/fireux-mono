@@ -8,7 +8,7 @@
     />
     <UAlert
       v-else-if="error"
-      :title="`${catalogue.singular} unavailable`"
+      title="Item unavailable"
       description="This record could not be loaded. Please try again."
       color="error"
       variant="soft"
@@ -19,7 +19,7 @@
         <FireCopyError
           :message="
             [
-              `${catalogue.singular} unavailable`,
+              `Item unavailable`,
               'This record could not be loaded. Please try again.',
             ]
               .filter(Boolean)
@@ -28,14 +28,10 @@
         />
       </template>
     </UAlert>
-    <p v-else-if="pending" role="status">Loading {{ catalogue.singular }}…</p>
-    <UAlert
-      v-else-if="!dish"
-      color="neutral"
-      :title="`${catalogue.singular} not found`"
-    />
+    <p v-else-if="pending" role="status">Loading Item…</p>
+    <UAlert v-else-if="!item" color="neutral" title="Item not found" />
     <template v-else>
-      <WorkspacePageHeader :title="dish.name" variant="child">
+      <WorkspacePageHeader :title="item.name" variant="child">
         <template #actions>
           <UButton
             :to="menuReturn || catalogueReturn"
@@ -81,16 +77,16 @@
       </UModal>
     </template>
     <FireDisclosurePanel
-      v-if="dish && canWrite"
+      v-if="item && canWrite"
       title="Item AI context"
       :default-open="false"
     >
       <FireContextRecord
-        v-if="dish && canWrite"
-        :key="`${kitchenId}/${dishId}`"
+        v-if="item && canWrite"
+        :key="`${kitchenId}/${itemId}`"
         title="Item AI context"
         endpoint="/api/workspace/kitchen/context"
-        :scope="{ kitchenId, subject: 'dish', recordId: dishId }"
+        :scope="{ kitchenId, subject: 'dish', recordId: itemId }"
       />
     </FireDisclosurePanel>
   </section>
@@ -98,10 +94,9 @@
 <script setup lang="ts">
 import { useKitchenWorkspace } from '../../../../composables/workspace/useKitchenWorkspace'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useKitchenItemsContext } from '../../../../composables/workspace/items/useKitchenItemsContext'
 const workspace = useKitchenWorkspace()
-const { catalogue } = useKitchenItemsContext()
-import { computed, ref } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { itemCatalogueReturn } from '../../../../utils/item-catalogue-route'
 import { useRoute, navigateTo } from '#imports'
 import { useItemDelete } from '../../../../composables/item/useItemDelete'
@@ -111,8 +106,10 @@ import ItemMenus from '../Menus.vue'
 import { provideKitchenItemContext } from '../../../../item/composables/useKitchenItemContext'
 import { useKitchenItemRead } from '../../../../item/composables/useKitchenItemRead'
 const {
-  item: dish,
-  itemId: dishId,
+  item,
+  itemId,
+  offer,
+  offerError,
   kitchenId,
   pending,
   error,
@@ -128,24 +125,24 @@ const route = useRoute()
 const manage = ref(false)
 const { deleteItem } = useItemDelete([
   kitchenId,
-  dishId,
+  itemId,
   () => route.fullPath,
   canWrite,
 ])
 const toast = useToastify()
 const captureIntent = useItemEditorScope(
-  [kitchenId, dishId, () => route.fullPath],
+  [kitchenId, itemId, () => route.fullPath],
   () => {
     manage.value = false
   }
 )
 async function removeItem() {
-  if (!canWrite.value || !dish.value) throw new Error('This Item is read-only.')
+  if (!canWrite.value || !item.value) throw new Error('This Item is read-only.')
   const isCurrent = captureIntent()
-  const targetId = dishId.value,
+  const targetId = itemId.value,
     targetKitchen = kitchenId.value
-  const destination = catalogue.path,
-    label = catalogue.singular
+  const destination = '/workspace/kitchen/menu/items',
+    label = 'Item'
   await deleteItem(targetId, { kitchenId: targetKitchen })
   if (!isCurrent()) return
   toast.add({ title: `${label} deleted`, icon: 'i-heroicons-check-circle' })
@@ -167,6 +164,19 @@ const views = [
 const view = computed(() =>
   route.query.view === 'menus' ? 'menus' : 'details'
 )
+const pageState = useWorkspacePageState('kitchen')
+watchEffect(() => {
+  pageState.publish({
+    item: item.value,
+    selling: offer.value,
+    derived: {
+      outcome: outcome.value,
+      canWrite: canWrite.value,
+      view: view.value,
+      sellingReadable: !offerError.value,
+    },
+  })
+})
 </script>
 <style scoped>
 .item-workspace {

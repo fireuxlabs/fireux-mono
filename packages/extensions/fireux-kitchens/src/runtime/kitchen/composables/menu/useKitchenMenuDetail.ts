@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import type { Item } from '../../utils/item.ts'
+import type { ItemCollectionRow } from '../../utils/item.ts'
 import { useKitchenItemCollection } from '../useKitchenItemCollection'
 import { useMenuSectionCollection } from '../../../menu/composables/useMenuSectionCollection'
 import { useKitchenMenuItems } from './useKitchenMenuItems'
@@ -27,7 +27,7 @@ function useKitchenMenuDetailFromScope(
   )
   const catalogueState = useKitchenItemCollection(kitchenId, collectionOptions)
   const dishesById = computed(() => {
-    const map = new Map<string, Item>()
+    const map = new Map<string, ItemCollectionRow>()
     for (const dish of catalogueState.dishes.value) {
       const id = text(dish.id)
       if (id) map.set(id, dish)

@@ -1,11 +1,6 @@
 <!-- Concurrent edit — 2026-07-28 — Align the FireUX and Misebox Main App landing family. -->
 <template>
   <div>
-    <FireLandingOperationRail
-      ariaLabel="Kitchen operations"
-      :operations="operationRailItems"
-    />
-
     <FireLandingProductIndex
       :content="content"
       hero-layout="proof-wide"
@@ -43,27 +38,6 @@
 
       <template #surfaces> </template>
 
-      <template #specifics>
-        <FireLandingProductProofSection
-          section-id="misebox-workspace"
-          copy-emphasis
-          :eyebrow="selectedWorkspaceCopy.eyebrow"
-          :title="selectedWorkspaceCopy.title"
-          :description="selectedWorkspaceCopy.description"
-          :supporting="selectedWorkspaceCopy.supporting"
-          :items="selectedWorkspaceCopy.items"
-          :action="{
-            label: selectedWorkspaceCopy.action,
-            to: selectedWorkspaceCopy.to,
-            icon: 'i-lucide-arrow-right',
-          }"
-        >
-          <LandingWorkspacePreview
-            v-model:surface-id="selectedWorkspaceSurfaceId"
-          />
-        </FireLandingProductProofSection>
-      </template>
-
       <template #apps>
         <FireLandingAppCollection
           :controller="appsController"
@@ -85,33 +59,23 @@
       <template #solutions>
         <FireLandingProductCatalogue :content="solutionsCatalogue" />
       </template>
-
-      <template #operations>
-        <FireLandingProductCatalogue :content="operationsCatalogue" />
-      </template>
     </FireLandingProductIndex>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import type { LandingProductCatalogueContent } from 'fireux-app/runtime/models/landing/product'
-import type {
-  FireuxMetaOperation,
-  FireuxMetaSolution,
-} from 'fireux-core/runtime/app/literature/types'
+import type { FireuxMetaSolution } from 'fireux-core/runtime/app/literature/types'
 import { useAppCollection } from 'fireux-core/runtime/app/composables/useAppCollection'
 import { metaContent } from '../../meta'
-import LandingWorkspacePreview from './WorkspacePreview/Index.vue'
 import LandingHeroImage from './HeroImage.vue'
 import {
-  workspaceSurfaceCopy,
   content as landingContent,
   featuredAppIds,
   featuredAppMedia,
   toolsCatalogue,
-  type WorkspaceSurfaceCopy,
 } from '~/content/landing'
 
 const { workspaceEntryHref } = useWorkspaceEntryCta('kitchen')
@@ -134,36 +98,12 @@ const showApps = computed(
       (app) => app.status === 'active' && app.id !== 'misebox-app'
     ).length > 1
 )
-const baseRegionOrder = [
-  'surfaces',
-  'specifics',
-  'operations',
-  'solutions',
-  'tools',
-] as const
+const baseRegionOrder = ['surfaces', 'solutions', 'tools'] as const
 const regionOrder = computed(() =>
   showApps.value ? ([...baseRegionOrder, 'apps'] as const) : baseRegionOrder
 )
-const selectedWorkspaceSurfaceId = ref('kitchen.dishes')
-const landingOperations: readonly FireuxMetaOperation[] =
-  metaContent.operations?.filter(
-    (operation) => operation.workspace.id === 'kitchen'
-  ) ?? []
 const landingSolutions: readonly FireuxMetaSolution[] =
   metaContent.solutions ?? []
-const operationRailItems = landingOperations.map((operation) => ({
-  id: operation.id,
-  title: operation.title,
-  icon: operation.icon,
-  to: operation.slug ? `/operations/${operation.slug}` : operation.to,
-}))
-
-const selectedWorkspaceCopy = computed<WorkspaceSurfaceCopy>(
-  () =>
-    workspaceSurfaceCopy[
-      selectedWorkspaceSurfaceId.value as keyof typeof workspaceSurfaceCopy
-    ] || workspaceSurfaceCopy['kitchen.dishes']
-)
 
 const solutionItems = landingSolutions
   .filter(
@@ -179,15 +119,6 @@ const solutionItems = landingSolutions
     action: solution.cta?.label || 'View solution',
   }))
 
-const operationItems = landingOperations.map((operation) => ({
-  id: operation.id,
-  title: operation.title,
-  description: operation.description,
-  icon: operation.icon,
-  to: operation.slug ? `/operations/${operation.slug}` : operation.to,
-  action: 'Open operation',
-}))
-
 const solutionsCatalogue = {
   sectionId: 'misebox-solutions',
   eyebrow: 'Solutions',
@@ -200,19 +131,5 @@ const solutionsCatalogue = {
     icon: 'i-lucide-arrow-right',
   },
   items: solutionItems,
-} satisfies LandingProductCatalogueContent
-
-const operationsCatalogue = {
-  sectionId: 'misebox-operations',
-  eyebrow: 'Operations',
-  title: 'Work inside the Kitchen Workspace.',
-  description:
-    'Each Kitchen Operation points to a working Workspace surface owned by its domain package.',
-  action: {
-    label: 'Explore all operations',
-    to: '/operations',
-    icon: 'i-lucide-arrow-right',
-  },
-  items: operationItems,
 } satisfies LandingProductCatalogueContent
 </script>

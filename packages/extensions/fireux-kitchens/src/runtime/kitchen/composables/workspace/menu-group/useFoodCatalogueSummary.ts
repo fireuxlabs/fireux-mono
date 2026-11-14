@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
 import { useKitchenChildCollection } from '../../useKitchenChildCollection'
-import type { Item } from '../../../models/item.model'
+import type { ItemCollectionRow } from '../../../utils/item'
 import type { KitchenPromotion } from '../../../models/promotion.model'
 import type { Menu } from '../../../../menu/models/menu.model'
 import {
@@ -14,9 +14,13 @@ export function useFoodCatalogueSummary(
   menus: Ref<Menu[]>,
   menusOutcome: Ref<string>
 ) {
-  const dishes = useKitchenChildCollection<Item>('dishes', kitchenId, {
-    kitchenCollectionPath: 'kitchens',
-  })
+  const dishes = useKitchenChildCollection<ItemCollectionRow>(
+    'dishes',
+    kitchenId,
+    {
+      kitchenCollectionPath: 'kitchens',
+    }
+  )
   const promotions = useKitchenChildCollection<KitchenPromotion>(
     'promotions',
     kitchenId,

@@ -4,7 +4,7 @@ import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fir
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
-import { normalizeItem, type Item } from '../utils/item.ts'
+import { normalizeItem, type ItemCollectionRow } from '../utils/item.ts'
 import { resolveKitchenChildCollectionBasePath } from '../utils/kitchen-collection-path'
 
 const resolveItemsPath = (kitchenCollectionPath: string, kitchenId: string) =>
@@ -41,7 +41,7 @@ export function useKitchenItemCollection(
   )
   const collectionRef =
     firestoreFetchCollection<Record<string, unknown>>(collectionPath)
-  const dishes = computed<Item[]>(() =>
+  const dishes = computed<ItemCollectionRow[]>(() =>
     (collectionRef.value ?? []).map((entry) => normalizeItem(entry))
   )
   const count = computed(() => dishes.value.length)

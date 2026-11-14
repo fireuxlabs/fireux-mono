@@ -1,0 +1,317 @@
+[
+  {
+    "slug": "via-ferrata",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/81c01f74-d0ff-4664-b769-8004e8f89608.webp",
+    "jobId": "80a26526-16b7-4fb2-bbc9-19b785a098f6",
+    "assetId": "46110a2e-f879-435d-85b0-3c413d1c1162",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1600,
+    "original": "../activity-originals/via-ferrata.jpg",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/via-ferrata.webp"
+    }
+  },
+  {
+    "slug": "heliskiing",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/11ed4359-08ce-48ee-bc8c-4115fc6ef68b.webp",
+    "jobId": "82dc7940-d322-4659-97ff-9097f381bd8c",
+    "assetId": "300b946e-7817-43ad-a772-3030d090de8a",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1600,
+    "original": "../activity-originals/heliskiing.jpg",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/heliskiing.webp"
+    }
+  },
+  {
+    "slug": "ski-guiding",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/4b5cd49d-6dce-4ac2-a834-8b400c51abfb.webp",
+    "jobId": "a99f6157-6c52-4d22-9fe9-ed4ccc8184cf",
+    "assetId": "bd4f514b-cbf5-4983-81cf-6d29cfb43ac7",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1600,
+    "original": "../activity-originals/ski-guiding.png",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/ski-guiding.webp"
+    }
+  },
+  {
+    "slug": "freeride",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/b189839d-1aaf-4d71-9f0e-1780df1474b0.webp",
+    "jobId": "6fb525c7-84b2-4958-a4ea-4ffc607e88dc",
+    "assetId": "8b3376d0-4a8f-4f28-ab36-07d29b15d68d",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1596,
+    "original": "../activity-originals/freeride.png",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/freeride.webp"
+    }
+  },
+  {
+    "slug": "snowshoe-trekking",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/6d7d78a9-e439-463c-858a-a8e2fbe4431f.webp",
+    "jobId": "fe2da13f-1068-4e21-b1f6-94acd7680c04",
+    "assetId": "6f548428-cac1-4f71-bb61-ab5ff1728df6",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1600,
+    "original": "../activity-originals/snowshoe-trekking.jpg",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/snowshoe-trekking.webp"
+    }
+  },
+  {
+    "slug": "avalanche-courses",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/e8ff9fcf-68d5-4b79-b6f7-68c6dbce6291.webp",
+    "jobId": "e980ea2a-c4f4-4364-bf95-accc1b763632",
+    "assetId": "86109bc0-4f85-42b2-80e8-ff71d05806aa",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1600,
+    "original": "../activity-originals/avalanche-courses.jpg",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/avalanche-courses.webp"
+    }
+  },
+  {
+    "slug": "waterfall-ice-climbing",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/ba8fdfc6-8878-4546-aac0-448806d23e12.webp",
+    "jobId": "58e7b3b7-9221-4cf9-8c4b-39255ada40c2",
+    "assetId": "03a16fc9-93c5-42ae-986e-427f627170c4",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1600,
+    "original": "../activity-originals/waterfall-ice-climbing.jpg",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/waterfall-ice-climbing.webp"
+    }
+  },
+  {
+    "slug": "ski-touring",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/d0129ae1-8244-4155-b335-4df1107d8cb9.webp",
+    "jobId": "15aeba1b-b24b-4280-8bbf-8c1043cb284a",
+    "assetId": "57af2d6f-0651-4c38-b9b7-661946e67a6b",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1600,
+    "original": "../activity-originals/ski-touring.jpg",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/ski-touring.webp"
+    }
+  },
+  {
+    "slug": "glacier-ice-climbing",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/560bf583-c597-4e3a-a567-bd0663d14127.webp",
+    "jobId": "7759d5b1-8f89-47be-ab17-ae88a61eace7",
+    "assetId": "bd9cecd0-f83a-4ad7-8602-ed2c8de5e3dc",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1600,
+    "original": "../activity-originals/glacier-ice-climbing.jpg",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/glacier-ice-climbing.webp"
+    }
+  },
+  {
+    "slug": "heli-hiking",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/9692cd16-9a09-4914-a0ab-024e1e42f822.webp",
+    "jobId": "9a247918-4281-4c15-8e8f-9034cbdf9f3d",
+    "assetId": "a71a7749-f158-43a4-9789-76800124d60e",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1600,
+    "original": "../activity-originals/heli-hiking.jpg",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/heli-hiking.webp"
+    }
+  },
+  {
+    "slug": "mountaineering",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/8d92858f-8ef8-458c-96be-5d8537507e89.webp",
+    "jobId": "4c068ef4-4136-44e7-a16a-6c6ee908043a",
+    "assetId": "d252dd57-b59c-4d5e-8a54-19ee51f8e518",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1600,
+    "original": "../activity-originals/mountaineering.jpg",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/mountaineering.webp"
+    }
+  },
+  {
+    "slug": "rock-climbing",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/d056ff1b-43de-4a93-8440-58f4d11cb552.webp",
+    "jobId": "cd0a3824-2c45-4886-8b6b-5603ede6b6a8",
+    "assetId": "8da79d82-ed2b-4b84-af06-e9e948369474",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1600,
+    "original": "../activity-originals/rock-climbing.jpg",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/rock-climbing.webp"
+    }
+  },
+  {
+    "slug": "paragliding",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/db17a9c2-e015-4edc-afa4-3e0c7af1231e.webp",
+    "jobId": "af088958-3278-497e-8973-9df93b659975",
+    "assetId": "fd8562da-7adf-470b-8d10-39f28c94550a",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1600,
+    "original": "../activity-originals/paragliding.jpg",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/paragliding.webp"
+    }
+  },
+  {
+    "slug": "team-events",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/3bc5581c-a70b-4185-b5fd-dd8ec776af60.webp",
+    "jobId": "d4978a85-c876-476d-991d-a971467c0ff0",
+    "assetId": "5608f204-8a2d-4e27-a5c5-9fe69b488947",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1600,
+    "original": "../activity-originals/team-events.jpg",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/team-events.webp"
+    }
+  },
+  {
+    "slug": "glacier-trekking",
+    "url": "https://cdn.creativeclaw.co/u/cb9c7301/images/0cd2f403-0eb8-48d2-bc1f-747e740e3be6.webp",
+    "jobId": "ab96fd05-1d67-46fd-89ca-b9d3f837dea6",
+    "assetId": "a3b09647-3caf-429a-8418-637d8b809368",
+    "model": "upscale/recraft-crisp",
+    "width": 4000,
+    "height": 1600,
+    "original": "../activity-originals/glacier-trekking.jpg",
+    "delivery": {
+      "widths": [
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "webpQuality": 92,
+      "avifQuality": 70,
+      "publicPath": "/img/activities/restored-v1/glacier-trekking.webp"
+    }
+  }
+]

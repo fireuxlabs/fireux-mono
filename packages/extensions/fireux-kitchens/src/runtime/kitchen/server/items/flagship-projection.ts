@@ -5,11 +5,11 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import {
   normalizeLegacyItemKind,
   normalizeItem,
-  type Item,
+  type ItemCollectionRow,
 } from '../../utils/item.ts'
 
 export type KitchenFlagshipItemProjection = Pick<
-  Item,
+  ItemCollectionRow,
   'id' | 'slug' | 'name' | 'description' | 'item_kind' | 'image' | 'is_flagship'
 >
 

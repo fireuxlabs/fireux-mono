@@ -4,25 +4,24 @@
     :class="{ 'latap-backdrop--landing': variant === 'landing' }"
     aria-hidden="true"
   >
-    <img
-      class="latap-backdrop__image"
-      :src="src"
-      alt=""
-    >
+    <img class="latap-backdrop__image" :src="src" alt="" />
     <div class="latap-backdrop__wash" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { laTapBerneContent } from '../../config/content.config'
+import { laTapBerneContent } from '../../content/site'
 
-withDefaults(defineProps<{
-  src?: string
-  variant?: 'content' | 'landing'
-}>(), {
-  src: laTapBerneContent.assets.backdrop.src,
-  variant: 'content',
-})
+withDefaults(
+  defineProps<{
+    src?: string
+    variant?: 'content' | 'landing'
+  }>(),
+  {
+    src: laTapBerneContent.assets.backdrop.src,
+    variant: 'content',
+  }
+)
 </script>
 
 <style scoped>
@@ -50,7 +49,10 @@ withDefaults(defineProps<{
 }
 
 .latap-backdrop--landing {
-  --latap-backdrop-landing-rgb: var(--latap-landing-wash-rgb, var(--brand-accent-display-rgb, 154 101 0));
+  --latap-backdrop-landing-rgb: var(
+    --latap-landing-wash-rgb,
+    var(--brand-accent-display-rgb, 154 101 0)
+  );
 }
 
 .latap-backdrop--landing .latap-backdrop__wash {

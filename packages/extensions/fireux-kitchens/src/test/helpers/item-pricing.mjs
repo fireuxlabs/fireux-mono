@@ -1,3 +1,4 @@
+import { readItemChoiceGroups } from '../../runtime/kitchen/utils/item-choices.ts'
 import { normalizeItemChoiceGroups } from '../../runtime/kitchen/utils/item-choices.ts'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -10,8 +11,8 @@ const source = readFileSync(
   .replace(/^export /gm, '')
 export const itemPricingHelpers = compileFunction(
   stripTypeScriptTypes(source) +
-    ';return {normalizeItemPriceOptions,normalizeItemAddOns,normalizeItemPricingPatch,readItemPricing}',
-  ['normalizeSlug', 'normalizeItemChoiceGroups']
+    ';return {normalizeItemPriceOptions,normalizeItemAddOns,normalizeItemPricingPatch,readItemPricing,readItemOffer}',
+  ['normalizeSlug', 'normalizeItemChoiceGroups', 'readItemChoiceGroups']
 )(
   (value) =>
     String(value || '')
@@ -19,5 +20,6 @@ export const itemPricingHelpers = compileFunction(
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, ''),
-  normalizeItemChoiceGroups
+  normalizeItemChoiceGroups,
+  readItemChoiceGroups
 )

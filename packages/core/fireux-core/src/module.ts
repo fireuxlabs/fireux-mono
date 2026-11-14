@@ -16,12 +16,12 @@ import {
   configureSeo,
   mergeSitemapPaths,
   type FireuxSeoConfig,
-} from './config/app/seo-config'
-import { configureFireuxModule } from './config/module/module-wiring'
-import { registerComposablesDirs } from './config/module/module-helpers'
-import { configureComponents } from './config/module/components-config'
-import { configurePageTransitions } from './config/module/pages-config'
-import { configureAssets } from './config/module/assets-config'
+} from './config/app/seo-config.ts'
+import { configureFireuxModule } from './config/module/module-wiring.ts'
+import { registerComposablesDirs } from './config/module/module-helpers.ts'
+import { configureComponents } from './config/module/components-config.ts'
+import { configurePageTransitions } from './config/module/pages-config.ts'
+import { configureAssets } from './config/module/assets-config.ts'
 import { createJiti } from 'jiti'
 import { join } from 'node:path'
 

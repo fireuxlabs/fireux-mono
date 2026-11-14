@@ -9,7 +9,7 @@
     "checked": "2026-11-13",
     "summary": "Helicopter-assisted guided descents on Ebnefluh, Petersgrat and Sustenlimi.",
     "programs": [],
-    "image": "/img/activities/heliskiing.jpg",
+    "image": "/img/activities/restored-v1/heliskiing.webp",
     "imageSource": "https://www.swissalpineguides.ch/images/Heliskiing%20-me.jpg",
     "note": "Five routes are detailed in our heliskiing catalogue. Published prices differ between language versions; confirm the current quote.",
     "heliski": true,
@@ -17,7 +17,8 @@
     "sources": [
       "https://www.swissalpineguides.ch/english/Heliskiing/heliskiing.html",
       "https://www.swissalpineguides.ch/Deutsch/Heliskiing/heliskiing.html"
-    ]
+    ],
+    "imageFocus": "58% 50%"
   },
   {
     "slug": "ski-guiding",
@@ -90,7 +91,7 @@
         ]
       }
     ],
-    "image": "/img/activities/ski-guiding.png",
+    "image": "/img/activities/restored-v1/ski-guiding.webp",
     "imageSource": "https://www.swissalpineguides.ch/images/img/Powder%20Heliski.png",
     "note": "Older indexed versions list different rates. Choose terrain appropriate to your experience with the operator.",
     "path": "/activities/ski-guiding",
@@ -189,7 +190,7 @@
         ]
       }
     ],
-    "image": "/img/activities/avalanche-courses.jpg",
+    "image": "/img/activities/restored-v1/avalanche-courses.webp",
     "imageSource": "https://www.swissalpineguides.ch/images/avalanche.jpg",
     "dates": [
       "December 2026: 5–6, 12–13",
@@ -259,7 +260,7 @@
         ]
       }
     ],
-    "image": "/img/activities/freeride.png",
+    "image": "/img/activities/restored-v1/freeride.webp",
     "imageSource": "https://www.swissalpineguides.ch/english/Freeride/images/freeride%201.png",
     "common": [
       {
@@ -400,7 +401,7 @@
         ]
       }
     ],
-    "image": "/img/activities/snowshoe-trekking.jpg",
+    "image": "/img/activities/restored-v1/snowshoe-trekking.webp",
     "imageSource": "https://www.swissalpineguides.ch/images/sunset%202.jpg",
     "common": [
       {
@@ -477,7 +478,7 @@
         ]
       }
     ],
-    "image": "/img/activities/waterfall-ice-climbing.jpg",
+    "image": "/img/activities/restored-v1/waterfall-ice-climbing.webp",
     "imageSource": "https://www.swissalpineguides.ch/english/IcefallClimbing/images/icefallclimb.jpg",
     "dates": [
       "The original page lists 17, 24 and 31 January; 7, 15, 21 and 22 February 2026. These dates are past; request the current programme."
@@ -572,7 +573,7 @@
         ]
       }
     ],
-    "image": "/img/activities/ski-touring.jpg",
+    "image": "/img/activities/restored-v1/ski-touring.webp",
     "imageSource": "https://www.swissalpineguides.ch/images/Freeride.jpg",
     "dates": [
       "The source programme lists weekends from 6 January to 7 April 2024. These are archived dates, not current availability."
@@ -633,7 +634,7 @@
         ]
       }
     ],
-    "image": "/img/activities/glacier-ice-climbing.jpg",
+    "image": "/img/activities/restored-v1/glacier-ice-climbing.webp",
     "imageSource": "https://www.swissalpineguides.ch/english/IceClimbing/images/Ice%20ClimbingSommer%20b.jpg",
     "path": "/activities/glacier-ice-climbing",
     "sources": [
@@ -804,7 +805,7 @@
         ]
       }
     ],
-    "image": "/img/activities/via-ferrata.jpg",
+    "image": "/img/activities/restored-v1/via-ferrata.webp",
     "imageSource": "https://www.swissalpineguides.ch/images/via%20Ferrata%20M%C3%BCrren/via%20Ferrata%20m%C3%BCrren%20good.jpg",
     "common": [
       {
@@ -826,7 +827,8 @@
     "sources": [
       "https://www.swissalpineguides.ch/english/ViaFerrata/viaFerrata.html",
       "https://www.swissalpineguides.ch/Deutsch/Klettersteige/default.html"
-    ]
+    ],
+    "imageFocus": "51% 50%"
   },
   {
     "slug": "heli-hiking",
@@ -919,7 +921,7 @@
         ]
       }
     ],
-    "image": "/img/activities/heli-hiking.jpg",
+    "image": "/img/activities/restored-v1/heli-hiking.webp",
     "imageSource": "https://www.swissalpineguides.ch/english/HeliHiking/images/helihike_Petersgrat.jpg",
     "note": "The source also lists Breithorn. Its current route and contrasting published price references are retained under Mountaineering.",
     "related": [
@@ -1128,7 +1130,7 @@
         ]
       }
     ],
-    "image": "/img/activities/glacier-trekking.jpg",
+    "image": "/img/activities/restored-v1/glacier-trekking.webp",
     "imageSource": "https://www.swissalpineguides.ch/images/Inside%20a%20glacier.jpg",
     "note": "The operator asks participants to arrange suitable insurance and recommends REGA membership. Confirm route conditions, huts and current arrangements.",
     "path": "/activities/glacier-trekking",
@@ -1277,7 +1279,7 @@
         ]
       }
     ],
-    "image": "/img/activities/rock-climbing.jpg",
+    "image": "/img/activities/restored-v1/rock-climbing.webp",
     "imageSource": "https://www.swissalpineguides.ch/images/Rock%20guy.jpg",
     "common": [
       {
@@ -1649,7 +1651,7 @@
         ]
       }
     ],
-    "image": "/img/activities/mountaineering.jpg",
+    "image": "/img/activities/restored-v1/mountaineering.webp",
     "imageSource": "https://www.swissalpineguides.ch/english/Mountaineering/images/Monch.jpg",
     "common": [
       {
@@ -1689,7 +1691,8 @@
     "sources": [
       "https://www.swissalpineguides.ch/english/Mountaineering/default.html",
       "https://www.swissalpineguides.ch/Deutsch/Bergsteigen/default.html"
-    ]
+    ],
+    "imageFocus": "52% 50%"
   },
   {
     "slug": "paragliding",
@@ -1737,7 +1740,7 @@
         ]
       }
     ],
-    "image": "/img/activities/paragliding.jpg",
+    "image": "/img/activities/restored-v1/paragliding.webp",
     "imageSource": "https://www.swissalpineguides.ch/english/Paragliding/Paraglide%20nr%201.jpg",
     "path": "/activities/paragliding",
     "sources": [
@@ -1783,7 +1786,7 @@
         ]
       }
     ],
-    "image": "/img/activities/team-events.jpg",
+    "image": "/img/activities/restored-v1/team-events.webp",
     "imageSource": "https://www.swissalpineguides.ch/Deutsch/Teamevents/images/helihike_petersgrat.jpg",
     "path": "/activities/team-events",
     "sources": [

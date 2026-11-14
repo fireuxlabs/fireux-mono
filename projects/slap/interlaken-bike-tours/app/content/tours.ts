@@ -2,6 +2,8 @@ export const tours = [
   {
     slug: 'interlaken-panorama',
     name: 'Interlaken Panorama',
+    meetingPoint:
+      'Flexible location in Interlaken, agreed directly with your guide.',
     label: 'The perfect first ride',
     duration: '4 hours',
     durationHours: 4,
@@ -21,6 +23,8 @@ export const tours = [
   {
     slug: 'lauterbrunnen-valley',
     name: 'Lauterbrunnen Valley',
+    meetingPoint:
+      'Flexible location in Interlaken, agreed directly with your guide.',
     label: 'Into waterfall country',
     duration: '6 hours',
     durationHours: 6,
@@ -40,6 +44,8 @@ export const tours = [
   {
     slug: 'giessbach-waterfalls',
     name: 'Giessbach Waterfalls',
+    meetingPoint:
+      'Flexible location in Interlaken, agreed directly with your guide.',
     label: 'Take the lakeside road',
     duration: '6 hours',
     durationHours: 6,

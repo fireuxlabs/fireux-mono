@@ -119,10 +119,7 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
-import {
-  bookWithNatsContent,
-  primaryNatsProperty,
-} from '../config/content.config'
+import { bookWithNatsContent, primaryNatsProperty } from '../content/site'
 
 definePageMeta({ layout: 'nats-default' })
 
