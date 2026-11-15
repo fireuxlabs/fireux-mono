@@ -1,6 +1,6 @@
 <template>
   <section class="entity-collection menu-collection">
-    <div>
+    <div class="menu-collection__search">
       <UInput
         v-model="query"
         placeholder="Search food or venues"
@@ -10,11 +10,15 @@
         class="directory-search"
         maxlength="120"
       />
-      <span v-if="!hideResults" aria-live="polite">
+      <span
+        v-if="!hideResults"
+        aria-live="polite"
+        class="menu-collection__count"
+      >
         {{ groups.length }} {{ groups.length === 1 ? 'result' : 'results' }}
       </span>
     </div>
-    <nav aria-label="Choose how to eat">
+    <nav aria-label="Choose how to eat" class="menu-collection__services">
       <UButton
         v-for="choice in choices"
         :key="choice.label"
@@ -83,7 +87,24 @@ const groups = computed(() => foodVenueGroups(props.menus, service.value))
 </script>
 <style scoped>
 .menu-collection {
+  display: grid;
   gap: 1.5rem;
+  min-width: 0;
+}
+.menu-collection__search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--spacing) * 3);
+}
+.menu-collection__count {
+  font-size: var(--text-sm);
+  color: var(--ui-text-muted);
+}
+.menu-collection__services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
 }
 .directory-search {
   width: min(100%, 32rem);
@@ -93,7 +114,7 @@ const groups = computed(() => foodVenueGroups(props.menus, service.value))
   gap: 1.5rem 2.5rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-@media (max-width: 640px) {
+@media (max-width: 48rem) {
   .menu-discovery-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;

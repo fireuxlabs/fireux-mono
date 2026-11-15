@@ -3,36 +3,50 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
 
 export const menuAppTheme: WorkspaceTheme = {
-  palette: { canvas: 'var(--ui-bg)', text: 'var(--ui-text)', accent: 'var(--ui-primary)', accent_contrast: 'var(--ui-bg)' },
+  palette: {
+    canvas: 'var(--ui-bg)',
+    text: 'var(--ui-text)',
+    accent: 'var(--ui-primary)',
+    accent_contrast: 'var(--ui-bg)',
+  },
 }
 
-export function useMenuThemeSurface(options: {
-  theme?: MaybeRefOrGetter<WorkspaceTheme | null | undefined>
-  pageCanvas?: MaybeRefOrGetter<boolean | null | undefined>
-} = {}) {
-  const className = 'menu-theme--light'
+export function useMenuThemeSurface(
+  options: {
+    theme?: MaybeRefOrGetter<WorkspaceTheme | null | undefined>
+    pageCanvas?: MaybeRefOrGetter<boolean | null | undefined>
+  } = {}
+) {
+  const className = computed(() =>
+    toValue(options.pageCanvas)
+      ? 'menu-theme--light menu-theme--page-canvas'
+      : 'menu-theme--light'
+  )
   const styleVars = computed(() => {
     const theme = toValue(options.theme)
     const palette = theme?.palette || menuAppTheme.palette
     // Scope brand tokens to this surface; AppConfig remains owned by the host App.
-    const ui = theme && theme !== menuAppTheme ? {
-      '--ui-primary': palette.accent,
-      '--ui-bg': palette.canvas,
-      '--ui-text': palette.text,
-      '--ui-text-highlighted': palette.text,
-      '--ui-text-inverted': palette.accent_contrast,
-      '--ui-bg-inverted': palette.text,
-      '--ui-text-muted': `color-mix(in srgb, ${palette.text} 72%, ${palette.canvas})`,
-      '--ui-text-dimmed': `color-mix(in srgb, ${palette.text} 54%, ${palette.canvas})`,
-      '--ui-text-toned': `color-mix(in srgb, ${palette.text} 86%, ${palette.canvas})`,
-      '--ui-bg-muted': `color-mix(in srgb, ${palette.text} 4%, ${palette.canvas})`,
-      '--ui-bg-elevated': `color-mix(in srgb, ${palette.text} 8%, ${palette.canvas})`,
-      '--ui-bg-accented': `color-mix(in srgb, ${palette.text} 12%, ${palette.canvas})`,
-      '--ui-border': `color-mix(in srgb, ${palette.text} 18%, ${palette.canvas})`,
-      '--ui-border-muted': `color-mix(in srgb, ${palette.text} 12%, ${palette.canvas})`,
-      '--ui-border-accented': `color-mix(in srgb, ${palette.text} 28%, ${palette.canvas})`,
-      '--ui-border-inverted': palette.text,
-    } : {}
+    const ui =
+      theme && theme !== menuAppTheme
+        ? {
+            '--ui-primary': palette.accent,
+            '--ui-bg': palette.canvas,
+            '--ui-text': palette.text,
+            '--ui-text-highlighted': palette.text,
+            '--ui-text-inverted': palette.accent_contrast,
+            '--ui-bg-inverted': palette.text,
+            '--ui-text-muted': `color-mix(in srgb, ${palette.text} 72%, ${palette.canvas})`,
+            '--ui-text-dimmed': `color-mix(in srgb, ${palette.text} 54%, ${palette.canvas})`,
+            '--ui-text-toned': `color-mix(in srgb, ${palette.text} 86%, ${palette.canvas})`,
+            '--ui-bg-muted': `color-mix(in srgb, ${palette.text} 4%, ${palette.canvas})`,
+            '--ui-bg-elevated': `color-mix(in srgb, ${palette.text} 8%, ${palette.canvas})`,
+            '--ui-bg-accented': `color-mix(in srgb, ${palette.text} 12%, ${palette.canvas})`,
+            '--ui-border': `color-mix(in srgb, ${palette.text} 18%, ${palette.canvas})`,
+            '--ui-border-muted': `color-mix(in srgb, ${palette.text} 12%, ${palette.canvas})`,
+            '--ui-border-accented': `color-mix(in srgb, ${palette.text} 28%, ${palette.canvas})`,
+            '--ui-border-inverted': palette.text,
+          }
+        : {}
     return {
       ...ui,
       '--menu-bg': palette.canvas,
@@ -51,13 +65,32 @@ export function useMenuThemeSurface(options: {
       '--menu-title-light': palette.text,
       '--menu-title-dark': palette.text,
       '--menu-font': 'var(--font-sans, ui-sans-serif, system-ui, sans-serif)',
-      '--menu-title-font': 'var(--font-sans, ui-sans-serif, system-ui, sans-serif)',
+      '--menu-title-font':
+        'var(--font-sans, ui-sans-serif, system-ui, sans-serif)',
     }
   })
-  useHead(computed(() => toValue(options.pageCanvas) ? {
-    bodyAttrs: { 'data-menu-theme-canvas': 'true', style: {
-      ...styleVars.value, 'background-color': 'var(--menu-bg)', color: 'var(--menu-text)',
-    } },
-  } : {}))
+  useHead(
+    computed(() =>
+      toValue(options.pageCanvas)
+        ? {
+            // Keep brand tokens on the surface. Canvas variables alone have no effect
+            // after the Menu leaves the DOM, even during asynchronous route transitions.
+            bodyAttrs: {
+              style: {
+                '--menu-page-canvas-bg': styleVars.value['--menu-bg'],
+                '--menu-page-canvas-text': styleVars.value['--menu-text'],
+              },
+            },
+            style: [
+              {
+                key: 'menu-page-canvas',
+                innerHTML:
+                  'body:has(.menu-theme--page-canvas) { background-color: var(--menu-page-canvas-bg); color: var(--menu-page-canvas-text); }',
+              },
+            ],
+          }
+        : {}
+    )
+  )
   return { className, styleVars }
 }

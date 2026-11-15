@@ -3,25 +3,27 @@
     <template v-if="presentation">
       <MenuCollectionScoped :index="menuIndex" browse-only>
         <template #header>
-          <KitchenDetailMenuHeader
-            :venue="presentation"
-            :venue-path="venuePath"
-            :title="offeringName || 'Food & drinks'"
-          />
-          <KitchenDetailMenuServices
-            v-if="!offeringId"
-            :kitchen-slug="kitchenSlug"
-          />
-          <div>
-            <h2>Explore the menus</h2>
-            <UButton
-              to="/kitchens/"
-              label="Explore other menus"
-              trailing-icon="i-lucide-arrow-right"
-              variant="link"
-              color="neutral"
-              size="sm"
+          <div class="venue-menu-intro">
+            <KitchenDetailMenuHeader
+              :venue="presentation"
+              :venue-path="venuePath"
+              :title="offeringName || 'Food & drinks'"
             />
+            <KitchenDetailMenuServices
+              v-if="!offeringId"
+              :kitchen-slug="kitchenSlug"
+            />
+            <div class="venue-menu-intro__browse">
+              <h2>Explore the menus</h2>
+              <UButton
+                to="/kitchens/"
+                label="Explore other menus"
+                trailing-icon="i-lucide-arrow-right"
+                variant="link"
+                color="neutral"
+                size="sm"
+              />
+            </div>
           </div>
         </template>
       </MenuCollectionScoped>
@@ -81,3 +83,20 @@ useSeoMeta({
     statusCode.value || menuIndex.error.value ? 'noindex, nofollow' : undefined,
 })
 </script>
+<style scoped>
+.venue-menu-intro {
+  display: grid;
+  gap: calc(var(--spacing) * 6);
+}
+.venue-menu-intro__browse {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
+}
+.venue-menu-intro__browse h2 {
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+</style>

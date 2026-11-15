@@ -39,9 +39,9 @@
         </slot>
 
         <UPageBody>
-          <div v-if="menus.length" class="collection-stack">
+          <div v-if="menus.length" class="scoped-menu-list">
             <template v-if="browseOnly">
-              <NuxtLink
+              <UPageCard
                 v-for="menu in menus"
                 :key="menu.id"
                 :to="
@@ -50,21 +50,19 @@
                     menuId: menu.slug || menu.id,
                   })
                 "
-                class="venue-menu-entry"
+                :title="menu.name"
+                :description="menu.description || undefined"
+                icon="i-lucide-book-open"
+                variant="outline"
               >
-                <div>
-                  <h3>{{ menu.name }}</h3>
-                  <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
-                </div>
-                <p v-if="menu.description">
-                  {{ menu.description }}
-                </p>
-                <KitchenDetailOfferingTimes
-                  v-if="menu.offerings?.length"
-                  :offerings="menu.offerings"
-                  compact
-                />
-              </NuxtLink>
+                <template #footer>
+                  <KitchenDetailOfferingTimes
+                    v-if="menu.offerings?.length"
+                    :offerings="menu.offerings"
+                    compact
+                  />
+                </template>
+              </UPageCard>
             </template>
             <template v-else>
               <MenuCardsPreview
@@ -160,7 +158,8 @@ useSeoMeta({
 </script>
 
 <style scoped>
-.venue-menu-entry {
-  padding-block: 1.25rem;
+.scoped-menu-list {
+  display: grid;
+  gap: calc(var(--spacing) * 4);
 }
 </style>

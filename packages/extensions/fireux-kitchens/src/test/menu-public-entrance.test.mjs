@@ -140,6 +140,11 @@ for (const service of ['collection', 'delivery'])
       render: compile(template(source)),
     })
     app.component('UButton', { render: () => null })
+    app.component('UPageHeader', {
+      props: ['title', 'description'],
+      setup: (props) => () =>
+        h('header', [h('h1', props.title), h('p', props.description)]),
+    })
     const html = await renderToString(app)
     assert.equal((html.match(/Prices in CHF/g) || []).length, 1, html)
     place.value = { default_currency_code: 'EUR' }

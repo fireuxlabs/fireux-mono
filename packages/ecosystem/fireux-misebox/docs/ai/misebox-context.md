@@ -1083,11 +1083,23 @@ Customer accounts, vouchers and order links require proved customer routes
 before adoption. Publishing/QR remains available through its existing solution. Changes here preserve the separate
 Kitchen-owned Menu management contract and existing public Menu URLs.
 
+The current root food-discovery grouping in `menu/utils/catalogue/venue-groups.ts`
+requires Collection or Delivery eligibility; a published browse-only Menu can
+remain available at its Kitchen entrance without appearing in these results.
+`Collection/Results.vue` owns responsive search, result-count and service-filter
+layout; `Cards/FoodVenue.vue` owns venue identity, service doorways, serving times
+and separated links to other offerings. Both consume the existing page reader's
+projections without adding record acquisition or ordering authority.
+
 Kitchen-owned Menu presentation uses the Kitchen's `theme.palette`, with the
 application default when no palette has been configured. Menus store no palette
 or kiosk skin. Document Menus use the same Kitchen presentation authority.
 `menu/server/payload/theme.ts` resolves colours and `useMenuThemeSurface` renders
 them through local Nuxt UI tokens without changing the host App's shell.
+Full-page Menu canvases use isolated body canvas variables and a selector that
+applies only while the page-canvas Menu surface exists. Brand `--ui-*` tokens
+stay on the surface and must not persist on the host body after returning to
+the Menu chooser. `menu-theme-surface.test.mjs` covers that boundary.
 
 Place owns `default_currency_code`; Menu creation, imports, Sellables and
 customer payloads read it from the linked same-id Place. Kitchen creation does
@@ -2499,6 +2511,14 @@ published offering hours through `KitchenDetailOfferingTimes`; no availability i
 inferred from missing schedules. The entrance uses the same content for QR, direct
 and website arrivals and retains a Venue information link. No referrer-based flow,
 additional record reader or ordering action is introduced.
+
+The entrance header uses native `UPageHeader` and the saved Place media backdrop
+for logo legibility. Its scoped directory presents published browse links with
+native `UPageCard`; local semantic styles own venue identity and section spacing.
+Keep this presentation with `Detail/MenuHeader.vue`, `Collection/Scoped.vue` and
+the public entrance route, without changing publication, serving-time or reader
+authority as part of visual repairs. `menu-public-entrance.test.mjs` covers the
+shared header's Place-currency contract alongside the public route checks above.
 
 ## Ordinary Menu audience
 
