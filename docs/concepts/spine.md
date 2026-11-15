@@ -1,7 +1,7 @@
 # Spine
 
 Updated: 2026-11-14
-Ref: 5916a6874
+Ref: d570b2ff4
 Role: map, not canon
 
 ## Purpose
@@ -112,6 +112,10 @@ the cross-App composition contract. For a family-wide audit, enumerate the
 maintained consumers in that task's acceptance scope.
 
 The [Codex map workflow](../../tools/ide/README.md#repository-and-codex-map)
+derives this section's code relationships from its links to existing source
+files and their current package/App owners. Nested source links also belong to
+their ancestor concepts; sibling concepts retain their own evidence.
+The map
 joins task links only when supplied thread metadata includes exact `ownerPaths`
 and `conceptPaths`. This concept anchor provides durable navigation; live chat
 assignment and status require that external snapshot. Keep task IDs and status

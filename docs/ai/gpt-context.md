@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-11-14
-Ref: 5916a6874
+Updated: 2026-11-15
+Ref: d570b2ff4
 Role: living context
 Scope: repository-wide
 
@@ -118,11 +118,28 @@ Nuxt layouts consume their supplied content through the native layout slot.
 Use `NuxtPage` for an App or family route outlet and real parent/child routes;
 keep each outlet with its owning shell. See [layouts](../concepts/layouts.md).
 
-Composition is a completion gate. Settle ownership and composition before
-expanding behavior. A working demo or passing tests do not close a change while
-known composition gaps remain. Report composition evidence separately from
-functional evidence; correct known duplication and misplaced ownership in the
-same change rather than deferring them to a cleanup phase.
+FireUX fit is a completion gate for every implementation and structural change.
+It includes ownership and composition, supported Nuxt/Nuxt UI and FireUX patterns,
+data authority, lifecycle, navigation, product language and the actual consuming
+experience. Establish the relevant source-backed pattern and intended App/domain
+differences before expanding behavior. Preserve deliberate product differences;
+copying a sibling or applying brand styling alone does not establish fit. Correct
+known duplication and misplaced ownership within the agreed scope in the same
+change. Report FireUX fit evidence separately from functional evidence.
+
+The implementation task owns delivering FireUX fit. Architecture and ownership
+stewards the patterns and boundaries; Verification checks the actual consuming
+result against them; Main is accountable for acceptance of the complete outcome.
+Include the reference, actual consumers, intended differences and required
+evidence in handoffs. These responsibilities apply to every task and model,
+whether or not dedicated coordination chats are available.
+
+When an intended contract changes, reconcile the owner, affected consumers,
+checks and applicable living context together. Protect meaningful behavior and
+authority; investigate stale mocks or implementation-shape assertions rather
+than letting them dictate architecture. Never weaken a check merely to obtain
+a passing result. Follow the [rule-review process](#authority-and-rule-review)
+for changes to established boundaries.
 
 Unshipped implementations follow the same current contract regardless of age.
 Do not preserve conflicting shapes as older/newer variants or add compatibility
@@ -159,20 +176,27 @@ checklist.
 
 **Before reporting completion:**
 
-1. Inspect the affected route, composition, registration, consumers and
-   route-to-command path.
+1. Inspect the actual consuming result against the relevant pattern and intended
+   user outcome, following the affected route, composition, registration,
+   consumers and route-to-command path as applicable.
 2. Confirm there is no duplicate read, command owner or authority; preserve
    cleanup, accessibility, error and stale-completion behavior.
 3. Run the selected checks, fix concrete gaps within scope, and report what was
    and was not verified.
 4. Confirm the applicable living context still points to current owners and
    evidence.
-5. Report composition evidence separately from functional checks: name the
-   reused parent and lower owners and explain each retained custom boundary.
-   Typechecks, rendered metadata tests and use of native controls cannot prove
-   design or architectural alignment. A visual change also needs visual review
-   at the affected viewport sizes before claiming its presentation is verified.
-   When challenged about drift, return to this start gate before rewriting.
+5. Report FireUX fit evidence separately from functional checks: identify the
+   inspected reference and actual consumers, name the reused parent and lower
+   owners, and explain each retained difference. Typechecks, rendered metadata
+   tests, screenshots alone and use of native controls cannot prove overall fit.
+   UI changes need rendered review at affected viewport sizes and interaction
+   checks appropriate to the change. Nonvisual changes need evidence at the real
+   consumer, registration or command boundary. When challenged about drift,
+   return to this start gate before rewriting.
+6. Do not call the outcome done while a known fit gap or required inspection
+   remains outstanding. If the actual result cannot be inspected, report the
+   implementation, review or verification as pending, name the missing evidence
+   or blocker, and limit completion claims to the scope actually verified.
 
 The detailed UI and Entity conventions live in [components](../concepts/components.md),
 [pages](../concepts/pages.md), [layouts](../concepts/layouts.md),

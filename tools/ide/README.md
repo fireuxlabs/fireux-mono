@@ -150,6 +150,15 @@ available source-owned check commands. The launcher enriches runnable Apps
 with their manifest-owned dev port; Apps without a dev command remain in the
 inventory.
 
+Concept sections also connect to code through their Markdown links to existing
+files under inventoried package, App and tool owners. The generated `sourceLinks`
+record each resolved file and its owner; the containing section and its ancestors
+include those relationships. Sibling sections keep their own links. Fenced
+examples, missing files, directories and targets outside this checkout are
+excluded. These links identify relevant source to inspect, not architectural
+approval or edit authority. Maintain the links in the existing concept map;
+the generator derives the relationships without a separate registry.
+
 Use `--output /tmp/fireux-codex-map.html` for a self-contained searchable map,
 or a `.json` output path for structured data. Without `--output`, generation is
 read-only and writes nothing. The map does not run checks or create Codex chats.

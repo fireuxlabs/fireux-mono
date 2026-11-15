@@ -88,7 +88,10 @@ brand or folder name alone.
   library, App and tool inventory, observed source spines, context entrypoints
   and declared internal dependencies. It also indexes concept maps under
   `docs/concepts/` and their heading hierarchy, linking owners through current
-  context/README references and optional tasks through explicit concept IDs.
+  context/README references and concept-section links to existing source files.
+  File links retain their containing concept and ancestors, with the owning
+  package/App/tool derived from the current inventory. Optional tasks use
+  explicit concept IDs.
   `pnpm codex:map` prints JSON; optional thread metadata and JSON/HTML outputs
   are local snapshots, not another ownership registry or authority for task
   completion.

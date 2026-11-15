@@ -4,6 +4,7 @@ import {
   mkdirSync,
   readFileSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from 'node:fs'
 import os from 'node:os'
@@ -223,6 +224,97 @@ test('ambiguous manifest names and malformed exports do not silently assign a ta
   })
   assert.equal(map.unmatchedThreads[0].reason, 'Ambiguous owner name')
   assert.throws(() => buildCodexMap(root, { threads: {} }), /Thread export/)
+})
+
+test('concept source links connect exact sections and ancestors to existing file owners', (t) => {
+  const { root, put } = fixture(t)
+  put('packages/extensions/fireux-kitchens/src/config.ts')
+  put(
+    'docs/concepts/composition.md',
+    `# Composition
+
+## App selection
+[App](../../projects/misebox/venue/nuxt.config.ts)
+### Builder
+[Builder](../../packages/extensions/fireux-kitchens/src/config.ts)
+[Repeated](../../packages/extensions/fireux-kitchens/src/config.ts#options)
+## Other selection
+[Core](../../packages/core/fireux-core/src/module.ts)
+`
+  )
+  const map = buildCodexMap(root)
+  const concept = (anchor = '') =>
+    map.concepts.find(
+      (node) => node.id === `docs/concepts/composition.md${anchor}`
+    )
+  assert.deepEqual(concept('#app-selection').sourceLinks, [
+    {
+      path: 'packages/extensions/fireux-kitchens/src/config.ts',
+      ownerPath: 'packages/extensions/fireux-kitchens',
+    },
+    {
+      path: 'projects/misebox/venue/nuxt.config.ts',
+      ownerPath: 'projects/misebox/venue',
+    },
+  ])
+  assert.deepEqual(concept('#builder').ownerPaths, [
+    'packages/extensions/fireux-kitchens',
+  ])
+  assert.deepEqual(concept('#other-selection').ownerPaths, [
+    'packages/core/fireux-core',
+  ])
+  assert.equal(concept().sourceLinks.length, 3)
+  assert.deepEqual(concept('#builder').sourceLinks, [
+    {
+      path: 'packages/extensions/fireux-kitchens/src/config.ts',
+      ownerPath: 'packages/extensions/fireux-kitchens',
+    },
+  ])
+  const html = renderCodexMap(map)
+  assert.ok(html.includes('Referenced source files'))
+  assert.ok(
+    html.includes(`${root}/packages/extensions/fireux-kitchens/src/config.ts`)
+  )
+})
+
+test('source relationships exclude missing, external, escaped and fenced example links', (t) => {
+  const { root, put } = fixture(t)
+  const outside = mkdtempSync(path.join(os.tmpdir(), 'codex-map-outside-'))
+  t.after(() => rmSync(outside, { recursive: true, force: true }))
+  writeFileSync(path.join(outside, 'external.ts'), '')
+  symlinkSync(
+    path.join(outside, 'external.ts'),
+    path.join(root, 'packages/core/fireux-core/external.ts')
+  )
+  put(
+    'docs/concepts/composition.md',
+    `# Composition
+## Selection
+[Missing](../../packages/core/fireux-core/missing.ts)
+[External](https://example.com/packages/core/fireux-core/src/module.ts)
+[Symlink](../../packages/core/fireux-core/external.ts)
+[Directory](../../packages/core/fireux-core)
+[Bad encoding](../../packages/core/fireux-core/%zz)
+[Doc](fireux-mono.md)
+~~~md
+## Example heading
+[Example](../../packages/core/fireux-core/src/module.ts)
+~~~
+\`\`\`md
+[Another example](../../projects/misebox/venue/nuxt.config.ts)
+\`\`\`
+`
+  )
+  const map = buildCodexMap(root)
+  const nodes = map.concepts.filter(
+    (node) => node.path === 'docs/concepts/composition.md'
+  )
+  assert.equal(nodes.length, 2)
+  assert.ok(
+    nodes.every(
+      (node) => node.sourceLinks.length === 0 && node.ownerPaths.length === 0
+    )
+  )
 })
 
 test('HTML is self-contained, escapes source/task content and exposes missing overlay limits', (t) => {

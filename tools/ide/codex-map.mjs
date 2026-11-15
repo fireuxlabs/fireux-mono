@@ -3,6 +3,8 @@ import {
   mkdirSync,
   readdirSync,
   readFileSync,
+  realpathSync,
+  statSync,
   writeFileSync,
 } from 'node:fs'
 import path from 'node:path'
@@ -204,11 +206,34 @@ function headingSlug(text) {
     .replace(/\s+/g, '-')
 }
 
+// Preserve offsets while excluding fenced examples from headings and links.
+function markdownProse(text) {
+  let fence
+  return text
+    .split('\n')
+    .map((line) => {
+      if (fence) {
+        if (new RegExp(`^ {0,3}${fence[0]}{${fence.length},}\\s*$`).test(line))
+          fence = undefined
+        return ' '.repeat(line.length)
+      }
+      const opening = /^ {0,3}(`{3,}|~{3,})/.exec(line)
+      if (!opening) return line
+      fence = opening[1]
+      return ' '.repeat(line.length)
+    })
+    .join('\n')
+}
+
 function conceptIndex(root, scopes) {
   const concepts = []
   const linksByFile = new Map()
+  const sourceOwners = scopes
+    .filter((scope) => scope.kind !== 'repository')
+    .sort((a, b) => b.path.length - a.path.length)
+  const realRoot = realpathSync(root)
   for (const file of conceptMapFiles(root)) {
-    const text = readFileSync(path.join(root, file), 'utf8')
+    const text = markdownProse(readFileSync(path.join(root, file), 'utf8'))
     const owners = scopes
       .filter((scope) => scope.sourceMaps.includes(file))
       .map((scope) => scope.path)
@@ -221,9 +246,11 @@ function conceptIndex(root, scopes) {
       anchor: null,
       parentId: null,
       ownerPaths: owners,
+      sourceLinks: [],
       tasks: [],
     }
     concepts.push(mapNode)
+    const fileConcepts = [mapNode]
     const slugs = new Map()
     const headings = []
     for (const match of text.matchAll(/^(#{2,6})\s+(.+?)\s*#*\s*$/gm)) {
@@ -243,10 +270,46 @@ function conceptIndex(root, scopes) {
         anchor,
         parentId: parent?.id ?? mapNode.id,
         ownerPaths: [],
+        sourceLinks: [],
         tasks: [],
       }
-      headings.push({ ...node, level })
+      headings.push({ ...node, level, offset: match.index })
       concepts.push(node)
+      fileConcepts.push(node)
+    }
+    const byId = new Map(fileConcepts.map((node) => [node.id, node]))
+    for (const match of text.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
+      const target = match[1].replace(/^<|>$/g, '').split(/[?#]/)[0]
+      if (!target || /^(?:[a-z][a-z0-9+.-]*:|#)/i.test(target)) continue
+      let source
+      try {
+        source = realpathSync(
+          path.resolve(root, path.dirname(file), decodeURIComponent(target))
+        )
+        if (
+          !source.startsWith(`${realRoot}${path.sep}`) ||
+          !statSync(source).isFile()
+        )
+          continue
+      } catch {
+        continue
+      }
+      const sourcePath = slash(path.relative(realRoot, source))
+      const owner = sourceOwners.find((scope) =>
+        sourcePath.startsWith(`${scope.path}/`)
+      )
+      if (!owner) continue
+      const section = [...headings]
+        .reverse()
+        .find((heading) => heading.offset < match.index)
+      let node = byId.get(section?.id ?? mapNode.id)
+      while (node) {
+        if (!node.sourceLinks.some((link) => link.path === sourcePath))
+          node.sourceLinks.push({ path: sourcePath, ownerPath: owner.path })
+        if (!node.ownerPaths.includes(owner.path))
+          node.ownerPaths.push(owner.path)
+        node = byId.get(node.parentId)
+      }
     }
     linksByFile.set(file, { mapNode, headings })
   }
@@ -283,7 +346,10 @@ function conceptIndex(root, scopes) {
       }
     }
   }
-  for (const concept of concepts) concept.ownerPaths.sort()
+  for (const concept of concepts) {
+    concept.ownerPaths.sort()
+    concept.sourceLinks.sort((a, b) => a.path.localeCompare(b.path))
+  }
   return concepts
 }
 
@@ -600,6 +666,8 @@ export function renderCodexMap(map) {
     values.length
       ? `<ul>${values.map((value) => `<li>${render(value)}</li>`).join('')}</ul>`
       : '<p class="quiet">None recorded.</p>'
+  const sourceEvidence = (concept) =>
+    `<h4>Referenced source files</h4>${list(concept.sourceLinks ?? [], (link) => sourceLink(link.path))}`
   const scopes = map.scopes
     .map((scope) => {
       const text = [
@@ -632,7 +700,7 @@ export function renderCodexMap(map) {
   }
   const renderSubConcept = (concept) => {
     const children = conceptsByParent.get(concept.id) ?? []
-    return `<li><details><summary>${sourceLink(concept.path, concept.anchor)} <span class="quiet">${concept.ownerPaths.length} owners · ${concept.tasks.length} tasks</span></summary>${list(concept.ownerPaths, sourceLink)}${list(concept.tasks, (task) => `<a href="${escapeHtml(task.link)}">${escapeHtml(task.title)}</a> · ${escapeHtml(task.status)}`)}${children.length ? `<ul>${children.map(renderSubConcept).join('')}</ul>` : ''}</details></li>`
+    return `<li><details><summary>${sourceLink(concept.path, concept.anchor)} <span class="quiet">${concept.ownerPaths.length} owners · ${concept.tasks.length} tasks</span></summary>${list(concept.ownerPaths, sourceLink)}${sourceEvidence(concept)}${list(concept.tasks, (task) => `<a href="${escapeHtml(task.link)}">${escapeHtml(task.title)}</a> · ${escapeHtml(task.status)}`)}${children.length ? `<ul>${children.map(renderSubConcept).join('')}</ul>` : ''}</details></li>`
   }
   const conceptCards = conceptNodes
     .filter((concept) => concept.kind === 'map')
@@ -643,6 +711,7 @@ export function renderCodexMap(map) {
         concept.title,
         concept.path,
         ...concept.ownerPaths,
+        ...(concept.sourceLinks ?? []).map((link) => link.path),
         ...concept.tasks.map((task) => task.title),
         ...sections.flatMap((section) => [
           section.title,
@@ -652,7 +721,7 @@ export function renderCodexMap(map) {
       ]
         .join(' ')
         .toLowerCase()
-      return `<article data-search="${escapeHtml(query)}"><h3>${sourceLink(concept.path)} · ${escapeHtml(concept.title)}</h3><p class="quiet">${sections.length} sub-concepts</p><h4>Linked owners</h4>${list(concept.ownerPaths, sourceLink)}<h4>Linked tasks</h4>${list(concept.tasks, (task) => `<a href="${escapeHtml(task.link)}">${escapeHtml(task.title)}</a> · ${escapeHtml(task.status)}`)}${children.length ? `<details><summary>Browse sub-concepts</summary><ul>${children.map(renderSubConcept).join('')}</ul></details>` : '<p class="quiet">No headings recorded.</p>'}</article>`
+      return `<article data-search="${escapeHtml(query)}"><h3>${sourceLink(concept.path)} · ${escapeHtml(concept.title)}</h3><p class="quiet">${sections.length} sub-concepts</p><h4>Linked owners</h4>${list(concept.ownerPaths, sourceLink)}${sourceEvidence(concept)}<h4>Linked tasks</h4>${list(concept.tasks, (task) => `<a href="${escapeHtml(task.link)}">${escapeHtml(task.title)}</a> · ${escapeHtml(task.status)}`)}${children.length ? `<details><summary>Browse sub-concepts</summary><ul>${children.map(renderSubConcept).join('')}</ul></details>` : '<p class="quiet">No headings recorded.</p>'}</article>`
     })
     .join('')
   return `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(map.repository.name)} — Codex map</title><style>:root{color-scheme:light dark;font:16px/1.5 system-ui,sans-serif}body{max-width:1100px;margin:2rem auto;padding:0 1rem}header{margin-bottom:2rem}input{box-sizing:border-box;width:100%;padding:.8rem;font:inherit}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:1rem}article{border:1px solid #8886;border-radius:.8rem;padding:1rem;overflow-wrap:anywhere}h2{font-size:1.2rem;margin:.3rem 0}h3{font-size:1rem;margin-bottom:.3rem}h4{font-size:.9rem;margin-bottom:.2rem}.eyebrow,.quiet{opacity:.7}.eyebrow{font-size:.8rem}summary{cursor:pointer}article ul{padding-left:1.4rem}code{font-size:.85em}[hidden]{display:none!important}</style><header><h1>${escapeHtml(map.repository.name)} — Codex source map</h1><p>${escapeHtml(
