@@ -1,7 +1,7 @@
 # App config spine map
 
-Updated: 2026-11-12
-Ref: a38377207
+Updated: 2026-11-15
+Ref: af9b9a2e8
 Role: map, not canon
 
 ## Purpose
@@ -130,6 +130,23 @@ template; it needs no public runtime marker. Kitchens validates its opt-in chann
 and projects them into the existing `public.ordering` contract used by readers and
 trusted commands. Omitted ordering options enable no channels. App declarations
 do not patch these runtime fields manually.
+
+## AI availability and presentation
+
+The [App defaults](../../packages/extensions/fireux-app/src/defaults.ts) include
+AI's module and native layer. Availability does not enable execution: the
+[AI module options](../../packages/extensions/fireux-ai/src/module.ts) and
+[server configuration](../../packages/extensions/fireux-ai/src/runtime/server/utils/fireux-ai-config.server.ts)
+retain enabled/mode/provider configuration, while consuming features retain
+their execution and authority checks. Static research remains independent of
+execution as described above.
+
+`fireux-ai` owns [provider/model presentation](../../packages/extensions/fireux-ai/src/runtime/components/Workspace/AI/ModelLabel.vue).
+Core's [Workspace composer](../../packages/core/fireux-core/src/runtime/workspace/components/AI/Composer.vue)
+remains a passive control with a `model` slot; it does not read AI configuration
+or choose provider/model labels. The
+[Kitchen Test consumer](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Test/AI.vue)
+composes those owners without adding an AI dependency to Core.
 
 ## App pattern
 

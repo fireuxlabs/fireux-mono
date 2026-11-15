@@ -1,3 +1,4 @@
+import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/access.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -24,7 +25,11 @@ const created = { seconds: 100, nanoseconds: 500 }
 function harness() {
   const state = {
     member: { user_id: 'u', status: 'active' },
-    membership: { role: 'user', created: { at: created } },
+    membership: {
+      role: 'user',
+      subscription: 'free',
+      created: { at: created },
+    },
     access: { ids: ['p'], membership_created_at: created },
     memberExists: true,
   }
@@ -54,10 +59,7 @@ function harness() {
       useFireUXConfig: () => ({ appId: 'app' }),
       requireFirebaseBearerUser: async () => ({ uid: 'u' }),
       requireFirestoreDocumentId: (x) => x,
-      requireWorkspaceEntityMemberRole: ({ exists, role }) => {
-        if (!exists || !['user', 'admin', 'dev'].includes(role))
-          throw createError({ statusCode: 403 })
-      },
+      resolveAppUserAccess,
       createError,
       getRuntimeFirestore: (id) => {
         assert.equal(id, 'fireux')
@@ -99,6 +101,33 @@ test('Removing or recreating App membership revokes retained Project access', as
   await assert.rejects(h.run({}, 'p'), { statusCode: 403 })
   h.state.access.membership_created_at = h.state.membership.created.at
   await h.run({}, 'p')
+})
+
+test('Project operator preflight denies invalid subscriptions and roles despite a current grant', async () => {
+  for (const change of [
+    ...[undefined, null, '', 'unknown', {}, [], 1].map((subscription) => ({
+      subscription,
+    })),
+    ...[undefined, null, 'guest', ' user ', {}, []].map((role) => ({ role })),
+  ]) {
+    const h = harness()
+    Object.assign(h.state.membership, change)
+    await assert.rejects(h.run({}, 'p'), { statusCode: 403 })
+  }
+})
+
+test('Project operator preflight preserves canonical and legacy valid memberships', async () => {
+  for (const role of ['user', 'admin', 'dev']) {
+    for (const subscription of ['free', 'pro', 'business', 'premium']) {
+      const h = harness()
+      Object.assign(h.state.membership, { role, subscription })
+      const actor = await h.run({}, 'p')
+      assert.equal(actor.uid, 'u')
+      assert.equal(actor.appId, 'app')
+      assert.equal(actor.projectId, 'p')
+      assert.deepEqual(actor.membership, h.state.membership)
+    }
+  }
 })
 
 test('Malformed Project access fails closed instead of borrowing Team or AppUser rights', async () => {

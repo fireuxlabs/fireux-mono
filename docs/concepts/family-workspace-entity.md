@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-11-12
-Ref: 426cb858c
+Updated: 2026-11-15
+Ref: af9b9a2e8
 Role: map, not canon
 
 ## Purpose
@@ -246,7 +246,13 @@ Every Workspace Entity must share these rules:
   intentional legacy subscription read. `useMembershipAccess` applies that
   decision before reading a grant; its lower timestamp/ID utility retains only
   grant-shape and exact membership-lifetime validation. Domain commands still
-  enforce current authority on the submitted target.
+  enforce current authority on the submitted target. Project's
+  [operator checks](../../packages/extensions/fireux-projects/src/runtime/project/server/authority.ts),
+  [Identity command](../../packages/extensions/fireux-projects/src/runtime/project/server/identity/update.ts),
+  signed-in creation and private management reader use that same Core membership
+  decision. Existing-Project writes retain their exact Project grant and
+  membership-lifetime checks inside the writing transaction; anonymous creation
+  remains a separate explicit authority flow.
 
 - Neutral Identity read presentation and availability reuse
   [`useIdentity`](../../packages/core/fireux-core/src/runtime/composables/fireux/useIdentity.ts)
@@ -516,8 +522,8 @@ migration verification, and protected Workspace consumer are complete.
   still owns its event sources, authority, actions, and readiness prerequisites.
   Calendar and Notifications appear only for a non-anonymous signed-in user
   with a selected canonical root whose lifecycle status is `active`. The
-  authorized family reader already proves that user's Team access. This is
-  onboarding lifecycle readiness, not identity completeness, publication, or
+  authorized family reader already proves that user's membership-bound domain
+  access. This is onboarding lifecycle readiness, not identity completeness, publication, or
   capability setup, and it is derived at runtime rather than stored as a
   generic Workspace `onboarded` field.
   Kitchen, Property, and Project currently prove distinct date-navigation

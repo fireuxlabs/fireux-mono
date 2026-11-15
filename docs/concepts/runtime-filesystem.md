@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
-Updated: 2026-11-12
-Ref: 176bb5b27
+Updated: 2026-11-15
+Ref: af9b9a2e8
 Role: map, not canon
 
 ## Purpose
@@ -390,6 +390,20 @@ Nested components are registered by the owning module; no local component import
 is required. Retired example scenarios are not part of Entity registration.
 
 ## Shared utility boundary
+
+Entity `models/` directories contain only `model.ts` for that Entity and its
+owned field vocabulary. Child Entities own their own spines. Apply this shape
+to new and migrated owners; review legacy entries before moving or removing them.
+Generic Core models remain pending that ownership review and receive no new
+declarations. Contracts, projections, configuration and executable helpers stay
+outside Entity models.
+
+`types/` holds genuine runtime or integration coordination contracts;
+`utils/` holds focused stateless behavior. Neither is an alternative home for
+canonical records, workflows, reactive state, readers or commands. Concrete
+cross-owner contracts and their consumers are mapped in
+[Core models](core-models.md#stored-records); one-consumer normalization remains
+private beside its [reader](composables.md#names-describe-responsibility).
 
 Core `runtime/utils` contains only shared stateless value contracts: identifiers,
 URLs, read outcomes, timestamps, shared palette values and mutation-target validation.

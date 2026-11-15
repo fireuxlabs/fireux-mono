@@ -1,7 +1,7 @@
 # Nuxt UI integration map
 
-Updated: 2026-11-05
-Ref: d6240d394
+Updated: 2026-11-15
+Ref: af9b9a2e8
 Role: map, not canon
 
 ## Purpose and authority
@@ -30,8 +30,9 @@ and [main.scss](../../packages/core/fireux-core/src/runtime/assets/styles/main.s
 Apps may declare semantic color roles in App configuration; package manifests
 and the lockfile own the exact compatible versions.
 
-Use native Nuxt UI controls and their supported props, slots and events by
-default. Core adds a shared component only for a real FireUX-wide interaction,
+Use the current stable Nuxt UI API supported by the consuming manifests.
+Inspect real consumers before retiring a FireUX mechanism. Use native controls
+and their supported props, slots and events by default. Core adds a shared component only for a real FireUX-wide interaction,
 layout or lifecycle responsibility. Domain components retain domain meaning,
 readers, permissions and commands. App components retain product framing and
 route policy.

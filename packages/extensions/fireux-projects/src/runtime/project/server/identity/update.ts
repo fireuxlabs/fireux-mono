@@ -7,7 +7,7 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
 import { serverProjectAccessTarget } from '../access'
 import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from '../app-targets'
 
@@ -91,11 +91,11 @@ export async function updateProjectIdentity(
         transaction.read(fireuxProjectsTarget, projectId),
       ])
       if (!app.exists) fail(403, 'FireUX App membership is required.')
-      requireWorkspaceEntityMemberRole({
-        exists: membership.exists,
-        role: membership.data?.role,
-        entityLabel: 'Project',
-      })
+      if (
+        !membership.exists ||
+        !resolveAppUserAccess(membership.data).hasMembership
+      )
+        fail(403, 'FireUX App membership is required.')
       if (
         !readMembershipAccessIds(access.data, membership.data).includes(
           projectId

@@ -1,3 +1,4 @@
+import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/access.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -19,11 +20,6 @@ function load(path, result, dependencies) {
 
 const createError = (value) =>
   Object.assign(new Error(value.statusMessage), value)
-const requireWorkspaceEntityMemberRole = load(
-  '../../../../core/fireux-core/src/runtime/workspace/server/entity/onboarding-authority.ts',
-  'requireWorkspaceEntityMemberRole',
-  { createError }
-)
 const readProjectDocument = load(
   '../runtime/project/utils/readProject.ts',
   'readProjectDocument',
@@ -39,7 +35,7 @@ function identityHarness() {
   const at = { seconds: 1, nanoseconds: 0 }
   const records = new Map([
     ['apps/app', {}],
-    ['members/user', { role: 'user', created: { at } }],
+    ['members/user', { role: 'user', subscription: 'free', created: { at } }],
     ['access/user', { ids: ['project'], membership_created_at: at }],
     [
       'projects/project',
@@ -64,7 +60,7 @@ function identityHarness() {
       createError,
       readProjectDocument,
       readMembershipAccessIds,
-      requireWorkspaceEntityMemberRole,
+      resolveAppUserAccess,
       requireFirebaseBearerUser: async () => ({ uid: 'user' }),
       requireFirestoreDocumentId: (value) => {
         assert.ok(isFirestoreDocumentId(value))

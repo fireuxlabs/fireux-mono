@@ -1,7 +1,7 @@
 # FireUX Mono repository map
 
-Updated: 2026-11-14
-Ref: 5916a6874
+Updated: 2026-11-15
+Ref: af9b9a2e8
 Role: map, not canon
 
 ## Purpose and navigation
@@ -37,8 +37,10 @@ member; its runtime App ID remains `fireux-app`.
 
 A directory is a pnpm workspace member when it has its own package.json and is
 included by pnpm-workspace.yaml. That workspace file owns the member globs.
-Library inventories cover `packages/`; concrete Apps and development tools
-belong in separate inventories. The no-FireUX embed harness is a static project
+Reusable libraries under `packages/` use `fireux-*` names. Development tools
+live under `tools/` and use tool-specific names outside that prefix. Library
+inventories cover `packages/`; concrete Apps and development tools belong in
+separate inventories. The no-FireUX embed harness is a static project
 exception, not a reusable library.
 
 ## Dependency direction
@@ -61,7 +63,8 @@ Workspace when no owned product surface proves one.
 
 ## Cold-reading path
 
-1. Read AGENTS.md, global context and the smallest relevant scoped context.
+1. Read AGENTS.md, global context and every context or map required by the
+   applicable AGENTS.md routing rows.
 2. Read the owning package manifest and Nuxt module entrypoint to establish
    dependencies and registration.
 3. Start at the App route, layout, middleware or server adapter.

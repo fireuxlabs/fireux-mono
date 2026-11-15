@@ -9,8 +9,7 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/server/entity/creation-identity'
-import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
-import { readAppUserSubscription } from 'fireux-core/runtime/app/app-user/utils/validation'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from '../app-targets'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -111,19 +110,13 @@ export async function createProject(event: H3Event, input: unknown) {
         transaction.read(memberships, uid),
         transaction.read(accessTarget, uid),
       ])
-      const subscription = readAppUserSubscription(
-        membership.data?.subscription
-      )
-      if (!app.exists) {
+      const membershipAccess = resolveAppUserAccess(membership.data)
+      if (
+        !app.exists ||
+        !membership.exists ||
+        !membershipAccess.hasMembership
+      ) {
         fail(403, 'FireUX App membership is required to create a Project.')
-      }
-      requireWorkspaceEntityMemberRole({
-        exists: membership.exists,
-        role: membership.data?.role,
-        entityLabel: 'Project',
-      })
-      if (!subscription) {
-        fail(409, 'The FireUX App subscription has an invalid stored shape.')
       }
 
       const projects = readMembershipAccessIds(access.data, membership.data)
@@ -131,7 +124,7 @@ export async function createProject(event: H3Event, input: unknown) {
         !hasAppSubscriptionCapacity(
           fireux.subscriptionCapacity,
           'project',
-          subscription,
+          membershipAccess.subscription,
           projects.length
         )
       ) {

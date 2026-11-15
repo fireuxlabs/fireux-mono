@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-11-13
-Ref: 83b341600
+Updated: 2026-11-15
+Ref: af9b9a2e8
 Role: map, not canon
 
 ## Purpose and navigation
@@ -117,6 +117,14 @@ Overview, Profile and Settings share the semantic `fx-account-content` width
 in `page-layouts.scss`; field groups reuse `pagebody` spacing.
 
 ## Component placement and names
+
+### Vue file convention
+
+Authored Vue single-file components put `<template>` first, then
+`<script setup>`, then any `<style>` blocks. Omit blocks that have no purpose.
+This order does not replace readable composition or domain ownership. The
+existing formatter and applicable lint checks are separate evidence; scoped
+lint rules do not establish repository-wide enforcement.
 
 Runtime component trees contain `.vue` files and folders of components only.
 Put styles used by one component in its SFC style block. Styles shared by

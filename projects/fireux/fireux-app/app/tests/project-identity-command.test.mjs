@@ -1,3 +1,4 @@
+import { resolveAppUserAccess } from '../../../../../packages/core/fireux-core/src/runtime/app/app-user/utils/access.ts'
 import { isFirestoreDocumentId } from '../../../../../packages/core/fireux-core/src/runtime/utils/firestore-document-id.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -21,11 +22,6 @@ const readMembershipAccessIds = load(
   core + 'app/app-user/utils/membership-access.ts',
   {},
   'readMembershipAccessIds'
-)
-const requireWorkspaceEntityMemberRole = load(
-  core + 'workspace/server/entity/onboarding-authority.ts',
-  { createError },
-  'requireWorkspaceEntityMemberRole'
 )
 const useCommandScope = load(
   core + 'composables/fireux/commands/useCommandScope.ts',
@@ -52,7 +48,7 @@ function harness(role = 'user') {
     writes = []
   const records = new Map([
     ['apps/fireux-app', {}],
-    ['members/u', { role, created: { at } }],
+    ['members/u', { role, subscription: 'free', created: { at } }],
     ['access/u', { ids: ['project', 'misebox'], membership_created_at: at }],
     ['projects/project', projectRoot('Before')],
     ['projects/misebox', projectRoot('Misebox')],
@@ -73,7 +69,7 @@ function harness(role = 'user') {
         fireuxApps: 'apps',
         fireuxProjects: 'projects',
       },
-      requireWorkspaceEntityMemberRole,
+      resolveAppUserAccess,
       readMembershipAccessIds,
       serverAuditStamp: (x) => x,
       runGuardedServerTransaction: async (target, callback) => {
@@ -141,6 +137,42 @@ test('transaction rejects revoked membership/access and membership recreation', 
     h.before(() => mutate(h))
     await assert.rejects(h.update({}, 'project', { name: 'Name' }))
     assert.equal(h.writes.length, 0)
+  }
+})
+test('Identity rejects invalid membership subscriptions inside the writing transaction', async () => {
+  for (const subscription of [undefined, null, '', 'unknown', {}, [], 1]) {
+    const h = harness()
+    h.before(() => {
+      h.records.get('members/u').subscription = subscription
+    })
+    await assert.rejects(h.update({}, 'project', { name: 'Denied' }), {
+      statusCode: 403,
+    })
+    assert.deepEqual(h.writes, [])
+  }
+})
+test('Identity preserves every recognized role and canonical or legacy subscription', async () => {
+  for (const role of ['user', 'admin', 'dev']) {
+    for (const subscription of ['free', 'pro', 'business', 'premium']) {
+      const h = harness(role)
+      h.records.get('members/u').subscription = subscription
+      assert.deepEqual(await h.update({}, 'project', { name: 'Allowed' }), {
+        ok: true,
+        project_id: 'project',
+      })
+      assert.equal(h.writes.length, 1)
+      assert.equal(h.writes[0][2]['identity.name'], 'Allowed')
+    }
+  }
+})
+test('Identity rejects unrecognized and padded membership roles without writes', async () => {
+  for (const role of [undefined, null, 'guest', ' user ', {}, []]) {
+    const h = harness(role)
+    h.records.get('members/u').role = role
+    await assert.rejects(h.update({}, 'project', { name: 'Denied' }), {
+      statusCode: 403,
+    })
+    assert.deepEqual(h.writes, [])
   }
 })
 test('the former linked Project uses the same editable identity fields', async () => {

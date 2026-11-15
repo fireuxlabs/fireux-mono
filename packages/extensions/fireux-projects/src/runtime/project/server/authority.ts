@@ -2,7 +2,7 @@ import { readMembershipAccessIds } from 'fireux-core/runtime/app/app-user/utils/
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
 import { createError, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -40,11 +40,14 @@ export async function requireProjectOperator(
       statusMessage: 'FireUX App membership is required.',
     })
   }
-  requireWorkspaceEntityMemberRole({
-    exists: membership.exists,
-    role: membership.data()?.role,
-    entityLabel: 'Project',
-  })
+  if (
+    !membership.exists ||
+    !resolveAppUserAccess(membership.data()).hasMembership
+  )
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'FireUX App membership is required.',
+    })
   const projectIds = readMembershipAccessIds(access.data(), membership.data())
   if (!projectIds.includes(projectId)) {
     throw createError({
@@ -86,11 +89,14 @@ export async function requireProjectOperatorInTransaction(
       statusCode: 403,
       statusMessage: 'FireUX App membership is required.',
     })
-  requireWorkspaceEntityMemberRole({
-    exists: membership.exists,
-    role: membership.data?.role,
-    entityLabel: 'Project',
-  })
+  if (
+    !membership.exists ||
+    !resolveAppUserAccess(membership.data).hasMembership
+  )
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'FireUX App membership is required.',
+    })
   if (
     !readMembershipAccessIds(access.data, membership.data).includes(
       actor.projectId

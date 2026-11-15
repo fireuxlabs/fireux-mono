@@ -1,7 +1,7 @@
 # FireUX platform map
 
-Updated: 2026-11-06
-Ref: 97ab6b477
+Updated: 2026-11-15
+Ref: af9b9a2e8
 Role: map, not canon
 
 ## Purpose and authority
@@ -118,6 +118,9 @@ shipping authorization. See [Entity storage](firestore-entity.md),
   selects the FireUX Ecosystem and its App-specific package layers.
 - [Core Firebase integration](../../packages/core/fireux-core/src/config/app/firebase.ts)
   configures the installed Nuxt Firebase runtime and its ordered Auth plugins.
+  Core owns both the [Admin initializer](../../packages/core/fireux-core/src/runtime/plugins/firebase/firebase-admin-fallback.server.ts)
+  and [browser Auth persistence](../../packages/core/fireux-core/src/runtime/plugins/firebase/firebase-auth-persistence.client.ts);
+  consuming Apps do not establish parallel integration owners.
 - [FireUX Ecosystem binding](../../packages/ecosystem/fireux-fireux/src/config/firebase/ecosystem.config.ts)
   supplies this Ecosystem's Firebase project and database.
 

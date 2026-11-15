@@ -1,7 +1,7 @@
 # Composables spine map
 
-Updated: 2026-11-12
-Ref: 0cf23bb13
+Updated: 2026-11-15
+Ref: af9b9a2e8
 Role: map, not canon
 
 ## Purpose
@@ -194,6 +194,12 @@ spreading unwrapped values must not freeze title, outcome or diagnostics.
 Routes retain metadata and visible named-component composition. The FireUX
 App-owned Ecosystem coordinator retains platform publication and structured
 SEO policy. Menu retains service/search state and contextual result feedback.
+
+Domain search supplies explicit searchable fields when hidden/internal values or
+presentation metadata would otherwise become accidental search inputs. Core's
+[App Collection](../../packages/core/fireux-core/src/runtime/app/components/Collection/Index.vue)
+is the maintained consumer of that boundary; see
+[collection search](family-entity-collection-page.md#app-collection-search-and-presentation).
 
 ## Common buckets
 

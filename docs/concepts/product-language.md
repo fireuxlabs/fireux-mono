@@ -1,7 +1,7 @@
 # Product language
 
-Updated: 2026-11-12
-Ref: 614700fd9
+Updated: 2026-11-15
+Ref: af9b9a2e8
 Role: map, not canon
 
 ## Purpose
@@ -289,7 +289,29 @@ App-owned features. Present a single surface directly without a selector or a
 visible `Surfaces` label. Use a selector only when the App has multiple genuine
 usage surfaces backed by current routes.
 
+### Products over shared capabilities
+
+A public Product packages a domain capability without becoming the owner of its
+underlying tool. Workspace may expose the same capability directly with richer
+domain configuration, without requiring purchase of the public service. Product
+intake, commercial terms and delivery stay above that tool; existing access,
+capacity and resource-usage policies still apply. This grants neither unlimited
+provider usage nor editing authority.
+
+Misebox's [Menu Hosting product](../../projects/misebox/misebox-app/app/pages/products/menu-express/index.vue)
+consumes the Kitchen-owned document capability, while the
+[Workspace preparation route](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menu/menus/prepare.vue)
+retains its own authenticated domain journey. Use the
+[Misebox context](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md)
+for the current offer and delivery boundaries; these are examples, not a claim
+that every Product has the same commercial terms.
+
 ## Pricing literature
+
+SaaS plan offers belong to Ecosystem Main Apps, not tenant Apps. Core owns shared
+access and capacity mechanics; `fireux-app` owns their commercial presentation.
+A shared tier alone is not evidence of paid billing or cross-App entitlement
+reconciliation.
 
 Pricing separates product access, operating capacity, human service, product
 identity, and new development:

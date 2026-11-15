@@ -207,7 +207,7 @@ function createHarness(access) {
       appId: 'app',
       role: 'global',
       workspaceConfig: {},
-      subscriptionCapacity: { project: { free: 1, pro: null } },
+      subscriptionCapacity: { project: { free: 1, pro: null, business: null } },
     },
   }
   const appTarget = { collectionPath: 'apps' }
@@ -273,10 +273,7 @@ function createHarness(access) {
         ...(appId ? { app_id: appId } : {}),
       }),
       resolveWorkspaceEntityCreationId: () => 'first',
-      requireWorkspaceEntityMemberRole: ({ exists, role }) => {
-        if (!exists || !['user', 'admin', 'dev'].includes(role))
-          throw createError({ statusCode: 403 })
-      },
+      resolveAppUserAccess,
       readAppUserSubscription,
       hasAppSubscriptionCapacity,
       fireuxProjectsTarget: projectsTarget,
@@ -350,6 +347,32 @@ test('Project creation counts all access ids, including missing roots, and rejec
   assert.equal(h.state.writes.length, 0)
 })
 
+test('Signed-in Project creation uses Core membership validity before staging records', async () => {
+  for (const change of [
+    ...[undefined, null, '', 'unknown', {}, [], 1].map((subscription) => ({
+      subscription,
+    })),
+    ...[undefined, null, 'guest', ' user ', {}, []].map((role) => ({ role })),
+  ]) {
+    const h = createHarness(undefined)
+    Object.assign(h.state.membership, change)
+    await assert.rejects(h.run(), { statusCode: 403 })
+    assert.deepEqual(h.state.writes, [])
+  }
+  for (const role of ['user', 'admin', 'dev']) {
+    for (const subscription of ['free', 'pro', 'business', 'premium']) {
+      const h = createHarness(undefined)
+      Object.assign(h.state.membership, { role, subscription })
+      assert.deepEqual(await h.run(), {
+        ok: true,
+        project_id: 'first',
+        action: 'create',
+      })
+      assert.equal(h.state.writes.length, 3)
+    }
+  }
+})
+
 test('Creation after rejoining replaces stale grants and preserves current grants for additional Projects', async () => {
   const h = createHarness({
     ids: ['old'],
@@ -376,8 +399,10 @@ test('Creation after rejoining replaces stale grants and preserves current grant
 test('Project server projection observes domain access and returns allowed ids even when roots are missing', async () => {
   const state = {
     access: { ids: ['p', 'empty'], membership_created_at: stamps },
+    membership: membership(),
   }
   const reads = []
+  let rootReads = 0
   const record = {
     identity: {
       status: 'active',
@@ -398,7 +423,7 @@ test('Project server projection observes domain access and returns allowed ids e
         exists: true,
         data: () =>
           path === 'apps/app/users/u'
-            ? membership()
+            ? state.membership
             : path === 'project_access/app/users/u'
               ? state.access
               : {},
@@ -407,8 +432,14 @@ test('Project server projection observes domain access and returns allowed ids e
   })
   const db = {
     collection: (path) => ({ doc: (id) => doc(`${path}/${id}`) }),
-    getAll: async (...refs) =>
-      refs.map(({ id }) => ({ id, exists: id === 'p', data: () => record })),
+    getAll: async (...refs) => {
+      rootReads++
+      return refs.map(({ id }) => ({
+        id,
+        exists: id === 'p',
+        data: () => record,
+      }))
+    },
   }
   const readProjectDocument = load(
     '../runtime/project/utils/readProject.ts',
@@ -422,7 +453,7 @@ test('Project server projection observes domain access and returns allowed ids e
       createError,
       readProjectDocument,
       requireFirebaseBearerUser: async () => ({ uid: 'u' }),
-      requireWorkspaceEntityMemberRole: () => {},
+      resolveAppUserAccess,
       getRuntimeFirestore: (id) => {
         assert.equal(id, 'fireux')
         return db
@@ -443,6 +474,31 @@ test('Project server projection observes domain access and returns allowed ids e
   state.access.ids = []
   assert.deepEqual((await read({})).items, [])
   await assert.rejects(read({}, 'p'), { statusCode: 403 })
+  state.access.ids = ['p']
+  for (const change of [
+    ...[undefined, null, '', 'unknown', {}, [], 1].map((subscription) => ({
+      subscription,
+    })),
+    ...[undefined, null, 'guest', ' user ', {}, []].map((role) => ({ role })),
+  ]) {
+    state.membership = { ...membership(), ...change }
+    const before = rootReads
+    await assert.rejects(read({}, 'p'), { statusCode: 403 })
+    assert.equal(
+      rootReads,
+      before,
+      'invalid membership cannot acquire private roots'
+    )
+  }
+  for (const role of ['user', 'admin', 'dev']) {
+    for (const subscription of ['free', 'pro', 'business', 'premium']) {
+      state.membership = { ...membership(), role, subscription }
+      assert.deepEqual(
+        (await read({}, 'p')).items.map((item) => item.id),
+        ['p']
+      )
+    }
+  }
 })
 
 test('Project collections use live exact-document bindings above 30 ids and dispose revoked ids', async () => {

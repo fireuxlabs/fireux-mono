@@ -1,3 +1,4 @@
+import { resolveAppUserAccess } from '../../../../../packages/core/fireux-core/src/runtime/app/app-user/utils/access.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -28,11 +29,6 @@ const readMembershipAccessIds = load(
   core + 'app/app-user/utils/membership-access.ts',
   'readMembershipAccessIds'
 )
-const requireWorkspaceEntityMemberRole = load(
-  core + 'workspace/server/entity/onboarding-authority.ts',
-  'requireWorkspaceEntityMemberRole',
-  { createError }
-)
 const capacity = load(
   core + 'app/utils/app-subscription-capacity.ts',
   '{ hasAppSubscriptionCapacity }',
@@ -58,7 +54,7 @@ const authority = load(
   'requireProjectOperatorInTransaction',
   {
     readMembershipAccessIds,
-    requireWorkspaceEntityMemberRole,
+    resolveAppUserAccess,
     createError,
     FIREUX_MUTATION_TARGETS: { fireuxApps: apps },
     fireuxAppUsersTarget: members,
@@ -227,6 +223,18 @@ const revocations = {
   role: (h) => {
     h.records.get('apps/fireux-app/users/actor').role = 'guest'
   },
+  missingSubscription: (h) => {
+    delete h.records.get('apps/fireux-app/users/actor').subscription
+  },
+  unknownSubscription: (h) => {
+    h.records.get('apps/fireux-app/users/actor').subscription = 'unknown'
+  },
+  malformedSubscription: (h) => {
+    h.records.get('apps/fireux-app/users/actor').subscription = {}
+  },
+  paddedRole: (h) => {
+    h.records.get('apps/fireux-app/users/actor').role = ' user '
+  },
   recreated: (h) => {
     h.records.get('apps/fireux-app/users/actor').created.at = {
       seconds: 2,
@@ -269,7 +277,7 @@ test('Team creation fails closed on malformed current subscription', async () =>
   h.before(() => {
     h.records.get('apps/fireux-app/users/actor').subscription = 'unknown'
   })
-  await assert.rejects(h.commands.create(), { statusCode: 409 })
+  await assert.rejects(h.commands.create(), { statusCode: 403 })
   assert.equal(h.writes.length, 0)
 })
 test('Team creation preserves Pro capacity for canonical and legacy stored memberships', async () => {
@@ -278,6 +286,29 @@ test('Team creation preserves Pro capacity for canonical and legacy stored membe
     h.records.get('apps/fireux-app/users/actor').subscription = subscription
     await h.commands.create()
     assert.equal(h.writes.length, 1)
+  }
+})
+test('Shared transactional Project authority preserves every valid role and subscription', async () => {
+  for (const role of ['user', 'admin', 'dev']) {
+    for (const subscription of ['free', 'pro', 'business', 'premium']) {
+      const h = harness()
+      Object.assign(h.records.get('apps/fireux-app/users/actor'), {
+        role,
+        subscription,
+      })
+      assert.deepEqual(await h.commands.update(), {
+        ok: true,
+        project_id: 'project',
+        member_id: 'member',
+        name: 'Renamed',
+      })
+      assert.equal(h.writes.length, 1)
+      assert.deepEqual(h.writes[0].slice(0, 3), [
+        'update',
+        'projects/project/team',
+        'member',
+      ])
+    }
   }
 })
 const newApp = {

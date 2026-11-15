@@ -5,7 +5,7 @@ import { createError, type H3Event } from 'h3'
 import { type Project } from '../../models/project.model'
 import { readProjectDocument } from '../../utils/readProject'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { serverProjectAccessTarget } from '../access'
 
@@ -40,11 +40,14 @@ export async function readProjectIndex(event: H3Event, requestedId = '') {
       statusMessage: 'FireUX App membership is required.',
     })
   }
-  requireWorkspaceEntityMemberRole({
-    exists: membershipSnapshot.exists,
-    role: membership.role,
-    entityLabel: 'Project',
-  })
+  if (
+    !membershipSnapshot.exists ||
+    !resolveAppUserAccess(membership).hasMembership
+  )
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'FireUX App membership is required.',
+    })
 
   const ids = readMembershipAccessIds(accessSnapshot.data(), membership)
   if (requestedId && !ids.includes(requestedId)) {
