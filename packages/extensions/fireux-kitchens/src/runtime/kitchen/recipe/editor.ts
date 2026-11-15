@@ -18,7 +18,7 @@ export function recipeDraft(recipe: Recipe) {
   }
 }
 export type RecipeDraft = ReturnType<typeof recipeDraft>
-function record(draft: RecipeDraft) {
+export function recipeDraftRecord(draft: RecipeDraft) {
   return {
     name: draft.name,
     description: draft.description,
@@ -43,8 +43,8 @@ export function recipeDraftChanges(
   draft: RecipeDraft,
   baseline: RecipeDraft
 ): RecipeChanges {
-  const next = readRecipeChanges(record(draft))
-  const before = record(baseline)
+  const next = readRecipeChanges(recipeDraftRecord(draft))
+  const before = recipeDraftRecord(baseline)
   return Object.fromEntries(
     Object.entries(next).filter(
       ([key, value]) =>

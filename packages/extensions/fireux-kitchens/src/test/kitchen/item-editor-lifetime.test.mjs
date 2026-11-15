@@ -160,11 +160,6 @@ function context() {
         name,
         deps
       )
-    deps.useKitchenPrepItemCreate = load(
-      '../../runtime/kitchen/composables/prep-item/useKitchenPrepItemCreate.ts',
-      'useKitchenPrepItemCreate',
-      deps
-    )
     deps.useMenuSectionItemCreation = load(
       '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemCreation.ts',
       'useMenuSectionItemCreation',
@@ -249,14 +244,6 @@ function mount(h, component, exposed, extra = {}) {
     useKitchenIngredients: () => ({
       ingredients: vue.ref([]),
       pending: vue.ref(false),
-      error: vue.ref(null),
-    }),
-    useKitchenRecipeCollection: () => ({
-      recipes: vue.ref([]),
-      error: vue.ref(null),
-    }),
-    useKitchenPrepItems: () => ({
-      prepItems: vue.ref([]),
       error: vue.ref(null),
     }),
   }

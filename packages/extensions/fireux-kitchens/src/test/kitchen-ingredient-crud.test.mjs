@@ -41,7 +41,9 @@ function fixture({ authorized = true, extras = {}, duringActor } = {}) {
       assert.ok(x.verbs.length)
       return x
     },
-    INGREDIENT_MUTATION_TARGETS: { ingredients: { collectionPath: 'ingredients' } },
+    INGREDIENT_MUTATION_TARGETS: {
+      ingredients: { collectionPath: 'ingredients' },
+    },
     readKitchenMutationActor: async () => {
       await duringActor?.()
       return { uid: 'operator', runtimeAppId: 'app' }
@@ -157,6 +159,19 @@ test('every supported dependency blocks removal, including dependencies after th
       'recipes',
       { preparation: { ingredients: [{ ingredient_id: 'carrot' }] } },
     ],
+    [
+      'recipes',
+      {
+        inputs: [
+          {
+            kind: 'ingredient',
+            reference_id: 'carrot',
+            quantity: 1,
+            unit: 'g',
+          },
+        ],
+      },
+    ],
     ['dishes', { spec: { ingredients: [{ ingredient_id: 'carrot' }] } }],
     ['prep-items', { inputs: [{ ingredient_id: 'carrot' }] }],
     ['supplier-ingredients', { ingredient_id: 'carrot' }],
@@ -212,4 +227,27 @@ test('Kitchen association captures its exact destination before actor waits', as
   const result = await f.createKitchenIngredient({}, submitted)
   assert.deepEqual(result, { ok: true, ...input })
   assert.deepEqual(f.writes, [['create', 'kitchens/mine/ingredients/carrot']])
+})
+
+test('Recipe canonical inputs win over historical inputs and Preparation identity is not an Ingredient reference', async () => {
+  for (const recipe of [
+    { inputs: [], preparation: { ingredients: [{ ingredient_id: 'carrot' }] } },
+    {
+      inputs: [
+        { kind: 'preparation', reference_id: 'carrot', quantity: 1, unit: 'g' },
+      ],
+    },
+  ]) {
+    const f = fixture({
+      extras: {
+        'kitchens/mine/ingredients/carrot': { ingredient_id: 'carrot' },
+        'kitchens/mine/recipes/r': recipe,
+        'kitchens/other/recipes/r': {
+          inputs: [{ kind: 'ingredient', reference_id: 'carrot' }],
+        },
+      },
+    })
+    await f.deleteKitchenIngredient({}, input)
+    assert.deepEqual(f.writes, [['delete', 'kitchens/mine/ingredients/carrot']])
+  }
 })

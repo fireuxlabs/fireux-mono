@@ -1,7 +1,7 @@
 # Composables spine map
 
 Updated: 2026-11-15
-Ref: af9b9a2e8
+Ref: 12ab09be9
 Role: map, not canon
 
 ## Purpose
@@ -374,10 +374,10 @@ See `src/test/app-identity.test.mjs`, `app-media-sync.test.mjs` and
 Kitchen uses one folder per meaningful responsibility. Root Kitchen stored
 adapters live directly in `kitchen/composables/firestore`; their function names
 identify reads and commands without additional `fetch`, `mutations`, or
-`utils/paths` folders. Kitchen-owned Dish, Recipe and Prep Item composables live
-together under `dish`, `recipe` and `prep-item`, including their stored adapters.
-This narrows the older storage-first placement rule for these parent-owned
-responsibilities; it changes no storage paths or authority.
+`utils/paths` folders. Current Item and production readers live under `kitchen/item`,
+`kitchen/preparation` and `kitchen/recipe`, beside their owned contracts. The
+retired Recipe and Prep Item client directories are not alternate reader owners.
+Storage paths and trusted command authority remain independent of that placement.
 
 Workspace-only controllers live under `composables/workspace/<capability>` with
 lowercase capability folders. Workspace selection and shared page mechanics sit
@@ -461,28 +461,31 @@ consumed presentation remain explicit, without compulsory CRUD scaffolding.
 
 ## Recipe and Prep responsibilities
 
-Kitchen owns the consumed Recipe collection and routable record controllers,
-Recipe create/update/delete adapters, and the Prep collection/create adapter.
-Models hold preparation contracts; `kitchen/utils/recipe-preparation.ts` holds
-pure normalization and authored-input validation. Trusted actions live directly
-under `kitchen/server/recipes/{create,update,delete}.ts`; Prep input parsing is
-separate from its create-only transaction.
+Kitchen's `preparation/composables/useKitchenPreparationsRead.ts` and
+`recipe/composables/useKitchenRecipesRead.ts` each acquire one exact access-bound
+collection through Core. Their private normalization retains historical output
+links and per-field Recipe inputs/method/yield without rewriting documents or
+fabricating provenance. The active `/prep/preparations` and `/prep/recipes` routes
+compose `PrepAndProduction/LibraryRead.vue`; `Library.vue` owns search, links and
+local expected-yield scaling.
 
-Recipe Workspace readers bind only a ready, exact selected Kitchen and carry
-owner/child outcomes together. The Prep reader reuses Core's live collection
-mechanics rather than retaining a raw VueFire list across scope changes. Recipe
-screens separate main-record failures from linked Ingredient/Prep failures, hide
-premature collection counts, and keep the readable method available independently.
-An explicitly opened same-record editor retains its local buffer through a live
-refresh, while public read data remains masked; authority/record changes dispose
-that editing intent.
+`Recipes/Editor.vue` supplies canonical creation and sparse updates through one
+`usePrepMutation` transport and Core `useIdentityEditor`. The trusted create/update
+commands share `recipe/changes.ts` and validate exact current Ingredient and
+Preparation references in the transaction. Preparation identity editing remains
+separate. Recipe list/detail acquire no mutation controller solely for counts;
+Ingredient acquisition is enabled only for Recipe views. Its failures remain
+separate from the saved Recipe's readable method.
 
-The unconsumed Recipe and Prep Fetch/Computed/Interface wrappers are retired.
-The existing Recipe Cell owns only its consumed presentation props; there is no
-unused mapper contract or compulsory CRUD scaffold. Source-owned checks:
-`fireux-kitchens/src/test/recipe-reader-internals.test.mjs` and
-`recipe-command-internals.test.mjs`. Browser and live-database verification are
-separate from these fixtures.
+The unregistered Recipe collection/detail/form, duplicate Recipe readers,
+translation/preparation authoring parser and unused Prep creation client are
+retired. Historical compatibility belongs to the current reader, not a second
+Recipe model. Recipe deletion and the historical Prep creation API retain their
+existing trusted owners; neither has a current library control. See the
+[Misebox production boundary](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md#preparations-recipes-and-production)
+and `kitchen/prep-edit.test.mjs`, `kitchen/preparation-library.test.mjs`,
+`recipe-command-internals.test.mjs` and Ingredient-removal tests under Kitchens'
+`src/test`. Controlled fixtures do not replace signed-in browser acceptance.
 
 ## Ingredient responsibilities
 

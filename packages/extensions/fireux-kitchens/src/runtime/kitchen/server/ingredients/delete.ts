@@ -43,7 +43,11 @@ export async function deleteKitchenIngredient(event: H3Event, input: unknown) {
         const used = rows.some(({ data }) => {
           const inputs =
             collection === 'recipes'
-              ? data.preparation?.ingredients
+              ? Array.isArray(data.inputs)
+                ? data.inputs
+                    .filter((row) => row?.kind === 'ingredient')
+                    .map((row) => ({ ingredient_id: row.reference_id }))
+                : data.preparation?.ingredients
               : collection === 'dishes'
                 ? data.spec?.ingredients
                 : collection === 'prep-items'

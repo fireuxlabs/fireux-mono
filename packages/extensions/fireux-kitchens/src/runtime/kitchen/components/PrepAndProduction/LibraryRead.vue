@@ -19,13 +19,16 @@
         :can-edit="outcome === 'ready'"
       />
       <KitchenPrepAndProductionRecipesEditor
-        v-if="recipe"
-        :key="`${kitchenId}:${recipe.id}`"
+        v-if="view === 'recipes' && (!selectedId || recipe)"
+        :key="`${kitchenId}:${recipe?.id || 'new'}`"
         :record="recipe"
         :kitchen-id="kitchenId"
-        :can-edit="outcome === 'ready'"
+        :can-edit="outcome === 'ready' || outcome === 'empty'"
         :preparations="preparations"
         :ingredients="ingredientOptions"
+        :ingredients-outcome="ingredientOutcome"
+        :ingredients-error="ingredientError"
+        @created="navigateTo(recipeTo($event))"
       />
     </template>
   </KitchenPrepAndProductionLibrary>
@@ -45,6 +48,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
+import { navigateTo } from '#imports'
 import { useKitchenChildCollection } from '../../composables/useKitchenChildCollection'
 import { useIngredientCollection } from '../../../ingredient/composables/useIngredientCollection'
 import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
@@ -55,7 +59,9 @@ const props = defineProps<{
   selectedId?: string
 }>()
 const workspace = useKitchenWorkspace()
-const catalogue = useIngredientCollection()
+const catalogue = useIngredientCollection({
+  enabled: () => props.view === 'recipes',
+})
 const inputLabels = computed(() =>
   Object.fromEntries(
     catalogue.ingredients.value.map((ingredient) => [
@@ -68,12 +74,22 @@ const kitchenId = computed(() =>
   workspace.outcome.value === 'ready' ? workspace.id.value : ''
 )
 const ingredientKitchenId = computed(() =>
-  props.view === 'recipes' && props.selectedId ? kitchenId.value : ''
+  props.view === 'recipes' ? kitchenId.value : ''
 )
 const associations = useKitchenChildCollection<{ ingredient_id: string }>(
   'ingredients',
   ingredientKitchenId,
   { kitchenCollectionPath: 'kitchens' }
+)
+const ingredientOutcome = computed(() => {
+  const states = [catalogue.outcome.value, associations.outcome.value]
+  if (states.includes('error')) return 'error'
+  if (states.includes('pending')) return 'pending'
+  if (states.includes('idle')) return 'idle'
+  return ingredientOptions.value.length ? 'ready' : 'empty'
+})
+const ingredientError = computed(
+  () => catalogue.error.value || associations.error.value
 )
 const ingredientOptions = computed(() =>
   associations.outcome.value === 'ready'

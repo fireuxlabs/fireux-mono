@@ -1,14 +1,14 @@
 <template>
   <UButton
-    label="Edit"
-    aria-label="Edit Recipe"
-    icon="i-lucide-pencil"
+    :label="record ? 'Edit' : 'Add recipe'"
+    :aria-label="record ? 'Edit Recipe' : 'Add Recipe'"
+    :icon="record ? 'i-lucide-pencil' : 'i-lucide-plus'"
     color="neutral"
     variant="soft"
     :disabled="!canEdit"
     @click="start"
   />
-  <UModal v-model:open="open" title="Edit Recipe">
+  <UModal v-model:open="open" :title="record ? 'Edit Recipe' : 'Add Recipe'">
     <template #body>
       <form class="recipe-editor" @submit.prevent="save">
         <UFormField label="Name" required
@@ -45,6 +45,11 @@
               :disabled="saving"
           /></UFormField>
         </div>
+        <FireState
+          :outcome="ingredientsOutcome"
+          entity="Kitchen ingredients"
+          :error="ingredientsError"
+        />
         <KitchenPrepAndProductionRecipesEditorInputs
           v-model="draft.inputs"
           :ingredients="ingredients"
@@ -80,7 +85,7 @@
             variant="ghost"
             @click="open = false"
           /><UButton
-            label="Save changes"
+            :label="record ? 'Save changes' : 'Create recipe'"
             type="submit"
             :loading="saving"
             :disabled="!changed || !canEdit || saving"
@@ -92,23 +97,34 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { useIdentityEditor } from 'fireux-core/runtime/composables/fireux/useIdentityEditor'
 import type { Recipe } from '../../../recipe/models/model'
 import type { Preparation } from '../../../preparation/models/model'
-import { recipeDraft, recipeDraftChanges } from '../../../recipe/editor'
+import {
+  recipeDraft,
+  recipeDraftChanges,
+  recipeDraftRecord,
+} from '../../../recipe/editor'
 import { usePrepMutation } from '../../../composables/prep/usePrepMutation'
 const props = defineProps<{
-  record: Recipe
+  record?: Recipe
   kitchenId: string
   canEdit: boolean
   preparations: Preparation[]
   ingredients: Array<{ value: string; label: string }>
+  ingredientsOutcome: ReadOutcome
+  ingredientsError?: unknown
 }>()
+const emit = defineEmits<{ created: [id: string] }>()
+const currentRecord = () =>
+  props.record || { id: '', name: '', inputs: [], method: [] }
 const open = ref(false),
-  baseline = ref(recipeDraft(props.record))
+  baseline = ref(recipeDraft(currentRecord()))
+const createdId = ref('')
 const command = usePrepMutation([
   () => props.kitchenId,
-  () => props.record.id,
+  () => props.record?.id,
   () => props.canEdit,
 ])
 const preparationOptions = computed(() =>
@@ -117,14 +133,14 @@ const preparationOptions = computed(() =>
 const unlinkedOutput = '__unlinked__'
 const outputOptions = computed(() => [
   { value: unlinkedOutput, label: 'Not linked' },
-  ...(props.record.output_preparation_id &&
+  ...(props.record?.output_preparation_id &&
   !props.preparations.some(
-    (row) => row.id === props.record.output_preparation_id
+    (row) => row.id === props.record?.output_preparation_id
   )
     ? [
         {
           value: props.record.output_preparation_id,
-          label: `${props.record.output_preparation_id} (unavailable)`,
+          label: `${props.record?.output_preparation_id} (unavailable)`,
         },
       ]
     : []),
@@ -132,11 +148,21 @@ const outputOptions = computed(() => [
 ])
 const { draft, changed, saving, error, begin, save } = useIdentityEditor({
   open,
-  scope: [() => props.kitchenId, () => props.record.id],
+  scope: [command.scopeKey, () => props.kitchenId, () => props.record?.id],
   canEdit: () => props.canEdit,
-  createDraft: () => recipeDraft(props.record),
+  createDraft: () => recipeDraft(currentRecord()),
   signature: JSON.stringify,
   save: async (value, isCurrent) => {
+    if (!props.record) {
+      createdId.value = (
+        await command.createRecipe(
+          props.kitchenId,
+          recipeDraftRecord(value),
+          isCurrent
+        )
+      ).id
+      return
+    }
     const changes = recipeDraftChanges(value, baseline.value)
     if (!Object.keys(changes).length) return
     await command.update(
@@ -149,6 +175,7 @@ const { draft, changed, saving, error, begin, save } = useIdentityEditor({
   },
   onSaved: () => {
     open.value = false
+    if (createdId.value) emit('created', createdId.value)
   },
   errorMessage: 'Recipe could not be saved.',
 })
@@ -159,7 +186,8 @@ const outputSelection = computed({
   },
 })
 function start() {
-  baseline.value = recipeDraft(props.record)
+  createdId.value = ''
+  baseline.value = recipeDraft(currentRecord())
   begin()
 }
 </script>

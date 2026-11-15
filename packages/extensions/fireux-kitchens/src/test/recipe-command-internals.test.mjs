@@ -6,7 +6,6 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
-import { normalizeKitchenPrepItem } from '../runtime/kitchen/utils/prep-item.ts'
 
 function load(path, names, dependencies = {}) {
   const source = stripTypeScriptTypes(
@@ -26,21 +25,6 @@ const requireFirestoreDocumentId = (id) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid id' })
   return id.trim()
 }
-const preparation = load(
-  '../runtime/kitchen/utils/recipe-preparation.ts',
-  ['validateRecipePreparation', 'normalizeRecipePreparation'],
-  { isFirestoreDocumentId }
-)
-const translation = load(
-  '../runtime/kitchen/utils/recipe.ts',
-  ['normalizeTranslatedText'],
-  preparation
-)
-const patch = load(
-  '../runtime/kitchen/utils/recipe-update-input.ts',
-  ['readRecipeUpdate', 'mergeRecipeUpdate'],
-  { ...preparation, ...translation }
-)
 const input = load(
   '../runtime/kitchen/server/recipes/record-input.ts',
   ['recipeTarget', 'recipeFields', 'validateRecipeInput'],
@@ -88,7 +72,6 @@ const catalogue = load(
 const references = load(
   '../runtime/kitchen/server/core/preparation-references.ts',
   [
-    'requireRecipePreparationReferences',
     'requireKitchenIngredientReferences',
     'requireKitchenRecipeReference',
     'requireUnusedKitchenRecipe',
@@ -99,7 +82,6 @@ const references = load(
     defineFirestoreMutationTarget: (x) => x.collectionPath,
     INGREDIENT_MUTATION_TARGETS: { ingredients: 'ingredients' },
     serverKitchenItemsTarget: (kitchen) => `kitchens/${kitchen}/dishes`,
-    normalizeKitchenPrepItem,
   }
 )
 const prepTranslation = load('../runtime/kitchen/utils/prep-item.ts', [
@@ -139,9 +121,6 @@ function fixture({ wait, retry } = {}) {
   ])
   const dependencies = {
     readRecipeChanges,
-    ...preparation,
-    ...translation,
-    ...patch,
     ...input,
     ...authority,
     ...references,
@@ -214,6 +193,11 @@ function fixture({ wait, retry } = {}) {
       dependencies
     )
   )
+  dependencies.requireRecipeDefinitionReferences = load(
+    '../runtime/kitchen/recipe/server/references.ts',
+    ['requireRecipeDefinitionReferences'],
+    dependencies
+  ).requireRecipeDefinitionReferences
   const commands = Object.assign(
     {},
     ...['create', 'update', 'delete'].map((action) =>
@@ -232,109 +216,38 @@ function fixture({ wait, retry } = {}) {
   return { ...commands, records, writes, reads, pages }
 }
 const ready = () => ({
-  status: 'ready',
   yield: { quantity: 2, unit: 'portion' },
-  ingredients: [{ ingredient_id: 'onion', quantity: 1, unit: 'g', note: '' }],
-  prep_items: [
-    { prep_item_id: 'sauce', quantity: 1, unit: 'portion', note: '' },
+  inputs: [
+    {
+      kind: 'ingredient',
+      reference_id: 'onion',
+      quantity: 1,
+      unit: 'g',
+      note: '',
+    },
+    {
+      kind: 'preparation',
+      reference_id: 'sauce',
+      quantity: 1,
+      unit: 'portion',
+      note: '',
+    },
   ],
   method: ['Mix.'],
-  source_note: '',
 })
 
-test('Recipe authored preparation rejects coercion, unknown shapes and invalid IDs while retaining draft defaults', () => {
-  assert.deepEqual(
-    preparation.validateRecipePreparation({ status: 'draft' }),
-    preparation.normalizeRecipePreparation({})
-  )
-  for (const input of [
-    null,
-    [],
-    { status: 'published' },
-    { yield: { quantity: '2' } },
-    { yield: { quantity: true } },
-    { ingredients: {} },
-    { prep_items: 'x' },
-    { method: [{}] },
-    { source_note: 4 },
-    { unknown: true },
-    { yield: { quantity: 1, other: 2 } },
-    { yield: { quantity: 1, unit: '' } },
-    { ingredients: [{ ingredient_id: 'onion', quantity: '1', unit: 'g' }] },
-    { prep_items: [{ prep_item_id: '.', quantity: 1, unit: 'g' }] },
-    {
-      ingredients: [
-        { ingredient_id: 'onion', quantity: 1, unit: 'g', other: true },
-      ],
-    },
-    {
-      ingredients: [
-        { ingredient_id: 'onion', quantity: 1, unit: 'g', note: {} },
-      ],
-    },
-  ])
-    assert.throws(() => preparation.validateRecipePreparation(input))
-})
-test('Recipe language deltas and preparation are detached before credentials and retry merge uses current translations', async () => {
-  const wait = deferred(),
-    h = fixture({
-      wait,
-      retry: (records) =>
-        (records.get('kitchens/k/recipes/existing').names.de =
-          'Concurrent German'),
-    })
-  const changes = {
-    names: { en: ' New ' },
-    descriptions: { en: '' },
-    preparation: ready(),
-  }
-  const pending = h.updateRecipe(
-    {},
-    { kitchenId: 'k', recipeId: 'existing', changes }
-  )
-  changes.names.en = 42
-  changes.descriptions.en = 'Wrong'
-  changes.preparation.ingredients[0].quantity = 999
-  wait.resolve()
-  await pending
-  const saved = h.writes[0][3]
-  assert.deepEqual(saved.names, { en: 'New', de: 'Concurrent German' })
-  assert.deepEqual(saved.descriptions, { de: 'German notes' })
-  assert.equal(saved.preparation.ingredients[0].quantity, 1)
-  assert.equal(h.writes.length, 1)
-})
-test('Recipe create snapshots its source language and nested preparation before credentials', async () => {
-  const wait = deferred(),
-    h = fixture({ wait }),
-    draft = {
-      name: 'Dough',
-      source_language: 'en',
-      preparation: ready(),
-      names: { en: 'Dough' },
-    }
-  const pending = h.createRecipe({}, { kitchenId: 'k', draft })
-  draft.source_language = 'de'
-  draft.names.en = 'Wrong'
-  draft.preparation.method[0] = 'Wrong'
-  wait.resolve()
-  await pending
-  const saved = h.writes[0][3]
-  assert.equal(saved.source_language, 'en')
-  assert.equal(saved.names.en, 'Dough')
-  assert.deepEqual(saved.preparation.method, ['Mix.'])
-})
 test('Recipe and Prep actions require membership and exact associations but do not require a Place', async () => {
   const h = fixture()
   await h.createRecipe(
     {},
     {
       kitchenId: 'k',
-      draft: { name: 'Dough', source_language: 'en', preparation: ready() },
+      draft: { name: 'Dough', ...ready() },
     }
   )
   await h.updateRecipe(
     {},
-    { kitchenId: 'k', recipeId: 'existing', changes: { preparation: ready() } }
+    { kitchenId: 'k', recipeId: 'existing', changes: ready() }
   )
   await h.deleteRecipe({}, { kitchenId: 'k', recipeId: 'existing' })
   await h.createKitchenPrepItem(
@@ -364,7 +277,7 @@ test('Recipe and Prep actions require membership and exact associations but do n
     })
     const input =
       action === 'createRecipe'
-        ? { kitchenId: 'k', draft: { name: 'Dough', source_language: 'en' } }
+        ? { kitchenId: 'k', draft: { name: 'Dough' } }
         : action === 'updateRecipe'
           ? { kitchenId: 'k', recipeId: 'existing', changes: { name: 'New' } }
           : { kitchenId: 'k', draft: { name: 'Stock', source_language: 'en' } }
@@ -398,7 +311,7 @@ test('Recipe writes reject missing, conflicting, retired or foreign preparation 
         {
           kitchenId: 'k',
           recipeId: 'existing',
-          changes: { preparation: ready() },
+          changes: ready(),
         }
       ),
       { statusCode: 409 }
@@ -414,7 +327,7 @@ test('Recipe writes reject missing, conflicting, retired or foreign preparation 
       {
         kitchenId: 'k',
         recipeId: 'existing',
-        changes: { preparation: ready() },
+        changes: ready(),
       }
     ),
     { statusCode: 409 }
@@ -515,59 +428,6 @@ test('a Prep Item linked during a transaction retry keeps its Recipe', async () 
   assert.equal(h.pages.length, 4)
 })
 
-test('the routed Recipe detail shows the blocking label and retains its selection', async () => {
-  const component = readFileSync(
-    new URL(
-      '../runtime/kitchen/components/PrepAndProduction/Recipes/Detail/Index.vue',
-      import.meta.url
-    ),
-    'utf8'
-  )
-  const handler = component.slice(
-    component.indexOf('const deleteSelectedRecipe ='),
-    component.indexOf('</script>')
-  )
-  const notices = [],
-    destinations = [],
-    calls = [],
-    deleting = { value: false }
-  const deps = {
-    captureScope: () => () => true,
-    canWrite: { value: true },
-    recipe: { value: { name: 'Sauce' } },
-    recipeId: { value: 'existing' },
-    kitchenId: { value: 'k' },
-    deleting,
-    normalizeString: (value) => value,
-    window: { confirm: () => true },
-    toast: { add: (value) => notices.push(value) },
-    navigateTo: (value) => destinations.push(value),
-    deleteRecipe: async (...input) => {
-      calls.push(input)
-      throw {
-        data: {
-          statusMessage: 'Recipe is still in use.',
-          data: {
-            message: 'This recipe is used by Prep Item “Sauce fraîche”.',
-          },
-        },
-      }
-    },
-  }
-  const remove = compileFunction(
-    stripTypeScriptTypes(handler) + ';return deleteSelectedRecipe',
-    Object.keys(deps)
-  )(...Object.values(deps))
-  await remove()
-  assert.deepEqual(calls, [['existing', { kitchenId: 'k' }]])
-  assert.equal(
-    notices[0].description,
-    'This recipe is used by Prep Item “Sauce fraîche”.'
-  )
-  assert.deepEqual(destinations, [])
-  assert.equal(deleting.value, false)
-})
-
 test('Prep creation snapshots inputs and rejects foreign Recipes or missing Ingredient associations', async () => {
   const wait = deferred(),
     h = fixture({ wait }),
@@ -604,14 +464,21 @@ test('Prep creation snapshots inputs and rejects foreign Recipes or missing Ingr
 })
 
 test('Recipe and Prep create reject explicitly mistyped optional fields instead of treating them as missing', async () => {
-  for (const field of ['description', 'names', 'descriptions', 'preparation']) {
+  for (const field of [
+    'description',
+    'names',
+    'descriptions',
+    'preparation',
+    'method',
+    'inputs',
+  ]) {
     const h = fixture()
     await assert.rejects(
       h.createRecipe(
         {},
         {
           kitchenId: 'k',
-          draft: { name: 'Dough', source_language: 'en', [field]: null },
+          draft: { name: 'Dough', [field]: null },
         }
       ),
       { statusCode: 400 }
@@ -641,4 +508,76 @@ test('Recipe and Prep create reject explicitly mistyped optional fields instead 
     )
     assert.equal(h.writes.length, 0)
   }
+})
+
+test('canonical Recipe creation leaves unknown facts absent and never overwrites a named record', async () => {
+  const h = fixture()
+  await h.createRecipe({}, { kitchenId: 'k', draft: { name: ' Dough ' } })
+  assert.deepEqual(h.writes[0], [
+    'create',
+    'kitchens/k/recipes',
+    'dough',
+    {
+      name: 'Dough',
+      inputs: [],
+      method: [],
+      created: { by: 'u', appId: 'app' },
+      updated: { by: 'u', appId: 'app' },
+    },
+  ])
+  h.records.set('kitchens/k/recipes/dough', { name: 'Existing' })
+  await assert.rejects(
+    h.createRecipe({}, { kitchenId: 'k', draft: { name: 'Dough' } }),
+    { statusCode: 409 }
+  )
+  assert.equal(h.writes.length, 1)
+})
+test('canonical Recipe create and update detach nested authored values before credentials', async () => {
+  for (const action of ['createRecipe', 'updateRecipe']) {
+    const wait = deferred(),
+      h = fixture({ wait })
+    const authored = { name: 'Dough', ...ready() }
+    const pending = h[action](
+      {},
+      action === 'createRecipe'
+        ? { kitchenId: 'k', draft: authored }
+        : { kitchenId: 'k', recipeId: 'existing', changes: authored }
+    )
+    authored.inputs[0].quantity = 999
+    authored.method[0] = 'Changed'
+    wait.resolve()
+    await pending
+    assert.equal(h.writes[0][3].inputs[0].quantity, 1)
+    assert.deepEqual(h.writes[0][3].method, ['Mix.'])
+  }
+})
+test('canonical Recipe creation validates its output, disallows consuming it and rereads on retry', async () => {
+  for (const draft of [
+    { name: 'Recipe', output_preparation_id: 'missing' },
+    {
+      name: 'Recipe',
+      output_preparation_id: 'sauce',
+      inputs: [
+        { kind: 'preparation', reference_id: 'sauce', quantity: 1, unit: 'g' },
+      ],
+    },
+  ]) {
+    const h = fixture()
+    await assert.rejects(h.createRecipe({}, { kitchenId: 'k', draft }))
+    assert.deepEqual(h.writes, [])
+  }
+  const h = fixture({
+    retry: (records) => records.delete('kitchens/k/prep-items/sauce'),
+  })
+  await assert.rejects(
+    h.createRecipe(
+      {},
+      {
+        kitchenId: 'k',
+        draft: { name: 'Recipe', output_preparation_id: 'sauce' },
+      }
+    ),
+    { statusCode: 409 }
+  )
+  assert.deepEqual(h.writes, [])
 })

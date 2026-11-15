@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { ref, reactive, effectScope, nextTick } from 'vue'
+import { ref, reactive, effectScope, nextTick, computed } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useIdentityEditor } from 'fireux-core/runtime/composables/fireux/useIdentityEditor'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
@@ -10,6 +10,7 @@ import { readRecipeChanges } from '../../runtime/kitchen/recipe/changes.ts'
 import {
   recipeDraft,
   recipeDraftChanges,
+  recipeDraftRecord,
 } from '../../runtime/kitchen/recipe/editor.ts'
 import { readPreparationChanges } from '../../runtime/kitchen/preparation/changes.ts'
 function load(path, result, deps) {
@@ -357,6 +358,7 @@ test('Prep transport captures input before credentials and stops obsolete accoun
   let release
   const api = scope.run(() =>
     load('composables/prep/usePrepMutation.ts', 'usePrepMutation', {
+      computed,
       useAuth: () => ({ currentUser: user }),
       useFireUXConfig: () => ({ appId: 'app' }),
       useAppSession: () => ({
@@ -401,6 +403,7 @@ test('Preparation editor uses the shared lifecycle and preserves an open dirty d
         useIdentityEditor,
         readPreparationChanges,
         usePrepMutation: () => ({
+          scopeKey: ref('actor'),
           update: async (...args) => {
             calls.push(args)
             return { id: 'sauce' }
@@ -421,4 +424,213 @@ test('Preparation editor uses the shared lifecycle and preserves an open dirty d
   await nextTick()
   assert.equal(api.open.value, false)
   scope.stop()
+})
+
+function recipeEditorFixture(record) {
+  const props = reactive({
+      record,
+      kitchenId: 'k',
+      canEdit: true,
+      preparations: [],
+      ingredients: [],
+      ingredientsOutcome: 'ready',
+    }),
+    scope = effectScope(),
+    accountScope = ref('actor'),
+    calls = [],
+    emitted = []
+  let dispatch = async () => ({ id: record?.id || 'new-recipe' })
+  const api = scope.run(() =>
+    load(
+      'components/PrepAndProduction/Recipes/Editor.vue',
+      '({draft,open,start,save,error,saving})',
+      {
+        ref,
+        computed,
+        defineProps: () => props,
+        defineEmits:
+          () =>
+          (...args) =>
+            emitted.push(args),
+        useIdentityEditor,
+        recipeDraft,
+        recipeDraftChanges,
+        recipeDraftRecord,
+        usePrepMutation: () => ({
+          scopeKey: accountScope,
+          update: async (...args) => {
+            calls.push(['update', ...args])
+            return dispatch()
+          },
+          createRecipe: async (...args) => {
+            calls.push(['create', ...args])
+            return dispatch()
+          },
+        }),
+      }
+    )
+  )
+  return {
+    props,
+    scope,
+    calls,
+    emitted,
+    accountScope,
+    api,
+    dispatch: (fn) => {
+      dispatch = fn
+    },
+  }
+}
+test('Recipe editor creates with the canonical form and navigates only after confirmed current success', async () => {
+  const f = recipeEditorFixture()
+  f.api.start()
+  assert.equal(f.api.draft.value.yieldQuantity, '')
+  assert.deepEqual(f.api.draft.value.inputs, [])
+  f.api.draft.value.name = 'New recipe'
+  await f.api.save()
+  assert.equal(f.calls[0][0], 'create')
+  assert.equal(f.calls[0][1], 'k')
+  assert.deepEqual(f.calls[0][2], {
+    name: 'New recipe',
+    description: '',
+    output_preparation_id: null,
+    yield: null,
+    inputs: [],
+    method: [],
+    source: null,
+  })
+  assert.deepEqual(f.emitted, [['created', 'new-recipe']])
+  assert.equal(f.api.open.value, false)
+  f.scope.stop()
+})
+test('Recipe editing keeps a dirty draft through same-record refresh and writes only authored deltas', async () => {
+  const f = recipeEditorFixture(recipe())
+  f.api.start()
+  f.api.draft.value.name = 'Updated'
+  f.props.record = { ...f.props.record, description: 'Remote' }
+  await nextTick()
+  assert.equal(f.api.open.value, true)
+  assert.equal(f.api.draft.value.name, 'Updated')
+  await f.api.save()
+  assert.deepEqual(f.calls[0].slice(0, 4), ['update', 'recipes', 'k', 'r'])
+  assert.deepEqual(f.calls[0][4], { name: 'Updated' })
+  f.props.kitchenId = 'other'
+  await nextTick()
+  assert.equal(f.api.open.value, false)
+  f.scope.stop()
+})
+test('failed Recipe creation keeps its draft, and cancelled or changed owner completion cannot navigate', async () => {
+  const f = recipeEditorFixture()
+  f.api.start()
+  f.api.draft.value.name = 'Recipe'
+  f.dispatch(async () => {
+    throw Error('Recipe already exists.')
+  })
+  await f.api.save()
+  assert.equal(f.api.open.value, true)
+  assert.equal(f.api.draft.value.name, 'Recipe')
+  assert.equal(f.api.error.value, 'Recipe already exists.')
+  assert.deepEqual(f.emitted, [])
+  let finish
+  f.dispatch(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve
+      })
+  )
+  const flight = f.api.save()
+  f.props.kitchenId = 'other'
+  finish({ id: 'recipe' })
+  await flight
+  assert.deepEqual(f.emitted, [])
+  assert.equal(f.api.saving.value, false)
+  f.scope.stop()
+})
+
+test('Recipe create transport snapshots the submitted definition and rejects obsolete form, membership and access waits', async () => {
+  for (const changed of ['none', 'form', 'membership', 'access', 'dispose']) {
+    const scope = effectScope(),
+      pending = ref(false),
+      formOpen = ref(true),
+      user = ref({
+        uid: 'u',
+        getIdToken: () =>
+          new Promise((resolve) => {
+            release = resolve
+          }),
+      }),
+      access = { outcome: ref('ready'), ids: ref(['k']) },
+      calls = []
+    let release
+    const api = scope.run(() =>
+      load('composables/prep/usePrepMutation.ts', 'usePrepMutation', {
+        computed,
+        useAuth: () => ({ currentUser: user }),
+        useFireUXConfig: () => ({ appId: 'app' }),
+        useAppSession: () => ({
+          appUser: ref({ role: 'user' }),
+          pending,
+          error: ref(null),
+        }),
+        useKitchenAccess: () => access,
+        useCommandScope,
+        isFirestoreDocumentId,
+        $fetch: async (...args) => {
+          calls.push(args)
+          return { id: 'recipe' }
+        },
+      })([formOpen])
+    )
+    const definition = { name: 'Recipe', method: ['Mix'], inputs: [] }
+    const flight = api.createRecipe('k', definition, () => formOpen.value)
+    definition.method[0] = 'Changed'
+    if (changed === 'form') {
+      formOpen.value = false
+      formOpen.value = true
+    }
+    if (changed === 'membership') {
+      pending.value = true
+      pending.value = false
+    }
+    if (changed === 'access') {
+      access.ids.value = []
+      access.ids.value = ['k']
+    }
+    if (changed === 'dispose') scope.stop()
+    release('token')
+    if (changed === 'none') {
+      assert.deepEqual(await flight, { id: 'recipe' })
+      assert.equal(calls[0][1].method, 'POST')
+      assert.deepEqual(calls[0][1].body, {
+        kitchenId: 'k',
+        draft: { name: 'Recipe', method: ['Mix'], inputs: [] },
+      })
+    } else {
+      await assert.rejects(flight, /changed/)
+      assert.equal(calls.length, 0)
+    }
+    scope.stop()
+  }
+})
+
+test('Recipe editor closes on account or membership scope changes and ignores its dispatched success', async () => {
+  const f = recipeEditorFixture()
+  let complete
+  f.api.start()
+  f.api.draft.value.name = 'Recipe'
+  f.dispatch(
+    () =>
+      new Promise((resolve) => {
+        complete = resolve
+      })
+  )
+  const flight = f.api.save()
+  f.accountScope.value = 'other-membership'
+  assert.equal(f.api.open.value, false)
+  complete({ id: 'recipe' })
+  await flight
+  assert.deepEqual(f.emitted, [])
+  assert.equal(f.api.error.value, '')
+  f.scope.stop()
 })

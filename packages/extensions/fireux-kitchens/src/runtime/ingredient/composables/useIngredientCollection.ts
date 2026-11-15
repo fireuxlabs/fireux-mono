@@ -7,7 +7,14 @@ import {
   useFirestoreCollectionState,
   type FirestoreCollectionOutcome,
 } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
-import { computed, ref, watch, type ComputedRef } from 'vue'
+import {
+  computed,
+  ref,
+  watch,
+  toValue,
+  type MaybeRefOrGetter,
+  type ComputedRef,
+} from 'vue'
 import type { IngredientDirectoryPage } from '../models/ingredient-directory.model.ts'
 import type { Ingredient } from '../utils/ingredient.ts'
 
@@ -21,7 +28,10 @@ export type UseIngredientCollectionResult = {
 }
 
 export function useIngredientCollection(
-  options: { includeInactive?: boolean } = {}
+  options: {
+    includeInactive?: boolean
+    enabled?: MaybeRefOrGetter<boolean>
+  } = {}
 ): UseIngredientCollectionResult {
   const includeInactive = options.includeInactive === true
   const { currentUser } = useAuth()
@@ -49,22 +59,24 @@ export function useIngredientCollection(
     )
   const active = computed(
     () =>
-      !includeInactive ||
-      Boolean(
-        currentUser.value &&
-          config?.role === 'global' &&
-          !session?.pending.value &&
-          !session?.error.value &&
-          (session?.appUser.value?.role === 'admin' ||
-            (config.devMode && config.developerId === currentUser.value.uid))
-      )
+      toValue(options.enabled ?? true) &&
+      (!includeInactive ||
+        Boolean(
+          currentUser.value &&
+            config?.role === 'global' &&
+            !session?.pending.value &&
+            !session?.error.value &&
+            (session?.appUser.value?.role === 'admin' ||
+              (config.devMode && config.developerId === currentUser.value.uid))
+        ))
   )
   const state = useAsyncData<IngredientDirectoryPage>(
     () =>
       includeInactive
-        ? `curator-ingredient-library-v2|${scopeEpoch.value}`
-        : 'ingredient-collection-v2',
+        ? `curator-ingredient-library-v2|${scopeEpoch.value}${toValue(options.enabled ?? true) ? '' : '|inactive'}`
+        : `ingredient-collection-v2${active.value ? '' : '|inactive'}`,
     async (_nuxtApp, { signal }) => {
+      if (!active.value) return { items: [] }
       const fetchRead = $fetch.create({ signal, cache: 'no-store' })
 
       if (!includeInactive) {

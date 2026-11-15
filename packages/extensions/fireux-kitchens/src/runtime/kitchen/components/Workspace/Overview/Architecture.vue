@@ -98,10 +98,10 @@ const notes: Record<
         'The page does not yet show which dishes use a recipe.',
     },
     references: {
-      Component: 'PrepAndProduction/Recipes/Index.vue',
-      Reader:
-        'useKitchenRecipeCollection — live recipes for the selected Kitchen.',
-      Usage: 'useKitchenWorkspaceRecipes — dish usage is not connected.',
+      Component: 'PrepAndProduction/LibraryRead.vue',
+      Reader: 'useKitchenRecipesRead — one access-bound Recipe collection.',
+      Usage:
+        'Recipe output and Preparation inputs are explicit references; Menu Item linkage is not connected.',
     },
   },
   'workspace-kitchen-ingredients': {

@@ -6,11 +6,6 @@ import {
   readKitchenMutationActor,
   requireKitchenRecordMutationAuthority,
 } from '../core/mutation-authority'
-import { requireRecipePreparationReferences } from '../core/preparation-references'
-import {
-  readRecipeUpdate,
-  mergeRecipeUpdate,
-} from '../../utils/recipe-update-input'
 import { recipeFields, recipeTarget, validateRecipeInput } from './record-input'
 import { readRecipeChanges } from '../../recipe/changes'
 import { requireRecipeDefinitionReferences } from '../../recipe/server/references'
@@ -19,20 +14,7 @@ export async function updateRecipe(event: H3Event, input: unknown) {
   const value = recipeFields(input, ['kitchenId', 'recipeId', 'changes'])
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
   const recipeId = requireFirestoreDocumentId(value.recipeId, 'Recipe id')
-  const changeRecord =
-    value.changes && typeof value.changes === 'object'
-      ? (value.changes as Record<string, unknown>)
-      : {}
-  const canonical =
-    ['inputs', 'method', 'yield', 'output_preparation_id', 'source'].some(
-      (key) => key in changeRecord
-    ) ||
-    !['names', 'descriptions', 'preparation'].some((key) => key in changeRecord)
-  const patch = validateRecipeInput(() =>
-    canonical
-      ? readRecipeChanges(value.changes)
-      : readRecipeUpdate(value.changes)
-  )
+  const patch = validateRecipeInput(() => readRecipeChanges(value.changes))
   const actor = await readKitchenMutationActor(event)
 
   return runGuardedServerTransaction(
@@ -46,24 +28,23 @@ export async function updateRecipe(event: H3Event, input: unknown) {
           statusCode: 404,
           statusMessage: 'Recipe not found.',
         })
-      if (canonical && ('inputs' in patch || 'output_preparation_id' in patch))
+      if (
+        existing.data?.kitchen_id != null &&
+        existing.data.kitchen_id !== kitchenId
+      )
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'The stored Recipe belongs to another Kitchen.',
+        })
+      if ('inputs' in patch || 'output_preparation_id' in patch)
         await requireRecipeDefinitionReferences(
           transaction,
           kitchenId,
           patch,
           existing.data ?? {}
         )
-      if ('preparation' in patch && patch.preparation)
-        await requireRecipePreparationReferences(
-          transaction,
-          kitchenId,
-          patch.preparation
-        )
-      const changes = canonical
-        ? patch
-        : mergeRecipeUpdate(existing.data ?? {}, patch)
       transaction.update(target, recipeId, {
-        ...changes,
+        ...patch,
         updated: serverAuditStamp({ by: actor.uid }),
       })
       return { id: recipeId }

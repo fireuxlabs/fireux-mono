@@ -66,7 +66,7 @@ const command = usePrepMutation([
 ])
 const { draft, changed, saving, error, begin, save } = useIdentityEditor({
   open,
-  scope: [() => props.kitchenId, () => props.record.id],
+  scope: [command.scopeKey, () => props.kitchenId, () => props.record.id],
   canEdit: () => props.canEdit,
   createDraft: () => ({
     name: props.record.name,

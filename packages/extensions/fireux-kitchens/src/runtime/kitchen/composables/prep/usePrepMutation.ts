@@ -1,4 +1,4 @@
-import type { WatchSource } from 'vue'
+import { computed, type WatchSource } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -11,30 +11,32 @@ export function usePrepMutation(sources: WatchSource[] = []) {
   const config = useFireUXConfig()
   const session = useAppSession()
   const access = useKitchenAccess()
-  const capture = useCommandScope([
-    () => currentUser.value?.uid,
-    () => config.appId,
-    () => JSON.stringify(session.appUser.value),
-    () => access.outcome.value,
-    () => JSON.stringify(access.ids.value),
-    ...sources,
-  ])
-  async function update(
+  const scopeKey = computed(() =>
+    JSON.stringify([
+      currentUser.value?.uid,
+      config.appId,
+      session.appUser.value,
+      session.pending.value,
+      Boolean(session.error.value),
+      access.outcome.value,
+      access.ids.value,
+    ])
+  )
+  const capture = useCommandScope([scopeKey, ...sources])
+  async function send(
+    method: 'POST' | 'PATCH',
     entity: 'preparations' | 'recipes',
     kitchenId: string,
-    id: string,
-    changes: object,
-    isOwnerCurrent: () => boolean
+    input: object,
+    isOwnerCurrent: () => boolean,
+    expectedId?: string
   ) {
-    if (!isFirestoreDocumentId(kitchenId) || !isFirestoreDocumentId(id))
-      throw new Error('Choose a Kitchen record.')
-    const body = JSON.parse(
-      JSON.stringify({
-        kitchenId,
-        [entity === 'recipes' ? 'recipeId' : 'preparationId']: id,
-        changes,
-      })
+    if (
+      !isFirestoreDocumentId(kitchenId) ||
+      (expectedId !== undefined && !isFirestoreDocumentId(expectedId))
     )
+      throw new Error('Choose a Kitchen record.')
+    const body = JSON.parse(JSON.stringify({ kitchenId, ...input }))
     const current = capture(),
       user = currentUser.value
     const assertCurrent = () => {
@@ -55,11 +57,40 @@ export function usePrepMutation(sources: WatchSource[] = []) {
     assertCurrent()
     const result = await $fetch<{ id: string }>(
       `/api/workspace/kitchen/${entity}`,
-      { method: 'PATCH', headers: { Authorization: `Bearer ${token}` }, body }
+      { method, headers: { Authorization: `Bearer ${token}` }, body }
     )
-    if (result?.id !== id)
+    if (
+      !isFirestoreDocumentId(result?.id) ||
+      (expectedId !== undefined && result.id !== expectedId)
+    )
       throw new Error('Save response did not identify the requested record.')
     return result
   }
-  return { update }
+  function update(
+    entity: 'preparations' | 'recipes',
+    kitchenId: string,
+    id: string,
+    changes: object,
+    isOwnerCurrent: () => boolean
+  ) {
+    return send(
+      'PATCH',
+      entity,
+      kitchenId,
+      {
+        [entity === 'recipes' ? 'recipeId' : 'preparationId']: id,
+        changes,
+      },
+      isOwnerCurrent,
+      id
+    )
+  }
+  function createRecipe(
+    kitchenId: string,
+    draft: object,
+    isOwnerCurrent: () => boolean
+  ) {
+    return send('POST', 'recipes', kitchenId, { draft }, isOwnerCurrent)
+  }
+  return { update, createRecipe, scopeKey }
 }

@@ -148,7 +148,7 @@ test('owner failures and child failures remain distinct from loading, empty and 
   assert.equal(f.state.loadError.value, undefined)
   f.scope.stop()
 })
-function catalogueFixture(includeInactive = false) {
+function catalogueFixture(includeInactive = false, enabled = ref(true)) {
   const scope = effectScope(),
     account = ref({ uid: 'admin', getIdToken: async () => 'token' })
   const config = reactive({ appId: 'app-a', role: 'global', devMode: false })
@@ -169,6 +169,7 @@ function catalogueFixture(includeInactive = false) {
     'useIngredientCollection',
     {
       computed,
+      toValue,
       ref,
       watch,
       useAuth: () => ({ currentUser: account }),
@@ -183,7 +184,7 @@ function catalogueFixture(includeInactive = false) {
       },
     }
   )
-  const state = scope.run(() => use({ includeInactive }))
+  const state = scope.run(() => use({ includeInactive, enabled }))
   return {
     state,
     raw,
@@ -536,4 +537,27 @@ test('passed Ingredient detail closes its editor when the record identity change
   props.ingredient = { id: 'onion' }
   assert.equal(state.showAdmin.value, false)
   scope.stop()
+})
+
+test('disabled Ingredient acquisition makes no request and masks cached rows until enabled', async () => {
+  const enabled = ref(false),
+    f = catalogueFixture(false, enabled)
+  let requests = 0
+  currentReadFetch = async () => {
+    requests++
+    return { items: [] }
+  }
+  assert.equal(f.state.outcome.value, 'idle')
+  assert.deepEqual(f.state.ingredients.value, [])
+  assert.deepEqual(
+    await f.handler({}, { signal: new AbortController().signal }),
+    { items: [] }
+  )
+  assert.equal(requests, 0)
+  const inactiveKey = f.key
+  enabled.value = true
+  assert.notEqual(f.key, inactiveKey)
+  await f.handler({}, { signal: new AbortController().signal })
+  assert.equal(requests, 1)
+  f.scope.stop()
 })

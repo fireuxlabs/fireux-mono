@@ -18,8 +18,11 @@ test('Kitchen groups stable capabilities and keeps Workspace mechanics separate'
     assert.ok(existsSync(join(root, 'Menu', child, 'Index.vue')))
     assert.ok(existsSync(join(root, 'Menu', child, 'Overview.vue')))
   }
-  for (const child of ['Recipes', 'Ingredients', 'Stations', 'PrepItems'])
+  for (const child of ['Recipes', 'Ingredients', 'Stations'])
     assert.ok(existsSync(join(root, 'PrepAndProduction', child)))
+  assert.ok(
+    existsSync(join(root, 'PrepAndProduction', 'PreparationEditor.vue'))
+  )
   assert.ok(existsSync(join(root, 'PrepAndProduction', 'Planning.vue')))
   assert.doesNotMatch(
     readFileSync(join(root, 'PrepAndProduction', 'Index.vue'), 'utf8'),

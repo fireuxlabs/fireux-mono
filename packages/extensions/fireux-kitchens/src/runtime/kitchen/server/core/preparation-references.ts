@@ -6,9 +6,7 @@ import {
   isActiveIngredient,
   normalizeIngredient,
 } from '../../../ingredient/server/normalize'
-import type { RecipePreparation } from '../../recipe/models/preparation.ts'
 import { serverKitchenItemsTarget } from '../mutation-targets'
-import { normalizeKitchenPrepItem } from '../../utils/prep-item'
 
 function childTarget(
   kitchenId: string,
@@ -52,23 +50,6 @@ export async function requireKitchenIngredientReferences(
   )
 }
 
-export async function requireRecipePreparationReferences(
-  transaction: GuardedServerTransaction,
-  kitchenId: string,
-  preparation: RecipePreparation
-) {
-  await requireKitchenIngredientReferences(
-    transaction,
-    kitchenId,
-    preparation.ingredients.map((row) => row.ingredient_id)
-  )
-  await requireKitchenPrepItemReferences(
-    transaction,
-    kitchenId,
-    preparation.prep_items.map((row) => row.prep_item_id)
-  )
-}
-
 export async function requireKitchenPrepItemReferences(
   transaction: GuardedServerTransaction,
   kitchenId: string,
@@ -98,7 +79,11 @@ export async function requireKitchenRecipeReference(
     childTarget(kitchenId, 'recipes'),
     recipeId
   )
-  if (!recipe.exists || recipe.data?.kitchen_id !== kitchenId)
+  if (
+    !recipe.exists ||
+    recipe.data?.status === 'archived' ||
+    (recipe.data?.kitchen_id != null && recipe.data.kitchen_id !== kitchenId)
+  )
     throw createError({
       statusCode: 409,
       statusMessage: 'The recipe is unavailable in this Kitchen.',
@@ -126,7 +111,7 @@ export async function requireUnusedKitchenRecipe(
             data.spec.recipe_ids.some(
               (id: unknown) => String(id ?? '').trim() === recipeId
             )
-          : normalizeKitchenPrepItem(data).recipe_id === recipeId
+          : String(data.recipe_id ?? '').trim() === recipeId
       )
       if (usage)
         throw createError({
