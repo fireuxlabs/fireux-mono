@@ -1,7 +1,7 @@
 # FireUX App Ignition intake context
 
-Updated: 2026-11-14
-Ref: 5916a6874
+Updated: 2026-11-15
+Ref: 93fd879be
 Role: living context
 Scope: FireUX App Ignition requests and private delivery tracking
 
@@ -79,6 +79,12 @@ Paths below are relative to this App:
   Products owns catalogue and Checkout integration. Generated provider environment
   values are blank and never inherit FireUX credentials. Input completion retains
   Core `useCommandScope` disposal and stale-response checks.
+- The same source recipe generates Ecosystem `docs/infrastructure.md` and links
+  it in the development handoff. Provider setup must discover actual Firebase
+  identities and each configured database's ID, edition, mode and location,
+  retaining dated metadata evidence. Generated values start unverified;
+  materialization does not run discovery or provisioning. Inheriting Apps use
+  the Ecosystem notes; separate bindings keep their own infrastructure owner.
 - Accepted web requests and the Codex operator converge through
   `server/api/internal/control/ignition-requests/build.post.ts`. It retains
   `requireFireuxAppAdmin` and the guarded App Conversation mutation target.

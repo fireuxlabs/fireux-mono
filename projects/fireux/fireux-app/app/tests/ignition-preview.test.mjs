@@ -34,6 +34,17 @@ test('one deterministic source result retains reviewed purpose, framework owners
   )
   assert.ok(artifact.codexTask.prompt.includes(artifact.ecosystem.sourcePath))
   assert.ok(artifact.codexTask.prompt.includes(JSON.stringify(input.outcome)))
+  assert.ok(
+    artifact.codexTask.prompt.includes(
+      `${artifact.ecosystem.sourcePath}/docs/infrastructure.md`
+    )
+  )
+  const infrastructure = artifact.ecosystem.files['docs/infrastructure.md']
+  assert.match(infrastructure, /Status: unverified/)
+  assert.match(infrastructure, /Edition.*Mode.*Location/)
+  assert.ok(!infrastructure.includes('STANDARD'))
+  assert.ok(!infrastructure.includes('ENTERPRISE'))
+  assert.match(artifact.manualSteps.join('\n'), /edition, mode and location/)
   assert.match(
     artifact.codexTask.prompt,
     /Wait for the operator before editing/

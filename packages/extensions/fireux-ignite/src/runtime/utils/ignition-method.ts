@@ -36,6 +36,12 @@ export const ignitionMethod = [
       'Use the consuming App’s existing delivery queue for approved website and Codex requests. The App owns acceptance, administrator authority and canonical build identity; the local worker owns source materialization. Freeze the reviewed input, claim the build before external effects and persist one linked development task. Reuse the same claim and task on retry. A conflicting worker or unknown external outcome requires reconciliation rather than an automatic takeover. Queue acceptance is not a source build or product launch.',
   },
   {
+    id: 'infrastructure',
+    title: 'Establish and record infrastructure facts',
+    instruction:
+      'When creating or connecting a Firebase project or App, discover the actual project and web App identities and every database used by its configured bindings. Read database metadata through normal Firebase or Google Cloud tooling and record each database ID, edition, mode and location, the verification date and evidence command in the owning Project/Ecosystem infrastructure notes; an App with its own binding owns its notes. Inheriting Apps point to that owner rather than copying the facts. Never infer edition from a database name, SDK or reference App. Before creating a new database, agree its edition and location within the authorized provisioning scope, then read back the created resource. Source-only preparation records unverified values and a pending provider step. Include the notes in the development handoff and consult them before asking an operator for technical facts. Missing access requires an explicit verification gap, not a guessed default or copied credentials. Recheck metadata when bindings change. This step coordinates existing provider tooling and does not grant provisioning, credential, IAM or deployment authority.',
+  },
+  {
     id: 'build',
     title: 'Implement a bounded journey',
     instruction:

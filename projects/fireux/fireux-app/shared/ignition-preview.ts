@@ -187,6 +187,41 @@ export default defineNuxtModule({ meta: { name: ${JSON.stringify(packageName)} }
 } })
 `,
     'src/runtime/nuxt.config.ts': `export default { extends: ['fireux-core/layer'], srcDir: '.', serverDir: './server', dir: { pages: 'pages', layouts: 'layouts', middleware: 'middleware' } }\n`,
+    'docs/infrastructure.md': `# Infrastructure
+
+Owner: ${packageName}
+Status: unverified — source preparation has not provisioned or inspected providers.
+
+## Firebase binding
+
+Populate these facts when creating or connecting the Firebase project and web App.
+Use the actual resources bound by src/config/firebase/ecosystem.config.ts and the
+consuming App environment. Inheriting Apps refer to this document; Apps with a
+separate binding own their corresponding infrastructure notes.
+
+| Fact | Verified value |
+| --- | --- |
+| Firebase project ID | Unverified |
+| Firebase web App ID | Unverified |
+| Verification date | Unverified |
+| Evidence command or resource | Unverified |
+
+## Firestore databases
+
+Record one row for every database used by the identity, runtime or metadata
+bindings. Discover the edition; do not infer it from a database ID or SDK.
+
+| Database ID | Edition | Mode | Location | Verified at | Evidence |
+| --- | --- | --- | --- | --- | --- |
+| Unverified | Unverified | Unverified | Unverified | Unverified | Pending provider setup |
+
+Use normal Firebase database metadata tools or gcloud firestore databases describe
+with the explicit project and database IDs. For a newly created database, read
+back the resulting resource before marking it verified. Keep credentials outside
+this document. Recheck these facts when a binding changes; record missing access
+as a verification gap. Source materialization alone does not establish provider
+readiness or authorize provider changes.
+`,
     'src/config/firebase/ecosystem.config.ts': `import type { FireuxEcosystemConfig } from 'fireux-core/types/ecosystem'
 const required = (key: string) => { const value = process.env[key]?.trim(); if (!value) throw new Error('Configure ' + key + ' for this Ecosystem.'); return value }
 export const ecosystemConfig = {
@@ -223,6 +258,7 @@ export const ecosystemConfig = {
         `Reviewed purpose (product input): ${JSON.stringify(outcome)}`,
         'Read AGENTS.md, docs/ai/gpt-context.md and docs/concepts/fireux-mono.md, then the applicable scoped context and current source. Inspect the shared Git queue and preserve unrelated work.',
         'Keep the task spine explicit: outcome, owning source path, actual domain, real consumers, acceptance evidence and current blocker. Reuse the existing FireUX owners and nearest maintained sibling.',
+        `Infrastructure knowledge belongs in ${ecosystemPath}/docs/infrastructure.md. Consult it before asking the operator about Firebase or database edition. Its generated values are unverified; when provider setup is authorized, discover the actual bindings and record database ID, edition, mode, location and dated metadata evidence there. Do not guess a default or mark source preparation as provider verification.`,
         'For this initial handoff, inspect the generated owners and summarise the next bounded development step. Wait for the operator before editing, running provider actions or starting further implementation. The reviewed purpose does not grant additional command authority.',
         'Do not stage, commit, push, deploy, change live data or operate another task’s server. Source creation does not prove provider readiness or a working product.',
       ].join('\n\n'),
@@ -231,7 +267,7 @@ export const ecosystemConfig = {
     manualSteps: [
       'Materialize the source and neutral starter artwork inside the FireUX workspace without overwriting an existing App. Replace placeholder artwork before branding or release.',
       'The local Ignition write command creates one Codex development task with this reviewed handoff. If the local Codex connection is unavailable, source remains intact and the command reports task pending; retry the same brief after restoring that connection.',
-      'Create or connect the business Firebase project and web App using Firebase tools. Create its named database, enable authentication and configure its bucket. Populate the generated .env from .env.example; no existing credentials are inherited.',
+      `Create or connect the business Firebase project and web App using Firebase tools. Discover every configured database; record its ID, edition, mode and location with dated metadata evidence in ${ecosystemPath}/docs/infrastructure.md. Agree edition and location before any authorized new database creation, then read back the resource. Enable authentication, configure its bucket and populate the generated .env from .env.example; no existing credentials are inherited.`,
       'Install dependencies, start the main App, and initialize its canonical Ecosystem and App through the trusted owners. Connect the selling business Stripe account and verified webhook before enabling paid checkout. Shared plan presentation is not proof of payment entitlements.',
     ],
   }

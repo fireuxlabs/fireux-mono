@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-11-15
-Ref: 12ab09be9
+Ref: 93fd879be
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -23,6 +23,12 @@ Before each Misebox task:
 4. Compare the nearest maintained Main/tenant App or Workspace sibling.
 
 ## Operational tooling ownership
+
+Verified database edition, mode and location belong in the Ecosystem's
+[infrastructure notes](../infrastructure.md), alongside their dated read-only
+evidence and binding source. Consult those facts before asking operators for
+technical metadata; reverify them when a binding changes. App-specific overrides
+retain their own infrastructure owner.
 
 Explicit Misebox database cutovers and reviewed client input catalogues live in
 `tools/misebox-migrations`, outside reusable Kitchen runtime. Their guarded
@@ -1264,11 +1270,37 @@ current Core App-access source.
 
 ## KitchenAI
 
+KitchenAI is one assistant with page-local focuses, not a set of separately
+configured agents. The Kitchen-owned
+[`Workspace/AI/Focus.vue`](../../../../extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/AI/Focus.vue)
+provides its name, focus label, Context disclosure and honest inactive composer.
+Existing Home, Menu and People consumers retain their domain controllers and
+reviewed actions inside that presentation. Other operator pages and record views
+compose the same frame with an explicit `kitchen-ai.*` focus. Identity's current
+page remains a placeholder; its retained interpreter is not mounted by this pass.
+
+The frame acquires no records, invokes no provider and owns no mutation command.
+Its Context disclosure links the existing Kitchen/Venue background editor in
+`/workspace/kitchen/identity/context`, reached under Identity & brand. This background
+configuration page edits the shared context and does not add another assistant
+composer. Area-specific saved background is explicitly unconnected; a focus name
+is not a stored context registry or an access grant. Working pages supply actual
+facts and exact record scope when their integration is connected. Task constraints
+and labelled examples do not become saved business facts automatically.
+
+The focus coverage and connected-slot/disabled-composer contracts are checked in
+`fireux-kitchens/src/test/kitchen/components/Workspace/AI/Focus.test.mjs`.
+`utils/ai-handoff.ts` owns the bounded Home-to-Menus value contract;
+`types/menus-intent.ts` owns the proposed Menu-control response. Neither belongs in
+a generic Kitchen model directory. Waste's retired development-only `WasteAI`
+inspection panel has no runtime replacement; normal Waste records and commands
+retain their owners.
+
 Kitchen, linked venue, ordinary Menu, Dish and Recipe documents each support one optional
 `context` string for operator background, decisions and questions. It lives on
 the owning document, not in question records or a context subcollection. Existing
-sparse documents without authored context read as empty text. Kitchen Identity &
-brand and Menu Settings compose Core's `components/Context/Editor.vue` text area;
+sparse documents without authored context read as empty text. Kitchen Context
+and Menu Settings compose Core's `components/Context/Editor.vue` text area;
 Core's scoped `useRecordContext` controller saves changes on leaving the field;
 Dish detail reuses `FireContextRecord` over the same Kitchen endpoint. Recipe
 context remains stored and command-owned, without a current library editing control. The trusted
@@ -1286,6 +1318,34 @@ instructions or measured evidence. Questions and provisional assumptions remain
 unconfirmed until the owner decides. Editing context never changes hours, prices
 or other operational settings. These are human Workspace commands, not new
 agent-callable write tools. Verify `fireux-kitchens/src/test/record-context.test.mjs`.
+
+Common kitchen patterns are authored once in Kitchen-owned
+[`kitchen/content/guidance.ts`](../../../../extensions/fireux-kitchens/src/runtime/kitchen/content/guidance.ts).
+The dedicated `/workspace/kitchen/identity/context` route composes Kitchen-owned
+`components/Context/Index.vue`, with `Context/Guidance` above the Kitchen and
+Venue text editors. Identity & brand retains its profile and listing and links
+to that page; editors are not duplicated across the routes.
+Operators explicitly select guides and keep their differences in Kitchen context;
+Venue context remains on the linked Place. No pattern is inferred from a venue's
+name, location or other kitchens. Shared guidance is reviewed source content,
+not automatically harvested operator notes. Guide IDs are durable references;
+changing shared content affects kitchens that selected that guide and needs
+normal source review.
+
+Each Kitchen stores only optional `guidance_ids`. The Workspace reader validates
+their value shape; `useKitchenGuidance` reuses that selected root without another
+record listener. Its explicit save calls
+`kitchen/server/context/guidance.ts`, which rechecks current Kitchen mutation
+authority, validates known unique references, compares the prior selection and
+updates only those IDs plus the audit stamp. Failed choices remain editable;
+account, membership, route and Kitchen changes suppress obsolete completion.
+The shared authorized operator-context reader resolves only that Kitchen's
+selected guides alongside its own Kitchen and Place text. Specific facts take
+priority over general guidance; none supplies stock, hours or approved business
+facts by itself. Placeholder focuses remain unconnected. See
+`fireux-kitchens/src/test/kitchen-guidance.test.mjs` for selection, scope,
+concurrency and context-assembly evidence. These references do not authorize a
+live migration, automatic sharing or changes to operational settings.
 
 The incomplete catalogue-based capability agents, research reference pages and
 `/api/workspace/kitchen/agent*` adapters are retired. They have no placeholder
@@ -1495,7 +1555,7 @@ Keep these boundaries when changing the UI:
   operational details stay with their owner. Do not restore forwarding UI copies.
 
 The owned intent sources are Kitchen `server/index/landing-intent.ts`,
-`server/menus/intent.ts`, `models/ai-handoff.ts` and
+`server/menus/intent.ts`, `utils/ai-handoff.ts` and
 `composables/workspace/useKitchenAIHandoff.ts`. Verify the seam through
 `src/test/kitchen-ai-handoff.test.mjs`, `menus-intent.test.mjs` and
 `landing-intent.test.mjs`; the separate KitchenAI ownership limitation above

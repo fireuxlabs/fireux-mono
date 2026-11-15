@@ -1,10 +1,11 @@
 <template>
-  <section :aria-label="title">
+  <section :aria-label="title" class="record-context">
     <h2>{{ title }}</h2>
     <p v-if="pending" role="status">Loading context…</p>
     <UTextarea
       v-if="ready"
       v-model="text"
+      class="record-context__input"
       :aria-label="title"
       :disabled="disabled || saving"
       :rows="5"
@@ -57,3 +58,13 @@ watch(
   }
 )
 </script>
+<style scoped>
+.record-context {
+  display: grid;
+  gap: calc(var(--spacing) * 3);
+  min-width: 0;
+}
+.record-context__input {
+  width: 100%;
+}
+</style>

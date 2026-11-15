@@ -1,18 +1,19 @@
 <template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.stock.waste"
+    label="Waste"
+    context-label="Stock"
+  />
   <div>
     <section class="workspace-surface">
       <KitchenWasteTools />
 
       <KitchenWaste />
-
-      <KitchenWasteInspection v-if="isDevelopment" />
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-const isDevelopment = import.meta.dev
-
 definePageMeta({
   layout: false,
   workspacePage: true,

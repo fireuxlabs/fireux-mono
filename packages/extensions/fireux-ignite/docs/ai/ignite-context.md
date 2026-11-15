@@ -1,7 +1,7 @@
 # FireUX Ignite context
 
-Updated: 2026-11-14
-Ref: 5916a6874
+Updated: 2026-11-15
+Ref: 93fd879be
 Role: living context
 Scope: reusable FireUX app ignition and reconciliation
 
@@ -155,6 +155,25 @@ proof, and must not be bypassed to manufacture it.
 Read the source, the consuming App case and its referenced owners before changing a case. Recheck paths and observations after migrations. Supply an independent assembly proposal before reporting proposal gaps. Classify semantic differences through review as missing knowledge, missing building blocks, incorrect composition or justified domain choices; the structural comparator does not make those judgments automatically.
 
 Run the package tests and typecheck, and the consuming App check when contracts change. For the FireUX source recipe, also materialize a disposable generated App and typecheck it; this catches missing native layers or workspace dependencies. External consumer proofs install versioned artifacts in an independent directory without monorepo aliases or workspace links. Local tarball acceptance is distinct from public publication, authenticated domain behaviour and release. Keep source-reviewed, checks-passed and journey-proved evidence separate. General industry generation, paid subscription reconciliation, independent sibling acceptance and release remain separate unfinished responsibilities; no live AI calls or deployment are needed to check this foundation.
+
+## Infrastructure knowledge at creation
+
+The method's `infrastructure` step requires metadata discovery when creating or
+connecting a Firebase project or App. The owning Project/Ecosystem records actual
+project and web App identities and each configured database's ID, edition, mode,
+location and dated read-only evidence in its infrastructure notes. Inheriting
+Apps point to that owner; separate App bindings retain their own notes. Discover
+edition from the resource rather than guessing from a name, SDK or reference App.
+Consult recorded facts before asking an operator for technical metadata; refresh
+them when a binding changes. Missing access remains an explicit verification gap.
+
+The FireUX App's existing source recipe generates Ecosystem
+`docs/infrastructure.md` with unverified values and includes its exact path in
+the shared website/CLI development handoff. Its provider setup instructions
+require metadata discovery and readback after authorized database creation.
+Source preparation does not inspect or provision Firebase automatically. Provider
+authority and credentials remain with their existing owners; these notes contain
+no secrets and establish no new runtime configuration or metadata registry.
 
 ## App context at creation
 

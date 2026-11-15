@@ -1,6 +1,11 @@
 <template>
   <section>
     <UPageHeader :title="current.title" :description="current.description" />
+    <WorkspaceKitchenAIFocus
+      :focus="`kitchen-ai.prep.${view}`"
+      :label="current.title"
+      context-label="Prep"
+    />
     <UCard>
       <div class="fx-card__chips">
         <UIcon :name="current.icon" />

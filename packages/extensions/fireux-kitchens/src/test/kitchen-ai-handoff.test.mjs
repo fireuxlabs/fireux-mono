@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { createRequire, stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
-import { currentKitchenAIHandoff } from '../runtime/kitchen/models/ai-handoff.ts'
+import { currentKitchenAIHandoff } from '../runtime/kitchen/utils/ai-handoff.ts'
 const require = createRequire(new URL('../../package.json', import.meta.url))
 const { computed, ref, watch, nextTick } = require('vue')
 const raw = readFileSync(

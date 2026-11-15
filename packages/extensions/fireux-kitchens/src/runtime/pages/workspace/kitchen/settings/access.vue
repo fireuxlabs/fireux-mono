@@ -1,4 +1,9 @@
 <template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.settings.access"
+    label="Access"
+    context-label="Settings"
+  />
   <KitchenSettingsAccess />
 </template>
 <script setup lang="ts">

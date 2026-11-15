@@ -1,4 +1,10 @@
 <template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.orders"
+    label="Orders"
+    context-label="Orders"
+    spacious
+  />
   <WorkspacePageLinks />
 </template>
 <script setup lang="ts">

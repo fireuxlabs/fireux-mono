@@ -1,4 +1,10 @@
-<template><KitchenMenuMenusPrepare /></template>
+<template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.menu.menus"
+    label="Menu preparation"
+    context-label="Menu"
+  /><KitchenMenuMenusPrepare />
+</template>
 <script setup lang="ts">
 import { provideKitchenMenusContext } from '../../../../../kitchen/composables/workspace/menus/useKitchenMenusContext'
 provideKitchenMenusContext()

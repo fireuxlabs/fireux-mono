@@ -1,5 +1,9 @@
 <template>
-  <WorkspaceAI aria-label="Kitchen Identity AI" compact>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.identity"
+    label="Identity & brand"
+    connected
+  >
     <p v-if="message" role="status">{{ message }}</p>
     <WorkspaceAIComposer
       v-model="prompt"
@@ -9,8 +13,8 @@
         )
       "
       :submitting="submitting"
-      placeholder="Ask Kitchen Identity AI…"
-      aria-label="Ask Kitchen Identity AI"
+      placeholder="Ask KitchenAI about Identity & brand…"
+      aria-label="Ask KitchenAI about Identity & brand"
       :suggestions="suggestions"
       @submit="submit"
       @select-suggestion="prompt = $event.label"
@@ -19,7 +23,7 @@
         <WorkspaceAIModelLabel />
       </template>
     </WorkspaceAIComposer>
-  </WorkspaceAI>
+  </WorkspaceKitchenAIFocus>
 </template>
 <script setup lang="ts">
 import { refreshNuxtData } from 'nuxt/app'

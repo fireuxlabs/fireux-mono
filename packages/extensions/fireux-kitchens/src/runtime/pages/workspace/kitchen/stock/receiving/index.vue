@@ -2,6 +2,11 @@
   <div>
     <section class="workspace-surface">
       <UPageHeader title="Deliveries" />
+      <WorkspaceKitchenAIFocus
+        focus="kitchen-ai.stock.receiving"
+        label="Deliveries"
+        context-label="Stock"
+      />
       <UAlert
         title="Not connected yet"
         description="Incoming goods, receipt checks and stock updates are not connected yet."

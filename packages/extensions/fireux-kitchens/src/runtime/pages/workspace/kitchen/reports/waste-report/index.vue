@@ -2,6 +2,11 @@
   <div>
     <section class="workspace-surface">
       <UPageHeader title="Waste report" />
+      <WorkspaceKitchenAIFocus
+        focus="kitchen-ai.reports.waste"
+        label="Waste report"
+        context-label="Reports"
+      />
       <UAlert
         title="Not connected yet"
         description="Waste reporting is not connected yet. Record individual waste events from Stock &amp; Purchasing."

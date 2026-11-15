@@ -50,6 +50,11 @@
           />
         </template>
       </WorkspacePageHeader>
+      <WorkspaceKitchenAIFocus
+        focus="kitchen-ai.menu.items"
+        label="Items"
+        context-label="Menu"
+      />
       <nav aria-label="Item views" class="item-tabs">
         <UButton
           v-for="item in views"

@@ -136,6 +136,7 @@ export function readKitchenDocument(raw: unknown, id: string): Kitchen | null {
       'id',
       'identity',
       'context',
+      'guidance_ids',
       'created',
       'updated',
       'theme',
@@ -147,7 +148,15 @@ export function readKitchenDocument(raw: unknown, id: string): Kitchen | null {
     !isStamp(kitchen.created) ||
     (kitchen.updated !== undefined && !isStamp(kitchen.updated)) ||
     (kitchen.context !== undefined &&
-      (typeof kitchen.context !== 'string' || kitchen.context.length > 32000))
+      (typeof kitchen.context !== 'string' ||
+        kitchen.context.length > 32000)) ||
+    (kitchen.guidance_ids !== undefined &&
+      (!Array.isArray(kitchen.guidance_ids) ||
+        kitchen.guidance_ids.length > 20 ||
+        new Set(kitchen.guidance_ids).size !== kitchen.guidance_ids.length ||
+        !kitchen.guidance_ids.every(
+          (id) => typeof id === 'string' && id.length > 0 && id.length <= 80
+        )))
   )
     return null
 

@@ -1,4 +1,10 @@
-<template><KitchenIdentityPayments /></template>
+<template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.settings.payments"
+    label="Payments"
+    context-label="Settings"
+  /><KitchenIdentityPayments />
+</template>
 
 <script setup lang="ts">
 definePageMeta({

@@ -1,4 +1,10 @@
 <template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.food-safety"
+    label="Food Safety"
+    context-label="Food Safety"
+    spacious
+  />
   <WorkspacePageLinks />
   <UAlert
     :title="'Food safety checks, records and procedures are not connected yet. This page does not certify Kitchen safety.'"

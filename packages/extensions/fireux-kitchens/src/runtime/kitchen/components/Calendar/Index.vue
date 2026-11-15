@@ -1,4 +1,5 @@
 <template>
+  <WorkspaceKitchenAIFocus focus="kitchen-ai.calendar" label="Calendar" />
   <WorkspaceCalendarSurface v-model="selectedDate">
     <KitchenCalendarAgenda />
   </WorkspaceCalendarSurface>

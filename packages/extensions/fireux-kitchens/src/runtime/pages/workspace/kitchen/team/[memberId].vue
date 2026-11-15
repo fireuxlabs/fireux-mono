@@ -1,4 +1,9 @@
 <template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.team.people"
+    label="People"
+    context-label="Team"
+  />
   <UButton
     to="/workspace/kitchen/team"
     label="Back to Team"

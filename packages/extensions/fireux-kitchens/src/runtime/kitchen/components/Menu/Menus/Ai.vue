@@ -1,6 +1,10 @@
 <template>
-  <WorkspaceAI aria-label="KitchenAI · Menus" compact>
-    <p class="fx-type-card-heading">KitchenAI · Menus</p>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.menu.menus"
+    label="Menu records"
+    connected
+    context-label="Menu"
+  >
     <p v-if="message" role="status" class="menu-ai-message">
       {{ message }}
     </p>
@@ -19,7 +23,7 @@
         <WorkspaceAIModelLabel :development-codex="developmentCodex" />
       </template>
     </WorkspaceAIComposer>
-  </WorkspaceAI>
+  </WorkspaceKitchenAIFocus>
 </template>
 <script setup lang="ts">
 import { refreshNuxtData } from 'nuxt/app'
@@ -30,8 +34,8 @@ import { menuWorkspaceDestination } from '../../../utils/menu-workspace-destinat
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 import { useKitchenAIHandoff } from '../../../composables/workspace/useKitchenAIHandoff'
-import { currentKitchenAIHandoff } from '../../../models/ai-handoff'
-import type { KitchenMenusIntent } from '../../../models/menus-intent'
+import { currentKitchenAIHandoff } from '../../../utils/ai-handoff'
+import type { KitchenMenusIntent } from '../../../types/menus-intent'
 
 const workspace = useKitchenMenusContext()
 const { currentUser } = useAuth()

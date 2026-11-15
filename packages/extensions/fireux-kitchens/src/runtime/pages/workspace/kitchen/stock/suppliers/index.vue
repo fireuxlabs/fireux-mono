@@ -1,4 +1,9 @@
 <template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.stock.suppliers"
+    label="Suppliers"
+    context-label="Stock"
+  />
   <div>
     <section class="workspace-surface">
       <KitchenSuppliersSelector />

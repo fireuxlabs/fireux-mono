@@ -1,5 +1,9 @@
 <template>
   <WorkspaceIntroInfo :intro="identity.intro.value" />
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.identity"
+    label="Identity &amp; brand"
+  />
   <KitchenIdentity :identity="identity" />
 </template>
 
@@ -38,6 +42,11 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
     children: [
+      {
+        label: 'Context',
+        to: '/workspace/kitchen/identity/context',
+        icon: 'i-lucide-file-text',
+      },
       {
         label: 'Operating hours',
         to: '/workspace/kitchen/identity/operating-hours',

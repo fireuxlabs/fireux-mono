@@ -1,5 +1,10 @@
 <template>
-  <WorkspaceAI aria-label="KitchenAI · Menus" compact>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.menu"
+    label="Menus"
+    connected
+    context-label="Menu"
+  >
     <p v-if="message" role="status">
       {{ message }}
     </p>
@@ -19,7 +24,7 @@
         <WorkspaceAIModelLabel :development-codex="developmentCodex" />
       </template>
     </WorkspaceAIComposer>
-  </WorkspaceAI>
+  </WorkspaceKitchenAIFocus>
 </template>
 <script setup lang="ts">
 import { useMenuGroupIndexContext } from '../../composables/workspace/menu-group/useMenuGroupIndexContext'

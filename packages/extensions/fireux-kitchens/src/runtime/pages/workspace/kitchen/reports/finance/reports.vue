@@ -1,4 +1,9 @@
 <template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.reports.sales"
+    label="Sales reports"
+    context-label="Reports"
+  />
   <KitchenFinanceNav />
   <section class="workspace-surface__grid workspace-surface__grid--2">
     <UCard>

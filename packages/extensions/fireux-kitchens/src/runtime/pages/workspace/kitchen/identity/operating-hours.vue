@@ -1,4 +1,9 @@
-<template><KitchenOperatingHours /></template>
+<template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.identity.operating-hours"
+    label="Operating hours"
+  /><KitchenOperatingHours />
+</template>
 
 <script setup lang="ts">
 definePageMeta({

@@ -10,6 +10,11 @@
         />
       </template>
     </WorkspaceKitchenCollectionHeader>
+    <WorkspaceKitchenAIFocus
+      focus="kitchen-ai.menu.promotions"
+      label="Promotions"
+      context-label="Menu"
+    />
     <KitchenMenuPromotionsEditor v-if="editor" :key="editor.key" />
     <KitchenMenuPromotionsCollection v-else />
   </section>

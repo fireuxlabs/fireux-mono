@@ -17,6 +17,11 @@
         />
       </template>
     </WorkspacePageHeader>
+    <WorkspaceKitchenAIFocus
+      :focus="`kitchen-ai.prep.${view}`"
+      :label="view === 'preparations' ? 'Preparations' : 'Recipes'"
+      context-label="Prep"
+    />
     <UInput
       v-if="!selectedId"
       v-model="search"

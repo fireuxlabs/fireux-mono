@@ -1,4 +1,9 @@
 <template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.reports.sales"
+    label="Transactions"
+    context-label="Reports"
+  />
   <KitchenFinanceNav />
   <WorkspaceKitchenOverviewFinance :from-date="fromDate" :to-date="toDate" />
 </template>

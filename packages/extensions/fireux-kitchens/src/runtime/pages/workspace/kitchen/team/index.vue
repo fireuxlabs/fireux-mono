@@ -1,4 +1,10 @@
 <template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.team"
+    label="Team"
+    context-label="Team"
+    spacious
+  />
   <WorkspacePageLinks />
 </template>
 <script setup lang="ts">

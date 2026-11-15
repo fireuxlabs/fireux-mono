@@ -10,6 +10,11 @@
         />
       </template>
     </WorkspaceKitchenCollectionHeader>
+    <WorkspaceKitchenAIFocus
+      focus="kitchen-ai.prep.ingredients"
+      label="Ingredients"
+      context-label="Prep"
+    />
 
     <UAlert
       v-if="loadError"

@@ -1,7 +1,12 @@
 <template>
   <section :aria-label="catalogue.title" class="dish-catalogue">
     <KitchenMenuItemsCollectionControls @create="dialogs?.openCreate($event)">
-      <template #intro> </template>
+      <template #intro
+        ><WorkspaceKitchenAIFocus
+          focus="kitchen-ai.menu.items"
+          label="Items"
+          context-label="Menu"
+      /></template>
     </KitchenMenuItemsCollectionControls>
     <KitchenMenuItemsCollectionResults @create="dialogs?.openCreate($event)" />
     <KitchenMenuItemsCollectionDialogs ref="dialogs" />

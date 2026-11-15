@@ -1,5 +1,10 @@
 <template>
   <section class="workspace-surface">
+    <WorkspaceKitchenAIFocus
+      focus="kitchen-ai.menu.services"
+      label="Services"
+      context-label="Menu"
+    />
     <KitchenMenuServicesStatus />
     <div v-if="retained" :key="source.editorOwnerKey.value">
       <KitchenMenuServicesService

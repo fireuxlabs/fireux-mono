@@ -2,6 +2,11 @@
   <div>
     <section class="workspace-surface">
       <UPageHeader title="Stock" />
+      <WorkspaceKitchenAIFocus
+        focus="kitchen-ai.stock.inventory"
+        label="Stock"
+        context-label="Stock"
+      />
       <UAlert
         title="Not connected yet"
         description="Stock balances and movements are not connected yet. No quantities on hand can be reported from this screen."

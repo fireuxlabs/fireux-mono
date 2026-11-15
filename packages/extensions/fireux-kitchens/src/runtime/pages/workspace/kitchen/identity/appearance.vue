@@ -1,4 +1,9 @@
-<template><KitchenAppearance /></template>
+<template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.identity.appearance"
+    label="Appearance"
+  /><KitchenAppearance />
+</template>
 
 <script setup lang="ts">
 definePageMeta({

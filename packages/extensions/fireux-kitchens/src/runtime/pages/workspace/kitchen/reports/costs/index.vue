@@ -2,6 +2,11 @@
   <div>
     <section class="workspace-surface">
       <UPageHeader title="Food costs" />
+      <WorkspaceKitchenAIFocus
+        focus="kitchen-ai.reports.food-costs"
+        label="Food costs"
+        context-label="Reports"
+      />
       <UAlert
         title="Not connected yet"
         description="Recipe costs, purchase prices and actual usage are not connected into this report yet."

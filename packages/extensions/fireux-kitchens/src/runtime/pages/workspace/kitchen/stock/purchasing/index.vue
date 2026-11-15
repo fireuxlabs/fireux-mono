@@ -2,6 +2,11 @@
   <div>
     <section class="workspace-surface">
       <UPageHeader title="Purchase orders" />
+      <WorkspaceKitchenAIFocus
+        focus="kitchen-ai.stock.purchasing"
+        label="Purchase orders"
+        context-label="Stock"
+      />
       <UAlert
         title="Not connected yet"
         description="Purchase order creation, approval and supplier transmission are not connected yet."

@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceAI aria-label="KitchenAI" compact>
+  <WorkspaceKitchenAIFocus focus="kitchen-ai" label="Kitchen" connected>
     <p v-if="message" role="status">
       {{ message }}
     </p>
@@ -18,7 +18,7 @@
         <WorkspaceAIModelLabel :development-codex="developmentCodex" />
       </template>
     </WorkspaceAIComposer>
-  </WorkspaceAI>
+  </WorkspaceKitchenAIFocus>
 </template>
 <script setup lang="ts">
 import { refreshNuxtData } from 'nuxt/app'

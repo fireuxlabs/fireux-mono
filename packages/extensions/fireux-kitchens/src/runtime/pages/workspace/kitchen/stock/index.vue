@@ -1,4 +1,10 @@
 <template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.stock"
+    label="Stock &amp; Purchasing"
+    context-label="Stock"
+    spacious
+  />
   <WorkspacePageLinks />
 </template>
 <script setup lang="ts">

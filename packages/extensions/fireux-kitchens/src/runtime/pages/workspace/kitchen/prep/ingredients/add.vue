@@ -1,4 +1,9 @@
 <template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.prep.ingredients"
+    label="Ingredients"
+    context-label="Prep"
+  />
   <section class="workspace-surface workspace-surface--compact">
     <KitchenPrepAndProductionIngredientsAdd />
   </section>

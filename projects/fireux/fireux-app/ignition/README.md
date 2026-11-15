@@ -7,6 +7,8 @@ The FireUX App `/ignite-preview` and Codex `ignition:prepare` use the same
 - `packages/ecosystem/fireux-<id>` using Core ecosystem wiring and Firebase binding.
 - `projects/<id>/<id>-app` with global role, Core FireuxApp and shared plan presentation.
 - An empty `.env.example` for the business Firebase and Stripe configuration.
+- Ecosystem `docs/infrastructure.md` for discovered Firebase identities and
+  database metadata, initially marked unverified.
 - A development-task handoff using the generated App's manifest name and source
   owner. The read-only preview/download prepares this handoff only.
 
@@ -86,6 +88,17 @@ Firebase tooling. Configure its named Firestore database, Authentication and
 Storage, then populate the generated environment locally. Use existing credential
 management for Admin access; never commit private keys. Install dependencies and
 start the App through native Nuxt commands. No deployment command is generated.
+
+During that setup, discover every database used by the configured bindings and
+record its ID, edition, mode and location with verification date and metadata
+evidence in the generated Ecosystem `docs/infrastructure.md`. Read these notes
+before asking an operator for technical facts. Do not infer edition from a
+database name or SDK. Agree edition and location before authorized database
+creation, then read back the resulting resource. Inheriting Apps refer to the
+Ecosystem notes; separate bindings own their own notes. Reverify metadata when a
+binding changes and record missing access as a verification gap. The source-only
+preparation command leaves these values unverified and does not provision or
+inspect providers.
 
 Connect the selling business Stripe account through the existing Product/Checkout
 owners. Separate Apps sold by the same business may share that account. Independent

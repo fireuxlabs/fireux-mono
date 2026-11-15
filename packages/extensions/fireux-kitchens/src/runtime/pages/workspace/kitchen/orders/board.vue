@@ -1,4 +1,10 @@
-<template><KitchenOrdersBoard /></template>
+<template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.orders.board"
+    label="Order board"
+    context-label="Orders"
+  /><KitchenOrdersBoard />
+</template>
 <script setup lang="ts">
 definePageMeta({
   layout: false,

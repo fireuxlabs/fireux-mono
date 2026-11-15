@@ -117,10 +117,14 @@ test('Identity and brand is top level, separate from technical Settings', () => 
   assert.deepEqual(
     identity.children.map((item) => item.to),
     [
+      '/workspace/kitchen/identity/context',
       '/workspace/kitchen/identity/operating-hours',
       '/workspace/kitchen/identity/appearance',
     ]
   )
+  const context = navigation(join(root, 'identity/context.vue'))
+  assert.equal(context.hidden, true)
+  assert.equal(context.group, 'Identity & brand')
   const settings = navigation(join(root, 'settings/index.vue'))
   assert.deepEqual(
     settings.children.map((item) => item.to),

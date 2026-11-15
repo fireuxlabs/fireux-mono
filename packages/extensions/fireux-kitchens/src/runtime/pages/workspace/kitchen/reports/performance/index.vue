@@ -2,6 +2,11 @@
   <div>
     <section class="workspace-surface">
       <UPageHeader title="Service report" />
+      <WorkspaceKitchenAIFocus
+        focus="kitchen-ai.reports.service"
+        label="Service report"
+        context-label="Reports"
+      />
       <UAlert
         title="Not connected yet"
         description="Order timing and service performance are not connected into this report yet."

@@ -1,4 +1,10 @@
-<template><KitchenFoodSafetyPage view="records" /></template>
+<template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.food-safety.records"
+    label="Records"
+    context-label="Food Safety"
+  /><KitchenFoodSafetyPage view="records" />
+</template>
 <script setup lang="ts">
 definePageMeta({
   layout: false,

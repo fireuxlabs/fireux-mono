@@ -1,12 +1,17 @@
 <template>
-  <WorkspaceAI aria-label="Kitchen Team AI" compact>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.team.people"
+    label="People"
+    connected
+    context-label="Team"
+  >
     <p v-if="message" role="status">{{ message }}</p>
     <WorkspaceAIComposer
       v-model="prompt"
       :can-submit="Boolean(prompt.trim() && suggestions.length && !submitting)"
       :submitting="submitting"
-      placeholder="Ask Kitchen Team AI…"
-      aria-label="Ask Kitchen Team AI"
+      placeholder="Ask KitchenAI about People…"
+      aria-label="Ask KitchenAI about People"
       :suggestions="suggestions"
       suggestions-aria-label="Available Team actions"
       @submit="submit"
@@ -16,7 +21,7 @@
         <WorkspaceAIModelLabel />
       </template>
     </WorkspaceAIComposer>
-  </WorkspaceAI>
+  </WorkspaceKitchenAIFocus>
 </template>
 <script setup lang="ts">
 import { useRoute } from '#imports'

@@ -1,6 +1,11 @@
 <template>
   <section class="workspace-surface">
     <KitchenMenuMenusDetailHeader />
+    <WorkspaceKitchenAIFocus
+      focus="kitchen-ai.menu.menus"
+      label="Menu records"
+      context-label="Menu"
+    />
     <UAlert
       v-if="outcome === 'denied'"
       color="warning"

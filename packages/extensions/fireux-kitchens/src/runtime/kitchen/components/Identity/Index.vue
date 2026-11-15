@@ -2,22 +2,15 @@
   <div class="workspace-profile">
     <KitchenIdentityProfile :identity="identity" />
     <KitchenIdentityListing :identity="identity" />
-    <template v-if="identity.status.value === 'ready'">
-      <WorkspaceKitchenContext
-        :key="`${identity.kitchenId.value}/kitchen`"
-        :kitchen-id="identity.kitchenId.value"
-        subject="kitchen"
-        title="Kitchen context"
-        :can-write="identity.canWriteKitchen.value"
+    <div v-if="identity.status.value === 'ready'">
+      <UButton
+        to="/workspace/kitchen/identity/context"
+        label="Kitchen context and shared guidance"
+        icon="i-lucide-file-text"
+        color="neutral"
+        variant="soft"
       />
-      <WorkspaceKitchenContext
-        :key="`${identity.kitchenId.value}/venue`"
-        :kitchen-id="identity.kitchenId.value"
-        subject="venue"
-        title="Venue context"
-        :can-write="identity.canWrite.value"
-      />
-    </template>
+    </div>
   </div>
 </template>
 <script setup lang="ts">

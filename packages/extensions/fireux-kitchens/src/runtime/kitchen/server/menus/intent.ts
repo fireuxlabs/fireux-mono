@@ -4,7 +4,7 @@ import { createError, type H3Event } from 'h3'
 import { firebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
-import type { KitchenMenusIntent } from '../../models/menus-intent'
+import type { KitchenMenusIntent } from '../../types/menus-intent'
 
 /** Page facts prepare controls only; existing commands still authorize writes. */
 export async function interpretKitchenMenus(event: H3Event, body: unknown) {

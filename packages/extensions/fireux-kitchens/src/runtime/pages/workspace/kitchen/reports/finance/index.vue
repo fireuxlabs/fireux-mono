@@ -1,4 +1,9 @@
 <template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.reports.sales"
+    label="Sales"
+    context-label="Reports"
+  />
   <KitchenFinance />
 </template>
 

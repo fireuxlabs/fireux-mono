@@ -1,4 +1,10 @@
 <template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.reports"
+    label="Reports"
+    context-label="Reports"
+    spacious
+  />
   <WorkspacePageLinks />
 </template>
 <script setup lang="ts">

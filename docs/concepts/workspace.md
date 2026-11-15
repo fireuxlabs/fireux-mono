@@ -1,7 +1,7 @@
 # Workspace
 
-Updated: 2026-11-12
-Ref: 31db3e8fa
+Updated: 2026-11-15
+Ref: 93fd879be
 Role: map, not canon
 
 Business is an additional Workspace Entity owned by `fireux-businesses`. Its first tools are business profile/contact editing, optional Place links and the organisational Team roster. Current source and authority are routed through `packages/extensions/fireux-businesses/docs/ai/businesses-context.md`.
@@ -176,7 +176,6 @@ rather than nesting it inside another WorkspaceAI section. Existing domain
 Assistant controllers remain mounted once and own their lifecycle. See the
 [compact surface checks](../../packages/core/fireux-core/src/test/workspace/components/AICompact.test.mjs).
 
-
 Core's `workspace/components/AI/Composer.vue` is the shared prompt control.
 Use `WorkspaceAIComposer spacious` for a group index: three initial text rows,
 growing to twelve. Child capabilities use the same composer without `spacious`:
@@ -197,6 +196,18 @@ and retain confirmation, permission, cancellation and stale-result checks. Core
 adds no provider call, domain read or global conversation. Suggestions remain
 optional and should fit the capability. The Kitchen Menu group consumes the
 spacious composer; child adoption uses the same API and existing domain owner.
+
+Kitchen composes one named assistant through its
+[`Workspace/AI/Focus.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/AI/Focus.vue)
+presentation. The explicit `kitchen-ai.*` name identifies its supplied working
+focus; it is not another agent, record owner or authorization layer. Connected
+Home/Menu/People children keep their own controllers and allowed actions. Other
+working pages may expose an honest disabled placeholder using the same native
+composer controls. Group placeholders use the spacious composer; children use the
+compact one. The Context disclosure links existing operator background and labels
+unconnected area-specific context. It adds no provider, record reader or write.
+The owning Misebox context and Kitchen's focused UI tests track this bounded
+composition; do not copy a second focus catalogue into Core.
 
 ## Component organisation
 
@@ -222,7 +233,9 @@ kitchen/components/
     Recipes/
     Ingredients/
     Stations/
-    PrepItems/
+    PreparationEditor.vue
+    LibraryRead.vue
+    Library.vue
   Finance/
   Orders/
   ...other named domain capabilities

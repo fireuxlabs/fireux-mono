@@ -1,4 +1,9 @@
 <template>
+  <WorkspaceKitchenAIFocus
+    focus="kitchen-ai.overview"
+    label="Overview"
+    spacious
+  />
   <WorkspaceIntroInfo :intro="intro" />
   <section class="workspace-surface workspace-surface--compact">
     <WorkspaceKitchenOverview @state="pageState.publish" />
