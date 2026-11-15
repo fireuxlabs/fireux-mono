@@ -21,7 +21,8 @@ export type AppCollectionPageSeo = Partial<
 
 /** One acquisition and SEO owner; routes retain the visible page composition. */
 export function useAppCollectionPage(options: {
-  scope: 'ecosystem' | 'platform'
+  endpoint: MaybeRefOrGetter<string>
+  scope: string
   title?: MaybeRefOrGetter<string>
   description?: MaybeRefOrGetter<string>
   seo?: AppCollectionPageSeo
@@ -35,11 +36,7 @@ export function useAppCollectionPage(options: {
     loadingMore,
     loadMoreError,
     loadMore,
-  } = useAppCollection(
-    options.scope === 'platform'
-      ? '/api/platform/apps?limit=24'
-      : '/api/apps?limit=24'
-  )
+  } = useAppCollection(options.endpoint)
 
   const page = useCollectionPage({
     entity: 'apps',

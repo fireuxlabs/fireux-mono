@@ -5,6 +5,7 @@ import { isDirectoryAppIndexable } from '../utils/directorySearchPolicy'
 /** FireUX-owned platform directory presentation and search policy. */
 export function usePlatformAppsPage() {
   return useAppCollectionPage({
+    endpoint: '/api/platform/apps?limit=24',
     scope: 'platform',
     title: 'Showcase',
     description:

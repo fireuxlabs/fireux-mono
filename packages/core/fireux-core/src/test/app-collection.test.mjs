@@ -231,8 +231,12 @@ test('A failed next page preserves ready records and can retry', async () => {
   assert.equal(c.state.hasMore.value, false)
 })
 
-for (const scope of ['ecosystem', 'platform']) {
-  test(`App page ${scope} coordination shares reactive records with presentation and SEO`, async () => {
+for (const source of [
+  '/api/directory/apps?limit=12',
+  ref('/api/relationships/apps?parent=one&limit=48'),
+  () => '/api/selected/apps?limit=6',
+]) {
+  test(`App page coordination forwards ${typeof source} endpoints and shares reactive records with presentation and SEO`, async () => {
     let reads = 0
     let endpoint
     let seo
@@ -274,7 +278,8 @@ for (const scope of ['ecosystem', 'platform']) {
     )
     const title = ref('Apps')
     const page = usePage({
-      scope,
+      endpoint: source,
+      scope: 'selected-source',
       title,
       seo: {
         jsonLdBuilder: (_context, apps) => {
@@ -283,12 +288,12 @@ for (const scope of ['ecosystem', 'platform']) {
         },
       },
     })
-    assert.equal(
-      endpoint,
-      scope === 'platform'
-        ? '/api/platform/apps?limit=24'
-        : '/api/apps?limit=24'
-    )
+    assert.equal(endpoint, source)
+    assert.equal(toValue(endpoint), toValue(source))
+    if (typeof source === 'object') {
+      source.value = '/api/relationships/apps?parent=two&limit=48'
+      assert.equal(toValue(endpoint), source.value)
+    }
     assert.equal(reads, 1)
     assert.equal(page.apps, records.value)
     assert.deepEqual(seo.jsonLdBuilder({}).ids, ['first'])
@@ -297,6 +302,7 @@ for (const scope of ['ecosystem', 'platform']) {
     assert.deepEqual(seo.jsonLdBuilder({}).ids, ['second'])
     assert.equal(page.diagnostics.objects.apps, page.apps)
     assert.equal(page.diagnostics.derived.count, 1)
+    assert.equal(page.diagnostics.derived.scope, 'selected-source')
     title.value = 'Updated'
     assert.equal(page.title, 'Updated')
     assert.equal(toValue(seo.title), 'Example | Updated')
@@ -314,7 +320,7 @@ for (const scope of ['ecosystem', 'platform']) {
   })
 }
 
-for (const scope of ['ecosystem', 'platform']) {
+for (const scope of ['directory', 'relationship']) {
   for (const mode of [
     'none',
     'static',
@@ -388,7 +394,11 @@ for (const scope of ['ecosystem', 'platform']) {
                   }
                 : {}),
             }
-      const page = usePage({ scope, seo })
+      const page = usePage({
+        endpoint: '/api/example/apps?limit=24',
+        scope,
+        seo,
+      })
       assert.equal(reads, 1)
       assert.equal(head().link[0].href, 'https://example.test/apps')
       if (mode === 'none' || mode === 'null-builder')

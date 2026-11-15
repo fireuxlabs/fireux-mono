@@ -38,5 +38,8 @@ definePageMeta({
   name: 'AppsIndexPage',
 })
 
-const page = useAppCollectionPage({ scope: 'ecosystem' })
+const page = useAppCollectionPage({
+  endpoint: '/api/apps?limit=24',
+  scope: 'ecosystem',
+})
 </script>

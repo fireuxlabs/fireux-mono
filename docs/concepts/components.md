@@ -1,7 +1,7 @@
 # Components spine map
 
 Updated: 2026-11-15
-Ref: af9b9a2e8
+Ref: 7e15efc66
 Role: map, not canon
 
 ## Purpose and navigation
@@ -262,9 +262,15 @@ development diagnostics when applicable. `FirePage` and the older multi-slot
 
 The domain `useXCollectionPage` acquires once through its reader and composes
 Core `useCollectionPage` for state, pagination and diagnostics. Collection children own
-filtering and presentation without repeating acquisition. Both Apps routes use
-`useAppCollectionPage`; FireUX's `usePlatformAppsPage` supplies platform scope,
-Showcase copy and structured SEO using those same records. Routes retain their
+filtering and presentation without repeating acquisition. Both Apps routes supply
+their endpoint to Core's
+[`useAppCollectionPage`](../../packages/core/fireux-core/src/runtime/app/composables/useAppCollectionPage.ts).
+The [Ecosystem route](../../packages/extensions/fireux-ecosystem/src/runtime/pages/apps/index.vue)
+selects its shared directory API; FireUX's
+[`usePlatformAppsPage`](../../projects/fireux/fireux-app/app/composables/usePlatformAppsPage.ts)
+selects its platform API, diagnostic scope, Showcase copy and structured SEO
+using those same records. Core coordinates the supplied reader and page state
+without selecting an upper App's endpoint. Routes retain their
 metadata and visible composition. The default layout supplies the container;
 a full-width App layout may require explicit route framing, as FireUX's Apps
 route does. Never nest a second implicit container.
