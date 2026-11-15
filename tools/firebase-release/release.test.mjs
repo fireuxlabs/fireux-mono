@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { writeAppAssetFixture } from '../../packages/core/fireux-core/src/test/fixtures/app-assets.mjs'
+import { getAppRegistryEntries } from '../fireux-launcher/apps.mjs'
 import {
   inspectTarget,
   prepareManifest,
@@ -300,19 +301,28 @@ test('uploader targets one App and Hosting-only excludes functions and Rules', a
     await assert.rejects(readFile(resolve(cwd, 'anything')), { code: 'ENOENT' })
   }
 })
-test('all App manifests use existing tooling and configured SSR Apps declare the runtime launcher', async () => {
+async function checkAppManifests(repo) {
   const { readdir } = await import('node:fs/promises')
-  let count = 0
-  for (const family of await readdir(resolve(root, 'projects'))) {
-    const base = resolve(root, 'projects', family)
-    const entries = await readdir(base, { withFileTypes: true }).catch(() => [])
+  const optionalJson = async (path) => {
+    try {
+      return await json(path)
+    } catch (error) {
+      if (error.code === 'ENOENT') return undefined
+      throw error
+    }
+  }
+  const inspected = new Set()
+  for (const family of await readdir(resolve(repo, 'projects'), {
+    withFileTypes: true,
+  })) {
+    if (!family.isDirectory()) continue
+    const base = resolve(repo, 'projects', family.name)
+    const entries = await readdir(base, { withFileTypes: true })
     for (const item of entries.filter((entry) => entry.isDirectory())) {
       const app = resolve(base, item.name)
-      const manifest = await json(resolve(app, 'package.json')).catch(
-        () => null
-      )
-      if (!manifest) continue
-      count++
+      const manifest = await optionalJson(resolve(app, 'package.json'))
+      if (manifest === undefined) continue
+      inspected.add(app)
       for (const [name, command] of Object.entries(manifest.scripts || {})) {
         assert.ok(
           !command.includes('../../../scripts/'),
@@ -321,9 +331,7 @@ test('all App manifests use existing tooling and configured SSR Apps declare the
         for (const match of command.matchAll(/node (\.\.\/[^\s]+\.mjs)/g))
           await readFile(resolve(app, match[1]))
       }
-      const firebase = await json(resolve(app, 'firebase.json')).catch(
-        () => null
-      )
+      const firebase = await optionalJson(resolve(app, 'firebase.json'))
       if (
         firebase?.functions &&
         !JSON.stringify(firebase).includes('<your_project_id>')
@@ -336,7 +344,103 @@ test('all App manifests use existing tooling and configured SSR Apps declare the
       }
     }
   }
-  assert.equal(count, 28)
+  const { scripts = {} } = await json(resolve(repo, 'package.json'))
+  for (const [name, command] of Object.entries(scripts)) {
+    const shortcut = /^pnpm --dir (projects\/\S+) dev$/.exec(command)
+    if (!name.startsWith('dev:') || !shortcut) continue
+    assert.ok(
+      inspected.has(resolve(repo, shortcut[1])),
+      `${name}: App shortcut ${shortcut[1]} must have an existing manifest`
+    )
+  }
+  const runnableApps = getAppRegistryEntries(repo)
+  assert.ok(runnableApps.length, 'Launcher must discover runnable Apps.')
+  for (const app of runnableApps) {
+    assert.ok(
+      inspected.has(app.directory),
+      `${app.key}: launcher App was omitted from the release manifest checks`
+    )
+  }
+}
+
+test('all App manifests use existing tooling and configured SSR Apps declare the runtime launcher', async () => {
+  await checkAppManifests(root)
+})
+
+test('manifest inventory validates templates and root-declared Apps without requiring non-App manifests', async (t) => {
+  const repo = await mkdtemp(resolve(tmpdir(), 'fireux-manifests-'))
+  t.after(() => rm(repo, { recursive: true, force: true }))
+  const app = resolve(repo, 'projects/example/app')
+  const sibling = resolve(repo, 'projects/example/sibling')
+  const template = resolve(repo, 'projects/templates/starter')
+  await mkdir(app, { recursive: true })
+  await mkdir(sibling, { recursive: true })
+  await mkdir(template, { recursive: true })
+  await mkdir(resolve(repo, 'projects/example/notes'))
+  await writeFile(
+    resolve(repo, 'package.json'),
+    JSON.stringify({
+      scripts: { 'dev:example': 'pnpm --dir projects/example/app dev' },
+    })
+  )
+  const appManifest = JSON.stringify({
+    name: 'example-app',
+    scripts: { dev: 'nuxi dev --port 3456' },
+    dependencies,
+  })
+  await writeFile(resolve(app, 'package.json'), appManifest)
+  await writeFile(
+    resolve(sibling, 'package.json'),
+    JSON.stringify({
+      name: 'sibling',
+      scripts: { dev: 'nuxi dev --port 3457' },
+    })
+  )
+  await writeFile(
+    resolve(app, 'firebase.json'),
+    JSON.stringify(config('example', 'exampleApp'))
+  )
+  const templateManifest = JSON.stringify({
+    name: 'starter',
+    scripts: { build: 'nuxi build' },
+  })
+  await writeFile(resolve(template, 'package.json'), templateManifest)
+  await t.test(
+    'accepts valid Apps and templates beside intentional non-App directories',
+    async () => {
+      await checkAppManifests(repo)
+    }
+  )
+
+  await t.test(
+    'rejects malformed JSON in launcher-excluded templates',
+    async () => {
+      await writeFile(resolve(template, 'package.json'), '{')
+      try {
+        await assert.rejects(checkAppManifests(repo), SyntaxError)
+      } finally {
+        await writeFile(resolve(template, 'package.json'), templateManifest)
+      }
+    }
+  )
+  await t.test('rejects manifest read errors other than absence', async () => {
+    const path = resolve(template, 'package.json')
+    await rm(path)
+    await mkdir(path)
+    try {
+      await assert.rejects(checkAppManifests(repo), { code: 'EISDIR' })
+    } finally {
+      await rm(path, { recursive: true })
+      await writeFile(path, templateManifest)
+    }
+  })
+  await t.test(
+    'rejects a missing manifest referenced by a root App shortcut',
+    async () => {
+      await rm(resolve(app, 'package.json'))
+      await assert.rejects(checkAppManifests(repo), /dev:example.*manifest/)
+    }
+  )
 })
 
 test('release builds override development environment and require a public HTTPS origin', () => {

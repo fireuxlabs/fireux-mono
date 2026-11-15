@@ -3,10 +3,20 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { createRequire, stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import { fileURLToPath } from 'node:url'
 const require = createRequire(
-  new URL('../../projects/misebox/misebox-app/package.json', import.meta.url)
+  new URL('../../packages/core/fireux-core/package.json', import.meta.url)
 )
 const { getRequestURL, getQuery } = require('h3')
+const { createJiti } = require('jiti')
+const { resolveAppTheme } = await createJiti(import.meta.url).import(
+  fileURLToPath(
+    new URL(
+      '../../packages/core/fireux-core/src/runtime/app/utils/app-theme.ts',
+      import.meta.url
+    )
+  )
+)
 const read = (path) =>
   readFileSync(new URL('../../' + path, import.meta.url), 'utf8')
 const body = (source) =>
@@ -70,6 +80,21 @@ test('FireUX Workspace routing and cache policy use the Firebase public host', (
   )
 })
 test('Core PWA manifest recognises the Workspace installation behind Firebase', () => {
+  let workspaceConfig = {
+    kitchen: { origin: 'https://workspace.misebox.app' },
+  }
+  let theme = {
+    palette: {
+      canvas: '#123456',
+      surface: '#ffffff',
+      canvas_inverted: '#000000',
+      text: '#111111',
+      text_muted: '#555555',
+      ink: '#222222',
+      accent: '#abcdef',
+      accent_contrast: '#000000',
+    },
+  }
   const handler = compileFunction(
     body(
       read(
@@ -82,6 +107,8 @@ test('Core PWA manifest recognises the Workspace installation behind Firebase', 
       'getRequestURL',
       'setHeader',
       'useRuntimeConfig',
+      'useAppConfig',
+      'resolveAppTheme',
       'brandAssets',
       'withBuildVersion',
     ]
@@ -95,12 +122,12 @@ test('Core PWA manifest recognises the Workspace installation behind Firebase', 
         fireux: {
           name: 'Misebox',
           workspaces: ['kitchen'],
-          workspaceConfig: {
-            kitchen: { origin: 'https://workspace.misebox.app' },
-          },
+          workspaceConfig,
         },
       },
     }),
+    () => ({ theme }),
+    resolveAppTheme,
     { pwaIcon192: '/192.png', pwaIcon512: '/512.png' },
     (value) => value
   )
@@ -109,9 +136,29 @@ test('Core PWA manifest recognises the Workspace installation behind Firebase', 
   const manifest = handler(request)
   assert.equal(manifest.name, 'Misebox Workspace')
   assert.equal(manifest.start_url, '/')
+  assert.equal(manifest.theme_color, theme.palette.accent)
+  assert.equal(manifest.background_color, theme.palette.canvas)
   const foreign = event('other.example')
   foreign.path = request.path
   assert.equal(handler(foreign).name, 'Misebox')
+
+  // Current Misebox uses the ordinary same-host Workspace entrance.
+  workspaceConfig = {}
+  const sameHost = event('misebox.app')
+  sameHost.path =
+    '/manifest.webmanifest?surface=workspace&start_url=%2Fworkspace%2Fkitchen'
+  assert.equal(handler(sameHost).name, 'Misebox Workspace')
+  assert.equal(handler(sameHost).start_url, '/workspace/kitchen')
+  for (const startUrl of ['/workspace/kitchen/team', '//other.example']) {
+    sameHost.path = `/manifest.webmanifest?surface=workspace&start_url=${encodeURIComponent(startUrl)}`
+    assert.equal(handler(sameHost).name, 'Misebox')
+    assert.equal(handler(sameHost).start_url, '/')
+  }
+  theme = undefined
+  assert.equal(handler(sameHost).theme_color, '#0f172a')
+  assert.equal(handler(sameHost).background_color, '#ffffff')
+  theme = { palette: { accent: 'invalid' } }
+  assert.throws(() => handler(sameHost), /exactly eight 6-digit/)
 })
 test('App-only hostname presentation uses native forwarded-origin options', () => {
   for (const path of [

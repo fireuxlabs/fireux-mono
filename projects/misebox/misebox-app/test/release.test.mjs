@@ -14,6 +14,7 @@ import {
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { execFileSync } from 'node:child_process'
+import { writeAppAssetFixture } from '../../../../packages/core/fireux-core/src/test/fixtures/app-assets.mjs'
 import {
   validateConfig,
   prepareManifest,
@@ -283,6 +284,8 @@ test('output preparation is repeatable and preflight detects stale output/enviro
     /discovery dependencies are incomplete/
   )
   await discoveryFixture(root)
+  await assert.rejects(checkOutput(root), /img\/app\/logo.png: Missing file/)
+  await writeAppAssetFixture(resolve(root, '.output/public'))
   await checkOutput(root)
   const binary = resolve(
     root,
@@ -518,10 +521,13 @@ test('native preflight selects development without running production tests; def
     resolve(repo, 'tools/firebase-release'),
     { recursive: true }
   )
-  const coreRules = 'packages/core/fireux-core/src/config/firebase/rules'
-  await cp(resolve(sourceRepo, coreRules), resolve(repo, coreRules), {
-    recursive: true,
-  })
+  // Reuse Core's validator, Rules composer and installed dependencies together.
+  await mkdir(resolve(repo, 'packages/core'), { recursive: true })
+  await symlink(
+    resolve(sourceRepo, 'packages/core/fireux-core'),
+    resolve(repo, 'packages/core/fireux-core'),
+    'dir'
+  )
   const policyRoot = 'packages/ecosystem/fireux-misebox/src/config/firebase'
   await mkdir(resolve(repo, policyRoot), { recursive: true })
   await cp(
@@ -546,6 +552,7 @@ test('native preflight selects development without running production tests; def
   )
   await mkdir(resolve(root, '.output/server'), { recursive: true })
   await mkdir(resolve(root, '.output/public/_nuxt'), { recursive: true })
+  await writeAppAssetFixture(resolve(root, '.output/public'))
   await writeFile(
     resolve(root, '.output/nitro.json'),
     JSON.stringify({
