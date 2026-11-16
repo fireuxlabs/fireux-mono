@@ -68,6 +68,48 @@ navigation needed when switching. There is no second `useXWorkspaceSelection`
 forwarding API. Core routing normalizes the supplied family without a domain
 alias table; Apps and route metadata provide canonical family names.
 
+## Operational default currency
+
+The selected Workspace Entity owns its operational currency; a Place does not
+provide financial authority. Business can link several Places, while Portfolio,
+Project and Blank need no direct Place. A geographical relationship must not be
+required merely to configure an Entity's money settings.
+
+- The common storage contract is optional root `default_currency_code`, separate
+  from public Identity and record-specific money. Use a normalized currency code
+  accepted by the consuming monetary contract. An unused value need not be
+  populated, and non-monetary families need no empty capability scaffolding.
+- The Entity's operational settings and existing exact-authority command own
+  editing. Shared controls do not acquire another Entity or grant write access.
+  A monetary flow needs an explicit offer/record currency or a confirmed Entity
+  default; it must not invent CHF, GBP or an actor/App/locale-derived value.
+- Place/country information can suggest an initial value for confirmation. It
+  is not ongoing inheritance: changing a Place does not change the Entity's
+  denomination. A non-financial Place need not have currency metadata.
+- A default chooses initial values; it does not constrain an Entity to one
+  transaction currency. Product prices, supplier prices, valuations, bookings,
+  reservations and financial facts retain their own currency contracts.
+- Changing a default never converts or relabels existing monetary data. Where
+  retained prices are bare numbers, the owner must prevent a default change from
+  reinterpreting them. Any repricing, currency adoption or stored-data cutover
+  requires its own reviewed scope and authority; no migration is implied here.
+
+Current Kitchen [ordering](../../packages/extensions/fireux-kitchens/src/runtime/menu/server/ordering.ts)
+and presentation still read the same-ID Place through
+[`readPlaceCurrencyCode`](../../packages/extensions/fireux-places/src/runtime/place/utils/place-spine.ts).
+That is an implementation conflict to reconcile across Kitchen and Place, not
+the shared ownership rule. Preserve existing denomination during that alignment;
+do not silently replace missing data with a geographical guess. Place onboarding's
+current currency requirement is likewise not a requirement for all Places.
+
+Record-specific evidence includes Finance's
+[`FinancialMoney`](../../packages/extensions/fireux-finance/src/runtime/models/money.model.ts),
+[ProductPrice](../../packages/extensions/fireux-products/src/runtime/product/models/product-price.model.ts),
+and [Property Reservation totals](../../packages/extensions/fireux-reservations/src/runtime/property/models/reservation.model.ts).
+Property's valuation currency is a valuation fact, not its operational default.
+Current source determines which domains have adopted this setting; this contract
+does not claim every stored Entity or editor is already aligned.
+
 ## Selected identity in navigation
 
 Kitchen `Workspace/Navigation/Index.vue` and Project `Workspace/Navigation.vue`
@@ -373,7 +415,9 @@ Its optional `user_id` links an account. Onboarding can use the UID as the
 initial member's document ID, and ordinary Team creation generates a member ID.
 Kitchen's root model contains
 `id` and nested `identity.{slug,status,visibility,source?}`. Shared venue
-profile and currency remain on the linked same-id Place.
+profile remains on the linked same-id Place. Current Kitchen currency reads also
+use that Place, pending alignment with the
+[Entity-owned operational currency contract](#operational-default-currency).
 Core's `workspace/server/team/roles.ts` receives a required `TeamRolePolicy`
 from each domain's existing `server/team/roles.ts` boundary (Blank retains its
 App-local `server/utils/blank/team/roles.ts`). The policy owns fixed IDs, labels
@@ -660,8 +704,9 @@ account avatars remain reader metadata.
 Identity and Team are universal capability responsibilities, not universal
 industry schemas. Kitchen and Project prove different Identity shapes: Project
 edits its own name, description and image; Kitchen composes Kitchen identity with
-its same-id Place. Address, contact, business hours, currency and timezone stay
-Place-owned. No shared Identity-field model is required by these consumers.
+its same-id Place. Address, contact, business hours and timezone stay Place-owned;
+operational currency follows the [Entity-owned contract](#operational-default-currency).
+No shared Identity-field model is required by these consumers.
 
 Core’s [Team Editor](../../packages/core/fireux-core/src/runtime/workspace/components/Team/Editor.vue)
 opens the existing searchable roster in read-only mode for an AI Read. Kitchen
@@ -1195,8 +1240,10 @@ stays contextual. The focused listing page composes URL, status and directory
 visibility controls. Venue profile
 owns the current-value venue sections. Focused side panels
 compose the Place-owned inline editors also used by the public Place edit route. The Kitchen Workspace
-passes its explicit mutation authority. Currency remains Place-owned; Kitchen
-retains its separate palette controls; the public Place route retains Place access and return navigation.
+passes its explicit mutation authority. Its current Place currency editor is an
+existing implementation to reconcile with [operational currency ownership](#operational-default-currency),
+not authority for new monetary flows. Kitchen retains its separate palette
+controls; the public Place route retains Place access and return navigation.
 Project Home, navigation, selection and Identity use the saved Project profile.
 Both Workspace families retain their Identity editors.
 

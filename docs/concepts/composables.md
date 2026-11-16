@@ -396,20 +396,19 @@ is not a required template for them.
 
 ## Shared prices and Orders responsibilities
 
-Kitchen Sellables retain separate base commercial terms from Menu placement.
-`kitchen/utils/sellable.ts` owns pure terms validation and detached copying for
-client drafts, saved-record projections and the trusted terms writer. Direct
-`kitchen/server/sellables/bind.ts` and `update-terms.ts` actions capture reviewed
-forms, prices and revisions before actor waits; API adapters import those owners
-without a forwarding command barrel. Existing unbound Menu commercial fields
-remain the explicit adoption transition, rather than a fallback for bound items.
-
-`useKitchenSellableTerms` uses Core live read outcomes and existing exact
-membership-bound Kitchen selection. Its ready record is the authoritative read
-projection; an explicitly local editor seed keeps already-mounted dirty fields
-through a same-owner refresh and revision change. Account, App, membership,
-access, record and editing changes invalidate preparation and obsolete feedback.
-A committed result remains truthful even when its old editing surface is gone.
+Kitchen selling defaults belong to
+[ItemOffer](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/item/offer.ts),
+separately from reusable Item identity and Menu placement. Shared
+[item pricing](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/item-pricing.ts)
+owns pricing normalization and validation; trusted
+[Item creation](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/items/create.ts)
+and [update](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/items/update.ts)
+commands retain write authority. Menu-owned
+[placements](../../packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-item.model.ts)
+reference Items through `dish_id`; the
+[manifest projection](../../packages/extensions/fireux-kitchens/src/runtime/menu/server/manifest/sections.ts)
+and ordering consumers resolve those Item selling values. These are Item-owned
+terms, not a separate Sellable or offer Entity.
 
 The routed [Orders Board](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Orders/Board.vue)
 owns submitted-order polling and combines those results with saved drafts from

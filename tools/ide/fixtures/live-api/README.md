@@ -6,6 +6,9 @@ Project uses the existing Workspace, Workspace Team and Team summary consumers,
 plus the FireUX App's real Team GET and command adapters. Core's Firebase module,
 `useApiRead`, native `useAsyncData`, bearer verification, feed and Admin listeners
 are exercised directly. The small fixture presentation exposes their state.
+Kitchen also mounts the actual `useMenu` reader through the real Menu adapter,
+using the Kitchen owner's canonical published specials seed recipe. The reusable
+Item stays in `dishes`; the dated Section's placement stores only its reference.
 
 The fixture is shared verification tooling, outside package compilation. It
 generates Apps and Firebase configuration under
@@ -55,6 +58,18 @@ Inspect the network to confirm one feed connection per browser App and continued
 ordinary JSON reads. Confirm SSR HTML contains Kitchen names and hydration does
 not issue duplicate initial Kitchen JSON requests.
 
+The canonical special is `kitchens/place-000/menus/special-menu`, with slug
+`specials` and a published selection for `2099-11-23`. This future date exercises
+the existing next-published-special rule without depending on the operator's
+current date. `useMenu('specials', …)` reads its actual directory route scope.
+The `menu-manifest` element displays the returned safe manifest, including Daily
+date/publication, Item identity, price, choices and presentation currency.
+The `directory-special-place-000` and `selected-special-place-000` elements
+display the same Item through the actual Kitchen special preview. Place currency
+uses `default_currency_code`; Kitchen identity includes active status and public
+visibility. The existing exact Offering query is empty in this minimum browse
+fixture; no ordinary service or order capability is implied.
+
 Use one browser's controls while watching another:
 
 - Change Kitchen name; both its exact reader and directory must update.
@@ -62,6 +77,25 @@ Use one browser's controls while watching another:
   safe DTO must not trigger another browser JSON read or expose the private marker.
 - Burst Kitchen names; the final value must arrive. Record comparison and JSON
   counts instead of assuming one evaluation for all commits.
+- Change Item price and options: canonical `dishes/roll` changes from price `25`
+  to `27`, and its `Extra aioli` option changes from `2` to `3`. Both the Menu
+  manifest and Kitchen special preview must update from the same reusable Item.
+  The placement must not gain copied price, name, image or choice fields.
+- Change the private Item field; neither DTO nor the DOM may expose the Item,
+  Menu or Kitchen private marker. An unchanged safe DTO must not cause another
+  browser JSON read.
+- Withdraw the special date; the Kitchen preview disappears and the canonical
+  Menu reports an unpublished date with no Sections. Unpublish the Menu itself;
+  the actual detail request must return `404`. Restore publication and confirm
+  recovery in both readers without a reload.
+- Set the local Item image while image display is disabled; the Kitchen preview
+  keeps its image empty. Enable Item images and verify the preview receives the
+  local image and the canonical Menu's presentation opts in. Disable it again.
+  The only fixture image is the local `/fixture-item.svg`; no remote asset or
+  provider request is required.
+- Change Place currency to EUR, then reset to CHF; both the Menu presentation
+  and special preview must follow the canonical Place field. Existing Change
+  Kitchen name controls similarly exercise the Place-owned venue name.
 - Switch Kitchen scope; the selected reader must drop its old scope and show only
   the new Place. Toggle consumers off and confirm all feed listeners are released.
 - Sign in on Project, select Project A, and create a Team member through the real
@@ -85,8 +119,9 @@ source pooling includes native Firestore/database identity.
 fixture source, with a JSON body such as `{"operation":"team-name"}`. It performs
 local Admin mutations so changes can originate from a second browser without
 weakening production command authority. `GET /api/app/status` is an ordinary
-unwrapped JSON read. The fixture does not exercise translation provider branches;
-no billable translation request is needed or allowed for this proof.
+unwrapped JSON read. Sproochli integration is explicitly disabled in the seed.
+The fixture does not exercise translation provider branches; no billable
+translation request is needed or allowed for this proof.
 
 ## Read and listener costs
 

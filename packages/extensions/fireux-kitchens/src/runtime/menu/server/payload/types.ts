@@ -16,7 +16,6 @@ export type MenuPayloadScope = {
     date: string
     timezone: string
     nextChangeAt: number
-    refreshAfterMs: number
     published: boolean
   }
   kitchenTimezone?: string

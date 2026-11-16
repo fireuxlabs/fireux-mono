@@ -330,3 +330,81 @@ test('the Project source declarations drive roster changes and retain only exact
   assert.equal(pool.size, 0)
   assert.ok([...h.db.references.values()].every((ref) => ref.active === 0))
 })
+
+test('Project Team declares exact linked Users in the identity database and observes missing identity recovery', async (t) => {
+  const h = fixture()
+  h.db.values.set('projects/project-one/team/duplicate', {
+    name: 'Duplicate stored name',
+    user_id: 'user-one',
+    role_ids: [],
+  })
+  h.db.values.set('projects/project-one/team/missing', {
+    name: 'Missing stored name',
+    user_id: 'user-missing',
+    role_ids: [],
+  })
+  h.db.values.set('users/user-one', {
+    display_name: 'Wrong database identity',
+    handle: 'wrong-database',
+  })
+  const projection = await captureLiveProjection(h.url, h.dispatch)
+  const identities = projection.initial.sources.filter(
+    ({ source }) => source.firestore === h.identityDb
+  )
+  assert.deepEqual(identities.map(({ source }) => source.path).sort(), [
+    'users/user-missing',
+    'users/user-one',
+  ])
+  assert.ok(identities.every(({ authority }) => authority === false))
+  assert.equal(projection.initial.sources.length, 7)
+  assert.deepEqual(h.identityDb.reads, [
+    { batch: ['users/user-one', 'users/user-missing'] },
+  ])
+  assert.equal(h.db.references.has('users/user-one'), false)
+  const events = [],
+    pool = new LiveProjectionSourcePool()
+  const subscription = subscribeLiveProjection({
+    id: 'project-team-identity',
+    projection,
+    version: projection.initial.version,
+    pool,
+    send: (event) => events.push(event),
+  })
+  t.after(() => subscription.stop())
+  await subscription.ready
+  const user = h.identityDb.references.get('users/user-one')
+  const missing = h.identityDb.references.get('users/user-missing')
+  assert.equal(user.active, 1, 'duplicate Team links share one native source')
+  assert.equal(missing.active, 1, 'missing User documents remain watched')
+  assert.equal(pool.size, 7)
+  const member = (id) => h.responses.at(-1).members.find((row) => row.id === id)
+  assert.equal(member('linked').name, 'Alpha')
+  assert.equal(member('missing').linked, false)
+
+  h.identityDb.values.get('users/user-one').display_name = 'Remote identity'
+  user.emit()
+  await until(() => member('linked').name === 'Remote identity')
+  assert.equal(member('duplicate').name, 'Remote identity')
+  assert.ok(events.some((event) => event.type === 'change'))
+
+  h.identityDb.values.set('users/user-missing', {
+    display_name: 'Recovered identity',
+    handle: 'recovered',
+  })
+  missing.emit()
+  await until(() => member('missing').linked)
+  assert.equal(member('missing').name, 'Recovered identity')
+  assert.equal(member('missing').userId, 'user-missing')
+
+  h.identityDb.values.delete('users/user-one')
+  user.emit()
+  await until(() => !member('linked').linked)
+  assert.equal(member('linked').name, 'Stored Name')
+  assert.equal(member('duplicate').name, 'Duplicate stored name')
+  assert.equal(user.active, 1)
+  subscription.stop()
+  assert.equal(pool.size, 0)
+  assert.ok(
+    [...h.identityDb.references.values()].every((ref) => ref.active === 0)
+  )
+})

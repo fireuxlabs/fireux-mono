@@ -86,6 +86,9 @@ async function prepare() {
     await cp(join(source, 'server'), join(appRoot, 'server'), {
       recursive: true,
     })
+    await cp(join(source, 'public'), join(appRoot, 'public'), {
+      recursive: true,
+    })
     const core = join(repo, 'packages/core/fireux-core/src')
     const kitchen = join(repo, 'packages/extensions/fireux-kitchens/src')
     const projectRoutes = join(
@@ -104,6 +107,12 @@ async function prepare() {
         'get',
         `${kitchen}/runtime/server/api/kitchens/index.get.ts`,
       ],
+      ['/api/menus', 'get', `${kitchen}/runtime/server/api/menus/index.get.ts`],
+      ...['get', 'options'].map((method) => [
+        '/api/menus/:menuId',
+        method,
+        `${kitchen}/runtime/server/api/menus/[menuId].${method}.ts`,
+      ]),
       ...['get', 'post'].map((method) => [
         '/api/internal/control/projects/:projectId/team',
         method,

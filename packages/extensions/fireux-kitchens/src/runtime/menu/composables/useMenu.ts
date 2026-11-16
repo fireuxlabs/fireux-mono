@@ -205,7 +205,7 @@ export function useMenu(
   let rollover: ReturnType<typeof setTimeout> | undefined
   if (import.meta.client) {
     watch(
-      () => manifest.value?.content.daily?.refreshAfterMs,
+      () => manifest.value?.content.daily?.nextChangeAt,
       (boundary) => {
         if (rollover) clearTimeout(rollover)
         if (boundary)
@@ -214,7 +214,7 @@ export function useMenu(
               state.data.value = null
               void state.refresh()
             },
-            Math.max(0, boundary) + 100
+            Math.max(0, boundary - Date.now()) + 100
           )
       },
       { immediate: true }

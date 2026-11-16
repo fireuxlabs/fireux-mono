@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
 import { getFirestore } from 'firebase-admin/firestore'
+import { fixtureMenuRecords } from './server/utils/menu-records.mjs'
 
 const projectId = 'demo-fireux-live'
 if (
@@ -82,19 +83,26 @@ for (let offset = 0; offset < count; offset += 200) {
     const id = `place-${String(index).padStart(3, '0')}`
     batch.set(kitchens.doc(`places/${id}`), {
       name: `${id} initial`,
+      place_type: 'physical',
       timezone: 'Europe/Zurich',
-      currency_code: 'CHF',
+      default_currency_code: 'CHF',
       country_code: 'CH',
     })
     batch.set(kitchens.doc(`kitchens/${id}`), {
-      identity: { slug: id, visibility: true },
+      identity: { slug: id, status: 'active', visibility: true },
       services: { item_images: false },
       context: 'PRIVATE_KITCHEN_MARKER',
+      created: stamp,
+      updated: stamp,
     })
   }
   await batch.commit()
 }
+const menuBatch = kitchens.batch()
+for (const [path, record] of fixtureMenuRecords(stamp))
+  menuBatch.set(kitchens.doc(path), record)
+await menuBatch.commit()
 console.log(
-  `Seeded ${count} Kitchens, two Projects and one Auth actor in ${projectId}; named databases misebox/fireux/live-identity. No translation provider branch is exercised.`
+  `Seeded ${count} Kitchens, a canonical published special with a reusable Item, two Projects and one Auth actor in ${projectId}; named databases misebox/fireux/live-identity. Sproochli is disabled; no translation provider branch is exercised.`
 )
 await Promise.all([db.terminate(), kitchens.terminate(), identity.terminate()])

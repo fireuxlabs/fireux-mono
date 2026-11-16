@@ -18,7 +18,8 @@ export async function readProjectTeam(
   const team = await query.get()
   const enriched = await enrichTeamMembers(
     team.docs.map((row) => ({ id: row.id, data: row.data() })),
-    getRuntimeIdentityFirestore()
+    getRuntimeIdentityFirestore(),
+    sources
   )
   const members = enriched
     .map(({ memberId, ...member }) => ({ id: memberId, ...member }))

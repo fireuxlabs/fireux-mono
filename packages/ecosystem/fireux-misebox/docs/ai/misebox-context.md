@@ -1130,13 +1130,30 @@ applies only while the page-canvas Menu surface exists. Brand `--ui-*` tokens
 stay on the surface and must not persist on the host body after returning to
 the Menu chooser. `menu-theme-surface.test.mjs` covers that boundary.
 
-Place owns `default_currency_code`; Menu creation, imports, Sellables and
-customer payloads read it from the linked same-id Place. Kitchen creation does
-not copy it. Unset currency blocks tools that require prices until an operator
-sets it through the Place command. Order context validation rechecks the Place
-snapshot before commit; historical Orders and Sales retain their saved currency.
-Changing shared currency does not convert existing commercial terms. Their
-existing mismatch validation remains in force.
+The [shared operational currency rule](../../../../../docs/concepts/family-workspace-entity.md#operational-default-currency)
+assigns optional root `default_currency_code` to the selected Workspace Entity.
+Place geography may suggest an initial value for confirmation; it is not ongoing
+currency authority. Current Kitchen readers/editors are **not yet aligned**:
+Menu creation, imports, Item selling terms and customer payloads still read the linked
+same-ID Place, Kitchen creation does not copy the value, and the current Place
+command edits it. Order validation still rechecks that Place snapshot. Other
+Place-currency descriptions in this context describe that current implementation,
+not the accepted ownership rule.
+
+Kitchen Items and choices retain bare-number prices. The cutover must preserve
+explicitly verified denomination and refuse clearing/changing a currency when
+that would relabel retained prices. Historical Orders, Sales and other monetary
+facts retain their saved currency; defaults never convert or rewrite them. The
+retained denomination owner is the existing `kitchen/item/offer.ts` ItemOffer.
+Its accepted adoption contract adds explicit `currency_code` covering base,
+choice prices and bottle deposit in their existing amount units; current runtime
+has not implemented it. New priced terms capture denomination atomically from
+reviewed input or the confirmed Kitchen default. Menu placement stays a reference,
+and single-currency publication/ordering must reject mixed or unresolved offers.
+Default-change guards must cover all retained dependent bare terms, including
+concurrent writes, rather than only active/visible Menus. See
+`docs/concepts/family-menu.md#item-offer-denomination`. No parallel Sellable layer,
+runtime migration, country inference or live backfill follows from this decision.
 
 ### Theme and capability entitlement decisions
 

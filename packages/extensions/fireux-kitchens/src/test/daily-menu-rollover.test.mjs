@@ -29,11 +29,12 @@ test('the mounted reader clears yesterday and refreshes once at the server date 
   const scope = effectScope(),
     timers = [],
     cleared = []
-  let refreshes = 0
+  let refreshes = 0,
+    clockNow = 0
   const state = {
     data: ref({
       kind: 'manifest',
-      manifest: { content: { daily: { refreshAfterMs: 1234 } } },
+      manifest: { content: { daily: { nextChangeAt: 1234 } } },
     }),
     pending: ref(false),
     error: ref(null),
@@ -43,6 +44,7 @@ test('the mounted reader clears yesterday and refreshes once at the server date 
     },
   }
   const deps = {
+    Date: { now: () => clockNow },
     computed,
     ref,
     toValue,
@@ -77,18 +79,31 @@ test('the mounted reader clears yesterday and refreshes once at the server date 
   assert.equal(
     timers[0].delay,
     1334,
-    'Uses server duration, not the visitor clock'
+    'Schedules from the absolute server boundary'
+  )
+  clockNow = 1000
+  state.data.value = {
+    kind: 'manifest',
+    manifest: { content: { daily: { nextChangeAt: 1234 } } },
+  }
+  await nextTick()
+  assert.equal(
+    timers.length,
+    1,
+    'same absolute boundary does not restart the timer on a content refresh'
   )
   timers[0].callback()
   assert.equal(state.data.value, null)
   assert.equal(refreshes, 1)
   await nextTick()
+  clockNow = 1000
   state.data.value = {
     kind: 'manifest',
-    manifest: { content: { daily: { refreshAfterMs: 86400000 } } },
+    manifest: { content: { daily: { nextChangeAt: 86400000 } } },
   }
   await nextTick()
   assert.equal(timers.length, 2)
+  assert.equal(timers[1].delay, 86400000 - clockNow + 100)
   scope.stop()
   assert.ok(cleared.includes(2))
 })

@@ -2,6 +2,12 @@ import { getAuth } from 'firebase-admin/auth'
 import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { assertFixture, feeds, resetMetrics } from '../../utils/metrics'
+import {
+  fixtureItemChoices,
+  fixtureItemPath,
+  fixtureMenuDate,
+  fixtureMenuPath,
+} from '../../utils/menu-records.mjs'
 
 export default defineEventHandler(async (event) => {
   assertFixture()
@@ -42,6 +48,39 @@ export default defineEventHandler(async (event) => {
     await db
       .doc('projects/project-a/team/local')
       .update({ name: `Team changed ${suffix}` })
+  else if (operation === 'item-pricing' || operation === 'reset-item-pricing')
+    await kitchens.doc(fixtureItemPath).update({
+      price: operation === 'item-pricing' ? 27 : 25,
+      choice_groups: fixtureItemChoices(operation === 'item-pricing' ? 3 : 2),
+    })
+  else if (operation === 'item-private')
+    await kitchens
+      .doc(fixtureItemPath)
+      .update({ context: `PRIVATE_ITEM_MARKER ${suffix}` })
+  else if (operation === 'withdraw-special')
+    await kitchens.doc(fixtureMenuPath).update({ published_dates: [] })
+  else if (operation === 'draft-special')
+    await kitchens.doc(fixtureMenuPath).update({ status: 'draft' })
+  else if (operation === 'publish-special')
+    await kitchens
+      .doc(fixtureMenuPath)
+      .update({ status: 'published', published_dates: [fixtureMenuDate] })
+  else if (operation === 'item-image')
+    await kitchens.doc(fixtureItemPath).update({ image: '/fixture-item.svg' })
+  else if (
+    operation === 'enable-item-images' ||
+    operation === 'disable-item-images'
+  )
+    await kitchens
+      .doc('kitchens/place-000')
+      .update({ 'services.item_images': operation === 'enable-item-images' })
+  else if (
+    operation === 'place-currency' ||
+    operation === 'reset-place-currency'
+  )
+    await kitchens.doc('places/place-000').update({
+      default_currency_code: operation === 'place-currency' ? 'EUR' : 'CHF',
+    })
   else if (operation === 'identity-name')
     await identity
       .doc('users/linked-user')

@@ -217,6 +217,11 @@ hiding it in Vue is not authorization. Routes and UI availability grant no
 mutation authority. Protected writes use a named trusted command that validates
 the exact target.
 
+Workspace operational currency belongs to the selected Entity, independently
+of Place geography. Follow the shared [currency boundary](../concepts/family-workspace-entity.md#operational-default-currency)
+for optional defaults, domain editing authority and separately denominated
+prices and financial records.
+
 Supported mutable readers deliver authorized record changes to open pages by
 default, including changes made in another browser. Domains declare safe
 projections, exact scope and authority; Core owns shared connection, refresh,

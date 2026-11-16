@@ -198,3 +198,22 @@ test('specials choose today before the next release, expire locally and leave or
     false
   )
 })
+
+test('daily public metadata and fingerprints stay stable within a venue day', () => {
+  for (const purpose of [undefined, 'specials']) {
+    const menu = { purpose, published_dates: ['2026-11-23'] }
+    const first = dailyMenuSelection(
+      menu,
+      'Europe/Zurich',
+      new Date('2026-11-16T10:00:00Z')
+    )
+    const later = dailyMenuSelection(
+      menu,
+      'Europe/Zurich',
+      new Date('2026-11-16T10:15:00Z')
+    )
+    assert.deepEqual(later, first)
+    assert.equal('refreshAfterMs' in first, false)
+    assert.equal(first.nextChangeAt, Date.parse('2026-11-16T23:00:00Z'))
+  }
+})

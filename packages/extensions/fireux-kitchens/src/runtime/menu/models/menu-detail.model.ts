@@ -69,7 +69,6 @@ export type MenuManifestContent = {
     date: string
     timezone: string
     nextChangeAt: number
-    refreshAfterMs: number
     published: boolean
   }
   sections: MenuManifestSection[]

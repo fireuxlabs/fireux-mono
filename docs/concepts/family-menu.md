@@ -353,7 +353,8 @@ See `menu-process-composition.test.mjs` and `menu-import-media-gate.test.mjs`.
 
 Menu presentation is resolved, not copied:
 
-1. Place owns venue currency; Kitchen resolves it through its linked Place.
+1. Current currency readers still resolve the linked Place; they are not yet
+   aligned with the [entity-owned default and offer denomination contract](#item-offer-denomination).
    Kitchen owns its four-role `theme.palette`: canvas, text, accent and accent
    contrast. Basic colour editing is available on every plan.
 2. Kitchen-owned Menus consume those colours directly; they store no theme,
@@ -413,6 +414,35 @@ instance. Menu-owned `useKitchenMenuRead` resolves the exact slug with a bounded
 live query, rejects duplicate matches and rebinds with account/App scope. The Menus collection controller retains selection and creation,
 while section items retain their focused item/Item workflow. See the
 Misebox context and `menu-record-controller.test.mjs` for this boundary.
+
+## Item offer denomination
+
+The [Workspace operational currency rule](family-workspace-entity.md#operational-default-currency)
+assigns the optional default to the selected Kitchen root. Retained selling
+terms belong to the existing
+[`ItemOffer`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/item/offer.ts),
+not a new offer Entity, a Menu placement or a retired Sellable runtime.
+
+The accepted adoption contract adds explicit `currency_code` to those Item
+selling terms. One denomination covers the base price, all choice option prices
+and bottle deposit, preserving their existing ordinary-amount units. New priced
+terms capture that denomination atomically from reviewed input or the confirmed
+Kitchen default. Menu placement remains an Item reference. Publication and
+ordering consume canonical offer denomination and retain the current
+single-currency Menu validation; mixed or unresolved offers cannot be relabelled
+to fit a default. Promotions, Orders, Sales and Payments retain their existing
+explicit currency contracts, which require separate policy review.
+
+**Current implementation is not yet aligned:** `ItemOffer` has no currency field,
+and Kitchen/Menu readers and editors still consume Place-backed currency. Stored
+bare-number terms need reviewed denomination adoption with retained preimages;
+country, current default or a new field alone cannot prove historical currency.
+Default changes must never reinterpret existing prices. The initial guard must
+transactionally reject clearing/changing an established default while retained
+bare terms depend on it, including terms outside visible/active Menus and
+concurrent term writes. Default and offer-write owners must participate in that
+same consistency boundary. No automatic conversion, amount rewriting, runtime
+cutover or live migration is authorized by this design contract.
 
 ## File responsibilities and input contracts
 
@@ -565,9 +595,11 @@ copies content only; it never publishes the destination.
 Tenant and Kitchen-directory Menu/QR routes read that canonical Menu.
 Public reads resolve today using the linked Place timezone, return only explicitly
 published selections for that date, and show an empty-day message without falling
-back to past or future content. The server supplies the next local date boundary;
-the mounted reader clears old content and refreshes once at that boundary, with
-scope disposal. Existing live reads reflect edits and date withdrawal. Withdrawing
+back to past or future content. The server supplies the absolute next local date boundary as `nextChangeAt`,
+not a relative countdown that changes on every read. The mounted reader derives
+its delay from that instant, clears old content and refreshes once at the boundary,
+with scope disposal. Unchanged public content therefore retains a stable live
+projection fingerprint within the venue day. Existing live reads reflect edits and date withdrawal. Withdrawing
 one date preserves other published dates and the doorway. Daily Menus are browse-only:
 public order entrances, service links and transactional submission remain blocked.
 

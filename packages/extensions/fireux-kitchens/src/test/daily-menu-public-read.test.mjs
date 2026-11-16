@@ -113,7 +113,6 @@ test('canonical Menu uses its published-date gate and expose no private sections
       date: '2026-10-15',
       timezone: 'Europe/Zurich',
       nextChangeAt: 123,
-      refreshAfterMs: 100,
       published,
     }
     const deps = {

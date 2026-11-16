@@ -39,7 +39,6 @@ export function dailyMenuToday(
     date,
     timezone,
     nextChangeAt: high,
-    refreshAfterMs: high - now.getTime(),
     published: publishedMenuDates(menu.published_dates).includes(date),
   }
 }
