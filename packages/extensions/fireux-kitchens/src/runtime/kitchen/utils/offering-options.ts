@@ -1,5 +1,5 @@
-import type { KitchenOrderType } from '../models/offering-interaction-types.model'
-import type { KitchenOffering } from '../models/offering.model'
+import type { KitchenOrderType } from './interaction-types'
+import type { KitchenOffering } from './offering-policy'
 import { tableServiceChannel, tableChannelEnabled } from './table-service'
 
 /** Operator-facing choices over the existing named Kitchen offerings. */

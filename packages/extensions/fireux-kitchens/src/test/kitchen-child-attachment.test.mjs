@@ -189,7 +189,7 @@ test('Root preimages cannot appear as attachment or fulfilment authority in the 
   const safeString = (value) => String(value || '')
   const helpers = load(
     'kitchen/utils/kitchen-interface-projection.ts',
-    '({meaningfulSurfaceDelta,placeBaselineKeys,resolveKitchenPath})',
+    '({resolveKitchenPath})',
     { safeString }
   )
   const readKitchenVisibility = load(

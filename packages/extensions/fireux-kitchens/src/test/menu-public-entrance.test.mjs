@@ -24,6 +24,78 @@ const template = (source) =>
     source.indexOf('<template>') + 10,
     source.lastIndexOf('</template>')
   )
+const collectionCellSource = readFileSync(
+  new URL(
+    '../runtime/kitchen/utils/kitchen-interface-projection.ts',
+    import.meta.url
+  ),
+  'utf8'
+)
+const toKitchenCollectionCell = compileFunction(
+  stripTypeScriptTypes(
+    collectionCellSource
+      .replace(/^import[^\n]+\n/gm, '')
+      .replace(/^export /gm, '')
+  ) + ';return toKitchenCollectionCell'
+)()
+
+test('public Kitchen routes retain the shared host layout and its single page landmark', async () => {
+  const routeMeta = (path) => {
+    const source = readFileSync(
+      new URL('../runtime/pages/' + path, import.meta.url),
+      'utf8'
+    )
+    const declaration = source.match(/definePageMeta\((\{[\s\S]*?\})\)/)
+    assert.ok(declaration, path)
+    return compileFunction('return ' + declaration[1])()
+  }
+  for (const path of [
+    'kitchens/index.vue',
+    'menus/index.vue',
+    'kitchens/[slug]/index.vue',
+    'kitchens/[slug]/menu.vue',
+    'kitchens/[slug]/menu.collection.vue',
+    'kitchens/[slug]/menu.delivery.vue',
+  ])
+    assert.equal(routeMeta(path).layout || 'default', 'default', path)
+  assert.equal(routeMeta('kitchens/create.vue').layout, 'default')
+  assert.equal(routeMeta('kitchens/create.vue').requiresAuth, true)
+
+  const coreSource = (path) =>
+    readFileSync(
+      new URL(
+        '../../../../core/fireux-core/src/runtime/' + path,
+        import.meta.url
+      ),
+      'utf8'
+    )
+  const app = createSSRApp({
+    render: compile(template(coreSource('app/components/FireuxApp.vue'))),
+  })
+  const slotElement = (tag) => ({
+    setup: (_, context) => () => h(tag, context.slots.default?.()),
+  })
+  app.component('NuxtLayout', {
+    render: compile(template(coreSource('layouts/default.vue'))),
+  })
+  for (const name of ['UApp', 'UContainer', 'ClientOnly'])
+    app.component(name, slotElement('div'))
+  app.component('UMain', slotElement('main'))
+  app.component('NuxtPage', { render: () => h('article', 'Customer content') })
+  app.component('FireLayoutsDefaultHeader', {
+    render: () => h('header', { 'data-host-header': true }),
+  })
+  app.component('FireLayoutsDefaultFooter', {
+    render: () => h('footer', { 'data-host-footer': true }),
+  })
+  for (const name of ['DevOnly', 'FirePwaStatus', 'AppInitializationGate'])
+    app.component(name, { render: () => null })
+  const html = await renderToString(app)
+  assert.equal((html.match(/<main[\s>]/g) || []).length, 1, html)
+  assert.equal((html.match(/data-host-header/g) || []).length, 1, html)
+  assert.equal((html.match(/data-host-footer/g) || []).length, 1, html)
+  assert.match(html, /Customer content/)
+})
 function script(source) {
   return stripTypeScriptTypes(
     source
@@ -36,6 +108,9 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
   const cards = ['la-tapberne', 'luna-piccante', 'baeren-ringgenberg'].map(
     (slug) => ({
       name: slug,
+      tagline: '',
+      discoveryImageUrl: '',
+      shortAddress: '',
       hasPublishedMenu: slug !== 'luna-piccante',
       serviceLabels: ['Browse menus'],
       to: '/kitchens/' + slug,
@@ -43,11 +118,13 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
       categoryLabels: [],
     })
   )
-  const source = read('Collection/List.vue')
+  const source = read('Public/Collection/List.vue')
   const cells = compileFunction(script(source) + ';return cells.value', [
     'computed',
+    'ref',
     'defineProps',
-  ])(computed, () => ({ cards }))
+    'toKitchenCollectionCell',
+  ])(computed, ref, () => ({ cards }), toKitchenCollectionCell)
   const app = createSSRApp({
     setup: () => ({ cells, props: { cards } }),
     render: compile(template(source)),
@@ -55,14 +132,36 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
   app.component('UPageGrid', {
     setup: (_, ctx) => () => h('ul', ctx.slots.default?.()),
   })
-  app.component('UPageCard', {
-    props: ['to'],
-    setup: (props, ctx) => () =>
-      h('a', { href: props.to }, ctx.slots.footer?.()),
+  const cellSource = readFileSync(
+    new URL(
+      '../../../../core/fireux-core/src/runtime/components/Collection/Cell.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+  app.component('FireCollectionCell', {
+    props: ['cell'],
+    setup: (props) =>
+      compileFunction(
+        script(cellSource) +
+          ';return { NuxtLink, cardUi, avatarStyle, avatarUi }',
+        ['computed', 'defineProps', 'resolveComponent']
+      )(
+        computed,
+        () => props,
+        () => ({
+          props: ['to'],
+          setup: (link, ctx) => () =>
+            h('a', { href: link.to }, ctx.slots.default?.()),
+        })
+      ),
+    render: compile(template(cellSource)),
   })
-  app.component('UBadge', {
-    setup: (_, ctx) => () => h('span', ctx.slots.default?.()),
-  })
+  for (const name of ['UCard', 'UBadge', 'UPageCard', 'UAvatar'])
+    app.component(name, {
+      setup: (_, ctx) => () => h('div', ctx.slots.default?.()),
+    })
+  app.component('UIcon', { render: () => null })
   app.component('FireDiagnosticsDebugPanel', { render: () => null })
   const html = await renderToString(app)
   for (const card of cards)
@@ -70,6 +169,33 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
   assert.ok(!html.includes('/menus"'), html)
   assert.equal((html.match(/Browse menus/g) || []).length, 2)
   assert.ok(!html.includes('Service details not published'), html)
+})
+
+test('Kitchen discovery projection keeps supplied services and normalizes the Menu link', () => {
+  const card = {
+    name: 'La Tapberne',
+    tagline: 'Alpine Swiss Tapas',
+    discoveryImageUrl: '/pulpo.jpg',
+    shortAddress: 'Bern',
+    badges: ['Hidden'],
+    categoryLabels: ['Tapas'],
+    serviceLabels: ['Browse menus', 'Delivery', 'Delivery'],
+    hasPublishedMenu: true,
+    to: '/kitchens/la-tapberne/',
+  }
+  const cell = toKitchenCollectionCell(card)
+  assert.equal(cell.to, '/kitchens/la-tapberne/menu')
+  assert.deepEqual(cell.badges, ['Hidden', 'Tapas', 'Browse menus', 'Delivery'])
+  assert.equal(cell.image, card.discoveryImageUrl)
+  assert.deepEqual(card.serviceLabels, ['Browse menus', 'Delivery', 'Delivery'])
+
+  const unavailable = toKitchenCollectionCell({
+    ...card,
+    hasPublishedMenu: false,
+    to: '',
+  })
+  assert.equal(unavailable.to, '')
+  assert.ok(!unavailable.badges.includes('Browse menus'))
 })
 async function currency(service, place) {
   const spine = readFileSync(
@@ -136,6 +262,9 @@ for (const service of ['collection', 'delivery'])
         title: service,
         currencyCode: code,
         logoFailed: false,
+        prominent: false,
+        coverFailed: false,
+        coverUrl: '',
       }),
       render: compile(template(source)),
     })

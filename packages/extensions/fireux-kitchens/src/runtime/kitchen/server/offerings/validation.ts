@@ -4,7 +4,7 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import type {
   KitchenOffering,
   KitchenOfferingChanges,
-} from '../../models/offering.model'
+} from '../../utils/offering-policy'
 import { requireOperatingHours } from '../../utils/operating-hours'
 import { weekdayTimeCore } from '../../../utils/weekday-time-core'
 

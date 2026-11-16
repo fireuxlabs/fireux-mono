@@ -3,7 +3,7 @@
     focus="kitchen-ai.orders.board"
     label="Order board"
     context-label="Orders"
-  /><KitchenOrdersBoard />
+  /><WorkspaceKitchenOrdersBoard />
 </template>
 <script setup lang="ts">
 definePageMeta({

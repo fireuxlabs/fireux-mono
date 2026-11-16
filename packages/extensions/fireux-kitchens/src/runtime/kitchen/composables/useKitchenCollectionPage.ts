@@ -8,7 +8,7 @@ import { useCollectionPage } from 'fireux-core/runtime/composables/shared/useCol
 export function useKitchenCollectionPage() {
   const pageTitle = 'Kitchens'
   const { appName } = useFireUXConfig()
-  const { collection: kitchens, outcome, error } = useKitchens()
+  const { collection: kitchens, outcome, error, refresh } = useKitchens()
   useSeo({
     title: `${appName} | ${pageTitle}`,
     description:
@@ -23,5 +23,5 @@ export function useKitchenCollectionPage() {
       'Explore kitchens, discover their menus, and see what they are serving.',
     collection: { records: kitchens, outcome: outcome, error },
   })
-  return reactive({ ...toRefs(page), kitchens })
+  return reactive({ ...toRefs(page), kitchens, refresh })
 }

@@ -1,6 +1,6 @@
 import type { MenuRouteContext } from '../../models/menu-context.model.ts'
 import type { ScopedTargetKind } from '../ownership/target-types'
-import type { KitchenImageShade } from '../../../kitchen/models/kitchen-configuration.model.ts'
+import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type {
@@ -19,7 +19,7 @@ export type MenuPayloadScope = {
   }
   kitchenTimezone?: string
   kitchenId?: string
-  kitchenImageShade?: KitchenImageShade
+  kitchenImageShade?: PlaceImageShade
   kitchenImageUrl?: string
   kitchenLogoImageUrl?: string
   kitchenMediaBackdropColor?: string

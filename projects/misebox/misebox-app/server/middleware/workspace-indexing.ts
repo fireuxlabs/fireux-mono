@@ -5,11 +5,7 @@ export default defineEventHandler((event) => {
     xForwardedHost: true,
     xForwardedProto: true,
   })
-  if (
-    url.pathname === '/' ||
-    url.pathname === '/workspace' ||
-    url.pathname.startsWith('/workspace/')
-  ) {
+  if (url.pathname === '/workspace' || url.pathname.startsWith('/workspace/')) {
     setHeader(event, 'X-Robots-Tag', 'noindex, nofollow')
     setHeader(event, 'Cache-Control', 'no-store')
   }

@@ -3,6 +3,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import { OrderChannels } from '../types/ordering.ts'
 import {
   ref,
   reactive,
@@ -29,18 +30,13 @@ const useCommandScope = load(
   'useCommandScope',
   { watch, onScopeDispose }
 )
-const OrderChannels = load(base + 'models/order.model.ts', 'OrderChannels')
 const readOrder = load(base + 'utils/ordering.ts', 'readOrder', {
   OrderChannels,
 })
-const OrderSubmissionStates = load(
-  base + 'models/order-submission.model.ts',
-  'OrderSubmissionStates'
-)
 const readOrderSubmission = load(
   base + 'utils/order-submission.ts',
   'readOrderSubmission',
-  { readOrder, OrderSubmissionStates }
+  { readOrder }
 )
 const deferred = () => {
   let resolve
@@ -125,7 +121,7 @@ function harness(t, delayed = false) {
   )
   const board = scope.run(() =>
     load(
-      base + 'components/Orders/Board.vue',
+      base + 'components/Workspace/Orders/Board.vue',
       '({orders,kitchenId,pending,error,estimates,messages,respond,refresh})',
       {
         ref,

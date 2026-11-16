@@ -56,7 +56,7 @@
                 variant="outline"
               >
                 <template #footer>
-                  <KitchenDetailOfferingTimes
+                  <KitchenOfferingsTimes
                     v-if="menu.offerings?.length"
                     :offerings="menu.offerings"
                     compact

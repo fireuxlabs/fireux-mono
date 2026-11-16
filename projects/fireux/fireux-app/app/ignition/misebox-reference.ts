@@ -69,7 +69,9 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens → fireux-places',
       requirements: ['venue'],
       uses: ['kitchen'],
-      sourcePaths: [source + 'kitchen/components/Identity/Profile.vue'],
+      sourcePaths: [
+        source + 'kitchen/components/Workspace/Identity/Profile.vue',
+      ],
     },
     {
       id: 'menus',
@@ -87,7 +89,7 @@ export const miseboxReference: IgnitionAssembly = {
       uses: ['kitchen', 'menus'],
       sourcePaths: [
         source + 'kitchen/components/Menu/Services/Index.vue',
-        source + 'kitchen/components/Identity/Payments/Index.vue',
+        source + 'kitchen/components/Workspace/Identity/Payments/Index.vue',
       ],
     },
     {
@@ -120,7 +122,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['fulfil'],
       uses: ['kitchen'],
-      sourcePaths: [source + 'kitchen/components/Orders/Board.vue'],
+      sourcePaths: [source + 'kitchen/components/Workspace/Orders/Board.vue'],
     },
     {
       id: 'order-actions',
@@ -136,7 +138,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['fulfil'],
       uses: ['orders', 'order-actions', 'workspace'],
-      sourcePaths: [source + 'kitchen/components/Orders/Board.vue'],
+      sourcePaths: [source + 'kitchen/components/Workspace/Orders/Board.vue'],
     },
   ],
   evidence: collectionOrderingBrief.requirements.map((requirement) => ({

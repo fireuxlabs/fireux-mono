@@ -5,7 +5,7 @@ import {
   KitchenOrderTypes,
   type KitchenOrderType,
 } from '../../utils/interaction-types'
-import type { KitchenOfferingInteractionChanges } from '../../models/offering.model'
+import type { KitchenOfferingInteractionChanges } from '../../utils/offering-policy'
 
 const fail = (message: string): never => {
   throw createError({ statusCode: 400, statusMessage: message })

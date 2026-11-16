@@ -9,15 +9,14 @@ export default defineFireuxEcosystem({
     'Misebox connects public Kitchen and Menu discovery with a Kitchen Workspace for operators. Venue information, menu content and operational configuration have separate owners.',
   name: 'Misebox',
   shortName: 'Misebox',
-  homePath: '/home',
+  homePath: '/',
   contactEmail: 'misebox@misebox.app',
   role: 'global',
   workspaces: ['kitchen'],
   domains: ['kitchens', 'jobs', 'chefs', 'ingredients'],
   profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],
   seo: {
-    noindexPaths: ['/'],
-    staticPaths: ['/home', '/product', '/get-started', '/programme'],
+    staticPaths: ['/', '/product', '/get-started', '/programme'],
   },
   modules: [
     ['fireux-core', { componentCatalogue: true }],

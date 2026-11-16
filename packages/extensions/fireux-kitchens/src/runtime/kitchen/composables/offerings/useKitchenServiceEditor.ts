@@ -6,7 +6,7 @@ import {
   offeringsForOption,
   type KitchenOfferingOption,
 } from '../../utils/offering-options'
-import type { KitchenOffering } from '../../models/offering.model'
+import type { KitchenOffering } from '../../utils/offering-policy'
 import { serviceMenuReadiness } from '../../utils/service-menus'
 
 function createKitchenServiceEditor(

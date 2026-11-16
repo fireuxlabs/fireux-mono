@@ -2,7 +2,7 @@ import { useKitchenIdentity } from '../useKitchenIdentity'
 import { computed, type MaybeRefOrGetter } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { readKitchenFulfilmentConfig } from '../../utils/kitchen-fulfilment-reader'
-import type { KitchenFulfilment } from '../../models/fulfilment.model'
+import type { KitchenFulfilment } from '../../utils/kitchen-fulfilment-reader'
 
 export function useKitchenFulfilment(
   explicitKitchenId: MaybeRefOrGetter<string>

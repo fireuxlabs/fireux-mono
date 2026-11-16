@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div>
+  <div class="kitchen-venue-header">
+    <div class="kitchen-venue-header__navigation">
       <UButton
         to="/kitchens"
         label="All Kitchens"
@@ -16,7 +16,11 @@
       </div>
     </div>
     <PlaceDetailHeader :place="place" />
-    <UNavigationMenu :items="navigation" aria-label="Kitchen" />
+    <UNavigationMenu
+      :items="navigation"
+      aria-label="Kitchen"
+      class="kitchen-venue-header__sections"
+    />
   </div>
 </template>
 
@@ -29,7 +33,7 @@ import {
   menuRouteIndexPath,
   directoryMenuRouteScope,
 } from '../../../menu/utils/navigation/route'
-import type { KitchenDetailPresentation } from '../../models/kitchen-detail.response.ts'
+import type { KitchenDetailPresentation } from '../../types/public'
 
 const props = defineProps<{
   kitchen: KitchenDetailPresentation
@@ -70,3 +74,19 @@ const navigation = computed(() => [
   },
 ])
 </script>
+<style scoped>
+.kitchen-venue-header {
+  display: grid;
+  gap: calc(var(--spacing) * 6);
+}
+.kitchen-venue-header__navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(var(--spacing) * 3);
+}
+.kitchen-venue-header__sections {
+  padding-block: calc(var(--spacing) * 2);
+  border-bottom: 1px solid var(--ui-border);
+}
+</style>

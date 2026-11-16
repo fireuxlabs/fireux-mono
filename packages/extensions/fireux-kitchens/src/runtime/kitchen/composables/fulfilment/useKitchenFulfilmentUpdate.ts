@@ -8,7 +8,7 @@ import type {
   KitchenFulfilment,
   KitchenFulfilmentPaymentPolicy,
   KitchenDeliveryZone,
-} from '../../models/fulfilment.model.ts'
+} from '../../utils/kitchen-fulfilment-reader'
 
 type KitchenFulfilmentChanges =
   | { delivery_zones: KitchenDeliveryZone[] }

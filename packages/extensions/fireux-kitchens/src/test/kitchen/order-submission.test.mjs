@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
+import { OrderChannels } from '../../types/ordering.ts'
 import { itemPricingHelpers } from '../helpers/item-pricing.mjs'
 import { makeMenuOrdering } from '../helpers/menu-checkout.mjs'
 import {
@@ -57,23 +58,15 @@ const publicOffering = {
       : {}),
   })),
 }
-const model = load(
-  '../../runtime/kitchen/models/order.model.ts',
-  'OrderChannels'
-)
 const ordering = load(
   '../../runtime/kitchen/utils/ordering.ts',
   'readOrder,requireOrderChannel',
-  model
-)
-const submissionModel = load(
-  '../../runtime/kitchen/models/order-submission.model.ts',
-  'OrderSubmissionStates'
+  { OrderChannels }
 )
 const utils = load(
   '../../runtime/kitchen/utils/order-submission.ts',
   'orderSubmissionIssues,initialOrderSubmissionState,canTransitionOrder,readOrderSubmission',
-  { ...ordering, ...submissionModel }
+  ordering
 )
 const draft = (channel = 'website') => ({
   id: 'order-a',

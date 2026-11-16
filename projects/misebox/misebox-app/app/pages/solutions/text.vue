@@ -1,16 +1,20 @@
 <template>
-  <SolutionPage :solution="solution">
-    <SolutionTool>
-      <AppToolFoldaway
-        title="Text QR"
-        description="This Misebox test surface is paused while Go QR tools are rebuilt as provider embeds."
-        provider="Go QR"
-        open
-      >
-        <p class="fx-type-caption">Coming soon.</p>
-      </AppToolFoldaway>
-    </SolutionTool>
-  </SolutionPage>
+  <UPage>
+    <UButton to="/solutions" variant="link">Solutions</UButton>
+    <UPageHeader :title="solution.title" :description="solution.description" />
+    <UPageBody>
+      <div class="pagebody">
+        <AppToolFoldaway
+          title="Text QR"
+          description="This Misebox test surface is paused while Go QR tools are rebuilt as provider embeds."
+          provider="Go QR"
+          open
+        >
+          <p class="fx-type-caption">Coming soon.</p>
+        </AppToolFoldaway>
+      </div>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

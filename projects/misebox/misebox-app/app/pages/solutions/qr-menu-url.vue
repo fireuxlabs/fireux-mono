@@ -1,11 +1,17 @@
 <template>
-  <SolutionPage :solution="solution">
-    <ProviderGoQrTools tool="url" :payload="tool" />
-    <SolutionInstructions :items="solution.instructions" />
-    <SolutionIntegrations :integrations="solution.integrations" />
-    <SolutionUpgrades :items="solution.upgrades" />
-    <SolutionDev :dev="solution.dev" />
-  </SolutionPage>
+  <UPage>
+    <UButton to="/solutions" variant="link">Solutions</UButton>
+    <UPageHeader :title="solution.title" :description="solution.description" />
+    <UPageBody>
+      <div class="pagebody">
+        <ProviderGoQrTools tool="url" :payload="tool" />
+        <SolutionInstructions :items="solution.instructions" />
+        <SolutionIntegrations :integrations="solution.integrations" />
+        <SolutionUpgrades :items="solution.upgrades" />
+        <SolutionDev :dev="solution.dev" />
+      </div>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

@@ -210,7 +210,7 @@ test('every Kitchen sidebar group has one working index and operational screens 
     )
   }
   const operational = [
-    ['orders/board.vue', 'KitchenOrdersBoard'],
+    ['orders/board.vue', 'WorkspaceKitchenOrdersBoard'],
     ['prep/plan.vue', 'KitchenPrepAndProductionPlanning'],
     ['food-safety/checks.vue', 'KitchenFoodSafetyPage'],
     ['team/people.vue', 'KitchenTeam'],
@@ -629,7 +629,7 @@ test('every declared Kitchen group index is content under the Workspace page own
   assert.equal(existsSync(join(root, 'menu-setup.vue')), false)
   const identity = readFileSync(
     new URL(
-      '../runtime/kitchen/components/Identity/Index.vue',
+      '../runtime/kitchen/components/Workspace/Identity/Index.vue',
       import.meta.url
     ),
     'utf8'

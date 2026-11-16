@@ -1,5 +1,5 @@
 import { tableChannelEnabled } from './table-service'
-import type { KitchenOffering } from '../models/offering.model'
+import type { KitchenOffering } from './offering-policy'
 
 /** Public labels only: never return customer, notification or fulfilment policy. */
 export function kitchenServiceSummary(offerings: KitchenOffering[]): string[] {

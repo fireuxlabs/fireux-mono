@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-11-15
-Ref: 93fd879be
+Updated: 2026-11-16
+Ref: a068b6eaa
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -106,10 +106,24 @@ Exact Product bundles, Workspace coverage and commercial tier boundaries require
 product decisions; do not infer unlimited coverage. Managed is parked and, if
 revisited, extends Workspace rather than each individual Product.
 
-The Main App uses one host. Its native index opens Kitchen Workspace at
-`/workspace/kitchen`, preserving query and fragment. Traditional public Home is
-`/home`, selected through `homePath`. Workspace responses retain noindex/no-store
-headers. A hostname does not determine data authority or grant access.
+The Main App uses one host and explicitly owns a public directory Home at `/`,
+with `homePath: '/'`. Its [index route](../../../../../projects/misebox/misebox-app/app/pages/index.vue)
+uses default chrome; [`/home`](../../../../../projects/misebox/misebox-app/app/pages/home.vue)
+redirects permanently to `/`, preserving query and fragment. Kitchen Workspace
+remains at `/workspace/kitchen` with its own noindex/no-store response policy.
+Public entry grants no membership, target access or mutation authority.
+
+[Public Home](../../../../../projects/misebox/misebox-app/app/components/Landing/Public.vue)
+visibly composes native `UPage`/`UPageBody`, `PublicKitchenIntro`, Core read-state
+feedback, `PublicKitchenCollection`, a named Workspace entry and diagnostics over one
+`useKitchens` acquisition with Core `useCollectionPage`. Its
+[Workspace entry](../../../../../projects/misebox/misebox-app/app/components/Landing/WorkspaceEntry.vue)
+uses native `UPageCTA` and the existing `useWorkspaceEntryCta('kitchen')` owner.
+This Main App does not select shared `DirectoryHome`. `/kitchens` remains the
+venue-first discovery route; `/menus` remains food/service-first with its own
+reader, eligibility and controls. They share Intro/default chrome, not one
+combined acquisition or result contract. Other Main Apps and tenants retain
+their own entrance policies.
 
 The Main App's `/products` composes Pro and Business from App-owned
 `useMiseboxPricing`, which selects the App layer's shared commercial tiers, alongside the existing
@@ -338,12 +352,10 @@ and Footer components directly. Those shared components remain active.
   composes a Kitchen-owned local empty Ticket specimen.
   This catalogue is independent of the operational Orders Workspace and does
   not enable additional channels or perform database writes.
-- `misebox-app` is the Main App. Its native `/` route opens the registered
-  Kitchen Workspace at `/workspace/kitchen` through Core's entrance reader,
-  preserving query and fragment. The public Kitchen directory remains at
-  `/home`, `/kitchens` and `/menus`; `/product` retains product literature.
-  `homePath: '/home'` supplies the public Home link. Workspace and public pages,
-  pricing and authentication share the same origin. The former host-switching
+- `misebox-app` is the Main App. Its public Home and separate Workspace follow
+  the [App entrance contract](#apps-and-workspace); `/product` retains product
+  literature. Workspace and public pages, pricing and authentication share the
+  same origin. The former host-switching
   middleware, configured Workspace origin and route-removal hook are removed.
   Sign-in inherits Core's `/auth` page; Misebox has no duplicate auth route.
   App-owned `pages/workspace/kitchen/index.vue` composes KitchenHome; capability
@@ -356,8 +368,8 @@ and Footer components directly. Those shared components remain active.
   it does not mean the Workspace is absent. The Kitchen/Place creation and
   onboarding commands retain their distinct persistence and authority roles.
 - The Main App owns its Workspace entrance, navbar/SEO framing and short Kitchen
-  entry copy in `app/components/Workspace/KitchenHome.vue`. The Kitchen-owned Workspace Index composes the shared
-  collection/focus layout, publishes its bounded inspector context, and owns
+  entry copy in `app/components/Workspace/KitchenHome.vue`. The Kitchen-owned Workspace Index composes named
+  Home children, publishes its bounded inspector context, and owns
   the real creation and identity controls. The former draft/workflow landing
   presentation is retired.
 - Kitchen Calendar composes the shared month/date surface and a named Kitchen
@@ -988,15 +1000,19 @@ the current Kitchen source and relevant source-owned tests.
 
 ## Kitchen and Menu read contracts
 
-Stored contracts remain `kitchen.model.ts`. The sole Menu model is
+Use the [Kitchen contract boundary and focused checks](../../../../../docs/concepts/entities.md#coverage-boundary)
+for the stored model, public summary/directory/detail contracts and supplied
+presentation owners. Trusted domain commands retain target and write authority.
+The sole Menu model is
 `menu/models/menu.model.ts`, with Kitchen-scoped storage declared in
 `menu/models/menu-storage.model.ts`. Menu owns catalogue metadata, publication,
 audience, interactive/document format and an optional document attachment.
 Kitchen owns named Offerings and its palette; Menu readers derive those inputs
 from Kitchen and currency from the linked same-id Place.
 `menu/models/menu-directory.response.ts` owns the public Menu directory entries,
-Kitchen presentation and cursor. `kitchen/models/kitchen-detail.response.ts`
-owns the public detail response. Associated Workspace choices use the live
+Kitchen presentation and cursor. [useKitchens](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchens.ts)
+consumes enriched directory entries; [useKitchenDetail](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenDetail.ts)
+consumes the exact-detail response. Associated Workspace choices use the live
 `useKitchenCollection` collection; individual routes use `useKitchenRead`
 with an exact associated id. The retired targets/current/primary/choices HTTP
 readers and workspace response model are removed. Operational configuration
@@ -1008,9 +1024,10 @@ Place. Its collection override supports App-scoped operator records; it does
 not select a demo or simulation database. Demo payloads remain outside this
 reader, and the separate Test capability does not reinstate simulation storage.
 
-`kitchen-interface.model.ts` owns resolved presentation inputs and card outputs.
-Its identity presentation describes resolved display fields, while public
-response fields remain explicitly bounded. The consumed surface, card, pill and
+[useKitchenInterface](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenInterface.ts)
+constructs supplied surface, card, pill and cell projections; Collection List
+uses the narrow display mapper identified in the Entity map. Public response
+fields remain explicitly bounded. The consumed surface, card, pill and
 cell projections read canonical `identity.visibility` consistently; no alternate
 `visible` field supplies Kitchen publication state. The live associated-Kitchen collection reads `Kitchen`
 records and joins their same-id Place for presentation; Workspace selection
@@ -1076,9 +1093,15 @@ Menu counts or a Menu list. The canonical Kitchen slug opens its public Menu
 chooser; document Menus open directly. Reviewed promotional copy belongs to the
 concrete App in `app/app.config.ts#menuDiscovery`, with its exact source
 relationship, conditions and source URL; it never alters ordering prices.
-The public discovery route uses compact branded customer framing rather than
-the default product navigation. Search, filters and results take priority;
-Workspace, product-demo and publishing calls to action do not appear here.
+The public discovery, Kitchen venue, Menu chooser and Collection/Delivery routes
+retain the existing default chrome. Kitchen owns named content such as
+`PublicKitchenIntro` over native `UPageHeader`, search, filters and results;
+Core retains the shared navigation, account/Workspace and footer controls.
+Creation remains at its existing authenticated route. See the
+[Menu family](../../../../../docs/concepts/family-menu.md#shared-spine) and
+[layout ownership](../../../../../docs/concepts/layouts.md#other-route-composition-lanes).
+Customer content focuses on food discovery; product-demo and publishing controls
+stay outside that content.
 Customer accounts, vouchers and order links require proved customer routes
 before adoption. Publishing/QR remains available through its existing solution. Changes here preserve the separate
 Kitchen-owned Menu management contract and existing public Menu URLs.
@@ -1096,6 +1119,10 @@ application default when no palette has been configured. Menus store no palette
 or kiosk skin. Document Menus use the same Kitchen presentation authority.
 `menu/server/payload/theme.ts` resolves colours and `useMenuThemeSurface` renders
 them through local Nuxt UI tokens without changing the host App's shell.
+The visual inheritance order is Nuxt UI → FireUX → Misebox's App theme → the
+Kitchen's saved palette within its Menu surface. `themeSource: 'default'` uses
+host semantic tokens; transport fallback colours do not establish another
+public design theme. Kitchen identity media remains entity-owned content.
 Full-page Menu canvases use isolated body canvas variables and a selector that
 applies only while the page-canvas Menu surface exists. Brand `--ui-*` tokens
 stay on the surface and must not persist on the host body after returning to
@@ -1435,6 +1462,9 @@ La Tap's palette metadata stays in native `app.config.ts`. Tenant roots delegate
 to their existing shared App composition without injecting CSS through JavaScript.
 These values do not grant Kitchen or Menu access.
 
+Main App page, tool and Provider composition follows the canonical
+[component and forwarding-adapter admission rule](../../../../../docs/concepts/components.md#component-apis-and-extension-points).
+
 Derive copy from current capability source. App Tools/Operations/Discovery
 components are literature and doorways; execution stays with its owning capability.
 The fictional Kitchen/Supplier/Business demo scenarios, `/demo` routes, `/cards`
@@ -1449,6 +1479,31 @@ SFCs; content, types and helpers retain their actual owners. Landing pricing use
 `Landing/PricingStrip.vue`, `useMiseboxPricing` and the App pricing strip. The
 shared Core Dashboard remains its owner. Verify changed routes, template readers
 and actual Workspace journeys; retired demo tests are not evidence.
+
+## Developer reference ownership
+
+Misebox Main owns its developer entry at `/docs` and its supported component
+reference at `/docs/components`. The Main App owns the route adapters, authored
+content and examples under its [App source](../../../../../projects/misebox/misebox-app/app).
+Misebox-specific composition belongs here; link to the owning FireUX, domain and
+upstream references for lower contracts instead of copying their documentation
+or installing the complete FireUXDocs layer. Tenant Apps link to the Main
+reference rather than bundling its developer docs.
+
+Publication is explicit and curated. A source inventory or Nuxt registration is
+not a supported API catalogue. Describe the actual responsibility, inputs,
+runtime prerequisites, consumer evidence and limits of each published entry.
+Use supplied sample data and local callbacks for safe examples; do not
+auto-mount connected operator/account screens or expose live commands through
+previews. Keep internal inventory and contributor guidance separate. The
+[canonical library admission rule](../../../../../docs/concepts/components.md#library-admission-and-maturity)
+and [documentation ownership map](../../../../../docs/concepts/documentation.md#contributor-and-public-docs)
+apply; a listed component does not gain shared or production maturity.
+
+Verify the curated content against current owners and real consumers, the Main
+App's source-owned route/publication checks, and rendered desktop/mobile docs
+navigation and examples. Route implementation and rendered acceptance require
+their own evidence; this ownership decision alone establishes neither.
 
 ## Verification
 
@@ -1997,6 +2052,11 @@ and `tools/misebox-migrations/test_ingredient_catalogue.py`, plus the representa
 
 ## Workspace component placement
 
+Kitchen Public/customer and Workspace/operator components follow the
+[canonical surface and library convention](../../../../../docs/concepts/components.md#domain-component-surfaces).
+Operator grouping includes complete capability screens; current paths are not
+proof that every capability has completed alignment.
+
 Kitchen navigation follows the accepted convention: capability entrances and
 record destinations where required have URLs; Surface capabilities need no record
 layer. Perspectives within a record use local view state. Groups
@@ -2425,11 +2485,10 @@ still invalidate completion. No stale record is retained to disguise deletion.
 
 ## Directory and Workspace entrances
 
-The Main App uses the single-origin entrance contract under Apps and Workspace
-above. Its root page preserves query and fragment while opening the registered
-Kitchen Workspace; `/home` owns public discovery. Tenant Apps retain their own
-customer root and domain-scoped management. See `app/tests/workspace-surface.test.mjs`
-for current entrance, native metadata and indexing-header checks.
+The Main App uses the single-origin [entrance contract](#apps-and-workspace).
+Tenant Apps retain their own customer root and domain-scoped management.
+Workspace route metadata and indexing headers remain covered by the App-owned
+`app/tests/workspace-surface.test.mjs`; public presentation does not grant authority.
 
 ## Capability read-state and Overview boundaries
 
@@ -2459,8 +2518,10 @@ Order ticket examples compose `Orders/Examples/Index.vue`; stage previews share 
 Kitchen’s inner capability entries now name Collection, Detail, Create, Add and
 Edit responsibilities where consumed. Ingredient Add remains a Kitchen
 association workflow; Menu source-upload records remain separate from Menu
-creation. The current physical map is in `docs/concepts/components.md` and
-the source-owned reader/scope tests. Existing context providers, Kitchen
+creation. Surface admission and naming follow the
+[component convention](../../../../../docs/concepts/components.md#domain-component-surfaces);
+current registration and source-owned reader/scope tests establish each slice.
+Existing context providers, Kitchen
 selection, serving checks, commands and authority remain the same owners.
 
 Daily specials editing requires the acting User's Pro entitlement, independently
@@ -2507,7 +2568,7 @@ Verify `menu-public-slug.test.mjs`, discovery and public QR checks.
 
 The public Menu entrance reuses the existing Kitchen presentation for its logo,
 venue name and address through `kitchen/components/Detail/MenuHeader.vue`. Menu cards consume
-published offering hours through `KitchenDetailOfferingTimes`; no availability is
+published offering hours through `KitchenOfferingsTimes`; no availability is
 inferred from missing schedules. The entrance uses the same content for QR, direct
 and website arrivals and retains a Venue information link. No referrer-based flow,
 additional record reader or ordering action is introduced.
@@ -2888,19 +2949,26 @@ The Workspace–Entity family map owns the three-domain composition boundary.
 
 ## Kitchen component organisation
 
-Kitchen component groups express stable responsibilities: `Menu` owns
-Items, Menus, Promotions and Services management; `PrepAndProduction` owns
-the Preparation/Recipe library, Ingredients and Stations. Group Index/AI and shared summary
-presentation sit at the group root; each food child owns its Overview surface.
-Other capabilities, including Finance, Identity and Team, are direct Kitchen
-component folders. `Workspace` retains Home, selection, navigation, overview,
-AI, research, tools and diagnostics. This organisation does not move Menu or
-Ingredient-owned runtime components, domain readers, commands or records.
-Nuxt registration in `components-config.ts` derives `KitchenMenu*`,
-`KitchenPrepAndProduction*` and direct `Kitchen*` names from those paths; only
-Workspace mechanics retain `WorkspaceKitchen*`. Routes stay unchanged.
-Verify registration and retired-name absence with `kitchen-component-groups.test.mjs`,
-then the source-owned capability tests and a consuming App's generated components.
+Kitchen component organisation follows the canonical
+[Public/Workspace/lower-domain convention](../../../../../docs/concepts/components.md#domain-component-surfaces).
+Complete operator capability compositions belong to Workspace; customer
+compositions, including protected customer journeys, belong to Public. Existing
+unconverted direct-root groups remain pending alignment, not a second convention.
+A lower shared child needs proved independent consumers; multiple App hosts of
+one surface do not establish cross-audience reuse.
+
+[Component registration](../../src/config/module/components-config.ts) owns the
+scans and exclusions, including Core's stable `WorkspaceKitchenNavigation` ABI.
+Preserve current models, contracts, readers, commands, domain state and routes.
+Verify each completed move against registration, real consumers and relevant
+source-owned checks and rendered behavior; no alias or placeholder tree remains
+after a completed slice. Current customer compositions include [Public Intro](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Intro.vue),
+[Hero](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Hero.vue)
+and [Collection](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Collection/Index.vue),
+registered as `PublicKitchenIntro`, `PublicKitchenHero` and `PublicKitchenCollection`.
+The operator [Identity composition](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Index.vue)
+and its children use `WorkspaceKitchenIdentity*`. These paths do not establish
+alignment of the other Kitchen capabilities or replace rendered acceptance.
 
 ## Services configuration
 

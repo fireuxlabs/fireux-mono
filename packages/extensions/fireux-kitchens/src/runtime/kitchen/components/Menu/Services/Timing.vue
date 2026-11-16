@@ -27,7 +27,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { KitchenOrderTypeConfig } from '../../../models/ordering.model'
+import type { KitchenOrderTypeConfig } from '../../../utils/ordering-policy'
 const props = defineProps<{
   config: KitchenOrderTypeConfig
   disabled?: boolean

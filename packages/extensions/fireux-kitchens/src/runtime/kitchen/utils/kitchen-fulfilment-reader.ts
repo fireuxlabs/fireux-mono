@@ -1,11 +1,33 @@
-import type {
-  KitchenFulfilment,
-  KitchenFulfilmentPaymentPolicy,
-  KitchenPaymentRequirement,
-  KitchenDeliveryZone,
-  KitchenFulfilmentPaymentMethod,
-} from '../models/fulfilment.model.ts'
-import type { KitchenOrderType } from '../models/offering-interaction-types.model'
+import type { KitchenOrderType } from './interaction-types'
+
+export type KitchenDeliveryZone = {
+  id: string
+  label: string
+  min_order_chf?: number
+  fee_chf?: number
+  radius_m?: number
+  postal_codes?: string[]
+  place_ids?: string[]
+  polygon?: { lat: number; lng: number }[]
+  color?: string
+}
+export type KitchenFulfilmentPaymentMethod =
+  | 'cash'
+  | 'card_at_pickup'
+  | 'card_to_driver'
+  | 'room_charge'
+  | 'online_card'
+export type KitchenPaymentRequirement = 'verified_room'
+export type KitchenFulfilmentPaymentPolicy = {
+  method: KitchenFulfilmentPaymentMethod
+  order_types: KitchenOrderType[]
+  requirements?: KitchenPaymentRequirement[]
+}
+/** Validated configuration from the Kitchen-owned fulfilment/policy child. */
+export type KitchenFulfilment = {
+  delivery_zones: KitchenDeliveryZone[]
+  payment_methods: KitchenFulfilmentPaymentPolicy[]
+}
 
 type KitchenRecord = Record<string, unknown> | null | undefined
 const text = (value: unknown) => String(value ?? '').trim()

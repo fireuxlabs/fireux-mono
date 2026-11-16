@@ -1,15 +1,15 @@
-import type { KitchenOrderType } from '../../kitchen/models/offering-interaction-types.model'
+import type { KitchenOrderType } from '../../kitchen/utils/interaction-types'
 import type {
   KitchenOrderTypeConfig,
   KitchenOrderFulfilmentPolicy,
-} from '../../kitchen/models/ordering.model'
+} from '../../kitchen/utils/ordering-policy'
 import type {
   KitchenDeliveryZone,
   KitchenFulfilmentPaymentMethod,
-} from '../../kitchen/models/fulfilment.model'
+} from '../../kitchen/utils/kitchen-fulfilment-reader'
 import type { MenuRouteContext, MenuSurface } from './menu-context.model'
 import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.model'
-import type { KitchenPublicOffering } from '../../kitchen/models/public-offering.model'
+import type { KitchenPublicOffering } from '../../kitchen/utils/public-offerings'
 
 export type MenuOfferingHours = { operation_hours: WeekdayTimeWindowsConfig }
 

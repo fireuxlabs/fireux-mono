@@ -1,4 +1,4 @@
-import type { KitchenOffering } from '../../models/offering.model'
+import type { KitchenOffering } from '../../utils/offering-policy'
 import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
@@ -7,9 +7,8 @@ import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-plac
 import type {
   KitchenDetailPresentation,
   KitchenDetailResponse,
-} from '../../models/kitchen-detail.response.ts'
-import type { KitchenPublicSummary } from '../../models/kitchen.model.ts'
-import type { Place } from 'fireux-places/runtime/place/models/place.model'
+} from '../../types/public'
+import type { KitchenPublicSummary } from '../../types/public'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import { readKitchenVisibility } from '../../utils/kitchen-readers.ts'
 import { readKitchenPresentation } from '../../utils/kitchen-presentation'
@@ -100,7 +99,7 @@ export function resolveKitchen(
   document: KitchenRootRecord,
   dataByPath: Map<string, Record<string, unknown>>,
   scope: KitchenReadScope
-): (KitchenPublicSummary & { place: Place }) | null {
+): KitchenPublicSummary | null {
   const parts = resolveKitchenReadParts(document, dataByPath, scope)
   if (!parts) return null
   return normalizeKitchen(

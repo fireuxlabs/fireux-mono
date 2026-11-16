@@ -1,5 +1,15 @@
 import { createError } from 'h3'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
+import type { Kitchen } from '../../models/model'
+
+export type KitchenUpdateInput = {
+  'identity.slug'?: string
+  'identity.status'?: Kitchen['identity']['status']
+  'identity.visibility'?: boolean
+  'tables.count'?: number
+  'services.title'?: string
+  'services.item_images'?: boolean
+}
 
 const record = (value: unknown): Record<string, unknown> | null =>
   value && typeof value === 'object' && !Array.isArray(value)

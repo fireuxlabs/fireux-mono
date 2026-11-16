@@ -54,17 +54,8 @@
       >
         {{ tagline || about || prop }}
       </p>
-      <div
-        v-if="estimatedMinutes || fulfilmentModes.length || priceLevel"
-        class="kitchen-card-cell__directory-facts"
-      >
-        <span v-if="estimatedMinutes">
-          {{ estimatedMinutes.min }}–{{ estimatedMinutes.max }} min
-        </span>
+      <div v-if="priceLevel" class="kitchen-card-cell__directory-facts">
         <span v-if="priceLevel">Price {{ priceLevel }}/4</span>
-        <span v-for="mode in fulfilmentModes" :key="mode">
-          {{ fulfilmentLabel(mode) }}
-        </span>
       </div>
     </div>
   </FireActionSurface>
@@ -123,11 +114,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenCard } from '../../models/kitchen-interface.model'
+import type { KitchenCard } from '../../types/presentation'
 
 type Props = Partial<
   Pick<
-    KitchenCard.Card,
+    KitchenCard,
     | 'id'
     | 'to'
     | 'name'
@@ -138,13 +129,11 @@ type Props = Partial<
     | 'tagline'
     | 'about'
     | 'priceLevel'
-    | 'fulfilmentModes'
-    | 'estimatedMinutes'
     | 'logoImageUrl'
     | 'categoryLabels'
   >
 > & {
-  badges?: KitchenCard.Card['badges']
+  badges?: KitchenCard['badges']
   mediaBackdropColor?: string
   prop?: string
   showSubtitle?: boolean
@@ -173,7 +162,6 @@ const props = withDefaults(defineProps<Props>(), {
   tagline: '',
   about: '',
   priceLevel: '',
-  fulfilmentModes: () => [],
   badges: () => [],
   mediaBackdropColor: '',
   prop: '',
@@ -191,14 +179,6 @@ const resolvedAddress = computed(() => props.shortAddress || '')
 
 const resolvedImageUrl = computed(() => props.imageUrl || '')
 const displayName = computed(() => props.name || 'Kitchen')
-const fulfilmentLabel = (mode: string) =>
-  ({
-    delivery: 'Delivery',
-    collection: 'Collection',
-    dine_in: 'Table service',
-    takeaway: 'Takeaway',
-  })[mode] || mode
-
 const avatarShadeClass = computed(() => {
   const shade = props.imageShade
   if (!shade) return ''

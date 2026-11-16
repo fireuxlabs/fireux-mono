@@ -1,6 +1,6 @@
 import { tableChannelEnabled } from './table-service.ts'
 import type { Menu } from '../../menu/models/menu.model'
-import type { KitchenOffering } from '../models/offering.model'
+import type { KitchenOffering } from './offering-policy'
 import { kitchenOrderTypeLabel } from './kitchen-order-label'
 import { menuChoiceContextForOrderType } from '../../menu/utils/navigation/context'
 import {

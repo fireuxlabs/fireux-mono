@@ -461,7 +461,7 @@ for (const changed of [
       }
       const state = scope.run(() =>
         load(
-          'extensions/fireux-kitchens/src/runtime/kitchen/components/Identity/ListingEdit.vue',
+          'extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/ListingEdit.vue',
           '({save, draft, saving, updateError})',
           deps
         )

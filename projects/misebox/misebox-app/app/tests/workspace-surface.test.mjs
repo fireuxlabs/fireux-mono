@@ -3,13 +3,19 @@ import test from 'node:test'
 import { readFileSync, existsSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
+import {
+  createApp,
+  defineEventHandler,
+  getRequestURL,
+  setHeader,
+  toWebHandler,
+} from 'h3'
 
 const root = new URL('../../../../../', import.meta.url)
 for (const [family, workspace] of [
   ['bringli', 'supplier'],
   ['buenohost', 'property'],
   ['granite', 'portfolio'],
-  ['misebox', 'kitchen'],
 ]) {
   test(`${family} opens its registered Workspace and preserves entrance intent`, async () => {
     const page = readFileSync(
@@ -49,6 +55,8 @@ for (const [family, workspace] of [
   })
 }
 
+// Misebox's public root and /home alias are exercised by public-directory-entry.test.mjs.
+
 test('Misebox uses native same-origin routes and guest Workspace metadata', () => {
   assert.equal(
     existsSync(
@@ -78,7 +86,7 @@ test('Misebox uses native same-origin routes and guest Workspace metadata', () =
   assert.match(page, /requiresAuth: false/)
 })
 
-test('Misebox Workspace responses are private from indexing on every host; Home stays public', () => {
+test('Misebox Workspace response headers stay private on every host; public directories stay indexable', async () => {
   const source = readFileSync(
     new URL(
       'projects/misebox/misebox-app/server/middleware/workspace-indexing.ts',
@@ -89,33 +97,42 @@ test('Misebox Workspace responses are private from indexing on every host; Home 
   const code = stripTypeScriptTypes(
     source.replace(/^import .*\n/gm, '')
   ).replace('export default ', 'return ')
+  const handler = compileFunction(code, [
+    'defineEventHandler',
+    'getRequestURL',
+    'setHeader',
+  ])(defineEventHandler, getRequestURL, setHeader)
   for (const host of ['localhost:3001', 'misebox.app']) {
     for (const path of [
       '/',
+      '/workspace',
+      '/workspace/',
       '/workspace/kitchen',
       '/workspace/kitchen/team',
+      '/workspace-other',
       '/home',
       '/kitchens',
+      '/menus',
     ]) {
-      const headers = {}
-      const handler = compileFunction(code, [
-        'defineEventHandler',
-        'getRequestURL',
-        'setHeader',
-      ])(
-        (fn) => fn,
-        () => new URL(`http://${host}${path}`),
-        (_event, key, value) => {
-          headers[key] = value
-        }
+      const app = createApp()
+      app.use(handler)
+      app.use(defineEventHandler(() => 'Route content'))
+      const response = await toWebHandler(app)(
+        new Request(`http://${host}${path}`)
       )
-      handler({})
-      assert.deepEqual(
-        headers,
-        path === '/' || path.startsWith('/workspace/')
-          ? { 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'no-store' }
-          : {}
+      const workspace = path === '/workspace' || path.startsWith('/workspace/')
+      assert.equal(response.status, 200)
+      assert.equal(
+        response.headers.get('x-robots-tag'),
+        workspace ? 'noindex, nofollow' : null,
+        `${host}${path}`
       )
+      assert.equal(
+        response.headers.get('cache-control'),
+        workspace ? 'no-store' : null,
+        `${host}${path}`
+      )
+      assert.equal(await response.text(), 'Route content')
     }
   }
 })

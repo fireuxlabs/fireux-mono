@@ -1,5 +1,5 @@
 import type { MenuDirectoryEntry } from '../../menu/models/menu-directory.response'
-import type { KitchenPublicOffering } from '../models/public-offering.model'
+import type { KitchenPublicOffering } from './public-offerings'
 import {
   menuRoutePath,
   type MenuRouteScope,

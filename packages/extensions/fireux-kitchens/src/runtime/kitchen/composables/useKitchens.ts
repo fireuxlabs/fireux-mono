@@ -2,17 +2,10 @@ import { useAsyncData } from 'nuxt/app'
 import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 
 import { computed, toValue, type MaybeRefOrGetter, type ComputedRef } from 'vue'
-import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import type { KitchenPublicSummary } from '../models/kitchen.model.ts'
-
-export type KitchenPublicRecord = KitchenPublicSummary & {
-  place: Place
-  service_labels?: string[]
-  has_published_menu?: boolean
-}
+import type { KitchenDirectoryEntry } from '../types/public'
 
 export type UseKitchensReturn = {
-  collection: ComputedRef<KitchenPublicRecord[]>
+  collection: ComputedRef<KitchenDirectoryEntry[]>
   count: ComputedRef<number>
   ready: Promise<void>
   outcome: ComputedRef<'idle' | 'pending' | 'error' | 'empty' | 'ready'>
@@ -34,7 +27,7 @@ export function useKitchens(
       ? `/api/kitchens?placeId=${encodeURIComponent(placeId.value)}`
       : '/api/kitchens'
   )
-  const state = useAsyncData<KitchenPublicRecord[]>(
+  const state = useAsyncData<KitchenDirectoryEntry[]>(
     () =>
       options.placeId === undefined
         ? 'kitchens'
@@ -42,12 +35,12 @@ export function useKitchens(
     async (_nuxtApp, { signal }) => {
       const fetchRead = $fetch.create({ signal, cache: 'no-store' })
       return active.value
-        ? fetchRead<KitchenPublicRecord[]>(endpoint.value)
+        ? fetchRead<KitchenDirectoryEntry[]>(endpoint.value)
         : Promise.resolve([])
     },
     { watch: [endpoint, active] }
   )
-  const collection = computed<KitchenPublicRecord[]>(() => {
+  const collection = computed<KitchenDirectoryEntry[]>(() => {
     if (!active.value || state.pending.value || state.error.value) return []
     if (options.placeId === undefined) return state.data.value || []
     return (state.data.value || []).filter(

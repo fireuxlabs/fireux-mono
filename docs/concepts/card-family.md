@@ -1,7 +1,7 @@
 # Card family
 
-Updated: 2026-11-09
-Ref: ac88daacf
+Updated: 2026-11-16
+Ref: a068b6eaa
 Role: source map, not executable certification
 
 ## Purpose and authority
@@ -35,6 +35,12 @@ Overview names the rich Card presentation. A Workspace Overview is an upper
 composition that may consume Cards/Overview alongside capabilities, counts and
 navigation; the card is not restricted to that parent. Existing named profile
 editors, domain projections and shared UserProfile primitives retain their roles.
+
+Card roles do not require a neutral `Cards` root. Apply the canonical
+[surface and sharing admission](components.md#domain-component-surfaces): keep
+single-surface cards with their surface/capability and prove any lower shared
+boundary from its independent consumers. Existing path examples here describe
+inspected source, not completed alignment of every family.
 
 ## Shared User profile shape
 
@@ -126,13 +132,14 @@ name, description and detail link. App Detail retains related reads and SEO,
 and Ecosystem Detail retains its page header, Apps and Project composition.
 The public Ecosystem collection continues to use `FireCollectionCell`.
 
-Project's Cards belong to
-[`fireux-projects/runtime/project/components/Cards`](../../packages/extensions/fireux-projects/src/runtime/project/components/Cards).
-`EcosystemDetailProject` composes `ProjectCardsPreview` for the supplied public
+Project's customer Preview belongs to
+[`project/components/Public/Cards/Preview.vue`](../../packages/extensions/fireux-projects/src/runtime/project/components/Public/Cards/Preview.vue).
+`EcosystemDetailProject` composes `PublicProjectCardsPreview` for the supplied public
 Project's name, description and detail link. That parent retains the exact read,
 active-only publication filter, outcomes and diagnostics. Project's public Detail
 retains its App-owned header, related Apps and SEO; its collection uses
-`FireCollectionCell`. Existing Pill and Cell sources retain their current names.
+`FireCollectionCell`. Existing neutral Pill and Cell sources retain their current
+names; their placement does not prove sharing or a completed family migration.
 
 Business's four Cards belong to
 [`fireux-businesses/runtime/business/components/Business/Cards`](../../packages/extensions/fireux-businesses/src/runtime/business/components/Business/Cards).
@@ -148,7 +155,7 @@ Kitchen supplies Pill, Cell and Preview under
 Driver delivery beacons and the App gallery consume Pill; the gallery also
 consumes `KitchenCardsPreview`. Cell retains its supplied-data presentation with
 no current direct component consumer.
-The public Collection retains its discovery-card composition. Public Detail
+The public Collection projects discovery facts into Core's `FireCollectionCell`. Public Detail
 composes Place-owned identity with Kitchen menu and operator controls;
 `Identity/Profile` retains its Workspace editors and explicit mutation authority.
 Current consumers do not need a separate Kitchen Overview card.

@@ -6,7 +6,10 @@
       ai: 'Use the Identity editor to review and save changes.',
     }"
   />
-  <ProjectIdentity :key="identity.projectId.value" :identity="identity" />
+  <WorkspaceProjectIdentity
+    :key="identity.projectId.value"
+    :identity="identity"
+  />
 </template>
 
 <script setup lang="ts">

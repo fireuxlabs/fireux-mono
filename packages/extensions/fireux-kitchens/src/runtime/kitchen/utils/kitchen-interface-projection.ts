@@ -1,3 +1,4 @@
+import type { CollectionCellData } from 'fireux-core/runtime/types/collection-cell'
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 
 export const resolveKitchenPath = (target: {
@@ -15,40 +16,36 @@ export const resolveKitchenPath = (target: {
   return `/kitchens/${encodeURIComponent(slug)}`
 }
 
-export const meaningfulSurfaceDelta = (value: unknown) => {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
-
-  return Object.fromEntries(
-    Object.entries(value as Record<string, unknown>).filter(([, item]) => {
-      if (typeof item === 'string') return Boolean(item.trim())
-      if (Array.isArray(item)) return item.length > 0
-      if (typeof item === 'object' && item) return Object.keys(item).length > 0
-      return item !== null && item !== undefined
-    })
-  )
+/** Supplied discovery facts needed by the public Kitchen collection. */
+export type KitchenCollectionCard = {
+  name: string
+  tagline: string
+  discoveryImageUrl: string
+  shortAddress: string
+  badges: string[]
+  categoryLabels: string[]
+  serviceLabels: string[]
+  hasPublishedMenu: boolean
+  to: string
 }
 
-export const placeBaselineKeys = [
-  'name',
-  'short_name',
-  'tagline',
-  'about',
-  'formatted_address',
-  'short_address',
-  'address',
-  'lat',
-  'lng',
-  'timezone',
-  'image_url',
-  'cover_image',
-  'gallery_images',
-  'logo_image',
-  'wordmark_image',
-  'media_backdrop_color',
-  'image_shade',
-  'phone',
-  'email',
-  'website',
-  'google_maps_url',
-  'social_links',
-] as const
+export function toKitchenCollectionCell(
+  card: KitchenCollectionCard
+): CollectionCellData {
+  const services = card.serviceLabels.filter(
+    (label) => label !== 'Browse menus'
+  )
+  if (card.hasPublishedMenu) services.unshift('Browse menus')
+
+  return {
+    title: card.name,
+    description: card.tagline,
+    image: card.discoveryImageUrl,
+    imageStyle: 'cover',
+    fallbackIcon: 'i-lucide-utensils',
+    meta: card.shortAddress,
+    badges: [...new Set([...card.badges, ...card.categoryLabels, ...services])],
+    actionLabel: 'View menus',
+    to: card.to ? `${card.to.replace(/\/$/, '')}/menu` : '',
+  }
+}

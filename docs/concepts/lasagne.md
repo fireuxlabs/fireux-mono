@@ -1,7 +1,7 @@
 # Lasagne architecture
 
-Updated: 2026-10-01
-Ref: 2807ceca9
+Updated: 2026-11-15
+Ref: a068b6eaa
 Role: map, not canon
 
 ## Purpose
@@ -108,7 +108,12 @@ provider containing every entity's possible fields.
 
 ## Structural shells
 
-A shared shell owns structure only:
+Apply the canonical [component API admission rule](components.md#component-apis-and-extension-points)
+before introducing a shared shell. Consuming a native slot and creating a new
+shared extension point are different decisions. A Nuxt layout additionally needs
+[layout admission](layouts.md#layout-admission).
+
+An admitted shared shell owns structure only:
 
 - layout;
 - slot placement;

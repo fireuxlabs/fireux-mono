@@ -8,7 +8,7 @@
       @click="checkout.reset"
     />
     <template v-if="catalogueReady">
-      <KitchenDetailOfferingTimes
+      <KitchenOfferingsTimes
         :offerings="offerings"
         compact
         :show-names="false"
@@ -112,7 +112,7 @@ import { serviceItemSignature } from '../../utils/ordering/basket'
 import type { MenuCheckoutService } from '../../utils/ordering/checkout'
 import { useServiceBasket } from '../../composables/useServiceBasket'
 import { useServiceItemEditor } from '../../composables/useServiceItemEditor'
-import type { KitchenDetailPresentation } from '../../../kitchen/models/kitchen-detail.response'
+import type { KitchenDetailPresentation } from '../../../kitchen/types/public'
 import { formatCurrencyAmount } from '../../../utils/currency-display'
 const props = defineProps<{
   sections: MenuServiceSection[]

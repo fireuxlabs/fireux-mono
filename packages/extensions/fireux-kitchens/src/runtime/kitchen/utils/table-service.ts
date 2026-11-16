@@ -1,4 +1,4 @@
-import type { KitchenOrderTypeConfig } from '../models/ordering.model'
+import type { KitchenOrderTypeConfig } from './ordering-policy'
 
 export type TableServiceChannel = 'staff_pos' | 'table_qr'
 

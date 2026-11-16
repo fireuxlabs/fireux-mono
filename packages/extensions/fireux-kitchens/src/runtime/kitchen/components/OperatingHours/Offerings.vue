@@ -60,7 +60,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import type { KitchenOffering } from '../../models/offering.model'
+import type { KitchenOffering } from '../../utils/offering-policy'
 import type { Menu } from '../../../menu/models/menu.model'
 const props = defineProps<{
   offerings: KitchenOffering[]

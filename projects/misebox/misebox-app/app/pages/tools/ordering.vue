@@ -1,6 +1,8 @@
 <template>
-  <UPage ref="toolRoot">
-    <ProviderToolsOrdering />
+  <UPage>
+    <div ref="toolRoot">
+      <ProviderToolsOrdering />
+    </div>
   </UPage>
 </template>
 

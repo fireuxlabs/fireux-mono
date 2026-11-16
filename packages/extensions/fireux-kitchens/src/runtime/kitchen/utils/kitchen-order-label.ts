@@ -1,4 +1,4 @@
-import type { KitchenOrderType } from '../models/offering-interaction-types.model'
+import type { KitchenOrderType } from './interaction-types'
 
 export const kitchenOrderTypeLabel = (type: KitchenOrderType) => {
   const labels: Record<KitchenOrderType, string> = {

@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
-Updated: 2026-11-15
-Ref: af9b9a2e8
+Updated: 2026-11-16
+Ref: a068b6eaa
 Role: map, not canon
 
 ## Purpose
@@ -258,9 +258,9 @@ it composes the Portfolio overview with Documents, Tasks and Compliance and
 registers the existing `WorkspacePortfolioOverview` name explicitly. Core does
 not import those domains, and Properties does not import its upper Ecosystem.
 No package-level directory is required for a package containing only one Entity's
-Workspace implementation. Project Intent and App context UI remain under
-`fireux-projects/runtime/project/components/Workspace`; Project Identity and
-Team, including Team AI, live under their named capability folders beside it.
+Workspace implementation. Entity component placement follows the
+[Public/Workspace/lower-domain convention](components.md#domain-component-surfaces);
+current registration and consumers establish each completed move.
 
 Entity-specific Workspace implementation lives with the entity:
 
@@ -270,17 +270,15 @@ src/runtime/kitchen/composables/workspace/
 src/runtime/kitchen/server/
 ```
 
-Domain capability components sit directly beneath the Entity's components
-root, producing names such as `KitchenOrders` and `ProjectTeam`. Workspace
-composition and selected-Entity coordination remain in `components/Workspace`
-and `composables/workspace`; existing unmigrated capability folders are debt,
-not another ownership convention.
-Sidebar groups may group capability doorways in navigation, but `Operations`,
-`Capabilities`, `Supporting` and `Sundries` are not component-folder owners.
-Entry controls live in `Home`; cross-page helpers have specific names.
-See `components.md#workspace-component-folders` for the shared placement rule. Genuine domain commands
-and workflows may remain under `server/operations`; Kitchen domain models and
-commands do not move under Workspace merely because Workspace consumes them.
+The Entity's Workspace component group owns complete operator capability screens,
+not only coordination. Public/customer composition has its own scan; neutral
+lower children require the admission evidence in
+[components](components.md#domain-component-surfaces). Former direct-root
+capability placement is pending alignment wherever its consumer cutover is not
+complete. Sidebar groups do not create filesystem owners or require empty
+folders. Component grouping leaves composables, models, contracts and commands
+at their current domain owners; it does not move them under a Surface. Genuine
+domain commands and workflows may remain under `server/operations`.
 
 ## Other cross-cutting concepts
 

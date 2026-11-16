@@ -17,8 +17,12 @@
       @update:model-value="team.natives.select(String($event))"
     /> </UDashboardToolbar
   ><UPageHeader :title="intro.title" :description="intro.purpose" />
-  <ProjectTeamAI :team="team" @action="teamView?.openAction($event)" />
-  <ProjectTeam :key="team.state.value.project.id" ref="teamView" :team="team" />
+  <WorkspaceProjectTeamAI :team="team" @action="teamView?.openAction($event)" />
+  <WorkspaceProjectTeam
+    :key="team.state.value.project.id"
+    ref="teamView"
+    :team="team"
+  />
 </template>
 
 <script setup lang="ts">

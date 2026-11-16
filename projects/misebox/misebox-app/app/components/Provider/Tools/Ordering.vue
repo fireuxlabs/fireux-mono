@@ -1,5 +1,11 @@
 <template>
-  <ProviderFrame :title="toolTitle" :description="toolDescription">
+  <FireProviderToolFrame
+    provider-name="Misebox"
+    provider-url="https://misebox.app"
+    logo-alt="Misebox"
+    :title="toolTitle"
+    :description="toolDescription"
+  >
     <MenuCollection
       id="misebox-ordering-menus"
       :index="menuIndex"
@@ -7,7 +13,7 @@
       description="Choose a Menu, then open one of its available guest order paths."
       :show-variant-toggle="false"
     />
-  </ProviderFrame>
+  </FireProviderToolFrame>
 </template>
 
 <script setup lang="ts">

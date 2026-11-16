@@ -4,15 +4,16 @@
       <KitchenDetailHeader :kitchen="presentation" :place="place" />
     </template>
     <template #services>
-      <div>
-        <KitchenDetailMenuServices :kitchen-slug="presentation.slug" />
+      <div class="kitchen-venue-actions">
         <UButton
           :to="menusPath"
-          label="Menu"
+          label="Explore the menu"
           icon="i-lucide-utensils"
-          color="neutral"
-          variant="link"
+          color="primary"
+          variant="solid"
+          size="lg"
         />
+        <KitchenDetailMenuServices :kitchen-slug="presentation.slug" />
       </div>
     </template>
     <template #management>
@@ -25,7 +26,7 @@
 
 <script setup lang="ts">
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import type { KitchenDetailPresentation } from '../../models/kitchen-detail.response.ts'
+import type { KitchenDetailPresentation } from '../../types/public'
 import { computed } from 'vue'
 import {
   menuRouteIndexPath,
@@ -39,3 +40,11 @@ const menusPath = computed(() =>
   menuRouteIndexPath(directoryMenuRouteScope(props.presentation.slug))
 )
 </script>
+<style scoped>
+.kitchen-venue-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--spacing) * 3);
+}
+</style>

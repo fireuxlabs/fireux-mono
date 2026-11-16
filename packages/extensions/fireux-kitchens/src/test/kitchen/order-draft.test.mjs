@@ -4,15 +4,12 @@ import { compileFunction } from 'node:vm'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import * as Vue from 'vue'
+import { OrderChannels } from '../../types/ordering.ts'
 import { load } from './offering-test-helpers.mjs'
-const model = load(
-  '../../runtime/kitchen/models/order.model.ts',
-  'OrderChannels'
-)
 const ordering = load(
   '../../runtime/kitchen/utils/ordering.ts',
   'createOrderDraft,addOrderLine,updateOrderLineQuantity,removeOrderLine,readOrder,readSavedOrderDraft,OrderDraftCollection,requireOrderChannel',
-  model
+  { OrderChannels }
 )
 const createError = (value) =>
   Object.assign(new Error(value.statusMessage), value)
@@ -385,7 +382,7 @@ test('actual draft surface saves/reopens, preserves dirty edits and ignores an o
   let nextId = 0
   const source = readFileSync(
     new URL(
-      '../../runtime/kitchen/components/Orders/Editor.vue',
+      '../../runtime/kitchen/components/Workspace/Orders/Editor.vue',
       import.meta.url
     ),
     'utf8'
@@ -555,7 +552,7 @@ test('actual library channel switches show correct empty entry context without r
     '../../runtime/kitchen/utils/order-submission.ts',
     'orderSubmissionIssues'
   )
-  const deps = { ...Vue, ...ordering, ...model, ...validation }
+  const deps = { ...Vue, ...ordering, OrderChannels, ...validation }
   const state = scope.run(() =>
     compileFunction(
       `${stripTypeScriptTypes(source)}; return { channel,kioskChoice,websiteEntry,identity,tableName,tableId,order,itemsAdded,channels,postLocation,customerName,phone,address,requestedTime,needsName,needsLocation,initOrder,preOrder,itemsOrder }`,
@@ -671,7 +668,7 @@ test('library review blocks incomplete orders and captures valid local examples 
     '../../runtime/kitchen/utils/order-submission.ts',
     'orderSubmissionIssues'
   )
-  const deps = { ...Vue, ...ordering, ...model, ...validation }
+  const deps = { ...Vue, ...ordering, OrderChannels, ...validation }
   const state = scope.run(() =>
     compileFunction(
       `${stripTypeScriptTypes(source)}; return { channel,kioskChoice,websiteEntry,identity,itemsAdded,customerName,phone,address,tableName,postLocation,requestedTime,order,reviewIssues,submittedOrder,submitExample,successOutcome,successView }`,
@@ -735,7 +732,7 @@ test('board refresh is independent of actions and revoked access clears submitte
   const scope = Vue.effectScope()
   const source = readFileSync(
     new URL(
-      '../../runtime/kitchen/components/Orders/Board.vue',
+      '../../runtime/kitchen/components/Workspace/Orders/Board.vue',
       import.meta.url
     ),
     'utf8'

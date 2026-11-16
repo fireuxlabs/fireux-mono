@@ -3,7 +3,7 @@ import {
   type MenuRouteScope,
 } from '../../menu/utils/navigation/route.ts'
 import { tableChannelEnabled } from './table-service.ts'
-import type { KitchenOffering } from '../models/offering.model'
+import type { KitchenOffering } from './offering-policy'
 import type { Menu } from '../../menu/models/menu.model'
 
 export const websiteOrderContexts = [

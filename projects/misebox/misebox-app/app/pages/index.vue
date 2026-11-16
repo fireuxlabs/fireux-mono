@@ -1,11 +1,17 @@
-<template><div /></template>
+<template>
+  <LandingPublic />
+</template>
 <script setup lang="ts">
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
-definePageMeta({ layout: false, pageTransition: false, requiresAuth: false })
-const route = useRoute()
-const { workspaceEntryPath } = useWorkspaceEntryCta()
-await navigateTo(
-  { path: workspaceEntryPath.value, query: route.query, hash: route.hash },
-  { redirectCode: 302, replace: true }
-)
+import LandingPublic from '../components/Landing/Public.vue'
+import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+
+definePageMeta({ layout: 'default', requiresAuth: false })
+useAppLandingSeo({
+  title: 'Kitchens and Menus | Misebox',
+  description: 'Find a Kitchen and view its Menus.',
+  path: '/',
+  image: '/img/app/cover.png',
+  logo: '/img/app/logo.png',
+  language: 'en',
+})
 </script>

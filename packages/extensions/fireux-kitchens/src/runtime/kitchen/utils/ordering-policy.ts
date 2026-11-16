@@ -1,9 +1,32 @@
-import type {
-  KitchenOrderContactField,
-  KitchenOrderDepositPolicy,
-  KitchenOrderFulfilmentPolicy,
-  KitchenOrderTypeConfig,
-} from '../models/ordering.model'
+export type KitchenOrderContactField = 'name' | 'phone' | 'email'
+export type KitchenOrderDepositPolicy = {
+  type: 'fixed' | 'fixed_per_person' | 'percent'
+  amount: number
+  currency_code?: string
+  label?: string
+}
+export type KitchenOrderFulfilmentPolicy = {
+  deposit?: KitchenOrderDepositPolicy
+  handoff_instructions?: string
+}
+export type KitchenOrderWhatsAppNotificationPolicy = {
+  enabled?: boolean
+  recipient_phone?: string
+}
+export type KitchenOrderTypeConfig = {
+  type: KitchenOrderType
+  menu_ids?: string[]
+  table_channels?: { staff_pos: boolean; table_qr: boolean }
+  notice_hours?: number
+  message?: string
+  asap_enabled?: boolean
+  slot_interval_minutes?: number
+  schedule_horizon_days?: number
+  fulfilment?: KitchenOrderFulfilmentPolicy
+  customer?: { required_fields?: KitchenOrderContactField[] }
+  availability?: { paused?: boolean; message?: string }
+  notifications?: { whatsapp?: KitchenOrderWhatsAppNotificationPolicy }
+}
 const KitchenOrderContactFields = ['name', 'phone', 'email'] as const
 import { KitchenOrderTypes, type KitchenOrderType } from './interaction-types'
 import { readKitchenOrderWhatsAppNotificationPolicy } from './ordering-whatsapp'

@@ -8,6 +8,7 @@
               :venue="presentation"
               :venue-path="venuePath"
               :title="offeringName || 'Food & drinks'"
+              prominent
             />
             <KitchenDetailMenuServices
               v-if="!offeringId"

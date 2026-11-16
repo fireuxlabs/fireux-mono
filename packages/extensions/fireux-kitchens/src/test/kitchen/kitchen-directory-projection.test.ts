@@ -29,8 +29,16 @@ test('published Kitchen projection includes identity and mapped location, not op
   )
   assert.ok(kitchen)
   assert.equal(kitchen.identity.visibility, true)
+  assert.equal(kitchen.place.id, kitchen.id)
   assert.equal(kitchen.place.name, 'Public venue')
-  assert.deepEqual(Object.keys(kitchen).sort(), ['id', 'identity', 'place'])
+  assert.deepEqual(Object.keys(kitchen).sort(), [
+    'id',
+    'identity',
+    'place',
+    'services',
+  ])
+  assert.deepEqual(kitchen.services, { title: 'Food & drinks' })
   assert.equal('private_notes' in kitchen.place, false)
   assert.equal('team' in kitchen.place, false)
+  assert.equal(normalizeKitchen('another-location', kitchen, place), null)
 })

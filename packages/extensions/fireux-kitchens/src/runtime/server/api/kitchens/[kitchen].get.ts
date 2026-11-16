@@ -8,7 +8,7 @@ import {
 import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
 
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import type { KitchenDetailResponse } from '../../../kitchen/models/kitchen-detail.response.ts'
+import type { KitchenDetailResponse } from '../../../kitchen/types/public'
 import {
   readKitchenRelatedRecords,
   projectKitchenDetail,

@@ -1,4 +1,4 @@
-import type { KitchenOrderWhatsAppNotificationPolicy } from '../models/ordering.model'
+import type { KitchenOrderWhatsAppNotificationPolicy } from './ordering-policy'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

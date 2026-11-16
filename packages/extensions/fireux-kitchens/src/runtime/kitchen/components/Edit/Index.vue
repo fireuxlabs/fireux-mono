@@ -96,7 +96,7 @@ const kitchen = computed(() =>
   })
 )
 const loading = computed(() => Boolean(locator.value) && pending.value)
-const hydratedKitchen = computed(() => kitchen.value as any | null)
+const hydratedKitchen = kitchen
 const kitchenId = computed(() =>
   String(hydratedKitchen.value?.id || locator.value || '').trim()
 )

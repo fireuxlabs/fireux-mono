@@ -1,7 +1,7 @@
 # Theming and branded presentation
 
-Updated: 2026-11-12
-Ref: 614700fd9
+Updated: 2026-11-16
+Ref: a068b6eaa
 Role: map, not canon
 
 ## Purpose
@@ -28,8 +28,11 @@ template/brand contracts below do not establish a second global chrome theme.
 
 FireUX Core owns generic semantic colour tokens, page-style vocabulary and
 reusable UI compositions. Nuxt UI and its native colour-mode module own global
-light/dark preference and root-class lifecycle; Core's duplicate writer remains
-retirement work in [color-mode.md](color-mode.md). Core does not own tenant
+light/dark preference, persistence and root-class lifecycle. Core's
+[Logo](../../packages/core/fireux-core/src/runtime/app/components/Brand/Logo.vue) and
+[Wordmark](../../packages/core/fireux-core/src/runtime/app/components/Brand/Wordmark.vue)
+consume native `useColorMode()`; there is no parallel Core appearance writer.
+See [colour-mode ownership](color-mode.md#ownership). Core does not own tenant
 artwork, typography, photography or presentation-specific scene chrome.
 
 An App brand belongs to a genuine tenant App and uses the canonical
@@ -396,7 +399,7 @@ sources exist.
 - FireUX referral: `projects/fireux/fireux-app/app/pages/templates/*`
 - Kitchen capability projection and collection grouping:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/read.ts`
-  and `runtime/kitchen/components/Collection/Index.vue`
+  and `runtime/kitchen/components/Public/Collection/Index.vue`
 - Focused current theme test:
   `packages/extensions/fireux-kitchens/src/test/kitchen/menu-theme.test.ts`
 

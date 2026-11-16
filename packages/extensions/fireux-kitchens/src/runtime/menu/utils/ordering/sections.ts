@@ -8,7 +8,7 @@ import type {
   MenuManifest,
   PublicMenuItem,
 } from '../../models/menu-detail.model.ts'
-import type { KitchenPublicOffering } from '../../../kitchen/models/public-offering.model.ts'
+import type { KitchenPublicOffering } from '../../../kitchen/utils/public-offerings'
 
 export type MenuServiceSource = {
   manifest: MenuManifest

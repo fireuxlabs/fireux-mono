@@ -1,6 +1,6 @@
 import type { AvatarProps } from '@nuxt/ui'
 import { placeIdentityMedia } from 'fireux-places/runtime/place/utils/place-identity-media'
-import type { KitchenSurface } from '../models/kitchen-interface.model'
+import type { KitchenSurface } from '../types/presentation'
 
 /** Workspace identity consumes Place brand media without changing photo roles. */
 export function kitchenWorkspaceAvatar(

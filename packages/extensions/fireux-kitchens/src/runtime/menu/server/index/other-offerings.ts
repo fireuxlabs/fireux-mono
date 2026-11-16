@@ -1,4 +1,4 @@
-import type { KitchenOffering } from '../../../kitchen/models/offering.model'
+import type { KitchenOffering } from '../../../kitchen/utils/offering-policy'
 import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 
 /** Distinct public offerings outside the venue's Collection/Delivery menus. */

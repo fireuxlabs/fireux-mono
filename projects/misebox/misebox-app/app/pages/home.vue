@@ -1,14 +1,11 @@
-<template><LandingPublic /></template>
+<template>
+  <div />
+</template>
 <script setup lang="ts">
-import LandingPublic from '../components/Landing/Public.vue'
-import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-definePageMeta({ layout: 'landing', requiresAuth: false })
-useAppLandingSeo({
-  title: 'Kitchens and Menus | Misebox',
-  description: 'Find a Kitchen and view its Menus.',
-  path: '/home',
-  image: '/img/app/cover.png',
-  logo: '/img/app/logo.png',
-  language: 'en',
-})
+definePageMeta({ layout: false, pageTransition: false, requiresAuth: false })
+const route = useRoute()
+await navigateTo(
+  { path: '/', query: route.query, hash: route.hash },
+  { redirectCode: 301, replace: true }
+)
 </script>

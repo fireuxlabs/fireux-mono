@@ -4,7 +4,7 @@
     focus="kitchen-ai.identity"
     label="Identity &amp; brand"
   />
-  <KitchenIdentity :identity="identity" />
+  <WorkspaceKitchenIdentity :identity="identity" />
 </template>
 
 <script setup lang="ts">

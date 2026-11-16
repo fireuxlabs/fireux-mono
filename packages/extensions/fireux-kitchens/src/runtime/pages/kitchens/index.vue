@@ -1,10 +1,10 @@
 <template>
   <UPage>
-    <KitchenHero />
+    <PublicKitchenHero />
     <UPageBody>
       <KitchenCreate />
-      <FireState v-bind="page.state" />
-      <KitchenCollection
+      <FireState v-bind="page.state" retryable @retry="page.refresh()" />
+      <PublicKitchenCollection
         v-show="page.state.outcome === 'ready'"
         :kitchens="page.kitchens"
       />

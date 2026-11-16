@@ -4,7 +4,7 @@
     entity="published Project"
     :error="error"
   />
-  <ProjectCardsPreview v-if="publicProject" :project="publicProject" />
+  <PublicProjectCardsPreview v-if="publicProject" :project="publicProject" />
   <FireDiagnosticsDebugPanel
     title="Ecosystem Project relation"
     context="The exact Project related to the passed Ecosystem."

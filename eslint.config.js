@@ -193,6 +193,7 @@ export default [
       'packages/core/fireux-core/src/runtime/components/layouts/default/{Header,Footer,FooterAdmins}.vue',
       'packages/core/fireux-core/src/runtime/components/layouts/shared/PlatformFooter.vue',
       'packages/core/fireux-core/src/runtime/components/molecules/{DisclosurePanel,DisclosureCard}.vue',
+      'packages/core/fireux-core/src/runtime/workspace/components/Overview/Index.vue',
     ],
     plugins: { 'fireux-vue': fireuxVue },
     rules: {

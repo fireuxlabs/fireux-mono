@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-11-15
-Ref: af9b9a2e8
+Updated: 2026-11-16
+Ref: a068b6eaa
 Role: map, not canon
 
 ## Purpose
@@ -98,7 +98,7 @@ navigation/disposal cannot flush an older selection. Verify Core's
 
 ## Workspace arrival language
 
-The Workspace surface exists as soon as a user arrives at `/`. This applies
+The Workspace surface exists on arrival at its owning entrance. This applies
 with or without saved Project or Kitchen records. Use “getting started” for
 little or no saved information and describe progress through information added.
 Do not tell the user “no workspace yet”. A connected App is a Project-specific
@@ -109,18 +109,20 @@ visible Workspace availability does not grant mutation authority.
 
 ## Public and Workspace entry points
 
-Misebox, Bringli, BuenoHost and Granite open their existing registered Workspace
-entrances from native `/` index routes. Public Home remains at `/home`, with
-`homePath` supplying its navigation link. FireUX's public `/` remains its
-framework homepage; Project Workspace stays at `/workspace/project`. Tenant and
-standalone App entrances remain product-owned.
+Bringli, BuenoHost and Granite retain native `/` redirects to their registered
+Workspace entrances, with public Home at `/home`. FireUX's public `/` remains its
+framework homepage; Project Workspace stays at `/workspace/project`. Misebox Main
+is an explicit public-directory-root difference, with Kitchen Workspace at
+`/workspace/kitchen`; its [App-owned entrance contract](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md#apps-and-workspace)
+does not establish a new universal default. Tenant and standalone entrances
+remain product-owned.
 
 Misebox keeps public pages, authentication and Kitchen Workspace on one host.
 Its old host-switching middleware and configured Workspace origin are removed.
 The App's Workspace Home lives at `/workspace/kitchen`; capability descendants
-keep their existing paths. Its `/` redirect and Workspace responses send
-noindex/no-store headers. Native redirects preserve entrance query and fragment.
-Core's entrance reader resolves Home from the registered `workspace-<family>`
+keep their existing paths and noindex/no-store response policy. Public entry
+does not change Workspace authority. Core's entrance reader resolves the
+Workspace destination from the registered `workspace-<family>`
 nav key; optional external origins remain available only for a separately
 justified App. A hostname never changes membership, selection or permission.
 The native route and configuration remain the owners; no parallel entry model
@@ -346,13 +348,17 @@ Kitchen-owned root fields. Project root Update and Delete and Kitchen root
 Delete remain visibly unavailable until ProjectMeta synchronization and each
 Entity lifecycle and dependent-data policy are proved. Detail pages do not own
 a second mutation implementation while this family is being proved.
-Project and Kitchen Landing compose the shared `WorkspaceCapability` layout.
-Their domain Index UI owns the bounded landing projection; the data composables
-retain only their domain collection and selection binding. Project uses its
-own identity. Kitchen uses its linked Place identity.
+Project Landing and the Project/Kitchen Test surfaces consume the shared
+`WorkspaceCapability` structural component. This is the bounded collection/single
+panel extension point classified in the
+[component API rule](components.md#component-apis-and-extension-points), not a Nuxt
+layout or a requirement for every capability. Kitchen Landing currently composes
+its named Home children directly. The domain Index UI owns each bounded landing
+projection; data composables retain domain collection and selection binding.
+Project uses its own identity; Kitchen uses its linked Place identity.
 Kitchen owns the live `WorkspaceKitchenSelector`, `WorkspaceKitchen`, creation,
 target loading, and collection lifecycle. The Main App supplies its own copy directly to the
-native `UPageHeader`, composes Kitchen Workspace at its Workspace origin's `/`
+native `UPageHeader`, composes Kitchen Workspace at `/workspace/kitchen` on the same host
 through `app/components/Workspace/KitchenHome.vue`, and adds only App-owned
 presentation. Kitchen capability execution remains in
 the extension's direct named Workspace capability components. Other Kitchen-enabled Apps receive
@@ -409,12 +415,14 @@ migration verification, and protected Workspace consumer are complete.
   Entity-specific management validation, projections, messages, and
   transactions remain in the owning entity slice.
 
-- Workspace is the shared active-Entity surface, not the entity owner.
-  Shared Workspace components and composables remain in the root technical
-  spine. Entity-specific Workspace components and composables move to
-  `runtime/<entity>/components/Workspace` and
-  `runtime/<entity>/composables/workspace`; entity models and server commands do
-  not move under Workspace merely because it consumes them.
+- The shared Workspace runtime owns framework mechanics, not domain records.
+  Entity operator component surfaces follow the
+  [canonical audience convention](components.md#domain-component-surfaces), which
+  includes complete capability screens rather than only coordination. Public,
+  operator and admitted lower component grouping does not relocate the current
+  domain composables, state, models or commands, or imply selected-Entity scope.
+  Existing source paths require a completed consumer/registration cutover before
+  their surface migration is claimed.
 
 - `useWorkspace(workspace)` persists only one selected Entity id and exposes
   `selectedId`, `select`, and selection reconciliation. Its internal `clear` remains
@@ -999,11 +1007,11 @@ Index selection bindings, Test readers/commands and UI, Team controllers and
 Editor, shared layout, Info/JSON and Team AI context consumers. Kitchen Menus is included in the presentation baseline below. The component-placement contract applies to every maintained Workspace family;
 this interaction comparison is still limited to the named surfaces.
 
-| Capability | Collection / focused record     | Shared responsibility                                                                     | Necessary difference                                                                               |
-| ---------- | ------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Landing    | Workspaces / selected workspace | `WorkspaceCapability` layout; `useWorkspace` selection/reconciliation; creation allowance | Selection persists as an App-local preference; domain onboarding and identity remain distinct      |
-| Test       | Strings / focused string        | Same layout; one form for create dialog and record editor; Info/JSON                      | Disposable pipeline data; local focus; Kitchen AI prepares existing string controls; no role model |
-| Team       | People / focused person         | Same layout; Team person forms, focus, capacity and role-label UI; Info/JSON              | Linked accounts, role labels, invitation workflow and existing Team AI need real domain behavior   |
+| Capability | Collection / focused record     | Shared responsibility                                                                         | Necessary difference                                                                                                                                                     |
+| ---------- | ------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Landing    | Workspaces / selected workspace | `useWorkspace` selection/reconciliation and creation allowance                                | Project uses `WorkspaceCapability`; Kitchen composes named Home children. Selection persists as an App-local preference; domain onboarding and identity remain distinct. |
+| Test       | Strings / focused string        | `WorkspaceCapability` panels; one form for create dialog and record editor; Info/JSON         | Disposable pipeline data; local focus; Kitchen AI prepares existing string controls; no role model                                                                       |
+| Team       | People / focused person         | `WorkspaceCapability` panels; Team person forms, focus, capacity and role-label UI; Info/JSON | Linked accounts, role labels, invitation workflow and existing Team AI need real domain behavior                                                                         |
 
 | Workspace concern   | Kitchen                                                                                    | Project                                           | Classification                                                  |
 | ------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------- | --------------------------------------------------------------- |
@@ -1140,13 +1148,15 @@ has its own release and backup requirements.
 
 ### Overview construction contract
 
-The six Workspace Overviews retain named `useKitchenOverview`,
-`useProjectOverview`, `useSupplierOverview`, `usePropertyOverview`,
-`usePortfolioOverview` and `useBlankOverview` controllers, consumed by their
-own Overview Index components. Kitchen consumes its existing Workspace selection
-and linked Place directly; the other five reuse Core `useOverview` for their
-selected Entity projection and outcome. There is no generic page or
-industry-content registry.
+Overview components consume their existing domain state owners; a separate
+`useXOverview` controller is not required. [Kitchen Overview](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Index.vue)
+uses `useKitchenWorkspace` and its linked-Place identity projection directly;
+[Project Overview](../../packages/extensions/fireux-projects/src/runtime/project/components/Workspace/Overview/Index.vue)
+uses `useProjectWorkspace` directly. Supplier, Property, Portfolio and Blank
+currently consume their named `useXWorkspaceHome` projections, which reuse Core
+`useOverview` for selected Entity outcome and focused/collection summaries.
+Those source-backed differences do not create a generic page or industry-content
+registry, or justify forwarding controllers for symmetry.
 
 Main content is domain-owned and may differ: Kitchen presents selected identity
 and a route-owned map of working areas. Home remains its Kitchen-selection and
@@ -1157,9 +1167,11 @@ Overview or maintaining a second registry. See `workspace-navigation.test.mjs`.
 Project presents its saved identity. Collection-oriented Overviews retain
 their own scope summaries.
 Existing `WorkspaceOverview`, `WorkspaceOverviewFocus` and
-`WorkspaceOverviewMultiple` remain presentation building blocks. The
-Current domain controllers establish the shared relationship without requiring
-identical Main children; the old `workspace-pages.mjs` guard is retired. Other capability controllers are outside this contract.
+`WorkspaceOverviewMultiple` have bounded presentation consumers; apply the
+[component API rule](components.md#component-apis-and-extension-points) before
+extending them. Their names do not require identical Main children or controllers.
+The old `workspace-pages.mjs` guard is retired. Other capability controllers are
+outside this contract.
 
 ### Identity composition proving pair
 
@@ -1334,8 +1346,9 @@ Capability toolbars do not switch the active workspace entity.
 The padded body starts with the Hero heading, then the named capability AI area
 and the capability's collection/focus content. Collection tools stay with the collection; individual tools stay with
 the focused record, including their open forms beneath the compact controls.
-Core WorkspaceCapability retains the lower two-column layout. The routes and
-named domain components remain separate; this is not a generic page engine.
+Where a domain composes `WorkspaceCapability`, that structural component owns
+its responsive panel/focus behavior. It does not require every Landing to share
+the same body. Routes and named domain components remain separate.
 Team AI retains its existing intent handling. Kitchen Test AI prepares reviewed
 string actions through its domain intent endpoint and existing Test commands;
 read requests can select a string without writing. It consumes the same published
@@ -1632,7 +1645,7 @@ remain domain-owned. The save callback must pass the supplied `isCurrent`
 predicate through credential acquisition to the dispatch guard, not only use
 it to suppress UI completion.
 
-[Project Identity Write](../../packages/extensions/fireux-projects/src/runtime/project/components/Identity/Write.vue)
+[Project Identity Write](../../packages/extensions/fireux-projects/src/runtime/project/components/Workspace/Identity/Write.vue)
 adopts this lifecycle while retaining its fields, manual/requested opening and
 proposal overlays. Each new opening or proposal resets ownership, including an
 already-open editor. An old save cannot clear a newer attempt's busy state.

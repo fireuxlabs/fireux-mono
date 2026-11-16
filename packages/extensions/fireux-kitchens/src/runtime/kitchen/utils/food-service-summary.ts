@@ -1,7 +1,7 @@
 import { readOpeningHoursStatus } from 'fireux-places/runtime/place/utils/opening-hours-status'
 import type { Menu } from '../../menu/models/menu.model'
 import { constrainMenuOfferings } from '../../menu/utils/ordering/hours'
-import type { KitchenOffering } from '../models/offering.model'
+import type { KitchenOffering } from './offering-policy'
 import {
   kitchenOfferingOptions,
   offeringsForOption,

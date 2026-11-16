@@ -1,4 +1,4 @@
-import type { KitchenOffering } from '../../../kitchen/models/offering.model'
+import type { KitchenOffering } from '../../../kitchen/utils/offering-policy'
 import type { MenuKitchenScope } from './kitchen-scope'
 
 export type MenuOrderingSource = {

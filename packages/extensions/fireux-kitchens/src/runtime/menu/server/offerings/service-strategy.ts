@@ -1,4 +1,4 @@
-import type { KitchenOrderType } from '../../../kitchen/models/offering-interaction-types.model'
+import type { KitchenOrderType } from '../../../kitchen/utils/interaction-types'
 
 export type MenuOrderDestinationKind =
   | 'none'

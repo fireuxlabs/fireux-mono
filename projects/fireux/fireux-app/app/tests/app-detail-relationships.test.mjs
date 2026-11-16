@@ -121,9 +121,9 @@ async function render({
     )
   )
   app.component(
-    'ProjectCardsPreview',
+    'PublicProjectCardsPreview',
     component(
-      'packages/extensions/fireux-projects/src/runtime/project/components/Cards/Preview.vue',
+      'packages/extensions/fireux-projects/src/runtime/project/components/Public/Cards/Preview.vue',
       ['project'],
       '{}'
     )

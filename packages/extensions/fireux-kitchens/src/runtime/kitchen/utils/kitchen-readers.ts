@@ -4,9 +4,9 @@ import { intersectWeekdayHours } from '../../utils/weekday-time-constraints'
 import type { WorkspacePalette } from 'fireux-core/types/theme'
 import { readWorkspacePalette } from 'fireux-core/runtime/utils/theme-palette'
 import { readPlaceBusinessHours } from 'fireux-places/runtime/place/utils/place-spine'
-import type { KitchenOrderType } from '../models/offering-interaction-types.model'
+import type { KitchenOrderType } from './interaction-types'
 import { readWeekdayTimeWindowsConfig } from '../../utils/weekday-time'
-import type { KitchenFulfilment } from '../models/fulfilment.model.ts'
+import type { KitchenFulfilment } from './kitchen-fulfilment-reader'
 export {
   KitchenPaymentMethodDefaultOrderTypes,
   readKitchenFulfilmentConfig,

@@ -1,4 +1,4 @@
-import type { KitchenOffering } from '../../models/offering.model'
+import type { KitchenOffering } from '../../utils/offering-policy'
 import { resolveKitchenOperationHours } from '../../utils/kitchen-readers'
 import { hoursWithinParent } from '../../utils/service-hours'
 import { randomUUID } from 'node:crypto'

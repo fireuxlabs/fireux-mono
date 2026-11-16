@@ -22,8 +22,8 @@
 import { useFetch } from 'nuxt/app'
 
 import { computed } from 'vue'
-import type { KitchenSurface } from '../../models/kitchen-interface.model'
-import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
+import type { KitchenSurface } from '../../types/presentation'
+import type { KitchenFulfilment } from '../../utils/kitchen-fulfilment-reader'
 import { readKitchenFulfilmentConfig } from '../../utils/kitchen-readers'
 
 const props = defineProps<{

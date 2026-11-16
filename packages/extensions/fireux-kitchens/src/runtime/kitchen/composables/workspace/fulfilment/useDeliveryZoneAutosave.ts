@@ -1,6 +1,6 @@
 import { onScopeDispose, ref, watch, type Ref } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import type { KitchenDeliveryZone } from '../../../models/fulfilment.model'
+import type { KitchenDeliveryZone } from '../../../utils/kitchen-fulfilment-reader'
 import {
   normalizedZone,
   type EditableZone,

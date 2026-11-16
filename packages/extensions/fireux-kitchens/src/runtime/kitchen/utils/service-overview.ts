@@ -1,4 +1,4 @@
-import type { KitchenOffering } from '../models/offering.model'
+import type { KitchenOffering } from './offering-policy'
 import type { Menu } from '../../menu/models/menu.model'
 import {
   kitchenOfferingOptions,

@@ -48,11 +48,17 @@ export function configureComponents(resolver: Resolver) {
     global: true,
   })
 
+  registerComponentsDir(resolver, './runtime/kitchen/components/Public', {
+    global: false,
+    pathPrefix: true,
+    prefix: 'PublicKitchen',
+  })
+
   registerComponentsDir(resolver, './runtime/kitchen/components', {
     global: false,
     pathPrefix: true,
     prefix: 'Kitchen',
-    ignore: ['Workspace/**'],
+    ignore: ['Workspace/**', 'Public/**'],
   })
 
   registerComponentsDir(resolver, './runtime/menu/components', {

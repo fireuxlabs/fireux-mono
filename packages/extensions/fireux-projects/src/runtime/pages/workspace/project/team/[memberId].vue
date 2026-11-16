@@ -17,7 +17,7 @@
     <template #description
       ><FireCopyError message="Team could not be loaded" />
     </template> </UAlert
-  ><ProjectTeam
+  ><WorkspaceProjectTeam
     v-else-if="member"
     :key="memberId"
     :team="team"

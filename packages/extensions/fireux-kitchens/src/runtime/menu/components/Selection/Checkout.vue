@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { computed, ref, type UnwrapRef } from 'vue'
 import type { useServiceCheckout } from '../../composables/useServiceCheckout'
-import type { KitchenDetailPresentation } from '../../../kitchen/models/kitchen-detail.response'
+import type { KitchenDetailPresentation } from '../../../kitchen/types/public'
 const props = defineProps<{
   flow: UnwrapRef<ReturnType<typeof useServiceCheckout>>
   venue?: KitchenDetailPresentation | null

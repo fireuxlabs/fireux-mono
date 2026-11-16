@@ -1,17 +1,23 @@
 <template>
-  <SolutionPage :solution="solution">
-    <ProviderSproochliMenuTool
-      public-menu-url="https://misebox.app/kitchens/la-tapberne/menus/main"
-      kitchen-slug="la-tapberne"
-      menu-id="main"
-      source-language="de"
-      target-languages="en, fr, it"
-    />
-    <SolutionInstructions :items="solution.instructions" />
-    <SolutionIntegrations :integrations="solution.integrations" />
-    <SolutionUpgrades :items="solution.upgrades" />
-    <SolutionDev :dev="solution.dev" />
-  </SolutionPage>
+  <UPage>
+    <UButton to="/solutions" variant="link">Solutions</UButton>
+    <UPageHeader :title="solution.title" :description="solution.description" />
+    <UPageBody>
+      <div class="pagebody">
+        <ProviderSproochliMenuTool
+          public-menu-url="https://misebox.app/kitchens/la-tapberne/menus/main"
+          kitchen-slug="la-tapberne"
+          menu-id="main"
+          source-language="de"
+          target-languages="en, fr, it"
+        />
+        <SolutionInstructions :items="solution.instructions" />
+        <SolutionIntegrations :integrations="solution.integrations" />
+        <SolutionUpgrades :items="solution.upgrades" />
+        <SolutionDev :dev="solution.dev" />
+      </div>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

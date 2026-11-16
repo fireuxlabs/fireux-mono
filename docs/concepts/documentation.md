@@ -1,7 +1,7 @@
 # Documentation system
 
-Updated: 2026-11-08
-Ref: 614700fd9
+Updated: 2026-11-16
+Ref: a068b6eaa
 Role: map, not canon
 
 ## Purpose
@@ -122,6 +122,7 @@ Reviews and handoffs stay with the repository evidence.
 Ecosystem Main Apps own shared public guides for their products and libraries.
 Tenant Apps, such as La Tap Berne, and standalone Apps add documentation only
 for an explicit product need. They may link to their Ecosystem's guides.
+Misebox follows its scoped [Main reference and tenant-link boundary](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md#developer-reference-ownership).
 The App selects its documentation layer. The `fireux-docs` extension hosts
 FireUX's developer reference. It depends on Core for native surfaces and on
 `fireux-bookings` for its separate Extension component preview. Core depends on

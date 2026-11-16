@@ -14,6 +14,9 @@ export const menuAppTheme: WorkspaceTheme = {
 export function useMenuThemeSurface(
   options: {
     theme?: MaybeRefOrGetter<WorkspaceTheme | null | undefined>
+    themeSource?: MaybeRefOrGetter<
+      'menu' | 'kitchen' | 'default' | null | undefined
+    >
     pageCanvas?: MaybeRefOrGetter<boolean | null | undefined>
   } = {}
 ) {
@@ -23,7 +26,10 @@ export function useMenuThemeSurface(
       : 'menu-theme--light'
   )
   const styleVars = computed(() => {
-    const theme = toValue(options.theme)
+    const theme =
+      toValue(options.themeSource) === 'default'
+        ? undefined
+        : toValue(options.theme)
     const palette = theme?.palette || menuAppTheme.palette
     // Scope brand tokens to this surface; AppConfig remains owned by the host App.
     const ui =

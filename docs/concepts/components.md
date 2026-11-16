@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-11-15
-Ref: 7e15efc66
+Updated: 2026-11-16
+Ref: a068b6eaa
 Role: map, not canon
 
 ## Purpose and navigation
@@ -61,6 +61,51 @@ Check the route through composition and commands before moving a component.
 Keep accepted product differences explicit. Follow [Lasagne](lasagne.md) and
 the applicable family map before introducing a new shared seam.
 
+### Component APIs and extension points
+
+This is the canonical contributor rule for component composition. Ordinary
+parents visibly name their responsible children. Use typed props and events
+(including controlled `v-model`) for ordinary presentation inputs and actions;
+keep shared state in its existing bounded domain context when the
+[workflow and lifecycle](lasagne.md#controllers-and-context) justify it. Do not
+replace a simple presentation API with an injected controller or a slot engine.
+
+Binding App identity constants and merely forwarding props or a default slot
+into an existing Core component does not earn a forwarding adapter. Consume Core
+directly unless the adapter demonstrates an independent product, structural or
+lifecycle responsibility. Ordinary page/tool wrappers must not just conceal
+native/shared structure and named children.
+
+Consuming a supported native Nuxt/Nuxt UI slot, such as `UCard`'s footer or
+`UDashboardPanel`'s header/body, is normal native composition. Defining a custom
+shared slot API is a separate design decision: name its real shared structural
+responsibility and demonstrated consuming compositions, keep the extension
+surface bounded, and retain domain content, state and commands with their owners.
+A wrapper that only moves ordinary page children behind named slots has not
+proved that responsibility. Native API validity alone does not establish FireUX
+fit. Creating a Nuxt layout also requires the separate
+[layout admission](layouts.md#layout-admission) check; its native page slot is
+not a new custom component API.
+
+Inherit native component styling, existing shared semantic styles and tokens
+before adding domain styling. A new style owner needs a real presentation or
+structural responsibility. The single utility rule and exact human-exception
+boundary remain in [global context](../ai/gpt-context.md#ui-and-design-system).
+
+Classify references by their inspected responsibility rather than certifying
+all their implementation or treating every shared component as a template:
+
+| Reference                                                                                                               | Classification and boundary                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [WorkspacePage](../../packages/core/fireux-core/src/runtime/workspace/components/Page.vue) consuming native panel slots | Supported native slot consumption; Core owns one frame/outlet and domains supply route content.                                                                                                                                                                                                                                                                                                                                                                                           |
+| [FireOnboardingShell](../../packages/core/fireux-core/src/runtime/components/Onboarding/Shell.vue)                      | Bounded shared extension point for stage/progress/error framing, consumed by [Place](../../packages/extensions/fireux-places/src/runtime/place/components/Onboarding/Index.vue) and [Kitchen](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Onboarding/Index.vue). Their journey state, stage content and commands remain domain-owned.                                                                                                                        |
+| [WorkspaceCapability](../../packages/core/fireux-core/src/runtime/workspace/components/Capability.vue)                  | Bounded shared extension point for responsive collection/single panels and focus behavior, used by [Project Test](../../packages/extensions/fireux-projects/src/runtime/project/components/Workspace/Test/Index.vue), [Kitchen Test](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Test/Index.vue) and [Team](../../packages/core/fireux-core/src/runtime/workspace/components/Team/Editor.vue). It is a component, not a Nuxt layout or data owner. |
+| [WorkspaceOverview](../../packages/core/fireux-core/src/runtime/workspace/components/Overview/Index.vue)                | Project-only direct composition reference: the [Project consumer](../../packages/extensions/fireux-projects/src/runtime/project/components/Workspace/Overview/Index.vue) supplies default/attention content; `badge` has no current consumer. This does not establish a universal page-shell pattern or justify copying its extension API.                                                                                                                                                |
+
+The authored-utility and SFC-order rules in [ESLint configuration](../../eslint.config.js)
+cover an explicit file allowlist, including the reviewed Overview. That bounded enforcement is not a
+repository-wide composition or styling certificate.
+
 ## Authentication composition
 
 Core `Auth/System.vue` composes Brand, SignIn and Continue, using the existing
@@ -118,6 +163,73 @@ in `page-layouts.scss`; field groups reuse `pagebody` spacing.
 
 ## Component placement and names
 
+### Domain component surfaces
+
+Human-approved rule review: **replace** the direct-Entity capability-screen and
+Workspace-only-mechanics convention with audience-owned Public and Workspace
+composition; **narrow** neutral sharing to proved lower responsibilities. This
+is the canonical placement and library-admission convention. Existing source
+that retains the former grouping is pending alignment, not another accepted
+convention or proof that a family has completed migration.
+
+| Surface                        | Owns                                                                                                                                                           | Registered naming                                                                               |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Public                         | Customer-facing composition, including protected customer experiences. Authentication alone does not make a screen operator management.                        | A separate Public scan supplies `Public<Entity>*`.                                              |
+| Workspace                      | Complete operator capability screens and their children, including operational workflows, not only selection or coordination.                                  | A separate Workspace scan supplies `Workspace<Entity>*`.                                        |
+| Neutral lower domain component | A bounded responsibility with proved independent consumers and a shared/cross-Entity API. Several hosts of the same surface do not prove cross-audience reuse. | The neutral scan supplies `<Entity><Capability>*` and excludes both Public and Workspace trees. |
+
+Keep a single-surface leaf with that surface/capability. Do not create mandatory
+`Cards`, `Other` or `Shared` roots, or move useful children into neutral folders
+merely to shorten names. Public contribution and operator Setup are distinct
+onboarding compositions; shared Find/Review stages need their own proved
+consumers and contract. Marketing and standalone tools retain their actual
+App/tool owners and are not automatically operator Entity management.
+
+Workspace describes audience here, not a URL, chrome choice, selected-Entity
+injection or authority grant. Explicit-subject User administration retains its
+supplied User target; grouping it as operator UI does not substitute the selected
+Kitchen or another Workspace Entity. Models, public/presentation contracts,
+readers, commands and domain state stay outside this component grouping with
+their current owners.
+
+Core's dynamic `Workspace<Entity>Navigation` name remains an ABI: inspect the
+[Sidebar](../../packages/core/fireux-core/src/runtime/workspace/components/Sidebar.vue)
+and [Navbar](../../packages/core/fireux-core/src/runtime/workspace/components/Navbar.vue)
+lookup before changing domain registration. Current registration owners include
+[Kitchen](../../packages/extensions/fireux-kitchens/src/config/module/components-config.ts)
+and [Project](../../packages/extensions/fireux-projects/src/config/module/components-config.ts);
+their current declarations establish implementation, not completion of every
+surface under this rule.
+
+Complete a bounded move with its scans/exclusions, real route and component
+consumers, explicit imports, source-owned checks and rendered/interaction review.
+Preserve subject, state lifecycle and command authority. Retire old names and
+paths without aliases when that slice is complete; do not infer migration of
+untouched families or add placeholder trees. Specific source examples below
+remain evidence for their inspected responsibility, not universal migration
+baselines.
+
+### Library admission and maturity
+
+Classify a library entry explicitly as pure presentation, a connected Core
+platform adapter, or a named domain workflow. A presentation primitive consumes
+supplied values/actions; a connected adapter must expose its actual Core
+session/configuration/lifecycle prerequisites. A domain workflow stays with the
+owner that has its full meaning and authority. The word library does not admit
+generic CRUD, storage, slot engines or universal record editors. Existing
+unconsumed/unproved entries remain unproved, not canonical alternatives.
+
+The [component API admission rule](#component-apis-and-extension-points) still
+applies to props/events, bounded domain context and shared extension points.
+Maturity is limited by actual consumers: `WorkspaceOverview` has a Project-only
+composition reference; [WorkspaceFormActions](../../packages/core/fireux-core/src/runtime/workspace/components/FormActions.vue)
+is pure supplied-action presentation with a [Docs preview](../../packages/extensions/fireux-docs/src/runtime/components/CorePreview.vue),
+not production consumer proof. [SimpleField](../../packages/core/fireux-core/src/runtime/components/molecules/forms/editable/SimpleField.vue)
+is a connected Core adapter: Auth, App configuration and AppUser changes
+invalidate its supplied update intent; it invokes the caller's update rather
+than owning generic persistence. Unused `WorkspaceCapability` slots do not prove
+production reuse of those extension points.
+
 ### Vue file convention
 
 Authored Vue single-file components put `<template>` first, then
@@ -147,8 +259,9 @@ keep their existing names. Nuxt UI keeps `U`.
 
 - Core owns proved domain-neutral components and connected Core platform UI.
 - Entity UI belongs beneath the owning package's
-  `src/runtime/<entity>/components`. Cross-Entity package UI belongs at the
-  package root only when it genuinely spans domain owners.
+  `src/runtime/<entity>/components`, grouped by the [surface convention](#domain-component-surfaces).
+  Cross-Entity package UI belongs at the package root only for a proved
+  cross-Entity responsibility.
 - Reusable capability UI that spans consuming Apps belongs in its owning
   Extension's `src/runtime/components` when real consumers prove the shared
   responsibility. Its module supplies the package prefix; each App keeps its
@@ -173,7 +286,9 @@ slots, known runtime prerequisites and real consumer evidence. A package
 catalogue, auto-registration or visual similarity does not prove shared use.
 Use [spine.md](spine.md) to compare materially different consumers.
 
-Entity Cards use the [Pill, Cell, Preview and Overview roles](card-family.md).
+Entity Cards use the [Pill, Cell, Preview and Overview roles](card-family.md)
+within the admitted surface or lower shared boundary; these roles do not require
+a neutral Cards root.
 Core User is the four-role baseline; its Detail composes `UserCardsOverview`
 beside the App-owned membership capability. Card presentation does not own
 route acquisition, editing or trusted command authority.
@@ -200,12 +315,12 @@ The old GroupPage and Workspace layout shell are retired.
 
 Routes provide their content. Group indexes use
 [WorkspacePageLinks](../../packages/core/fireux-core/src/runtime/workspace/components/PageLinks.vue)
-as ordinary page content. Keep page/domain work in named components with typed
-props and events. Nuxt UI's supported slots remain valid when extending a native
-control; do not add a custom slot shell to repeat shared route framing.
+as ordinary page content. Apply the
+[component API rule](#component-apis-and-extension-points) to page/domain children
+and any proposed shared extension point; do not repeat the existing route frame.
 Shared styles live in
 [workspace-surface.scss](../../packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/workspace-surface.scss).
-The authored utility rule still applies, and utility usage elsewhere remains
+The authored utility rule still applies, and unapproved utility usage elsewhere remains
 migration debt; this shell change does not certify every connected component.
 WorkspaceNavbar accepts the page title and owns selected-identity and page
 actions. The separate Dashboard Navbar retains its existing `ui` forwarding;

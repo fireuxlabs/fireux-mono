@@ -1,7 +1,7 @@
 import type {
   KitchenOrderChannel,
   KitchenOrderType,
-} from '../../../kitchen/models/offering-interaction-types.model.ts'
+} from '../../../kitchen/utils/interaction-types'
 import {
   MenuRouteContexts,
   type MenuRouteContext,

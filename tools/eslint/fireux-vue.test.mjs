@@ -1,4 +1,4 @@
-import { Linter } from 'eslint'
+import { ESLint, Linter } from 'eslint'
 import vueParser from 'vue-eslint-parser'
 import tsParser from '@typescript-eslint/parser'
 import test from 'node:test'
@@ -41,6 +41,7 @@ for (const markup of [
   'class="flex gap-2"',
   ":class=\"active ? 'text-muted' : 'fx-label'\"",
   ':ui="{ root: \'w-full\' }"',
+  ':ui="{ image: \'object-contain\' }"',
 ]) {
   test(`foundation lint rejects utilities in ${markup}`, () => {
     assert.ok(
@@ -62,5 +63,21 @@ test('foundation lint rejects reversed block order', () => {
     lint(
       '<script setup>const value = 1</script><template><p>{{ value }}</p></template>'
     ).some((message) => message.ruleId === 'fireux/block-order')
+  )
+})
+
+test('Workspace Overview uses the bounded foundation rule through repository ESLint config', async () => {
+  const eslint = new ESLint()
+  const [result] = await eslint.lintText(
+    '<template><UAvatar :ui="{ image: \'object-contain\' }" /></template>',
+    {
+      filePath:
+        'packages/core/fireux-core/src/runtime/workspace/components/Overview/Index.vue',
+    }
+  )
+  assert.ok(
+    result.messages.some(
+      (message) => message.ruleId === 'fireux-vue/no-authored-utilities'
+    )
   )
 })

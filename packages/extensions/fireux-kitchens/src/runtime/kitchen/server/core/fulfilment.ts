@@ -1,6 +1,6 @@
 import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
+import type { KitchenFulfilment } from '../../utils/kitchen-fulfilment-reader'
 import { readKitchenFulfilmentConfig } from '../../utils/kitchen-readers.ts'
 
 type RuntimeFirestore = ReturnType<typeof getRuntimeFirestore>

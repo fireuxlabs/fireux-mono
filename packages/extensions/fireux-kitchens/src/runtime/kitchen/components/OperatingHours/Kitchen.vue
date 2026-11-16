@@ -107,7 +107,7 @@ import type {
   Place,
   PlaceBusinessHours,
 } from 'fireux-places/runtime/place/models/place.model'
-import type { Kitchen } from '../../models/kitchen.model'
+import type { Kitchen } from '../../models/model'
 import { useKitchenOperationHours } from '../../composables/workspace/ordering/useKitchenOperationHours'
 import { hoursWithinParent } from '../../utils/service-hours'
 import {
@@ -116,7 +116,7 @@ import {
 } from '../../utils/kitchen-readers'
 
 const props = defineProps<{
-  kitchen: Kitchen
+  kitchen: Pick<Kitchen, 'id' | 'orders'>
   place: Place
   canWrite: boolean
 }>()

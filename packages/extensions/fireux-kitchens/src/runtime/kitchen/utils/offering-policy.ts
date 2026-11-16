@@ -1,9 +1,46 @@
-import type {
-  KitchenOffering,
-  KitchenOfferingInteraction,
-} from '../models/offering.model'
-import { readKitchenOrderTypeConfig } from './ordering-policy'
+import {
+  readKitchenOrderTypeConfig,
+  type KitchenOrderTypeConfig,
+} from './ordering-policy'
 import { requireOperatingHours } from './operating-hours'
+import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.model'
+
+export type KitchenOfferingInteraction =
+  | { type: 'browse'; enabled: boolean }
+  | (KitchenOrderTypeConfig & { enabled: boolean })
+
+/** Normalized parent-owned Offering child, separate from Kitchen root fields. */
+export type KitchenOffering = {
+  id: string
+  name: string
+  enabled: boolean
+  menu_ids: string[]
+  separate?: boolean
+  collection_timing?: 'same_day' | 'next_day'
+  hours_source?: 'kitchen' | 'custom'
+  hours?: WeekdayTimeWindowsConfig
+  interactions: KitchenOfferingInteraction[]
+}
+export type KitchenOfferingChanges = Partial<
+  Pick<
+    KitchenOffering,
+    'name' | 'enabled' | 'menu_ids' | 'collection_timing' | 'hours_source'
+  >
+> & { hours?: WeekdayTimeWindowsConfig | null }
+export type KitchenOfferingInteractionChanges = Omit<
+  Partial<KitchenOrderTypeConfig>,
+  'type' | 'fulfilment'
+> & {
+  enabled?: boolean
+  fulfilment?: Omit<
+    NonNullable<KitchenOrderTypeConfig['fulfilment']>,
+    'deposit'
+  > & {
+    deposit?:
+      | NonNullable<KitchenOrderTypeConfig['fulfilment']>['deposit']
+      | null
+  }
+}
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)

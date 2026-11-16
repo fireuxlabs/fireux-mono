@@ -1,7 +1,7 @@
 # Composables spine map
 
-Updated: 2026-11-15
-Ref: 12ab09be9
+Updated: 2026-11-16
+Ref: a068b6eaa
 Role: map, not canon
 
 ## Purpose
@@ -379,7 +379,8 @@ identify reads and commands without additional `fetch`, `mutations`, or
 retired Recipe and Prep Item client directories are not alternate reader owners.
 Storage paths and trusted command authority remain independent of that placement.
 
-Workspace-only controllers live under `composables/workspace/<capability>` with
+The [component surface convention](components.md#domain-component-surfaces) does
+not relocate domain state or data owners. Workspace-only controllers live under `composables/workspace/<capability>` with
 lowercase capability folders. Workspace selection and shared page mechanics sit
 directly under `workspace`; there is no extra `core` folder. Injected Dishes,
 Ingredients, Menus, Orders and Recipes page state uses explicit `Context` names;
@@ -410,33 +411,30 @@ through a same-owner refresh and revision change. Account, App, membership,
 access, record and editing changes invalidate preparation and obsolete feedback.
 A committed result remains truthful even when its old editing surface is gone.
 
-Orders reads use `useKitchenOrderFetch` directly through the Workspace controller;
-the forwarding `useKitchenOrdersFetch` adapter is retired. Parent readiness and
-failure remain visible even without a saved selection, and retained child rows
-are masked before board partitions and counts are derived. Pass selection uses
-synchronous local intent cleanup. Incoming acceptance captures each ticket and
-bulk payload before waiting and combines owning context with its own surface
-lifetime, so disposal cannot print or continue a later bulk action. Order status,
-payment choice and atomic completion remain server-owned business rules.
+The routed [Orders Board](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Orders/Board.vue)
+owns submitted-order polling and combines those results with saved drafts from
+[useKitchenOrderDraftCollection](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenOrderDraftCollection.ts).
+Its selected Kitchen is gated by App session and Kitchen access. Draft acquisition
+masks rows outside its ready owner and read outcome. Board owns filters, editor
+selection and local response inputs; scope changes synchronously clear those
+values and submitted rows, and unmount clears polling and fullscreen listeners.
 
-Kiosk device management remains in its existing Orders component and Settings
-route. Its device rows derive from one live source, masked by the exact ready
-owner and Core collection outcomes. Activation, revocation and refresh capture
-owning context and local selection before credentials; disposal and changes away
-and back suppress obsolete feedback and navigation. The existing
-`kitchen/utils/kiosk-device.ts` validates the requested activation response and
-exact internally derived destination. Session policy remains server-owned.
-Cookie-mutating activation and revocation
-share a Nuxt-app-local in-flight guard independent of screen feedback. It survives
-owner changes and component disposal/remount and releases when the request
-settles, preventing response reordering within that running app instance.
-`kitchen/kiosk-client-internals.test.mjs` covers these client boundaries.
+[useOrderExchange](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useOrderExchange.ts)
+owns authenticated transport and current-intent checks across Kitchen, account,
+App and supplied access scope. Board uses separate instances for refresh and
+response actions. Requests detach payloads before credentials and reject obsolete
+continuations and mismatched responses. The
+[request adapter](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/exchange-request.ts)
+obtains the mutation actor for operator listing and responses; named submission
+operations retain domain authorization and transition rules. UI placement grants
+no authority.
 
-Source-owned checks include `orders-reader-internals.test.mjs`,
-`kitchen/order-action-internals.test.mjs`, `kitchen/sellable-command-internals.test.mjs`
-and `sellable-client-internals.test.mjs`, alongside the existing shared-terms
-editor checks. These controlled fixtures do not establish signed-in browser,
-device printing or provider acceptance.
+The customer [Menu Kiosk](../../packages/extensions/fireux-kitchens/src/runtime/menu/components/Kiosk/Index.vue)
+composes the service Menu with local eat-in/takeaway choice and guest-browser
+guidance. It does not establish a device activation/revocation management runtime.
+The [Board template check](../../packages/extensions/fireux-kitchens/src/test/kitchen/order-board-template.test.mjs)
+proves template compilation only, not signed-in browser behavior, device printing
+or provider acceptance.
 
 ## Dish and Drink responsibilities
 
@@ -614,7 +612,7 @@ No additional presentation-reader wrapper is required.
 Kitchen presentation is independent of its storage adapters. The single
 `kitchen/composables/useKitchenInterface.ts` implementation exposes only its
 consumed surface, interface, pill and cell projections. Presentation types live
-in `kitchen/models/kitchen-interface.model.ts`; pure projection helpers live in
+in `kitchen/types/presentation.ts`; pure projection helpers live in
 `kitchen/utils/kitchen-interface-projection.ts`. `useKitchenIdentityProjection`
 derives venue fields from supplied records without acquiring a reader, command
 or page-context publisher. Identity route context belongs to the Identity route;

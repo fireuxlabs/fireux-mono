@@ -1,7 +1,7 @@
 # Entities
 
-Updated: 2026-11-09
-Ref: ac88daacf
+Updated: 2026-11-16
+Ref: a068b6eaa
 Role: map, not canon
 
 ## Purpose
@@ -342,15 +342,38 @@ an inactive provider-imported Product that has no public route.
 These Product and Supplier relationships describe source contracts, not a live
 integrity audit of the Misebox database.
 
-Kitchen's [current model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts)
-contains nested `identity`, capability configuration, audit stamps and optional
-internal `context`. The [configuration model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen-configuration.model.ts)
-owns theme, ordering, services and tables. Its
-[public projection](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/normalize-kitchen.ts)
-returns identity and services with the same-id Place, omitting private root
-metadata. Team roster and Workspace access retain separate records and authority.
-Kitchen root IDs remain stable operational identity; authored slugs resolve
-through the [Kitchen server reader](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/read.ts).
+Kitchen's stored root, identity and admitted configuration contract is declared
+in [models/model.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/model.ts).
+[readKitchenDocument](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/read-kitchen-document.ts)
+validates stored values; trusted domain commands retain target, permission and
+write authority. Public projections and UI shapes do not replace that contract.
+
+[types/public.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/types/public.ts)
+owns the normalized public summary, required-enriched directory entry and exact
+detail response. The [normalizer](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/normalize-kitchen.ts)
+produces the base summary with its same-id Place; the
+[directory reader](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/read.ts)
+adds directory-only facts, while the
+[identity reader](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/read.ts)
+owns the exact public-detail projection. Directory enrichment is not assumed by
+an exact read. These projections omit private root metadata.
+
+[types/presentation.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/types/presentation.ts)
+owns supplied presentation surfaces and cards consumed by
+[useKitchenInterface](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenInterface.ts).
+The narrow `KitchenCollectionCard` contract remains beside
+`toKitchenCollectionCell` in [kitchen-interface-projection.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-interface-projection.ts).
+[Collection List](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Collection/List.vue)
+maps supplied cards to Core `CollectionCellData` without acquiring records or
+invoking mutations. Team roster and Workspace access retain separate records
+and authority; Kitchen root IDs remain stable operational identity and authored
+slugs resolve through the owning server reader.
+
+The package's `check:kitchen-contracts` uses its
+[focused TypeScript configuration](../../packages/extensions/fireux-kitchens/tsconfig.kitchen-contracts.json),
+including the type fixture; [runtime contract tests](../../packages/extensions/fireux-kitchens/src/test/kitchen/contracts.test.mjs)
+exercise stored/public separation, directory enrichment and supplied presentation.
+These are bounded contract checks, not complete App or live-policy verification.
 
 Retired operational artifacts in Git history are historical evidence, not
 supported audit commands. Live storage verification requires a current reviewed

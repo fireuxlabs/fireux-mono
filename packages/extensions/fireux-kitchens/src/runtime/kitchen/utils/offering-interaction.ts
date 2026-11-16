@@ -1,8 +1,8 @@
-import type { KitchenOrderType } from '../models/offering-interaction-types.model'
+import type { KitchenOrderType } from './interaction-types'
 import type {
   KitchenOfferingInteraction,
   KitchenOfferingInteractionChanges,
-} from '../models/offering.model'
+} from './offering-policy'
 
 export function newKitchenOfferingInteraction(
   type: 'browse'

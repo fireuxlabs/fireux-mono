@@ -1,5 +1,5 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
-import type { KitchenPublicSummary } from '../models/kitchen.model.ts'
+import type { KitchenPublicSummary } from '../types/public'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { readKitchenVisibility } from './kitchen-readers.ts'
 
@@ -18,7 +18,7 @@ export function normalizeKitchen(
   idValue: unknown,
   value: unknown,
   place: Place | null
-): (KitchenPublicSummary & { place: Place }) | null {
+): KitchenPublicSummary | null {
   const id = String(idValue ?? '').trim()
   const source = record(value)
   const identity = record(source.identity)
@@ -30,7 +30,8 @@ export function normalizeKitchen(
   }
 
   const status = String(identity.status ?? '').trim()
-  if (!['active', 'inactive', 'archived'].includes(status)) return null
+  if (status !== 'active' && status !== 'inactive' && status !== 'archived')
+    return null
   return {
     id,
     identity: {
@@ -38,14 +39,14 @@ export function normalizeKitchen(
         ? { source: readKitchenIdentitySource(identity.source) }
         : {}),
       slug,
-      status: status as KitchenPublicSummary['identity']['status'],
+      status,
       visibility: readKitchenVisibility(source),
     },
     services: {
       title:
         String(record(source.services).title || '').trim() || 'Food & drinks',
       ...(record(source.services).item_images === true
-        ? { item_images: true }
+        ? { item_images: true as const }
         : {}),
     },
     place,

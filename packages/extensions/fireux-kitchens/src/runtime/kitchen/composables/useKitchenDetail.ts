@@ -9,8 +9,8 @@ import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type {
   KitchenDetailPresentation,
   KitchenDetailResponse,
-} from '../models/kitchen-detail.response.ts'
-import type { KitchenPublicSummary } from '../models/kitchen.model.ts'
+} from '../types/public'
+import type { KitchenPublicSummary } from '../types/public'
 import { resolveKitchenDetailPresentation } from '../utils/kitchen-detail-presentation.ts'
 
 export type KitchenDetailOutcome =

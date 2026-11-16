@@ -3,7 +3,7 @@ import { useKitchenWorkspaceIdentity } from '../useKitchenWorkspaceIdentity'
 import type {
   KitchenFulfilment,
   KitchenDeliveryZone,
-} from '../../../models/fulfilment.model.ts'
+} from '../../../utils/kitchen-fulfilment-reader'
 import type { RadioGroupItem } from '@nuxt/ui'
 import { useDeliveryZoneAutosave } from './useDeliveryZoneAutosave'
 import { computed, ref, watch } from 'vue'

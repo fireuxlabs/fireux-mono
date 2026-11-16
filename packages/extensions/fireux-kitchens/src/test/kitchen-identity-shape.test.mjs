@@ -90,12 +90,11 @@ test('Kitchen editor accepts only supported dot paths and preserves sibling Iden
   }
 })
 test('joined presentation retains canonical Identity and reads currency only from Place', () => {
-  const { meaningfulSurfaceDelta, placeBaselineKeys, resolveKitchenPath } =
-    load(
-      'kitchen/utils/kitchen-interface-projection.ts',
-      'meaningfulSurfaceDelta,placeBaselineKeys,resolveKitchenPath',
-      { safeString: (v) => String(v || '') }
-    )
+  const { resolveKitchenPath } = load(
+    'kitchen/utils/kitchen-interface-projection.ts',
+    'resolveKitchenPath',
+    { safeString: (v) => String(v || '') }
+  )
   const { readPlaceCurrencyCode, readMediaBackdropColor } = load(
     '../../../fireux-places/src/runtime/place/utils/place-spine.ts',
     'readPlaceCurrencyCode,readMediaBackdropColor',
@@ -106,8 +105,6 @@ test('joined presentation retains canonical Identity and reads currency only fro
     'useKitchenInterface',
     {
       safeString: (v) => String(v || ''),
-      meaningfulSurfaceDelta,
-      placeBaselineKeys,
       resolveKitchenPath,
       readPlaceCurrencyCode,
       readMediaBackdropColor,

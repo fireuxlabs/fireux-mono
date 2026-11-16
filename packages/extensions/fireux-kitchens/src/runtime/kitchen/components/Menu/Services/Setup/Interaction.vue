@@ -20,8 +20,8 @@
 <script setup lang="ts">
 import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import type { Menu } from '../../../../../menu/models/menu.model'
-import type { KitchenOrderTypeConfig } from '../../../../models/ordering.model'
-import type { KitchenOfferingInteractionChanges } from '../../../../models/offering.model'
+import type { KitchenOrderTypeConfig } from '../../../../utils/ordering-policy'
+import type { KitchenOfferingInteractionChanges } from '../../../../utils/offering-policy'
 const props = defineProps<{
   label: string
   config: KitchenOrderTypeConfig & { enabled: boolean }

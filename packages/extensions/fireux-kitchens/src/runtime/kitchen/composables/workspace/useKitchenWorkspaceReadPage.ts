@@ -1,5 +1,5 @@
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
-import type { KitchenSurface } from '../../models/kitchen-interface.model'
+import type { KitchenSurface } from '../../types/presentation'
 
 type MaybeRef<T> = Ref<T> | ComputedRef<T>
 

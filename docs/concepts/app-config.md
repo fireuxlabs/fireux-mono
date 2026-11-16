@@ -1,7 +1,7 @@
 # App config spine map
 
 Updated: 2026-11-15
-Ref: af9b9a2e8
+Ref: a068b6eaa
 Role: map, not canon
 
 ## Purpose
@@ -305,14 +305,18 @@ Workspace middleware reads this declaration through `useFireUXConfig` on both
 server and client before client sign-in checks. Route path and metadata identify
 the family; query parameters do not enable Workspaces. See [route checks](pages.md#route-availability-and-sign-in).
 
-Ecosystem Main Apps with Workspaces use a thin native index route to open the
-registered Workspace entrance through `useWorkspaceEntryCta`, preserving query
-and fragment. Their traditional public landing is `/home`, also declared as
-`homePath`. The shared sidebar exposes this Home link when it differs from the
-Workspace entrance. The first declared Workspace supplies the default entrance.
-FireUX retains its authored public `/` and `homePath: '/'`.
-Tenant and standalone entrances remain App-owned. Root selection follows the existing Workspace declaration; there is no
-parallel entrance configuration or role-specific root.
+The existing Workspace-first Main App pattern uses a thin native index route to
+open the registered Workspace entrance through `useWorkspaceEntryCta`, preserving
+query and fragment. Bringli, BuenoHost and Granite retain this pattern with public
+Home at `/home`, declared as `homePath`. The first declared Workspace supplies
+the default Workspace entrance; the sidebar exposes public Home separately.
+
+FireUX retains its authored public `/`. Misebox Main explicitly uses a public
+directory Home at `/` with `homePath: '/'`, while Kitchen Workspace remains at
+`/workspace/kitchen`; see the [Misebox entrance contract](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md#apps-and-workspace).
+These App-owned product differences do not change the root-component rule above,
+Workspace authority or other App/tenant entrances. They introduce no parallel
+entrance configuration or role-specific root component.
 
 Misebox uses the same host for Home, Workspace, sign-in and public tools. Its
 former host-switching middleware and declared Kitchen Workspace origin are

@@ -1,4 +1,4 @@
-import type { KitchenOffering } from '../../../kitchen/models/offering.model'
+import type { KitchenOffering } from '../../../kitchen/utils/offering-policy'
 import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
 import { normalizeKitchenOfferings } from '../../../kitchen/utils/offering-policy'
 import type { Firestore } from 'firebase-admin/firestore'

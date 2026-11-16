@@ -76,7 +76,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useGoogleMaps } from 'fireux-places/runtime/place/composables/useGoogleMaps'
-import type { KitchenDeliveryZone } from '../../../models/fulfilment.model'
+import type { KitchenDeliveryZone } from '../../../utils/kitchen-fulfilment-reader'
 
 type LatLngPoint = { lat: number; lng: number }
 

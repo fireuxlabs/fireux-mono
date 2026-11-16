@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "strict": true },
+  "include": [
+    "src/test/kitchen/contracts.types.test.ts",
+    "src/runtime/kitchen/utils/read-kitchen-document.ts",
+    "src/runtime/kitchen/composables/useKitchens.ts",
+    "src/runtime/kitchen/composables/useKitchenCollection.ts",
+    "src/runtime/kitchen/composables/useKitchenIdentity.ts",
+    "src/runtime/kitchen/server/index/read.ts",
+    "src/runtime/kitchen/server/identity/read.ts",
+    "src/runtime/server/api/kitchens/index.get.ts"
+  ]
+}

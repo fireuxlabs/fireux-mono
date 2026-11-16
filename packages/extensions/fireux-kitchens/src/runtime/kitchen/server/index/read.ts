@@ -5,8 +5,10 @@ import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import type { KitchenPublicSummary } from '../../models/kitchen.model.ts'
-import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import type {
+  KitchenPublicSummary,
+  KitchenDirectoryEntry,
+} from '../../types/public'
 import {
   readKitchenRelatedRecords,
   resolveKitchen,
@@ -24,15 +26,7 @@ export type ReadKitchensInput = {
 /** Server-resolved Kitchens. Every Kitchen includes its canonical same-ID Place. */
 export async function readKitchens(
   input: ReadKitchensInput = {}
-): Promise<
-  Array<
-    KitchenPublicSummary & {
-      place: Place
-      service_labels?: string[]
-      has_published_menu?: boolean
-    }
-  >
-> {
+): Promise<KitchenDirectoryEntry[]> {
   const requestedPlaceId = text(input.placeId)
   if (requestedPlaceId && !isFirestoreDocumentId(requestedPlaceId)) {
     throw createError({
@@ -72,9 +66,7 @@ export async function readKitchens(
 
   const kitchens = documents
     .map((document) => resolveKitchen(document, related, scope))
-    .filter((kitchen): kitchen is KitchenPublicSummary & { place: Place } =>
-      Boolean(kitchen)
-    )
+    .filter((kitchen): kitchen is KitchenPublicSummary => Boolean(kitchen))
     .filter(
       (kitchen) => input.includeHidden === true || kitchen.identity.visibility
     )

@@ -178,6 +178,7 @@ export function useMenuDetail(props: {
   const { className: themeClassName, styleVars: themeStyleVars } =
     useMenuThemeSurface({
       theme,
+      themeSource: computed(() => menuPresentation.value?.themeSource),
       pageCanvas: computed(() => props.pageCanvas),
     })
 

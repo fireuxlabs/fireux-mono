@@ -1,6 +1,8 @@
 <template>
-  <UPageHeader
-    title="Bon Appétit"
-    description="Browse live menus and choose how you would like to eat."
+  <PublicKitchenIntro
+    eyebrow="Find your next meal"
+    icon="i-lucide-utensils"
+    title="Good food, your way."
+    description="Explore collection and delivery menus. Find a kitchen, check its serving times, and choose something you’ll love."
   />
 </template>

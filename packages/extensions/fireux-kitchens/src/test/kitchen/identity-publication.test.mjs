@@ -152,7 +152,7 @@ async function listingHarness({
   const createEditor = (supplied, emit) =>
     scope.run(() =>
       load(
-        'kitchen/components/Identity/ListingEdit.vue',
+        'kitchen/components/Workspace/Identity/ListingEdit.vue',
         '({save,draft,canSave,saving,updateError})',
         {
           computed,
@@ -480,7 +480,7 @@ test('Home Single opens the supplied root listing and receives its controlled cl
   })
   app.component('WorkspaceSingleCard', { render: () => null })
   app.component('UAvatar', { render: () => null })
-  app.component('KitchenIdentityListingEdit', {
+  app.component('WorkspaceKitchenIdentityListingEdit', {
     props: ['identity', 'open'],
     setup: (supplied, { emit }) => {
       assert.equal(supplied.identity, fixture.identity)
@@ -718,7 +718,7 @@ test('Kitchen-only updates use record authority inside their transaction and rej
 
 test('venue failure preserves Kitchen settings, while absent Kitchen hides them', async () => {
   const source = readFileSync(
-    new URL('kitchen/components/Identity/Index.vue', runtime),
+    new URL('kitchen/components/Workspace/Identity/Index.vue', runtime),
     'utf8'
   )
   const template = source.slice(
@@ -783,14 +783,14 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
     ])
       app.component(name, { render: () => null })
     const listingSource = readFileSync(
-      new URL('kitchen/components/Identity/Listing.vue', runtime),
+      new URL('kitchen/components/Workspace/Identity/Listing.vue', runtime),
       'utf8'
     )
-    app.component('KitchenIdentityListing', {
+    app.component('WorkspaceKitchenIdentityListing', {
       props: ['identity'],
       setup: (props) =>
         load(
-          'kitchen/components/Identity/Listing.vue',
+          'kitchen/components/Workspace/Identity/Listing.vue',
           '({kitchenPath,kitchenStatus,kitchenEditorOpen})',
           {
             computed,
@@ -804,14 +804,14 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
       ),
     })
     const profileSource = readFileSync(
-      new URL('kitchen/components/Identity/Profile.vue', runtime),
+      new URL('kitchen/components/Workspace/Identity/Profile.vue', runtime),
       'utf8'
     )
-    app.component('KitchenIdentityProfile', {
+    app.component('WorkspaceKitchenIdentityProfile', {
       props: ['identity'],
       setup: (props) =>
         load(
-          'kitchen/components/Identity/Profile.vue',
+          'kitchen/components/Workspace/Identity/Profile.vue',
           '({sections,section,sectionTitle,kitchenPath,publicTo,editor})',
           {
             computed,
@@ -847,7 +847,7 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
       setup: (props) => () => h('p', props.title),
     })
     let suppliedToEditor = false
-    app.component('KitchenIdentityListingEdit', {
+    app.component('WorkspaceKitchenIdentityListingEdit', {
       props: ['identity', 'open'],
       setup: (supplied) => {
         assert.equal(supplied.identity, identity)
@@ -902,7 +902,7 @@ test('Identity sections use Place facts, keep nested Kitchen identity and close 
   }
   const page = scope.run(() =>
     load(
-      'kitchen/components/Identity/Profile.vue',
+      'kitchen/components/Workspace/Identity/Profile.vue',
       '({sections, section, sectionTitle, kitchenPath, publicTo})',
       {
         computed,
@@ -922,7 +922,7 @@ test('Identity sections use Place facts, keep nested Kitchen identity and close 
     page,
     scope.run(() =>
       load(
-        'kitchen/components/Identity/Listing.vue',
+        'kitchen/components/Workspace/Identity/Listing.vue',
         '({kitchenEditorOpen, kitchenStatus})',
         { computed, ref, watch, defineProps: () => ({ identity }) }
       )

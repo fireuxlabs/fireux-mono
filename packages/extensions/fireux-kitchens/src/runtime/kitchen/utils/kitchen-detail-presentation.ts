@@ -1,6 +1,6 @@
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import type { KitchenDetailPresentation } from '../models/kitchen-detail.response.ts'
-import type { KitchenPublicSummary } from '../models/kitchen.model.ts'
+import type { KitchenDetailPresentation } from '../types/public'
+import type { KitchenPublicSummary } from '../types/public'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

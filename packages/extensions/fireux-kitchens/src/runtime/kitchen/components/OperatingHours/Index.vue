@@ -59,15 +59,7 @@
         <template #actions>
           <FireCopyError
             v-if="offeringsOutcome === 'error'"
-            :message="
-              [
-                offeringsOutcome === 'pending'
-                  ? 'Loading service schedules'
-                  : 'Service schedules unavailable',
-              ]
-                .filter(Boolean)
-                .join('\n')
-            "
+            message="Service schedules unavailable"
           />
         </template>
       </UAlert>

@@ -1,5 +1,15 @@
 import { normalizeKitchenOfferings } from './offering-policy'
-import type { KitchenPublicOffering } from '../models/public-offering.model'
+import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.model'
+
+/** Public service doorway; private interaction and customer policy stay excluded. */
+export type KitchenPublicOffering = {
+  id: string
+  name: string
+  separate?: boolean
+  collection_timing?: 'same_day' | 'next_day'
+  hours?: WeekdayTimeWindowsConfig
+  paused: boolean
+}
 
 export function readKitchenPublicOfferings(
   value: unknown,

@@ -1,7 +1,7 @@
 # Nuxt UI integration map
 
 Updated: 2026-11-15
-Ref: af9b9a2e8
+Ref: a068b6eaa
 Role: map, not canon
 
 ## Purpose and authority
@@ -30,17 +30,20 @@ and [main.scss](../../packages/core/fireux-core/src/runtime/assets/styles/main.s
 Apps may declare semantic color roles in App configuration; package manifests
 and the lockfile own the exact compatible versions.
 
-Use the current stable Nuxt UI API supported by the consuming manifests.
-Inspect real consumers before retiring a FireUX mechanism. Use native controls
-and their supported props, slots and events by default. Core adds a shared component only for a real FireUX-wide interaction,
-layout or lifecycle responsibility. Domain components retain domain meaning,
-readers, permissions and commands. App components retain product framing and
+Use the current stable Nuxt UI API supported by the consuming manifests and
+inspect real consumers before retiring a FireUX mechanism. Native controls and
+their supported props, slots and events are the foundation, not evidence that a
+new FireUX shell or layout has the right responsibility. Apply the canonical
+[component API rule](components.md#component-apis-and-extension-points) and
+[layout admission](layouts.md#layout-admission) criteria. Domains retain their
+meaning, readers, permissions and commands; Apps retain product framing and
 route policy.
 
 The repository-wide authored-Tailwind rule lives in
 [global context](../ai/gpt-context.md#ui-and-design-system). Nuxt UI may use
 Tailwind internally; that implementation does not grant FireUX source permission
-to add utility strings. Existing authored utilities remain migration debt.
+to add utility strings. The global rule distinguishes exact approved adjustments
+from migration debt.
 See [component ownership and reuse](components.md) for the consumption rule,
 shared component admission and current component evidence.
 

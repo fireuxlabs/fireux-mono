@@ -1,7 +1,7 @@
 # Entity Collection Page family
 
-Updated: 2026-10-25
-Ref: 61105afdf
+Updated: 2026-11-16
+Ref: a068b6eaa
 Role: map, not canon
 
 ## Purpose
@@ -71,16 +71,22 @@ data scope, validity and pagination. The shared page helper presents that reader
 outcome unchanged, even when an older pagination error exists. Only the reader
 can establish that retained rows remain valid after a next-page failure.
 
-Kitchen and Menu browsing place compact Create actions in the Hero’s links slot.
+Public Kitchen and Menu discovery retain the existing default chrome and use
+named domain introductions over native `UPageHeader`; their links connect the
+two discovery surfaces. The Collection retains search and filters. Creation
+remains with its owning authenticated route. See [Menu family](family-menu.md)
+for the content difference and [layout ownership](layouts.md#other-route-composition-lanes).
 The introduction precedes `UPageBody`. Native Nuxt UI components and the existing
 layout provide framing; the default layout supplies `UContainer`, while the
 FireUX full-width framework route supplies its own container. Do not add another
 page engine or repeat spacing utility shells.
 
-The route composes Entity-owned components. The Collection entry lives at
-`runtime/<entity>/components/Collection/Index.vue`, beside its named List and
-other collection sections; Nuxt retains the `EntityCollection` name. Hero
-remains the route-level introduction, rather than a child of the record list.
+The route composes Entity-owned Public components under the
+[approved surface convention](components.md#domain-component-surfaces). Collection,
+List and their single-surface children stay with that public capability. Concrete
+`EntityCollection` names retained in source examples are pending alignment where
+not yet migrated; registration and consumers move together. Hero remains the
+route-level introduction, rather than a child of the record list.
 Current and Create keep their existing capability owners. The
 Collection receives canonical records through a named prop such as `apps`,
 `users`, `ecosystems`, `projects`, `places`, or `kitchens`; it may own filters,
@@ -100,8 +106,12 @@ Inside an audited Entity, the physical presentation chain is
 filters, counts, and interface projection; List owns responsive layout and
 passes one resolved object to its presentation cell. Core's
 `CollectionCellData` and `<FireCollectionCell :cell="cell" />` are the ordinary shared
-boundary. Kitchen browsing retains the same List-owned projection but uses Nuxt UI
-`UPageCard` directly. Menu groups reuse `KitchenCollectionList`; standalone
+boundary. Kitchen browsing uses that shared cell with cover media, service badges
+and its public Menu destination. Its [Collection](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Collection/Index.vue)
+projects supplied records once, owns filter state and composes controlled
+[Controls](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Collection/Controls.vue)
+with its List. The controls own native search/category presentation; acquisition
+and retry stay with the page's existing reader. Standalone
 Menu records use compact Nuxt UI cards. Its stable semantic fields are title, description, image, meta,
 badges, action, and destination. Entity-owned Lists project their resolved
 interfaces into that object. Identity-led Apps select avatar media; physical
@@ -128,8 +138,8 @@ Entity-owned chroma. The FL Hero component uses compact `UPageHeader`, Create
 uses a concise horizontal doorway, and Collection keeps useful records in the
 first viewport through `UPageGrid`; these are shared information-design
 choices, not bespoke chroma. Ordinary Create children use a compact horizontal
-`UPageCard`; Kitchen and Menu browsing use compact action buttons within their
-page headers.
+`UPageCard`; public Kitchen/Menu discovery uses its domain-owned introduction
+beneath the existing default chrome.
 
 Hero introduces the index. Current presents the singular Entity relevant to the
 current session. Create owns the concrete creation doorway. Collection presents
@@ -189,7 +199,7 @@ become public outcome presentation.
 | Supplier                                   | ordinary sibling         | supplier identity, catalogue facts and management doorway    |
 | Portfolio                                  | ordinary sibling         | property-group identity and management doorway               |
 | Property                                   | paginated sibling        | bounded pagination and intentionally unlinked cards today    |
-| Business                                    | joined sibling           | complete Business/Place pairs and bounded pagination          |
+| Business                                   | joined sibling           | complete Business/Place pairs and bounded pagination         |
 
 ## App-owned branded families
 
@@ -286,8 +296,8 @@ When this family changes:
   ordinary baseline crosses the shared Core boundary through one `cell` object
   rather than repeated scalar props. App and Place prove the rich shared cell:
   App uses identity-led avatar media and Place uses venue-discovery cover media.
-  Kitchen browsing uses Nuxt UI `UPageCard` directly for compact photographic
-  cards. Menu groups reuse that exact `KitchenCollectionList` with canonical
+  Kitchen browsing uses the shared `FireCollectionCell` with cover media.
+  Menu groups reuse that exact `PublicKitchenCollectionList` with canonical
   visible Kitchen/Place records, filtered to Kitchens represented in the Menu
   results. Standalone Menus retain a separate section.
   These are bounded discovery presentation deltas; acquisition and domain

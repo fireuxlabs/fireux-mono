@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { kitchenWorkspaceAvatar } from '../../../utils/kitchen-workspace-avatar'
-import type { KitchenSurface } from '../../../models/kitchen-interface.model'
+import type { KitchenSurface } from '../../../types/presentation'
 
 const props = defineProps<{
   collection: readonly KitchenSurface[]

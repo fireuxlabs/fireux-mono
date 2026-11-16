@@ -3,11 +3,11 @@ import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands
 import type {
   KitchenOffering,
   KitchenOfferingInteractionChanges,
-} from '../../models/offering.model'
+} from '../../utils/offering-policy'
 import type { KitchenOfferingOption } from '../../utils/offering-options'
 import { offeringOptionEnabled } from '../../utils/offering-options'
 import { newKitchenOfferingInteraction } from '../../utils/offering-interaction'
-import type { KitchenOrderType } from '../../models/offering-interaction-types.model'
+import type { KitchenOrderType } from '../../utils/interaction-types'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model'
 import { requireOperatingHours } from '../../utils/operating-hours'
 

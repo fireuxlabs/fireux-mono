@@ -1,7 +1,7 @@
 # Menu family
 
-Updated: 2026-11-09
-Ref: 5a5a26e2d
+Updated: 2026-11-15
+Ref: a068b6eaa
 Role: map, not canon
 
 ## Purpose
@@ -68,6 +68,36 @@ Removal stays under Item actions. Kind-specific editors retain their existing au
 Menu IDs and own eligibility and serving schedules.
 
 ## Shared spine
+
+Public Kitchen and Menu discovery, venue profiles, Menu choosers and
+Collection/Delivery entrances retain the host's existing default chrome.
+Kitchen owns named content and presentation children; Core retains its shared
+navigation, account/Workspace controls, footer and root lifecycle. Follow
+[layout admission](layouts.md#layout-admission) for a genuinely different
+route-family responsibility, not for ordinary content differences.
+Presentation inherits Nuxt UI, then FireUX shared conventions, then the host
+App/Ecosystem theme (Misebox in its Main App). A saved Kitchen palette is the
+local Menu override. A payload marked `themeSource: 'default'` inherits the host
+tokens rather than imposing its transport fallback colours. Domain geometry
+and media styling must continue to consume those semantic tokens.
+`kitchen/components/Public/Intro.vue` composes native `UPageHeader` for the two
+discovery introductions. Existing collection-page readers, filtering and route
+scopes remain authoritative. Kitchen cards use already-projected venue media;
+failed or absent photos retain a named placeholder. Root Menu venue cards keep
+their existing identity and service projection.
+
+The Kitchen Menu chooser can show the existing Place cover in its shared
+`Detail/MenuHeader.vue`; service headings retain the compact variant. Venue
+profiles continue to compose Place's owning detail components. Published Menu
+reading and ordering remain separate projections, with their existing palette,
+audience, serving-time and checkout rules. A visual entrance does not establish
+publication or service eligibility.
+
+Ordering catalogue, item-picker and basket presentation stays in the existing
+`menu/components/Selection` owners; read-only service browsing stays in
+`menu/components/Service/Catalogue.vue`. Their local styles establish readable
+item, price and action hierarchy without moving choice validation, basket
+state, serving-time checks or submission authority into presentation components.
 
 - Menu reads use bounded server responses. Raw Menu
   Firestore rows are not the guest transport.

@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenDeliveryZone } from '../../models/fulfilment.model'
+import type { KitchenDeliveryZone } from '../../utils/kitchen-fulfilment-reader'
 
 // Kitchen fulfilment wrapper: DeliveryCoverageMap owns map rendering; this file adds kitchen fee/minimum rows.
 

@@ -52,3 +52,32 @@ test('page canvas cannot export Menu brand tokens into the host App', () => {
   assert.deepEqual(head.value, {})
   assert.equal(surface.className.value, 'menu-theme--light')
 })
+
+test('unconfigured menus inherit host tokens and a saved Kitchen palette overrides only its surface', () => {
+  const useSurface = compileFunction(
+    `${stripTypeScriptTypes(source)}; return useMenuThemeSurface`,
+    ['computed', 'toValue', 'useHead']
+  )(computed, toValue, () => {})
+  const themeSource = ref('default')
+  const theme = ref({
+    palette: {
+      canvas: '#f8fafc',
+      text: '#0f172a',
+      accent: '#0f766e',
+      accent_contrast: '#ffffff',
+    },
+  })
+  const surface = useSurface({ theme, themeSource })
+  assert.equal(surface.styleVars.value['--menu-bg'], 'var(--ui-bg)')
+  assert.equal(surface.styleVars.value['--menu-primary'], 'var(--ui-primary)')
+  assert.ok(
+    !Object.keys(surface.styleVars.value).some((key) => key.startsWith('--ui-'))
+  )
+  themeSource.value = 'kitchen'
+  assert.equal(surface.styleVars.value['--ui-primary'], '#0f766e')
+  assert.equal(surface.styleVars.value['--ui-bg'], '#f8fafc')
+  themeSource.value = 'default'
+  assert.ok(
+    !Object.keys(surface.styleVars.value).some((key) => key.startsWith('--ui-'))
+  )
+})

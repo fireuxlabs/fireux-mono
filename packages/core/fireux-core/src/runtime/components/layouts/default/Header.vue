@@ -17,6 +17,7 @@
         <div data-fireux-header-right class="fx-header-actions">
           <UButton
             v-if="hasWorkspaceEntry"
+            class="fx-header-desktop-action"
             :to="workspaceEntryHref"
             size="sm"
             color="neutral"
@@ -36,7 +37,10 @@
           </UButton>
 
           <template v-else-if="isSignedIn">
-            <AppUserAccessBadge :subscription="subscription" />
+            <AppUserAccessBadge
+              class="fx-header-desktop-action"
+              :subscription="subscription"
+            />
 
             <UButton
               to="/dashboard"
@@ -59,6 +63,26 @@
       </template>
 
       <template #body>
+        <div
+          v-if="hasWorkspaceEntry || (isSignedIn && subscription)"
+          class="fx-header-menu-actions"
+        >
+          <UButton
+            v-if="hasWorkspaceEntry"
+            :to="workspaceEntryHref"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-panels-top-left"
+            label="Workspace"
+          />
+          <div
+            v-if="isSignedIn && subscription"
+            class="fx-header-menu-membership"
+          >
+            <span>Your plan</span>
+            <AppUserAccessBadge :subscription="subscription" />
+          </div>
+        </div>
         <UNavigationMenu
           v-if="mobileItems.length"
           orientation="vertical"
@@ -160,5 +184,27 @@ const headerAvatarSrc = computed(() => {
   width: calc(var(--spacing) * 8);
   height: calc(var(--spacing) * 8);
   border-radius: 999px;
+}
+.fx-header-desktop-action {
+  display: none;
+}
+.fx-header-menu-actions,
+.fx-header-menu-membership {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--spacing) * 3);
+}
+.fx-header-menu-actions {
+  padding-block-end: calc(var(--spacing) * 4);
+}
+.fx-header-menu-membership {
+  color: var(--ui-text-muted);
+  font-size: var(--text-sm);
+}
+@media (min-width: 64rem) {
+  .fx-header-desktop-action {
+    display: inline-flex;
+  }
 }
 </style>

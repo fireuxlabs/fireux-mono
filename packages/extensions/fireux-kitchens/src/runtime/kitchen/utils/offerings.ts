@@ -1,7 +1,7 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { requireKitchenInteractionChanges } from './interaction-validation'
 import { normalizeKitchenOfferings } from './offering-policy'
-import type { KitchenOffering } from '../models/offering.model'
+import type { KitchenOffering } from './offering-policy'
 
 /** Snapshot identity belongs to the child record, never a root configuration array. */
 export function readKitchenOffering(

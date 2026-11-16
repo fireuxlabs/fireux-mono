@@ -1,5 +1,5 @@
 import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.model'
-import type { KitchenOffering } from '../models/offering.model'
+import type { KitchenOffering } from './offering-policy'
 import {
   intersectWeekdayHours,
   weekdayHoursWithin,

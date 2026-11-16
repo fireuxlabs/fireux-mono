@@ -11,7 +11,7 @@ const components = {
   property:
     '../../../fireux-properties/src/runtime/property/components/Team/Index.vue',
   project:
-    '../../../../extensions/fireux-projects/src/runtime/project/components/Team/Index.vue',
+    '../../../../extensions/fireux-projects/src/runtime/project/components/Workspace/Team/Index.vue',
 }
 for (const [domain, path] of Object.entries(components))
   test(`${domain} Team reuses shared presentation and retains domain roles and actions`, async () => {

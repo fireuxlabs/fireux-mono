@@ -22,7 +22,7 @@ import type {
   KitchenOfferingChanges,
   KitchenOfferingInteraction,
   KitchenOfferingInteractionChanges,
-} from '../../models/offering.model'
+} from '../../utils/offering-policy'
 
 export function useKitchenOfferings(
   explicitKitchenId: MaybeRefOrGetter<string>,

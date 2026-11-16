@@ -5,7 +5,7 @@ import { useKitchenUpdate } from './useKitchenUpdate'
 import { normalizeString } from 'fireux-core/runtime/utils/normalize-string'
 import { useKitchenAccess } from './useKitchenAccess'
 import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
-import type { KitchenSurface } from '../models/kitchen-interface.model'
+import type { KitchenSurface } from '../types/presentation'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -82,12 +82,8 @@ export function useKitchenIdentityProjection<T extends KitchenSurface>(source: {
       ? source.place.value
       : null
   )
-  const record = computed(
-    () => selectedKitchen.value as Record<string, unknown> | null
-  )
-  const identity = computed(
-    () => record.value?.presentation as Record<string, unknown> | undefined
-  )
+  const record = selectedKitchen
+  const identity = computed(() => record.value?.presentation)
 
   const name = computed(() => normalizeString(identity.value?.display_name))
   const tagline = computed(() => normalizeString(identity.value?.tagline))

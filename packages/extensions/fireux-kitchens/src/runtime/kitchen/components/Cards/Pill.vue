@@ -40,12 +40,12 @@
 <script setup lang="ts">
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import { computed } from 'vue'
-import type { KitchenCard } from '../../models/kitchen-interface.model'
+import type { KitchenCard } from '../../types/presentation'
 
 type PillProps = Partial<
-  Pick<KitchenCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle'>
+  Pick<KitchenCard, 'to' | 'imageUrl' | 'title' | 'subtitle'>
 > & {
-  badges?: KitchenCard.Card['badges']
+  badges?: KitchenCard['badges']
   imageShade?: PlaceImageShade
   showSubtitle?: boolean
   showBadges?: boolean

@@ -1,7 +1,7 @@
 # Layouts spine map
 
-Updated: 2026-11-07
-Ref: a38377207
+Updated: 2026-11-15
+Ref: a068b6eaa
 Role: map, not canon
 
 ## Purpose and authority
@@ -35,6 +35,23 @@ another outlet; a layout must consume the page it was supplied. A public Entity
 header introduces a record or collection, while a Workspace navbar identifies
 the active operational context. Similar titles alone do not make them the same
 responsibility.
+
+## Layout admission
+
+A new Nuxt layout needs real repeated route-family chrome or lifecycle ownership.
+Name its consumers and exact difference from the nearest existing layout first;
+a folder, supported `<slot>` or valid Nuxt rendering alone does not prove that
+boundary. Use ordinary named component composition when the difference is only
+page content or local content presentation. The
+[component API rule](components.md#component-apis-and-extension-points) distinguishes
+native slot consumption from defining a custom shared extension point.
+
+An admitted layout consumes the page supplied by the existing root. Preserve
+its route outlet, single content landmark, initialization, error/transition
+behavior and established header/footer responsibilities. Reuse existing shared
+chrome and style/token owners; retain a different owner only for an explicit
+product responsibility. A native layout slot does not authorize copying shared
+chrome or replacing it with unrelated local styling.
 
 ## App-root provider ownership
 
@@ -86,10 +103,11 @@ SFC block order for App roots and the reviewed shared shell/chrome/disclosure
 owners. Other existing Core styles remain migration debt; that scoped check
 is not a repository-wide styling certificate.
 
-Ecosystem Main Apps with Workspaces open their registered Workspace entrance
-through a native index route; public Home stays at `/home`. FireUX keeps its
-public root. See [App configuration](app-config.md#app-entrance-and-optional-workspace).
-Separate Workspace domains remain a future product decision.
+Main App entrance purpose remains App-owned: the existing Workspace-first pattern
+and the explicit FireUX/Misebox public-root differences are mapped in
+[App configuration](app-config.md#app-entrance-and-optional-workspace). Misebox's
+public Home uses existing default chrome; its separate Workspace keeps the same
+frame/outlet contract. Separate Workspace domains remain a future product decision.
 
 ## Workspace composition
 
@@ -115,13 +133,23 @@ Core disables page transitions for Workspace routes through
 so the shared frame remains mounted while its page outlet changes.
 
 Workspace pages supply their domain content and route metadata. Shared chrome
-does not acquire domain data or mutation authority. Prefer named components
-with typed props and events; use Nuxt UI's supported named slots when extending
-its native components. Do not add another custom slot shell around each route.
+does not acquire domain data or mutation authority. Follow the
+[component API rule](components.md#component-apis-and-extension-points) without
+adding a second route frame.
 Nested Nuxt pages remain valid where the route tree has a real parent/child
 relationship.
 
 ## Other route composition lanes
+
+- Public Kitchen/Menu discovery, venue profiles, Menu choosers and
+  Collection/Delivery entrances use the existing default chrome. Kitchen owns
+  their named content components, including the native `UPageHeader` in
+  [Public Intro](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Intro.vue).
+  Core retains the shared header/navigation, account and Workspace controls,
+  footer/contact/admin presentation, content container and root landmark/outlet.
+  This content difference does not introduce a separate customer layout.
+  Authenticated creation and the themed Menu, QR and kiosk contracts retain
+  their existing route and authority boundaries. See [Menu family](family-menu.md).
 
 - FireuxApp owns the normal layout and page fallback. FireuxWorkspaceApp supplies
   its default slot only for Workspace routes; ordinary routes reuse the fallback.
@@ -161,6 +189,9 @@ relationship.
   nearest package or Ecosystem owner and keep the App-specific delta explicit.
 
 ## Accepted boundaries
+
+These are accepted contracts, not blanket approval of every implementation listed
+above. New or changed layouts still need the admission evidence.
 
 | Boundary                                                         | State      | Reason                                                                    |
 | ---------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------- |

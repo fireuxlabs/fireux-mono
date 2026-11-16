@@ -1,5 +1,5 @@
 import { KitchenOrderTypes, type KitchenOrderType } from './interaction-types'
-import type { KitchenOfferingInteractionChanges } from '../models/offering.model'
+import type { KitchenOfferingInteractionChanges } from './offering-policy'
 
 /** Shared input constraints for persisted policy and the trusted command. */
 export function requireKitchenInteractionChanges(

@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-11-15
-Ref: af9b9a2e8
+Updated: 2026-11-16
+Ref: a068b6eaa
 Role: living context
 Scope: repository-wide
 
@@ -19,9 +19,12 @@ it does not make existing implementation desirable or complete.
 
 > Nuxt runs the web app, Nuxt UI supplies the controls, Firebase supplies the backend, and FireUX composes them into repeatable SaaS products.
 
-Use native behavior by default. A FireUX abstraction must earn its place with a
-specific product responsibility or a demonstrated integration gap. FireUX is an
-industry SaaS framework combining shared SaaS foundations with industry libraries.
+Use native behavior by default within FireUX ownership and composition rules.
+Supported Nuxt/Nuxt UI APIs establish API validity; FireUX fit also requires
+the ownership and composition checks below.
+A FireUX abstraction must earn its place with a specific product responsibility
+or a demonstrated integration gap. FireUX is an industry SaaS framework combining
+shared SaaS foundations with industry libraries.
 Use official upstream docs for framework behavior and the
 [platform map](../concepts/fireux.md) for FireUX-owned integration.
 
@@ -74,8 +77,14 @@ Unshipped implementations follow the same current contract regardless of age.
 Do not preserve conflicting shapes as older/newer variants or add compatibility
 adapters for a completed migration without a proved external compatibility need.
 
-Composition is the default from the first implementation. Keep parents readable
-as named responsibilities. A child may own a coherent section's content,
+Composition is the default from the first implementation. Parents visibly name
+child responsibilities, with props/events for ordinary presentation APIs and
+inherited native/shared styles and tokens. Bounded domain-provided context
+remains valid for genuinely shared state. Native slots remain supported; new
+shared extension points and layouts must meet the
+[component API](../concepts/components.md#component-apis-and-extension-points) and
+[layout admission](../concepts/layouts.md#layout-admission) criteria.
+A child may own a coherent section's content,
 presentation, styling or behavior, even with one consumer and no reactive state.
 Separation of concerns is sufficient reason for a component; reuse is not required.
 Small cohesive controls may stay local. Do not add forwarding wrappers, empty
@@ -138,19 +147,18 @@ Nuxt UI owns its component, accessibility and theming APIs. FireUX Core adds
 only proved shared visual or interaction responsibilities; domains retain their
 business meaning and Apps retain deliberate product framing.
 
-Authored Tailwind utility classes are banned in FireUX templates, bound class
-expressions, script-generated strings, per-instance ui overrides and new theme
-recipes. Do not hide utility recipes in helpers, constants or @apply. Consume
-supported component props and slots, semantic classes and design tokens. Nuxt
-UI may use Tailwind internally. Existing authored utilities are migration debt,
-not permission to add more. There is no implicit local-layout or final-polish
-exception; a unique final-element adjustment requires explicit human approval
-for that adjustment.
+Use supported native controls, inherited shared semantic styles and design tokens
+first. Authored Tailwind utility classes are disallowed by default in templates,
+bound class expressions, script-generated strings, per-instance `ui` overrides,
+new theme recipes, helpers, constants and `@apply`. The only exception is the
+exact adjustment explicitly approved by the human; that approval does not extend
+to other locations or later changes. Nuxt UI may use Tailwind internally.
 
-For current simple surfaces, inherit the native component, theme or existing
-shared semantic style. Remove redundant utility overrides rather than copying
-them into CSS. Flag a concrete visibility, accessibility or geometry need before
-retaining an exception; possible future polish does not authorize utilities now.
+Existing authored utilities without that approval are migration debt, not
+approved exceptions or precedent. Remove redundant overrides; do not convert
+utility recipes into local CSS to evade the rule. Local semantic styling still
+needs an owned presentation or structural responsibility and shared tokens.
+There is no implicit local-layout, final-polish or future-design exception.
 
 The [layouts map](../concepts/layouts.md#app-root-provider-ownership) covers roots,
 landmarks and provider lifecycles; [components](../concepts/components.md) covers
@@ -170,8 +178,10 @@ for rules absent from their configuration.
 
 Nuxt technical roles, declared Entity owners and the shared Workspace owner
 form the source spine. Carry only the responsibilities actually needed; do not
-create symmetric folders or forwarding layers. Workspace owns management
-presentation and selection, not domain records.
+create symmetric folders or forwarding layers. The shared Workspace runtime owns
+frame/selection mechanics, not domain records. Domain component audiences and
+library admission follow the [surface convention](../concepts/components.md#domain-component-surfaces);
+component grouping moves no model, reader, state or command authority.
 
 The [runtime filesystem map](../concepts/runtime-filesystem.md) owns placement;
 [App configuration](../concepts/app-config.md#app-content-and-styles) owns authored

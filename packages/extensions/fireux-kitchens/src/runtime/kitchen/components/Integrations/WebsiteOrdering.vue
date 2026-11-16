@@ -73,7 +73,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRequestURL } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import type { Kitchen } from '../../models/kitchen.model'
+import type { Kitchen } from '../../models/model'
 import {
   directoryMenuRouteScope,
   tenantMenuRouteScope,
@@ -83,7 +83,7 @@ import {
   menuWebsiteSnippet,
   menuWebsiteOrigin,
 } from '../../utils/menu-website-snippet'
-const props = defineProps<{ kitchen: Kitchen }>()
+const props = defineProps<{ kitchen: Pick<Kitchen, 'id' | 'identity'> }>()
 const fireux = useFireUXConfig()
 const origin = menuWebsiteOrigin(useRequestURL().origin, fireux.siteUrl)
 const orderUrl = computed(() =>

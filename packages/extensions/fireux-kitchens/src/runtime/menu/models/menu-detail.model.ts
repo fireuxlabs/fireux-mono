@@ -2,14 +2,14 @@ import type { ItemChoiceGroup } from '../../kitchen/item/offer'
 import type { PublicKitchenPromotion } from '../../kitchen/models/promotion.model'
 import type { MenuDocument, MenuStatus } from './menu.model'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
-import type { KitchenPublicOffering } from '../../kitchen/models/public-offering.model'
+import type { KitchenPublicOffering } from '../../kitchen/utils/public-offerings'
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
 import type {
   SproochliDefaultLanguage,
   SproochliLanguageCode,
 } from 'fireux-sproochli/runtime/sproochli'
 import type { MenuBrowseSurfaceCopy } from '../utils/catalogue/surface-copy'
-import type { KitchenImageShade } from '../../kitchen/models/kitchen-configuration.model.ts'
+import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import type { MenuOfferingProfile } from './menu-ordering.model'
 
 export type MenuManifestPriceOption = {
@@ -82,7 +82,7 @@ export type MenuKitchenPresentation = {
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
   showItemImages?: boolean
-  kitchenImageShade?: KitchenImageShade
+  kitchenImageShade?: PlaceImageShade
   kitchenImageUrl?: string
   kitchenLogoImageUrl?: string
   kitchenMediaBackdropColor?: string

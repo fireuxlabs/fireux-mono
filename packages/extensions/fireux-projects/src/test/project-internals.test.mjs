@@ -239,7 +239,7 @@ test('Project Team includes the selected person even beyond the interpretation l
     derived: { capability: { availableActions: ['delete'] } },
   }
   const request = load(
-    '../runtime/project/components/Team/AI.vue',
+    '../runtime/project/components/Workspace/Team/AI.vue',
     'requestAI',
     {
       ref,
@@ -385,7 +385,7 @@ function editorFixture() {
   const owner = effectScope()
   const api = owner.run(() =>
     load(
-      '../runtime/project/components/Identity/Write.vue',
+      '../runtime/project/components/Workspace/Identity/Write.vue',
       '{ show, save, open, saving, error, draft, changed, sameProject }',
       {
         computed,

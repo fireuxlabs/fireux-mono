@@ -1,7 +1,7 @@
 # Identity and product literature context
 
-Updated: 2026-11-12
-Ref: d6240d394
+Updated: 2026-11-15
+Ref: a068b6eaa
 Role: living context
 Scope: cross-system Main App identity, landing, pricing, and product literature
 
@@ -40,12 +40,15 @@ shared public-language or pricing seam applies to them.
   template overview describes the existing source starter without promoting
   paused domain previews or a package/download service. Project Workspace remains
   at `/workspace/project`, and only its Workspace host redirects root there.
-  The `/projects` directory remains secondary. Misebox,
-  BuenoHost and Granite lead with public discovery at `/`. Misebox's declared
-  Workspace origin renders Kitchen Home at `/`; BuenoHost and Granite keep
-  `/workspace/property` and `/workspace/portfolio`.
-  Ecosystem `landing/DirectoryHome.vue` owns the repeated discovery/Workspace framing;
-  Apps own the audience and wording, and domain components own their readers.
+  The `/projects` directory remains secondary. Misebox's
+  [public Home](../../projects/misebox/misebox-app/app/pages/index.vue) is `/`;
+  `/home` redirects there, and Kitchen Workspace remains at `/workspace/kitchen`.
+  BuenoHost and Granite keep their Workspace-first entrances and public `/home`,
+  with `/workspace/property` and `/workspace/portfolio` respectively.
+  Where selected, Ecosystem `landing/DirectoryHome.vue` owns repeated
+  discovery/Workspace framing. Misebox Main instead composes its
+  [App-owned Home](../../projects/misebox/misebox-app/app/components/Landing/Public.vue)
+  directly. Apps own audience and wording; domain components own their readers.
   BuenoHost and Granite consume only the existing published Property summary
   projection, never full operational Portfolio records. Product literature stays
   at the existing `/product` or `/about` routes. Tenant customer roots remain

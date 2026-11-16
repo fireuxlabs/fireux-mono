@@ -158,7 +158,7 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenFulfilment } from '../../../models/fulfilment.model'
+import type { KitchenFulfilment } from '../../../utils/kitchen-fulfilment-reader'
 
 import { useKitchenDeliveryEditor } from '../../../composables/workspace/fulfilment/useKitchenDeliveryEditor'
 const props = defineProps<{

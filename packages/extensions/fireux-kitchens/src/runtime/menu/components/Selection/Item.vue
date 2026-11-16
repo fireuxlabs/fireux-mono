@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="service-item-editor">
     <MenuItemImage
       :enabled="offer.presentation.showItemImages"
       :image-url="offer.item.imageUrl"
     />
-    <p v-if="offer.item.description">
+    <p v-if="offer.item.description" class="service-item-editor__description">
       {{ offer.item.description }}
     </p>
     <MenuSelectionBottle
@@ -40,7 +40,7 @@
         @update:model-value="choices.groups[group.id] = $event"
       />
     </UFormField>
-    <div>
+    <div class="service-item-editor__quantity">
       <UFormField label="Quantity">
         <UInput
           :model-value="choices.quantity"
@@ -51,11 +51,11 @@
           step="1"
         />
       </UFormField>
-      <span>{{
+      <strong>{{
         preview.line
           ? money((preview.line.unitMinor * choices.quantity) / 100)
           : money(offer.item.price)
-      }}</span>
+      }}</strong>
     </div>
     <p v-if="preview.issue" role="status">
       {{ preview.issue }}
@@ -128,3 +128,25 @@ function add() {
   })
 }
 </script>
+<style scoped>
+.service-item-editor {
+  display: grid;
+  gap: calc(var(--spacing) * 5);
+}
+.service-item-editor__description {
+  color: var(--ui-text-muted);
+  line-height: 1.65;
+}
+.service-item-editor__quantity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 4);
+}
+.service-item-editor__quantity strong {
+  font-size: var(--text-xl);
+  color: var(--ui-primary);
+  padding-block-end: calc(var(--spacing) * 2);
+}
+</style>

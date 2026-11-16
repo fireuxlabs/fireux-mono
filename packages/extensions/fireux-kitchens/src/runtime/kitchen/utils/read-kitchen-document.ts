@@ -1,6 +1,6 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { readWorkspacePalette } from 'fireux-core/runtime/utils/theme-palette'
-import type { Kitchen, KitchenIdentitySource } from '../models/kitchen.model.ts'
+import type { Kitchen, KitchenIdentity } from '../models/model'
 const KITCHEN_IDENTITY_SOURCES = ['user', 'place'] as const
 const KITCHEN_STATUSES = ['active', 'inactive', 'archived'] as const
 import { weekdayTimeCore } from '../../utils/weekday-time-core.ts'
@@ -13,7 +13,7 @@ function hasFields(value: Record<string, unknown>, fields: readonly string[]) {
   return Object.keys(value).every((field) => fields.includes(field))
 }
 
-function isStamp(value: unknown): boolean {
+function isStamp(value: unknown): value is Kitchen['created'] {
   if (!isRecord(value) || !hasFields(value, ['at', 'by', 'app_id']))
     return false
   const at = value.at
@@ -56,7 +56,10 @@ function isHours(value: unknown): boolean {
   )
 }
 
-function isConfiguration(value: Record<string, unknown>): boolean {
+function isConfiguration(
+  value: Record<string, unknown>
+): value is Record<string, unknown> &
+  Pick<Kitchen, 'theme' | 'orders' | 'services' | 'tables'> {
   if (value.theme !== undefined) {
     if (
       !isRecord(value.theme) ||
@@ -123,6 +126,32 @@ const omittedWorkspaceFields = [
   'integrations',
 ]
 
+function isIdentity(value: unknown): value is KitchenIdentity {
+  return (
+    isRecord(value) &&
+    hasFields(value, ['source', 'slug', 'status', 'visibility']) &&
+    (value.source === undefined ||
+      KITCHEN_IDENTITY_SOURCES.some((source) => source === value.source)) &&
+    typeof value.slug === 'string' &&
+    Boolean(value.slug.trim()) &&
+    value.slug.length <= 80 &&
+    !value.slug.includes('/') &&
+    KITCHEN_STATUSES.some((status) => status === value.status) &&
+    typeof value.visibility === 'boolean'
+  )
+}
+
+function isGuidanceIds(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) &&
+    value.length <= 20 &&
+    new Set(value).size === value.length &&
+    value.every(
+      (id) => typeof id === 'string' && id.length > 0 && id.length <= 80
+    )
+  )
+}
+
 /** Read the Workspace Kitchen without borrowing Place facts or legacy defaults. */
 export function readKitchenDocument(raw: unknown, id: string): Kitchen | null {
   if (!isFirestoreDocumentId(id) || !isRecord(raw)) return null
@@ -150,35 +179,24 @@ export function readKitchenDocument(raw: unknown, id: string): Kitchen | null {
     (kitchen.context !== undefined &&
       (typeof kitchen.context !== 'string' ||
         kitchen.context.length > 32000)) ||
-    (kitchen.guidance_ids !== undefined &&
-      (!Array.isArray(kitchen.guidance_ids) ||
-        kitchen.guidance_ids.length > 20 ||
-        new Set(kitchen.guidance_ids).size !== kitchen.guidance_ids.length ||
-        !kitchen.guidance_ids.every(
-          (id) => typeof id === 'string' && id.length > 0 && id.length <= 80
-        )))
+    (kitchen.guidance_ids !== undefined && !isGuidanceIds(kitchen.guidance_ids))
   )
     return null
 
-  const identity = kitchen.identity
-  if (
-    !isRecord(identity) ||
-    !hasFields(identity, ['source', 'slug', 'status', 'visibility']) ||
-    (identity.source !== undefined &&
-      !KITCHEN_IDENTITY_SOURCES.includes(
-        identity.source as KitchenIdentitySource
-      )) ||
-    typeof identity.slug !== 'string' ||
-    !identity.slug.trim() ||
-    identity.slug.length > 80 ||
-    identity.slug.includes('/') ||
-    !KITCHEN_STATUSES.includes(
-      identity.status as Kitchen['identity']['status']
-    ) ||
-    typeof identity.visibility !== 'boolean' ||
-    !isConfiguration(kitchen)
-  )
-    return null
+  if (!isIdentity(kitchen.identity) || !isConfiguration(kitchen)) return null
 
-  return { ...kitchen, id } as Kitchen
+  return {
+    id,
+    identity: kitchen.identity,
+    created: kitchen.created,
+    ...(kitchen.updated !== undefined ? { updated: kitchen.updated } : {}),
+    ...(kitchen.context !== undefined ? { context: kitchen.context } : {}),
+    ...(kitchen.guidance_ids !== undefined
+      ? { guidance_ids: kitchen.guidance_ids }
+      : {}),
+    ...(kitchen.theme !== undefined ? { theme: kitchen.theme } : {}),
+    ...(kitchen.orders !== undefined ? { orders: kitchen.orders } : {}),
+    ...(kitchen.services !== undefined ? { services: kitchen.services } : {}),
+    ...(kitchen.tables !== undefined ? { tables: kitchen.tables } : {}),
+  }
 }

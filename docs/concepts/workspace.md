@@ -1,7 +1,7 @@
 # Workspace
 
-Updated: 2026-11-15
-Ref: 93fd879be
+Updated: 2026-11-16
+Ref: a068b6eaa
 Role: map, not canon
 
 Business is an additional Workspace Entity owned by `fireux-businesses`. Its first tools are business profile/contact editing, optional Place links and the organisational Team roster. Current source and authority are routed through `packages/extensions/fireux-businesses/docs/ai/businesses-context.md`.
@@ -90,9 +90,9 @@ FireuxApp selects Core's named Workspace composition for routes marked by
 frame and shared Navbar/Breadcrumbs; the frame owns the route outlet and error
 boundary. Group indexes use `WorkspacePageLinks` as ordinary content. Route
 pages provide their domain surface without repeating the outer panel or header.
-The retired GroupPage shell is not the target for new routes. Use native Nuxt UI
-slots where their documented controls call for them; do not add a custom slot
-shell around each page. See the
+The retired GroupPage shell is not the target for new routes. Apply the canonical
+[component API rule](components.md#component-apis-and-extension-points), including
+its bounded shared extension points. See the
 [layouts map](layouts.md#workspace-composition) and
 [component map](components.md#workspace-composition).
 
@@ -212,57 +212,22 @@ composition; do not copy a second focus catalogue into Core.
 ## Component organisation
 
 Entity implementation lives under `src/runtime/<entity>/<technical-role>`.
-Within components, meaningful domain capabilities own their presentation;
-`Workspace` naming is reserved for actual selection, Home, navigation, overview
-and cross-page Workspace mechanics.
-
-Kitchen's inspected arrangement is:
-
-```text
-kitchen/components/
-  Identity/
-  Team/
-  Menu/
-    Index.vue
-    Items/
-    Menus/
-    Promotions/
-    Services/
-  PrepAndProduction/
-    Index.vue
-    Recipes/
-    Ingredients/
-    Stations/
-    PreparationEditor.vue
-    LibraryRead.vue
-    Library.vue
-  Finance/
-  Orders/
-  ...other named domain capabilities
-  Workspace/
-    Index.vue
-    Home/
-    Navigation/
-    Selector/
-    Overview/
-    ...named cross-page Workspace helpers
-```
+Component audience and lower-domain admission follow the canonical
+[component convention](components.md#domain-component-surfaces). Use the owning
+registration and real consumers to locate the current cutover; a folder listing
+is not another placement rule.
 
 Domain capabilities are not universal Workspace machinery. Kitchen Services,
 for example, owns menu selection and serving policy; other industries do not
 inherit that meaning merely because they also use the word service.
 
-Property Team lives in `property/components/Team/Index.vue` and is consumed
-as `PropertyTeam`; its roles and commands remain Property-owned. Project's
-Identity and Team live in `project/components/Identity` and
-`project/components/Team`, consumed as `ProjectIdentity` and `ProjectTeam`.
-Project Home, Overview, Navigation and selection remain Workspace composition.
-Other Property capabilities, Portfolio, Supplier, Blank and Project's other
-capabilities still retain components under `components/Workspace`. This is bounded
-placement migration, not completed repository alignment. Inspect registration,
-real consumers, relative imports and checks before each move. Preserve domain
-differences; remove retired paths rather than adding forwarding aliases.
-Do not create empty folders or sidebar-shaped containers for symmetry.
+Operator capability screens follow the canonical
+[component surface convention](components.md#domain-component-surfaces), including
+complete Identity, Team and operational UI. Workspace component grouping does
+not make every capability shared framework machinery or require selected-Entity
+injection. Existing direct-Entity capability paths are pending alignment until
+their registration and real consumer cutover is complete; they are not another
+canonical placement. Readers, state and commands retain their current owners.
 
 ## Selection and entrances
 
@@ -284,10 +249,10 @@ attachment use existing domain commands, access checks and capacity policy;
 there is no universal `crud.create` shape required of every controller.
 
 Misebox keeps public discovery, authentication and Kitchen Workspace on one
-host: `/` redirects through the registered Workspace entrance to
-`/workspace/kitchen`, and public Home is `/home`. Its
-[index route](../../projects/misebox/misebox-app/app/pages/index.vue) and
-[App config](../../projects/misebox/misebox-app/nuxt.config.ts) own that composition.
+host: public directory Home is `/`, `/home` redirects to that canonical entry,
+and Kitchen Workspace remains at `/workspace/kitchen`. Its
+[App-owned entrance contract](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md#apps-and-workspace)
+links the owning routes and composition.
 BuenoHost and Granite retain `/workspace/property` and `/workspace/portfolio`.
 FireUX presents its industry SaaS offering and framework resources at `/` and
 keeps Project Workspace at `/workspace/project`.
@@ -299,9 +264,9 @@ family path, for shared entry actions.
 
 Routes remain thin adapters. Workspace route metadata selects the shared Core
 frame; pages provide domain content and may use nested Nuxt outlets only for a
-real parent/child route. Named components, typed props and events define the
-composition. Native Nuxt UI slots remain supported; custom route-shell slots
-do not become another rendering owner. Shared page geometry belongs to native Nuxt UI and the
+real parent/child route. Follow the
+[component API rule](components.md#component-apis-and-extension-points); a shared
+slot component does not become another route-rendering owner. Shared page geometry belongs to native Nuxt UI and the
 semantic Workspace styles, not authored utility overrides. Workspace introductions use
 WorkspacePageHeader over native UPageHeader; the persistent frame still owns Navbar and breadcrumbs. Inspect the
 registered route and generated App output rather than inferring behaviour from
