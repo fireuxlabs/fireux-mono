@@ -5,6 +5,7 @@ import type {
 } from 'fireux-places/runtime/place/utils/place-spine'
 import type { Kitchen } from '../models/model'
 import type { KitchenCollectionCard } from '../utils/kitchen-interface-projection'
+import type { KitchenDirectoryEntry } from './public'
 
 export type KitchenIdentityPresentation = {
   display_name: string
@@ -59,6 +60,7 @@ export type KitchenSurface = Partial<Kitchen> &
     can_write?: boolean
     service_labels?: string[]
     has_published_menu?: boolean
+    special?: KitchenDirectoryEntry['special']
     operator_ids?: string[]
     team_ids?: string[]
     route_scope?: 'live' | 'demo' | 'test'

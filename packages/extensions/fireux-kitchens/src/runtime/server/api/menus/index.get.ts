@@ -13,6 +13,5 @@ export default defineEventHandler((event) => {
     offering: query.offering,
     cursor: query.cursor,
     limit: query.limit,
-    specials: query.specials,
   })
 })

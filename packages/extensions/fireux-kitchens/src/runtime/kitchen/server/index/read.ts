@@ -1,4 +1,6 @@
-import { hasPublishedPublicMenu } from '../../../menu/server/index/browse-availability'
+import { currentMenuAppId } from '../../../menu/server/ownership/app-scope'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
+import { readPublishedPublicMenuSummary } from '../../../menu/server/index/browse-availability'
 import { readKitchenOfferings } from '../offerings/read'
 import { kitchenServiceSummary } from '../../utils/service-summary'
 import { FieldPath } from 'firebase-admin/firestore'
@@ -72,14 +74,27 @@ export async function readKitchens(
     )
   return Promise.all(
     kitchens.map(async (kitchen) => {
-      const [offerings, hasPublishedMenu] = await Promise.all([
+      const [offerings, menus] = await Promise.all([
         readKitchenOfferings(db, kitchen.id),
-        hasPublishedPublicMenu(db, kitchen.id),
+        readPublishedPublicMenuSummary(
+          db,
+          kitchen.id,
+          String(kitchen.place.timezone || ''),
+          {
+            appId: currentMenuAppId(),
+            currencyCode: readPlaceCurrencyCode(kitchen.place) || undefined,
+            showItemImages: kitchen.services.item_images === true,
+          }
+        ),
       ])
       return {
         ...kitchen,
         service_labels: kitchenServiceSummary(offerings),
-        has_published_menu: kitchen.identity.visibility && hasPublishedMenu,
+        has_published_menu:
+          kitchen.identity.visibility && menus.hasPublishedMenu,
+        ...(kitchen.identity.visibility && menus.special
+          ? { special: menus.special }
+          : {}),
       }
     })
   )

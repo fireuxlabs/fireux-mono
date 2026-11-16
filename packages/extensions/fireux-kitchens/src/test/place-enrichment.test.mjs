@@ -17,7 +17,7 @@ const compileFunction = (source, args = []) => {
     ...names.map((name) => mocks[name])
   )
 }
-import { computed, ref, toValue } from 'vue'
+import { computed, ref, toValue, watch, effectScope, nextTick } from 'vue'
 
 function load(path, dependencies, result) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -43,6 +43,8 @@ test('Place Kitchen lookup stays scoped, uses public reads and hides stale or fa
     {
       computed,
       toValue,
+      onMounted: () => {},
+      onUnmounted: () => {},
       useAsyncData: (_key, read) => {
         fetcher = read
         return state
@@ -208,6 +210,8 @@ test('ordinary Kitchen directories retain their reader key and hide records duri
     {
       computed,
       toValue,
+      onMounted: () => {},
+      onUnmounted: () => {},
       useAsyncData: (sourceKey, read) => {
         key = sourceKey
         fetcher = read
@@ -233,4 +237,51 @@ test('ordinary Kitchen directories retain their reader key and hide records duri
   state.error.value = new Error('refresh failed')
   assert.deepEqual(collection.collection.value, [])
   assert.equal(collection.outcome.value, 'error')
+})
+
+test('Kitchen discovery refreshes at a special date boundary and clears its timer when disposed', async () => {
+  const scope = effectScope()
+  let timer,
+    disposed,
+    refreshed = 0
+  const cleared = []
+  const state = {
+    data: ref([{ id: 'venue', special: { nextChangeAt: Date.now() + 10000 } }]),
+    pending: ref(false),
+    error: ref(null),
+    refresh: async () => {
+      refreshed++
+    },
+    then: () => Promise.resolve(),
+  }
+  const useCollection = load(
+    '../runtime/kitchen/composables/useKitchens.ts',
+    {
+      computed,
+      toValue,
+      watch,
+      resolveReadOutcome,
+      useAsyncData: () => state,
+      onMounted: (callback) => callback(),
+      onUnmounted: (callback) => {
+        disposed = callback
+      },
+      setTimeout: (callback, delay) => {
+        timer = { callback, delay }
+        return timer
+      },
+      clearTimeout: (value) => cleared.push(value),
+    },
+    'useKitchens'
+  )
+  scope.run(() => useCollection())
+  assert.ok(timer.delay > 0 && timer.delay <= 10000)
+  await timer.callback()
+  assert.equal(refreshed, 1)
+  const scheduled = timer
+  state.data.value = []
+  await nextTick()
+  assert.ok(cleared.includes(scheduled))
+  disposed()
+  scope.stop()
 })

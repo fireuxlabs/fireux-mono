@@ -1,4 +1,5 @@
 import test from 'node:test'
+import { formatCurrencyAmount } from '../runtime/utils/currency-display.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -112,10 +113,29 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
       discoveryImageUrl: '',
       shortAddress: '',
       hasPublishedMenu: slug !== 'luna-piccante',
-      serviceLabels: ['Browse menus'],
+      serviceLabels: ['Browse menus', 'Delivery'],
+      ...(slug === 'la-tapberne'
+        ? {
+            special: {
+              date: '2026-11-23',
+              today: false,
+              nextChangeAt: 1,
+              slug: 'specials',
+              currencyCode: 'CHF',
+              items: [
+                {
+                  id: 'entry',
+                  name: 'Octopus Roll',
+                  description: 'Served with fries',
+                  price: 25,
+                },
+              ],
+            },
+          }
+        : {}),
       to: '/kitchens/' + slug,
       badges: [],
-      categoryLabels: [],
+      categoryLabels: ['Spanish'],
     })
   )
   const source = read('Public/Collection/List.vue')
@@ -132,30 +152,75 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
   app.component('UPageGrid', {
     setup: (_, ctx) => () => h('ul', ctx.slots.default?.()),
   })
-  const cellSource = readFileSync(
-    new URL(
-      '../../../../core/fireux-core/src/runtime/components/Collection/Cell.vue',
-      import.meta.url
-    ),
-    'utf8'
-  )
-  app.component('FireCollectionCell', {
-    props: ['cell'],
+  const linkComponent = {
+    props: ['to'],
+    setup: (props, ctx) => () =>
+      h('a', { href: props.to }, ctx.slots.default?.()),
+  }
+  app.component('NuxtLink', linkComponent)
+  app.component('UButton', {
+    props: ['to', 'label'],
+    setup: (props) => () => h('a', { href: props.to }, props.label),
+  })
+  const cardSource = read('Public/Collection/Card/Index.vue')
+  app.component('PublicKitchenCollectionCard', {
+    props: ['card'],
+    setup: (props) =>
+      compileFunction(script(cardSource) + ';return {props,cell,services}', [
+        'computed',
+        'defineProps',
+        'toKitchenCollectionCell',
+      ])(computed, () => props, toKitchenCollectionCell),
+    render: compile(template(cardSource)),
+  })
+  for (const [name, props] of [
+    ['Identity', ['cell']],
+    ['Labels', ['label', 'labels']],
+  ]) {
+    const source = read(`Public/Collection/Card/${name}.vue`)
+    app.component(`PublicKitchenCollectionCard${name}`, {
+      props,
+      render: compile(template(source)),
+    })
+  }
+  const specialSource = read('Public/Collection/Card/Special.vue')
+  app.component('PublicKitchenCollectionCardSpecial', {
+    props: ['special', 'kitchenPath'],
     setup: (props) =>
       compileFunction(
-        script(cellSource) +
-          ';return { NuxtLink, cardUi, avatarStyle, avatarUi }',
-        ['computed', 'defineProps', 'resolveComponent']
-      )(
-        computed,
-        () => props,
-        () => ({
-          props: ['to'],
-          setup: (link, ctx) => () =>
-            h('a', { href: link.to }, ctx.slots.default?.()),
-        })
-      ),
-    render: compile(template(cellSource)),
+        script(specialSource) + ';return {dateLabel,specialPath}',
+        ['computed', 'defineProps']
+      )(computed, () => props),
+    render: compile(template(specialSource)),
+  })
+  const itemSource = read('Public/Collection/Card/SpecialItem.vue')
+  app.component('PublicKitchenCollectionCardSpecialItem', {
+    props: ['item', 'currencyCode'],
+    setup: (props) =>
+      compileFunction(script(itemSource) + ';return {price}', [
+        'computed',
+        'defineProps',
+        'formatCurrencyAmount',
+      ])(computed, () => props, formatCurrencyAmount),
+    render: compile(template(itemSource)),
+  })
+  app.component('MenuItemImage', {
+    props: ['enabled', 'imageUrl'],
+    setup: (props) => () =>
+      props.enabled && props.imageUrl
+        ? h('img', { src: props.imageUrl })
+        : null,
+  })
+  app.component('UAlert', {
+    props: ['title', 'description', 'actions'],
+    setup: (props, ctx) => () =>
+      h('aside', [
+        props.title,
+        ctx.slots.description?.() || props.description,
+        ...props.actions.map((action) =>
+          h('a', { href: action.to }, action.label)
+        ),
+      ]),
   })
   for (const name of ['UCard', 'UBadge', 'UPageCard', 'UAvatar'])
     app.component(name, {
@@ -167,7 +232,15 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
   for (const card of cards)
     assert.ok(html.includes(`href="${card.to}/menu"`), html)
   assert.ok(!html.includes('/menus"'), html)
-  assert.equal((html.match(/Browse menus/g) || []).length, 2)
+  assert.ok(!html.includes('Browse menus'), html)
+  assert.match(html, /aria-label="Keywords"/)
+  assert.match(html, /aria-label="Services"/)
+  assert.match(html, /Upcoming special/)
+  assert.match(html, /href="\/kitchens\/la-tapberne\/menus\/specials"/)
+  assert.match(html, /23 November 2026/)
+  assert.match(html, /Octopus Roll/)
+  assert.match(html, /25 CHF/)
+  assert.match(html, /Served with fries/)
   assert.ok(!html.includes('Service details not published'), html)
 })
 
@@ -185,7 +258,7 @@ test('Kitchen discovery projection keeps supplied services and normalizes the Me
   }
   const cell = toKitchenCollectionCell(card)
   assert.equal(cell.to, '/kitchens/la-tapberne/menu')
-  assert.deepEqual(cell.badges, ['Hidden', 'Tapas', 'Browse menus', 'Delivery'])
+  assert.deepEqual(cell.badges, ['Hidden', 'Tapas'])
   assert.equal(cell.image, card.discoveryImageUrl)
   assert.deepEqual(card.serviceLabels, ['Browse menus', 'Delivery', 'Delivery'])
 

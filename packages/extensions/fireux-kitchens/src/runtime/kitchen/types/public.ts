@@ -16,6 +16,20 @@ export type KitchenPublicSummary = {
 export type KitchenDirectoryEntry = KitchenPublicSummary & {
   service_labels: string[]
   has_published_menu: boolean
+  special?: {
+    date: string
+    today: boolean
+    nextChangeAt: number
+    slug: string
+    currencyCode?: string
+    items: Array<{
+      id: string
+      name: string
+      description: string
+      price: number
+      imageUrl?: string
+    }>
+  }
 }
 
 export type KitchenDetailPresentation = {

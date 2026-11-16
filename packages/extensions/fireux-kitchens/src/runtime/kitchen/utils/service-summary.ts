@@ -7,14 +7,13 @@ export function kitchenServiceSummary(offerings: KitchenOffering[]): string[] {
   for (const offering of offerings) {
     if (!offering.enabled || !offering.menu_ids.length) continue
     for (const interaction of offering.interactions) {
-      if (!interaction.enabled) continue
+      if (!interaction.enabled || interaction.type === 'browse') continue
       if (
         (interaction.type === 'eat_in' || interaction.type === 'takeaway') &&
         !interaction.menu_ids?.length
       )
         continue
-      if (interaction.type === 'browse') labels.add('Browse menus')
-      else if (interaction.type === 'dine_in') {
+      if (interaction.type === 'dine_in') {
         if (tableChannelEnabled(interaction, 'staff_pos'))
           labels.add('Table service')
         if (tableChannelEnabled(interaction, 'table_qr'))

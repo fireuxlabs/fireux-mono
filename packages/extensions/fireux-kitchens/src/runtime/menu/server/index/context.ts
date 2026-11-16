@@ -12,7 +12,6 @@ export type MenuDirectoryContext = {
   kitchen?: MenuDirectoryKitchen
   kitchenName?: string
   kitchenSlug?: string
-  timezone?: string
 }
 
 export async function readScopedMenuDirectoryContext(
@@ -43,7 +42,6 @@ export async function readScopedMenuDirectoryContext(
     place: placeData,
   })
   return {
-    timezone: String(placeData.timezone || ''),
     kitchenOfferings,
     ...(includeOtherOfferings
       ? {

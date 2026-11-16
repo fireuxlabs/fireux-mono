@@ -1,7 +1,7 @@
 <template>
   <UPageGrid as="ul" aria-label="Kitchens">
-    <li v-for="cell in cells" :key="cell.to">
-      <FireCollectionCell :cell="cell" />
+    <li v-for="card in props.cards" :key="card.to">
+      <PublicKitchenCollectionCard :card="card" />
     </li>
   </UPageGrid>
   <FireDiagnosticsDebugPanel
@@ -16,7 +16,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import FireCollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
 import {
   toKitchenCollectionCell,
   type KitchenCollectionCard,

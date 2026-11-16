@@ -242,6 +242,8 @@ test('Kitchen directory hides retained rows during failure/loading and recovers 
     {
       computed,
       toValue,
+      onMounted: () => {},
+      onUnmounted: () => {},
       resolveReadOutcome,
       resolveHttpDocumentOutcome,
       useAsyncData: () => state,

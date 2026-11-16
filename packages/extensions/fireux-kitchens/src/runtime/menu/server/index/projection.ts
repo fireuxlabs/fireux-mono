@@ -9,7 +9,6 @@ import { readKitchenMenuOrdering } from '../offerings/projection'
 import { menuSourceFromData } from '../payload/source'
 import type { TenantMenuScope } from '../ownership/target-types'
 import type { MenuDirectoryContext } from './context'
-import { dailyMenuSelection, menuLocalDate } from '../../utils/calendar/daily'
 
 export type MenuDirectoryDocument = {
   id: string
@@ -64,22 +63,6 @@ export function projectMenuDirectoryEntry(
         })
       : undefined
   const description = readRecordString(data, 'description')
-  let special:
-    | { date: string; today: boolean; nextChangeAt: number }
-    | undefined
-  if (data.schedule === 'daily' && data.purpose === 'specials') {
-    try {
-      const selection = dailyMenuSelection(data, context.timezone || '')
-      if (selection.published)
-        special = {
-          date: selection.date,
-          nextChangeAt: selection.nextChangeAt,
-          today: selection.date === menuLocalDate(context.timezone || ''),
-        }
-    } catch {
-      /* Invalid venue timezones cannot advertise dated specials. */
-    }
-  }
   return {
     id,
     slug: readRecordString(data, 'slug'),
@@ -89,7 +72,6 @@ export function projectMenuDirectoryEntry(
       : {}),
     ...(kind === 'doc' && fileKind ? { file_kind: fileKind } : {}),
     name: readRecordString(data, 'name') || id,
-    ...(special ? { special } : {}),
     ...(description ? { description } : {}),
     status: 'published',
     offerings: readKitchenPublicOfferings(menuOfferings, id),

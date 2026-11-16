@@ -227,10 +227,11 @@ Specials boards use explicit `Menu.purpose: 'specials'` with a daily schedule,
 separate from generic Daily Menus such as conference or staff catering. The
 [date selector](../../packages/extensions/fireux-kitchens/src/runtime/menu/utils/calendar/daily.ts)
 chooses today's explicitly published release, otherwise the next published date,
-for specials only. Public directory entries expose a bounded special date and
-next local refresh boundary; `specials=true` filters before paging completes.
-The existing public Menu reader renders that selected date. Expired, draft and
-nonpublic specials do not advertise a homepage entry. No root Kitchen flag or
+for specials only. Kitchen discovery's existing published-Menu scan projects the
+next eligible date and canonical Menu slug onto that Kitchen's own card, including a local refresh boundary.
+The shared Kitchen reader refreshes at that boundary. The existing public Menu
+reader renders the selected date. Expired, draft and nonpublic specials do not
+advertise the dedicated specials area. No separate homepage specials list, root Kitchen flag or
 name-based identity is introduced.
 
 ## Menu doorways
@@ -761,9 +762,20 @@ Kitchen directory cards list a public label-only service summary from enabled
 Kitchen offerings with attached menus. Staff table service and QR table ordering
 are distinct; both Workspace and directory use `tableChannelEnabled`, including
 its established default when channel configuration is absent. The existing
-Kitchen directory read owns this projection, not a reader per card. The Browse menus badge is derived from a public published Menu by the Menu-owned
+Kitchen directory read owns this projection, not a reader per card. Browse availability remains derived from a public published Menu by the Menu-owned
 `server/index/browse-availability.ts` reader, independently of service settings.
-Private-link, protected-group, draft and archived Menus do not grant the badge.
+The card exposes View menus as its main action, not a Browse menus service badge.
+Kitchen-owned `Public/Collection/Card/Index.vue` composes Identity, named label
+groups and a dedicated Special child using native Nuxt UI. Keywords use neutral
+filled tags; services use primary outlines. Group names remain accessible labels
+without visible headings. The special links directly to its canonical published Menu. Its dish-led preview
+reuses the public dated Section reader for up to three Item names, descriptions
+and normal prices, with currency from the linked Place. This adds one selected
+Menu content acquisition only for Kitchens with an eligible special. Food images
+are optional: project them only when the Kitchen's existing item-image setting is
+enabled and an Item image exists. Missing or failed images produce no placeholder;
+the dish text remains complete. Keep the date secondary to the dish.
+Private-link, protected-group, draft and archived Menus do not advertise a special.
 The read scans past private published records in bounded pages; empty service
 settings add no filler message. Labels do not claim current opening hours
 or kiosk availability. Verify `kitchen-service-summary.test.mjs`.

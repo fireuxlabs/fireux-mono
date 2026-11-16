@@ -1,7 +1,15 @@
 import { useAsyncData } from 'nuxt/app'
 import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 
-import { computed, toValue, type MaybeRefOrGetter, type ComputedRef } from 'vue'
+import {
+  computed,
+  toValue,
+  watch,
+  onMounted,
+  onUnmounted,
+  type MaybeRefOrGetter,
+  type ComputedRef,
+} from 'vue'
 import type { KitchenDirectoryEntry } from '../types/public'
 
 export type UseKitchensReturn = {
@@ -55,6 +63,27 @@ export function useKitchens(
       present: collection.value.length > 0,
     })
   )
+  let dateTimer: ReturnType<typeof setTimeout> | undefined
+  onMounted(() => {
+    watch(
+      collection,
+      () => {
+        clearTimeout(dateTimer)
+        const boundaries = collection.value.flatMap((kitchen) =>
+          kitchen.special ? [kitchen.special.nextChangeAt] : []
+        )
+        if (boundaries.length)
+          dateTimer = setTimeout(
+            () => {
+              void state.refresh()
+            },
+            Math.max(1000, Math.min(...boundaries) - Date.now())
+          )
+      },
+      { immediate: true }
+    )
+  })
+  onUnmounted(() => clearTimeout(dateTimer))
 
   return {
     collection,

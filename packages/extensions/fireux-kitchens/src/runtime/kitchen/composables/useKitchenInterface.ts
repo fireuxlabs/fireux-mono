@@ -14,7 +14,11 @@ type KitchenSurfaceSource = Pick<Kitchen, 'id' | 'identity'> &
   Partial<Omit<Kitchen, 'id' | 'identity'>> &
   Pick<
     KitchenSurface,
-    'can_write' | 'service_labels' | 'has_published_menu' | 'route_scope'
+    | 'can_write'
+    | 'service_labels'
+    | 'has_published_menu'
+    | 'special'
+    | 'route_scope'
   >
 
 export type KitchenSurfaceParts = {
@@ -88,6 +92,7 @@ export function useKitchenInterface() {
       ...(kitchen.has_published_menu !== undefined
         ? { has_published_menu: kitchen.has_published_menu }
         : {}),
+      ...(kitchen.special ? { special: kitchen.special } : {}),
       ...(parts.scope?.operator_ids
         ? { operator_ids: parts.scope.operator_ids }
         : {}),
@@ -161,6 +166,7 @@ export function useKitchenInterface() {
       name,
       serviceLabels: kitchen.service_labels || [],
       hasPublishedMenu: kitchen.has_published_menu === true,
+      ...(kitchen.special ? { special: kitchen.special } : {}),
       badges,
 
       shortName,

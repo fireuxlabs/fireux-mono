@@ -1,4 +1,8 @@
 import test from 'node:test'
+import {
+  dailyMenuSelection,
+  menuLocalDate,
+} from '../runtime/menu/utils/calendar/daily.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -12,10 +16,44 @@ const source = readFileSync(
 )
   .replace(/^import.*\n/gm, '')
   .replace('export async', 'async')
-const hasPublishedPublicMenu = compileFunction(
-  stripTypeScriptTypes(source) + ';return hasPublishedPublicMenu',
-  ['FieldPath']
-)({ documentId: () => '__name__' })
+let previewItems = [
+  {
+    id: 'entry',
+    name: 'Octopus Roll',
+    description: 'With fries',
+    price: 25,
+    image_url: '/octopus.jpg',
+    context: 'private',
+  },
+]
+const previewReads = []
+const readSummary = compileFunction(
+  stripTypeScriptTypes(source) + ';return readPublishedPublicMenuSummary',
+  [
+    'FieldPath',
+    'dailyMenuSelection',
+    'menuLocalDate',
+    'readKitchenMenuSections',
+  ]
+)(
+  { documentId: () => '__name__' },
+  dailyMenuSelection,
+  menuLocalDate,
+  async (_db, input) => {
+    previewReads.push(input)
+    return [{ items: previewItems }]
+  }
+)
+const readPublishedPublicMenuSummary = (db, id, timezone, options = {}) =>
+  readSummary(db, id, timezone, {
+    appId: 'app',
+    currencyCode: 'CHF',
+    showItemImages: false,
+    ...options,
+  })
+const hasPublishedPublicMenu = async (db, id) =>
+  (await readPublishedPublicMenuSummary(db, id, 'Europe/Zurich'))
+    .hasPublishedMenu
 function database(rows, fail = false) {
   const calls = []
   const query = (after = '') => ({
@@ -156,4 +194,106 @@ test('Menu service choices never advertise another Menu on a basic Menu page', a
     basic.map((option) => option.value),
     ['generic']
   )
+})
+
+test('Kitchen card discovers the next special across all Menu pages without private, expired or generic daily entries', async () => {
+  const special = {
+    status: 'published',
+    schedule: 'daily',
+    purpose: 'specials',
+    slug: 'specials',
+    published_dates: ['2099-11-23'],
+  }
+  const rows = Array.from({ length: 50 }, (_, i) => ({
+    id: `a${String(i).padStart(2, '0')}`,
+    status: 'published',
+  }))
+  const db = database([...rows, { id: 'z', ...special }])
+  const summary = await readPublishedPublicMenuSummary(
+    db,
+    'venue',
+    'Europe/Zurich'
+  )
+  assert.equal(summary.hasPublishedMenu, true)
+  assert.equal(summary.special.date, '2099-11-23')
+  assert.equal(summary.special.today, false)
+  assert.deepEqual(db.calls, ['', 'a49'])
+  for (const changes of [
+    { audience: 'private_link' },
+    { audience: 'protected_group' },
+    { status: 'draft' },
+    { purpose: undefined },
+    { published_dates: ['2000-01-01'] },
+    { published_dates: [] },
+  ])
+    assert.equal(
+      (
+        await readPublishedPublicMenuSummary(
+          database([{ id: 's', ...special, ...changes }]),
+          'venue',
+          'Europe/Zurich'
+        )
+      ).special,
+      undefined
+    )
+  assert.equal(
+    (
+      await readPublishedPublicMenuSummary(
+        database([{ id: 's', ...special }]),
+        'venue',
+        'invalid'
+      )
+    ).special,
+    undefined
+  )
+})
+
+test('special preview reads only its published date and returns bounded dish truth with optional images', async () => {
+  const menu = {
+    id: 'special',
+    status: 'published',
+    schedule: 'daily',
+    purpose: 'specials',
+    slug: 'specials',
+    published_dates: ['2099-11-23'],
+  }
+  const original = previewItems
+  try {
+    previewItems = Array.from({ length: 5 }, (_, i) => ({
+      ...original[0],
+      id: String(i),
+    }))
+    const plain = await readPublishedPublicMenuSummary(
+      database([menu]),
+      'venue',
+      'Europe/Zurich'
+    )
+    assert.equal(plain.special.items.length, 3)
+    assert.equal(plain.special.items[0].name, 'Octopus Roll')
+    assert.equal(plain.special.currencyCode, 'CHF')
+    assert.equal('imageUrl' in plain.special.items[0], false)
+    assert.equal('context' in plain.special.items[0], false)
+    assert.equal(previewReads.at(-1).date, '2099-11-23')
+    assert.equal(previewReads.at(-1).menuId, 'special')
+    const pictured = await readPublishedPublicMenuSummary(
+      database([menu]),
+      'venue',
+      'Europe/Zurich',
+      { showItemImages: true }
+    )
+    assert.equal(pictured.special.items[0].imageUrl, '/octopus.jpg')
+    previewItems = []
+    assert.equal(
+      (
+        await readPublishedPublicMenuSummary(
+          database([menu]),
+          'venue',
+          'Europe/Zurich'
+        )
+      ).special,
+      undefined
+    )
+  } finally {
+    previewItems = original
+  }
 })

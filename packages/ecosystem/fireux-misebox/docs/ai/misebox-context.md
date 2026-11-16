@@ -1761,10 +1761,23 @@ Specials boards are ordinary interactive Daily Menus with explicit `purpose: 'sp
 a daily schedule alone does not identify a board. The paid blank-Menu form offers
 this preset without another creation command. Published public boards expose today's
 release first, otherwise the next explicitly published date, using the linked Place's
-timezone. The existing Menu directory's `specials=true` filter excludes drafts,
-private audiences, expired dates and unrelated daily/event Menus before pagination.
-Misebox's homepage composes `Landing/Specials.vue` through that same directory reader;
-it links to the canonical Menu and refreshes at the next venue date boundary.
+timezone. Kitchen discovery's existing published-Menu scan excludes drafts,
+private audiences, expired dates and unrelated daily/event Menus from its special
+summary, including later pages. The Kitchen interface supplies the date and
+canonical Menu slug to the dedicated specials area inside Kitchen's public
+directory card on `/` and `/kitchens`. Keywords and service labels have separate
+accessible groups with no visible headings: neutral filled keyword tags and primary
+outlined service badges. Browse menus is omitted from services in favour of the main View menus
+action. The Special child links directly to the published Menu and leads with
+up to three canonical dish names, descriptions and normal prices from that date's
+public Section reader; the date is secondary. Place owns currency. This content
+read is acquired only for an eligible special, in addition to the existing Menu
+scan. Food images are optional across Kitchens: only an existing Item image plus
+Kitchen `services.item_images` opt-in allows a preview image. No placeholder or
+venue preference is inferred when an image is missing; text-only is complete.
+There is no
+standalone homepage specials block. `useKitchens` refreshes at the next venue date
+boundary, and the card retains its normal Menu chooser destination.
 Content and publication remain owned by dated Sections, reusable Items and the existing
 Daily publication command. The homepage stores no copied special or Kitchen boolean.
 

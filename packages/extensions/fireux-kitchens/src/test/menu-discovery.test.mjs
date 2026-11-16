@@ -1,9 +1,5 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import {
-  dailyMenuSelection,
-  menuLocalDate,
-} from '../runtime/menu/utils/calendar/daily.ts'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
@@ -106,8 +102,6 @@ const projectionSource = readFileSync(
 const project = compileFunction(
   `${stripTypeScriptTypes(projectionSource)}; return projectMenuDirectoryEntry`,
   [
-    'dailyMenuSelection',
-    'menuLocalDate',
     'documentKindFromFile',
     'readRecordString',
     'guestDiscoverableMenuContexts',
@@ -118,8 +112,6 @@ const project = compileFunction(
     'publicMenuOrderTypes',
   ]
 )(
-  dailyMenuSelection,
-  menuLocalDate,
   ({ contentType }) => (contentType === 'application/pdf' ? 'pdf' : 'document'),
   (r, k) => (typeof r[k] === 'string' ? r[k] : ''),
   () => [],
@@ -302,35 +294,4 @@ test('directory exposes enabled room-service schedules without changing public o
     ['rooms']
   )
   assert.equal(result.offerings[0].id, 'rooms')
-})
-
-test('special discovery requires an explicit purpose and a current or upcoming public release', () => {
-  const scope = { appId: 'a', kitchenId: 'k', kitchenSlug: 'la-tapberne' }
-  const data = {
-    name: 'Specials',
-    slug: 'specials',
-    status: 'published',
-    schedule: 'daily',
-    purpose: 'specials',
-    published_dates: ['2000-01-01', '2099-11-23'],
-  }
-  const projectSpecial = (
-    changes = {},
-    context = { timezone: 'Europe/Zurich' }
-  ) =>
-    project({ id: 'specials', data: { ...data, ...changes } }, scope, context)
-  assert.equal(projectSpecial().special.date, '2099-11-23')
-  assert.equal(projectSpecial().special.today, false)
-  assert.ok(projectSpecial().special.nextChangeAt > Date.now())
-  for (const changes of [
-    { purpose: undefined },
-    { purpose: 'conference' },
-    { schedule: 'regular' },
-    { published_dates: ['2000-01-01'] },
-    { published_dates: [] },
-  ])
-    assert.equal(projectSpecial(changes).special, undefined)
-  assert.equal(projectSpecial({}, { timezone: 'invalid' }).special, undefined)
-  assert.equal(projectSpecial({ status: 'draft' }), null)
-  assert.equal(projectSpecial({ audience: 'private_link' }), null)
 })

@@ -97,7 +97,7 @@ test('explicit surface preserves Kitchen identity and Place display precedence w
   assert.equal(card.discoveryImageUrl, '/cover.png')
   assert.equal(card.name, 'Place name')
   assert.equal(Object.hasOwn(card, 'fulfilmentModes'), false)
-  assert.deepEqual(toKitchenCollectionCell(card).badges, ['Hidden', 'Delivery'])
+  assert.deepEqual(toKitchenCollectionCell(card).badges, ['Hidden'])
   assert.equal(toKitchenCollectionCell(card).to, '/kitchens/venue/menu')
   assert.equal(ui.surface({ kitchen: input, place: place('another') }), null)
 })
@@ -164,7 +164,9 @@ test('directory enrichment and exact detail preserve visibility and omit protect
       },
     ],
     kitchenServiceSummary,
-    hasPublishedPublicMenu: async () => true,
+    currentMenuAppId: () => 'app',
+    readPlaceCurrencyCode: () => 'CHF',
+    readPublishedPublicMenuSummary: async () => ({ hasPublishedMenu: true }),
   }
   const read = compileFunction(
     `${stripTypeScriptTypes(source)}; return readKitchens`,
@@ -175,7 +177,7 @@ test('directory enrichment and exact detail preserve visibility and omit protect
     visible.map((item) => item.id),
     ['visible']
   )
-  assert.deepEqual(visible[0].service_labels, ['Browse menus'])
+  assert.deepEqual(visible[0].service_labels, [])
   assert.equal(visible[0].has_published_menu, true)
   const all = await read({ includeHidden: true })
   assert.equal(

@@ -1,3 +1,4 @@
+import type { KitchenDirectoryEntry } from '../types/public'
 import type { CollectionCellData } from 'fireux-core/runtime/types/collection-cell'
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 
@@ -26,17 +27,13 @@ export type KitchenCollectionCard = {
   categoryLabels: string[]
   serviceLabels: string[]
   hasPublishedMenu: boolean
+  special?: KitchenDirectoryEntry['special']
   to: string
 }
 
 export function toKitchenCollectionCell(
   card: KitchenCollectionCard
 ): CollectionCellData {
-  const services = card.serviceLabels.filter(
-    (label) => label !== 'Browse menus'
-  )
-  if (card.hasPublishedMenu) services.unshift('Browse menus')
-
   return {
     title: card.name,
     description: card.tagline,
@@ -44,7 +41,7 @@ export function toKitchenCollectionCell(
     imageStyle: 'cover',
     fallbackIcon: 'i-lucide-utensils',
     meta: card.shortAddress,
-    badges: [...new Set([...card.badges, ...card.categoryLabels, ...services])],
+    badges: [...new Set([...card.badges, ...card.categoryLabels])],
     actionLabel: 'View menus',
     to: card.to ? `${card.to.replace(/\/$/, '')}/menu` : '',
   }
