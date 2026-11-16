@@ -69,7 +69,7 @@ import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/
 import type { LandingProductCatalogueContent } from 'fireux-app/runtime/models/landing/product'
 import type { FireuxMetaSolution } from 'fireux-core/runtime/app/literature/types'
 import { useAppCollection } from 'fireux-core/runtime/app/composables/useAppCollection'
-import { metaContent } from '../../meta'
+import { miseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
 import LandingHeroImage from './HeroImage.vue'
 import {
   content as landingContent,
@@ -102,15 +102,12 @@ const baseRegionOrder = ['surfaces', 'solutions', 'tools'] as const
 const regionOrder = computed(() =>
   showApps.value ? ([...baseRegionOrder, 'apps'] as const) : baseRegionOrder
 )
-const landingSolutions: readonly FireuxMetaSolution[] =
-  metaContent.solutions ?? []
-
-const solutionItems = landingSolutions
+const solutionItems = miseboxSolutions
   .filter(
     (solution) => solution.status === 'live' || solution.status === 'bridge'
   )
   .slice(0, 6)
-  .map((solution) => ({
+  .map((solution: FireuxMetaSolution) => ({
     id: solution.slug,
     title: solution.title,
     description: solution.description,

@@ -3,6 +3,12 @@ import type {
   LandingProductIndexContent,
 } from 'fireux-app/runtime/models/landing/product'
 
+export const productSeo = {
+  title: 'Restaurant Menu and Kitchen Management | Misebox',
+  description:
+    'Publish restaurant Menus and connect dishes, recipes, preparation, orders and service with Misebox.',
+} as const
+
 export const featuredAppIds = [
   'baeren-ringgenberg',
   'interlaken-essen',

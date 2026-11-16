@@ -1,78 +1,16 @@
-// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale entity samples from product metadata.
-// Concurrent edit — 2026-07-21 12:08 CEST — Shared solutions catalogue: consume Misebox ecosystem-owned entries.
-// Concurrent edit — 2026-07-21 12:58 CEST — Workspace operations catalogue: compose Kitchen and Supplier operations.
-// Concurrent edit — 2026-07-23 09:40 CEST — Align landing metadata with the live restaurant workflow promise.
-// Concurrent edit — 2026-07-23 15:48 CEST — Separate the Kitchen acquisition promise from the focused Jobs doorway.
 import { defineFireuxMeta } from 'fireux-core/runtime/app/literature/define-meta'
 import { swissJobsLegalReview } from 'fireux-jobs/runtime/content/swiss-legal-review'
 import { miseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
-import { sourceMeta } from './content/meta/source'
-
-const aboutHero = sourceMeta.about.hero as {
-  label: string
-  supportingCopy: string
-  primaryAction: { label: string; to: string }
-  secondaryAction: { label: string; to: string }
-  tagline?: string
-  description?: string
-}
-
-export const appMeta = {
-  name: sourceMeta.name,
-
-  brand: sourceMeta.landing.brand,
-  heroPrimaryHtml: sourceMeta.landing.heroPrimaryLine,
-  workspaceBridgeHtml: sourceMeta.landing.workspaceBridgeLine,
-  landingPrimaryCtaLabel: sourceMeta.landing.primaryCtaLabel,
-  landingPrimaryCtaTo: sourceMeta.landing.primaryCtaTo,
-  landingSecondaryCtaLabel: sourceMeta.landing.secondaryCtaLabel ?? '',
-  landingSecondaryCtaTo: sourceMeta.landing.secondaryCtaTo ?? '',
-  heroBullets: sourceMeta.landing.heroBullets,
-  heroPanelItems: sourceMeta.landing.rightPanelItems,
-
-  aboutLabel: aboutHero.label,
-  tagline: aboutHero.tagline ?? sourceMeta.about.appSpec.tagline,
-  description: aboutHero.description ?? sourceMeta.about.appSpec.description,
-  aboutSupportingCopy: aboutHero.supportingCopy,
-  aboutPrimaryAction: aboutHero.primaryAction,
-  aboutSecondaryAction: aboutHero.secondaryAction,
-  aboutPanelTitle: sourceMeta.about.panel.title,
-  aboutPanelSubtitle: sourceMeta.about.panel.subtitle,
-  aboutPanelTicks: sourceMeta.about.panel.ticks,
-  aboutSections: sourceMeta.about.sections,
-  keyConcepts: sourceMeta.about.keyConcepts,
-  modules: sourceMeta.about.appSpec.modules,
-  entities: sourceMeta.about.appSpec.entities,
-  routes: sourceMeta.about.appSpec.routes,
-  relationshipMap: sourceMeta.about.relationshipMap,
-
-  getStarted: sourceMeta.getStarted,
-
-  seoHome: sourceMeta.workspace.seo,
-  seoProduct: sourceMeta.landing.seo,
-  seoAbout: sourceMeta.about.seo,
-  seoGetStarted: sourceMeta.getStarted.seo,
-
-  roadmap: sourceMeta.roadmap,
-} as const
-
-const publicRoutes = appMeta.routes
-  .filter((route) => route.kind === 'public')
-  .map((route) => route.path)
-
-const workspaceRoutes = appMeta.routes
-  .filter((route) => route.kind === 'workspace')
-  .map((route) => route.path)
 
 export const metaContent = defineFireuxMeta({
   app: {
     id: 'misebox',
-    name: appMeta.name,
+    name: 'Misebox',
     ecosystem: 'misebox',
   },
   copy: {
-    big_personality: appMeta.brand.bigPersonality,
-    headline: appMeta.brand.headline,
+    big_personality: 'Manage your menu and kitchen<br>in one place.',
+    headline: 'Menu and kitchen management',
     highlight_terms: [
       'kitchens',
       'menus',
@@ -84,15 +22,17 @@ export const metaContent = defineFireuxMeta({
       'handoff',
       'connected workflow',
     ],
-    positioning_html: appMeta.heroPrimaryHtml,
-    promise_html: appMeta.aboutSupportingCopy,
-    workspace_bridge_html: appMeta.workspaceBridgeHtml,
-    about_p1: appMeta.description,
-    about_p2: appMeta.aboutSupportingCopy,
+    positioning_html:
+      'Publish <strong>menus</strong>, organise prep and manage orders with Misebox.',
+    workspace_bridge_html:
+      'Follow one <strong>connected workflow</strong> from guest menu to Kitchen handoff.',
+    about_p1:
+      'Misebox connects published menus with the dishes, orders, and service handoff behind them.',
   },
   seo: {
-    title: appMeta.seoHome.title,
-    description: appMeta.seoHome.description,
+    title: 'Restaurant Kitchen Management Workspace | Misebox',
+    description:
+      'Create your Kitchen workspace, publish Menus, and connect dishes, recipes, preparation and orders.',
     keywords: [
       'kitchen operations software',
       'restaurant kitchen management',
@@ -114,37 +54,6 @@ export const metaContent = defineFireuxMeta({
     ],
     primary_topic: 'kitchen operations software',
   },
-  cta: {
-    primary: {
-      label: appMeta.landingPrimaryCtaLabel,
-      to: appMeta.landingPrimaryCtaTo,
-    },
-    secondary:
-      appMeta.landingSecondaryCtaLabel && appMeta.landingSecondaryCtaTo
-        ? {
-            label: appMeta.landingSecondaryCtaLabel,
-            to: appMeta.landingSecondaryCtaTo,
-          }
-        : undefined,
-    workspace: appMeta.aboutPrimaryAction,
-    roadmap: {
-      label: 'Road map',
-      to: '/road-map',
-    },
-  },
-  lists: {
-    hero_bullets: [...appMeta.heroBullets],
-    about_ticks: [...appMeta.aboutPanelTicks],
-  },
   legal: { notices: [swissJobsLegalReview] },
   solutions: miseboxSolutions,
-  entities: appMeta.entities.map((entity) => ({
-    id: entity.name,
-    purpose: entity.purpose,
-  })),
-  relations_ascii: appMeta.relationshipMap,
-  routes: {
-    public: publicRoutes,
-    workspace: workspaceRoutes,
-  },
 })

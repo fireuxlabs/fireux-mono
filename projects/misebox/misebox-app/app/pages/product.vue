@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { appMeta } from '../meta'
+import { productSeo } from '../content/landing'
 import LandingIndex from '../components/Landing/Index.vue'
 
 definePageMeta({
@@ -21,8 +21,8 @@ definePageMeta({
 })
 
 useAppLandingSeo({
-  title: appMeta.seoProduct.title,
-  description: appMeta.seoProduct.description,
+  title: productSeo.title,
+  description: productSeo.description,
   path: '/product',
   image: '/img/landing/kitchen-operations-hero-v2.png',
   logo: '/img/app/logo.png',

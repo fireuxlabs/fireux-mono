@@ -12,35 +12,11 @@
     title="App-specific legal notices"
   >
     <UPageGrid>
-      <UCard
+      <FireLegalNotice
         v-for="notice in appLegalNotices"
         :key="notice.id"
-        variant="subtle"
-      >
-        <div class="fx-card-body-stack">
-          <UBadge v-if="notice.jurisdiction" color="warning" variant="soft">
-            {{ notice.jurisdiction }}
-          </UBadge>
-          <h3 class="fx-type-card-heading">{{ notice.title }}</h3>
-          <p class="fx-type-body">{{ notice.description }}</p>
-
-          <ul class="fx-list-stack">
-            <li v-for="item in notice.items" :key="item">{{ item }}</li>
-          </ul>
-
-          <nav v-if="notice.sources?.length" aria-label="Official guidance">
-            <ULink
-              v-for="source in notice.sources"
-              :key="source.to"
-              :to="source.to"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {{ source.label }}
-            </ULink>
-          </nav>
-        </div>
-      </UCard>
+        :notice="notice"
+      />
     </UPageGrid>
   </UPageSection>
 </template>

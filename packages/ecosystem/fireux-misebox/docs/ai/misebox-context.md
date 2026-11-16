@@ -1455,6 +1455,31 @@ acceptance remains distinct from source inspection.
 
 ## Product literature and presentation
 
+Misebox Main's [App metadata](../../../../../projects/misebox/misebox-app/app/meta.ts)
+is a pure composition entrypoint for Core's public messaging/SEO projection,
+the App's legal notices and Misebox-owned solutions. It is not a page-content
+index, CMS override layer or entity/relationship/route catalogue. The existing
+[Core reader](../../../../core/fireux-core/src/runtime/app/server/index/meta.ts)
+owns the public projection and App-media selection.
+The App-owned [public metadata page](../../../../../projects/misebox/misebox-app/app/pages/meta.vue)
+reads `/api/app/meta` once and supplies public App literature to its named
+[Copy section](../../../../../projects/misebox/misebox-app/app/components/Meta/Copy.vue),
+alongside SEO/social and normalized legal information. It is a read-only,
+`noindex,follow` reference to that allowlisted response, not a view of raw
+runtime configuration, App/Entity records or an editor. Core retains the public
+response boundary; adding a field to authored App metadata does not publish it
+through this page automatically.
+Its legal notice cards reuse the [shared App presentation](../../../../extensions/fireux-app/src/runtime/components/Legal/Notice.vue)
+also consumed by the ordinary Legal page; each parent retains its own read and
+section composition.
+[Get Started](../../../../../projects/misebox/misebox-app/app/content/get-started.ts)
+owns its page copy and SEO;
+[landing content](../../../../../projects/misebox/misebox-app/app/content/landing.ts)
+owns Product presentation and its distinct SEO. Their pages import those owners
+directly, while [About](../../../../../projects/misebox/misebox-app/app/pages/about.vue)
+retains its own literature. Keep the Home and Product descriptions distinct when
+their current audiences differ; similar wording alone is not shared ownership.
+
 Tenant page copy lives in App `app/content/site.ts`; Bären keeps its shared public
 Menu selection in the same source. Bangin Coffee and La Tap keep their static
 CSS in the existing App `assets/styles/main.css`, loaded by shared App defaults.
@@ -1549,11 +1574,18 @@ overlapping-stale-grant access-budget regression, deleted/malformed earlier
 App grants and non-string ID denial before release. See that
 directory's README for commands and local-versus-live verification boundaries.
 
-The Main App's native generated typing check uses
-`app/.nuxt/tsconfig.app.json`, after preparation with the current dependency
-graph. Its authored App config also remains a separate check. Stop the Main
-App development server before `build:release`, and restore it after verification;
-the release command never grants deployment authority.
+Use the [focused typecheck workflow](../../../../../tools/ide/README.md#everyday-checks):
+`pnpm typecheck:scope projects/misebox/misebox-app` runs `nuxi typecheck` from
+the Main App root through [the owning runner](../../../../../tools/ide/check.mjs).
+The installed Nuxt CLI prepares native types and selects the App's
+[root TypeScript configuration](../../../../../projects/misebox/misebox-app/tsconfig.json),
+including its authored source aliases and exclusions. Compare native diagnostics
+using that same workflow. A direct check of `app/.nuxt/tsconfig.app.json` exercises
+a different generated project and needs its own baseline; it is separate coverage,
+not a substitute for the native check. Reinspect the installed CLI's project
+selection when the dependency graph changes. Stop the Main App development server
+before `build:release`, and restore it after verification; the release command
+never grants deployment authority.
 
 For relevant changes:
 

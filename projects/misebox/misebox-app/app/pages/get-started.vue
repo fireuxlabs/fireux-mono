@@ -5,34 +5,34 @@
       <UContainer>
         <div class="pagebody">
           <p class="fx-type-headline">
-            {{ appMeta.getStarted.hero.eyebrow }}
+            {{ getStartedContent.hero.eyebrow }}
           </p>
           <h1 class="fx-type-display-title">
-            {{ appMeta.getStarted.hero.title }}
+            {{ getStartedContent.hero.title }}
           </h1>
           <p class="fx-type-description">
-            {{ appMeta.getStarted.hero.description }}
+            {{ getStartedContent.hero.description }}
           </p>
           <div class="fx-card__actions">
             <UButton :to="workspaceEntryHref" color="primary" size="lg">
-              {{ appMeta.getStarted.hero.primaryAction.label }}
+              {{ getStartedContent.hero.primaryAction.label }}
             </UButton>
             <UButton
-              :to="appMeta.getStarted.hero.secondaryAction.to"
+              :to="getStartedContent.hero.secondaryAction.to"
               color="neutral"
               variant="ghost"
               size="lg"
             >
-              {{ appMeta.getStarted.hero.secondaryAction.label }}
+              {{ getStartedContent.hero.secondaryAction.label }}
             </UButton>
           </div>
         </div>
         <UCard>
           <p class="fx-type-label">
-            {{ appMeta.getStarted.snapshotTitle }}
+            {{ getStartedContent.snapshotTitle }}
           </p>
           <ul class="fx-list-stack">
-            <li v-for="tick in appMeta.getStarted.snapshotTicks" :key="tick">
+            <li v-for="tick in getStartedContent.snapshotTicks" :key="tick">
               <UIcon name="i-lucide-check" />
               <span>{{ tick }}</span>
             </li>
@@ -45,13 +45,13 @@
       <UContainer>
         <div class="pagebody">
           <p class="fx-type-headline">
-            {{ appMeta.getStarted.stepsHeading.eyebrow }}
+            {{ getStartedContent.stepsHeading.eyebrow }}
           </p>
           <h2 class="fx-type-section-title">
-            {{ appMeta.getStarted.stepsHeading.title }}
+            {{ getStartedContent.stepsHeading.title }}
           </h2>
           <p class="fx-type-body">
-            {{ appMeta.getStarted.stepsHeading.description }}
+            {{ getStartedContent.stepsHeading.description }}
           </p>
         </div>
         <UPageGrid>
@@ -80,11 +80,11 @@
       <UContainer>
         <div>
           <h2 class="fx-type-section-title">
-            {{ appMeta.getStarted.afterSetup.title }}
+            {{ getStartedContent.afterSetup.title }}
           </h2>
           <dl>
             <UCard
-              v-for="faq in appMeta.getStarted.afterSetup.faqs"
+              v-for="faq in getStartedContent.afterSetup.faqs"
               :key="faq.title"
             >
               <dt class="fx-type-label">
@@ -98,14 +98,14 @@
         </div>
         <UCard>
           <p class="fx-type-label">
-            {{ appMeta.getStarted.afterSetup.card.eyebrow }}
+            {{ getStartedContent.afterSetup.card.eyebrow }}
           </p>
           <p class="fx-type-card-heading">
-            {{ appMeta.getStarted.afterSetup.card.title }}
+            {{ getStartedContent.afterSetup.card.title }}
           </p>
           <ul class="fx-list-stack">
             <li
-              v-for="bullet in appMeta.getStarted.afterSetup.card.bullets"
+              v-for="bullet in getStartedContent.afterSetup.card.bullets"
               :key="bullet"
             >
               <UIcon name="i-lucide-zap" />
@@ -113,11 +113,11 @@
             </li>
           </ul>
           <UButton
-            :to="appMeta.getStarted.afterSetup.card.action.to"
+            :to="getStartedContent.afterSetup.card.action.to"
             block
             color="primary"
           >
-            {{ appMeta.getStarted.afterSetup.card.action.label }}
+            {{ getStartedContent.afterSetup.card.action.label }}
           </UButton>
         </UCard>
       </UContainer>
@@ -131,7 +131,7 @@ import {
   useSeo,
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
-import { appMeta } from '../meta'
+import { getStartedContent } from '../content/get-started'
 
 definePageMeta({
   layout: 'landing',
@@ -148,8 +148,8 @@ definePageMeta({
 })
 
 useSeo({
-  title: appMeta.seoGetStarted.title,
-  description: appMeta.seoGetStarted.description,
+  title: getStartedContent.seo.title,
+  description: getStartedContent.seo.description,
   path: '/get-started',
   image: '/img/app/cover.png',
   jsonLdBuilder: (context) =>
@@ -162,5 +162,5 @@ useSeo({
 })
 
 const { workspaceEntryHref } = useWorkspaceEntryCta('kitchen')
-const steps = appMeta.getStarted.steps
+const steps = getStartedContent.steps
 </script>
