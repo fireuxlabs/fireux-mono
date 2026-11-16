@@ -39,6 +39,10 @@ function load(file, bindings = {}) {
   compileFunction(code, ['require', 'exports', ...Object.keys(bindings)])(
     (name) => {
       if (name.endsWith('/content/docs')) return docs
+      if (name === 'fireux-core/runtime/composables/fireux/seo/useSeo') {
+        assert.equal(typeof bindings.useSeo, 'function')
+        return { useSeo: bindings.useSeo }
+      }
       assert.equal(
         name,
         'vue',
@@ -184,12 +188,15 @@ test('guide recipe validates and its source links resolve in the local checkout'
 
 for (const page of ['index', 'components']) {
   test(`/docs/${page} renders native navigation and curated content without service acquisition`, async () => {
-    let meta
+    let meta, seo
     const surface = load(new URL(`pages/docs/${page}.vue`, appRoot), {
       definePageMeta: (value) => {
         meta = value
       },
       useSeoMeta() {},
+      useSeo: (value) => {
+        seo = value
+      },
     })
     const app = createSSRApp(surface)
     register(app)
@@ -199,6 +206,10 @@ for (const page of ['index', 'components']) {
     assert.match(html, /href="\/docs"/)
     assert.match(html, /href="\/docs\/components"/)
     if (page === 'index') {
+      assert.equal(seo.path, '/docs')
+      assert.equal(seo.title, 'Developer docs · Misebox')
+      assert.match(html, /href="\/meta"/)
+      assert.match(html, /href="\/api\/app\/meta"/)
       assert.match(html, /Compose an App/)
       assert.match(html, /Public experience, Workspace and domain owners/)
       assert.match(html, /firebase.google.com\/docs\/web\/setup/)

@@ -14,7 +14,7 @@ const miseboxPricingProfile = {
   entityPluralName: 'Kitchens',
   free: [
     'Use one Kitchen workspace',
-    'Use Main and Drinks menus',
+    'Use one combined Food & Drinks menu',
     'Advertise permanent and temporary Jobs',
     'Coordinate one active temporary Engagement',
   ],

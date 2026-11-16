@@ -25,6 +25,7 @@ const links = [
   { label: 'Pricing', to: '/pricing' },
   { label: 'About', to: '/about' },
   { label: 'Patterns', to: '/patterns' },
+  { label: 'Metadata', to: '/meta' },
   { label: 'Legal', to: '/legal' },
 ]
 </script>

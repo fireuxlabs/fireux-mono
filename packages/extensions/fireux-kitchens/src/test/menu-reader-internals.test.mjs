@@ -17,6 +17,13 @@ import {
 } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
+import { normalizeString } from '../../../../core/fireux-core/src/runtime/utils/normalize-string.ts'
+import {
+  appSubscriptionCapacity,
+  hasAppSubscriptionCapacity,
+} from '../../../../core/fireux-core/src/runtime/app/utils/app-subscription-capacity.ts'
+import { readPlaceCurrencyCode } from '../../../fireux-places/src/runtime/place/utils/place-spine.ts'
+import { useKitchenInterface } from '../runtime/kitchen/composables/useKitchenInterface.ts'
 const runtime = new URL('../runtime/', import.meta.url)
 function load(path, result, dependencies) {
   const source = readFileSync(new URL(path, runtime), 'utf8')
@@ -33,10 +40,15 @@ const paths = load(
   '({ normalizeString, resolveKitchenCollectionBasePath, resolveKitchenChildCollectionPath })',
   {}
 )
-const { MenuStorage } = load(
+const { MenuStorage, kitchenMenuCapacity } = load(
   'menu/models/menu-storage.model.ts',
-  '({ MenuStorage })',
+  '({ MenuStorage, kitchenMenuCapacity })',
   {}
+)
+const useKitchenIdentityProjection = load(
+  'kitchen/composables/useKitchenIdentity.ts',
+  'useKitchenIdentityProjection',
+  { computed, normalizeString, readPlaceCurrencyCode }
 )
 const { useFirestoreCollectionState } = load(
   '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCollection.ts',
@@ -248,10 +260,27 @@ test('Menu items expose a real zero only for a settled empty section', async () 
 })
 function collectionFixture() {
   const owner = effectScope()
+  const place = ref({ id: 'old-kitchen', default_currency_code: 'CHF' })
+  const { surface } = useKitchenInterface()
   const workspace = {
     id: ref('old-kitchen'),
     outcome: ref('ready'),
-    data: ref({ id: 'old-kitchen' }),
+    data: ref(
+      surface({
+        kitchen: {
+          id: 'old-kitchen',
+          identity: {
+            slug: 'old-kitchen',
+            status: 'active',
+            visibility: false,
+          },
+        },
+        place: place.value,
+        routeScope: 'live',
+      })
+    ),
+    place,
+    placeOutcome: ref('ready'),
   }
   const session = {
     uid: ref('account-a'),
@@ -331,7 +360,7 @@ function collectionFixture() {
     useState: (_key, init) => ref(init()),
     useKitchenWorkspace: () => workspace,
     useKitchenWorkspaceIdentity: () => ({
-      selectedKitchen: workspace.data,
+      ...useKitchenIdentityProjection(workspace),
       canWrite: computed(() => workspace.outcome.value === 'ready'),
     }),
     useFireUXConfig,
@@ -344,10 +373,10 @@ function collectionFixture() {
       createOptions = options
       return { createMenu() {} }
     },
-    readPlaceCurrencyCode: () => 'CHF',
-    appSubscriptionCapacity: () => 4,
-    hasAppSubscriptionCapacity: () => true,
-    kitchenMenuCapacity: {},
+    readPlaceCurrencyCode,
+    appSubscriptionCapacity,
+    hasAppSubscriptionCapacity,
+    kitchenMenuCapacity,
   }
   const create = load(
     'kitchen/composables/workspace/menus/useKitchenWorkspaceMenus.ts',
@@ -388,6 +417,69 @@ function collectionFixture() {
     },
   }
 }
+test('Menu creation uses the scoped Identity currency and stays blocked for missing or stale Place records', () => {
+  const f = collectionFixture()
+  try {
+    f.menuRows.value = []
+    assert.equal(f.workspace.data.value.currency_code, 'CHF')
+    assert.equal('default_currency_code' in f.workspace.data.value, false)
+    assert.equal(f.api.currencyCode.value, 'CHF')
+    assert.equal(f.api.menuLimit.value, 1)
+    assert.equal(f.api.canCreateMenu.value, true)
+    assert.equal(f.api.menuCreateBlockedMessage.value, '')
+
+    f.workspace.place.value.default_currency_code = 'EUR'
+    assert.equal(f.api.currencyCode.value, 'EUR')
+    assert.equal(f.api.canCreateMenu.value, true)
+
+    for (const place of [
+      null,
+      { id: 'old-kitchen' },
+      { id: 'another-kitchen', default_currency_code: 'CHF' },
+    ]) {
+      f.workspace.place.value = place
+      assert.equal(f.api.currencyCode.value, '')
+      assert.equal(f.api.canCreateMenu.value, false)
+      assert.equal(
+        f.api.menuCreateBlockedMessage.value,
+        'Set the Kitchen currency before creating menus.'
+      )
+    }
+
+    f.workspace.place.value = {
+      id: 'old-kitchen',
+      default_currency_code: 'CHF',
+    }
+    for (const outcome of ['pending', 'error', 'empty', 'idle']) {
+      f.workspace.placeOutcome.value = outcome
+      assert.equal(f.api.currencyCode.value, '')
+      assert.equal(f.api.canCreateMenu.value, false)
+    }
+    f.workspace.placeOutcome.value = 'ready'
+    assert.equal(f.api.currencyCode.value, 'CHF')
+    assert.equal(f.api.canCreateMenu.value, true)
+  } finally {
+    f.owner.stop()
+  }
+})
+test('Menu creation applies the real Free allowance to retained archived Menus and preserves paid capacity', () => {
+  const f = collectionFixture()
+  try {
+    f.menuRows.value = [{ id: 'retained', slug: 'main', status: 'archived' }]
+    assert.equal(f.api.menus.value.length, 0)
+    assert.equal(f.api.menuCount.value, 1)
+    assert.equal(f.api.menuLimit.value, 1)
+    assert.equal(f.api.canCreateMenu.value, false)
+    assert.match(f.api.menuCreateBlockedMessage.value, /allowance reached/)
+    for (const subscription of ['pro', 'business']) {
+      f.session.appUser.value = { role: 'user', subscription }
+      assert.equal(f.api.menuLimit.value, null)
+      assert.equal(f.api.canCreateMenu.value, true)
+    }
+  } finally {
+    f.owner.stop()
+  }
+})
 for (const outcome of ['pending', 'error', 'empty', 'idle'])
   test(`Menu and upload storage stop when the owning Kitchen is ${outcome}`, () => {
     const f = collectionFixture()

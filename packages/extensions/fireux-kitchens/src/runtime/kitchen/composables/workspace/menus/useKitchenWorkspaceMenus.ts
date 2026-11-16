@@ -5,7 +5,6 @@ import {
 } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { computed, watchEffect } from 'vue'
 import { useCookie, useState } from '#imports'
-import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceIdentity } from '../useKitchenWorkspaceIdentity'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
@@ -100,9 +99,7 @@ export function useKitchenWorkspaceMenus() {
   })
   const pending = computed(() => outcome.value === 'pending')
   const collectionPath = fetchedCollectionPath
-  const currencyCode = computed(() =>
-    readPlaceCurrencyCode(identity.selectedKitchen.value)
-  )
+  const currencyCode = identity.currencyCode
   const canWrite = computed(
     () =>
       identity.canWrite.value &&

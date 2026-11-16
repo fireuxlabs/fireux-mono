@@ -1,5 +1,6 @@
 <template>
   <UPage>
+    <UPageHeader title="Collection Ordering" />
     <UPageBody>
       <FireState
         :outcome="outcome"
@@ -17,6 +18,7 @@
 </template>
 <script setup lang="ts">
 import { useProductDetail } from 'fireux-products/runtime/product/composables/useProductDetail'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 definePageMeta({
   layout: 'default',
@@ -26,11 +28,13 @@ const { product, outcome, error, refresh, ready } = useProductDetail(
   'collection-ordering'
 )
 await ready
-useSeoMeta({
+useSeo({
   title: 'Collection Ordering · Misebox',
   description: () =>
     product.value?.description ||
     'Customer Collection ordering and the Kitchen order board.',
+  path: '/products/collection-ordering',
+  image: '/img/app/cover.png',
   robots: 'noindex, nofollow',
 })
 </script>

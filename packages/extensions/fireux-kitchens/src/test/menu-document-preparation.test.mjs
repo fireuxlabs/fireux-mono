@@ -3,6 +3,8 @@ import test from 'node:test'
 import { computed, ref, reactive, watch, effectScope } from 'vue'
 import { useCommandScope } from '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
 import { loadOfferingSource as load } from './offering-test-helpers.mjs'
+import { starterMenu } from '../runtime/menu/content/starter-menu.ts'
+import { normalizeSlug } from '../../../../core/fireux-core/src/runtime/utils/slug/normalize-slug.ts'
 
 const createError = (value) =>
   Object.assign(new Error(value.statusMessage), value)
@@ -83,6 +85,7 @@ function server() {
       throw createError({ statusCode: 403, statusMessage: 'Access revoked' })
   }
   const deps = {
+    starterMenu,
     createError,
     ...metadata,
     ...createInput,
@@ -93,7 +96,7 @@ function server() {
     },
     menuNameAndSlug: (_, name) => {
       if (typeof name !== 'string' || !name.trim()) throw Error('Invalid name')
-      return { name: name.trim(), slug: name.toLowerCase().trim() }
+      return { name: name.trim(), slug: normalizeSlug(name) }
     },
     readKitchenMutationActor: async () => ({
       uid: 'operator',
@@ -287,10 +290,11 @@ test('another preparation and an existing Menu path are never overwritten', asyn
 test('document preparation keeps shared Free naming policy and does not grant a paid tier', async () => {
   const h = server()
   h.tier('free')
-  await assert.rejects(h.prepare({ name: 'Custom' }), /Custom Menu names/)
+  for (const name of ['Main', 'Food', 'Drinks', 'Custom'])
+    await assert.rejects(h.prepare({ name }), /Custom Menu names/)
   assert.equal(h.rows.has('kitchens/k/menus/source'), false)
-  await h.prepare({ name: 'Food' })
-  assert.equal(h.rows.get('kitchens/k/menus/source').name, 'Food')
+  await h.prepare({ name: 'Food & Drinks' })
+  assert.equal(h.rows.get('kitchens/k/menus/source').name, 'Food & Drinks')
 })
 
 test('structured import cannot overwrite a document Menu or create Items behind its document', async () => {

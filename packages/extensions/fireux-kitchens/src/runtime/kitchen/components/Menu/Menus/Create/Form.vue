@@ -7,7 +7,7 @@
       ><USelect
         v-if="subscription === 'free'"
         v-model="name"
-        :items="['Main', 'Drinks']"
+        :items="freeMenuNames"
         :disabled="busy || !canCreateMenu" />
       <UInput
         v-else
@@ -16,6 +16,17 @@
         :maxlength="160"
         :disabled="busy || !canCreateMenu"
     /></UFormField>
+    <UFormField
+      v-if="canPlanDaily"
+      label="Menu schedule"
+      help="Daily menus stay private until you publish a date. You can choose service dates later."
+    >
+      <USelect
+        v-model="schedule"
+        :items="scheduleOptions"
+        :disabled="busy || !canCreateMenu"
+      />
+    </UFormField>
     <UFormField label="Description (optional)"
       ><UTextarea
         v-model="description"
@@ -39,8 +50,9 @@
   </form>
 </template>
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
+import { starterMenu } from '../../../../../menu/content/starter-menu'
 import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import { useMenuRecordNavigation } from '../../../../composables/workspace/menus/useMenuRecordNavigation'
 const { openView } = useMenuRecordNavigation()
@@ -53,11 +65,21 @@ const {
   subscription,
 } = useKitchenMenusContextSource()
 const name = defineModel<string>('name', { default: '' })
+const freeMenuNames: string[] = [starterMenu.name]
+const schedule = ref<'regular' | 'daily'>('regular')
+const scheduleOptions: { label: string; value: 'regular' | 'daily' }[] = [
+  { label: 'Regular menu', value: 'regular' },
+  { label: 'Daily menu', value: 'daily' },
+]
+const canPlanDaily = computed(() =>
+  ['pro', 'business'].includes(subscription.value)
+)
 watch(
   subscription,
   (tier) => {
-    if (tier === 'free' && !['Main', 'Drinks'].includes(name.value))
-      name.value = 'Main'
+    if (tier === 'free' && name.value !== starterMenu.name)
+      name.value = starterMenu.name
+    if (!canPlanDaily.value) schedule.value = 'regular'
   },
   { immediate: true }
 )
@@ -66,14 +88,27 @@ const busy = ref(false)
 const error = ref('')
 const route = useRoute()
 const captureScope = useMenuEditorScope(
-  [kitchenId, name, description, canCreateMenu, () => route.fullPath],
+  [
+    kitchenId,
+    name,
+    description,
+    schedule,
+    canPlanDaily,
+    canCreateMenu,
+    () => route.fullPath,
+  ],
   () => {
     busy.value = false
     error.value = ''
   }
 )
 async function save() {
-  if (!canCreateMenu.value || busy.value) return
+  if (
+    !canCreateMenu.value ||
+    busy.value ||
+    (schedule.value === 'daily' && !canPlanDaily.value)
+  )
+    return
   const isCurrent = captureScope()
   busy.value = true
   error.value = ''
@@ -83,6 +118,7 @@ async function save() {
         name: name.value.trim(),
         description: description.value.trim(),
         format: 'interactive',
+        ...(schedule.value === 'daily' ? { schedule: 'daily' as const } : {}),
       },
       isCurrent
     )

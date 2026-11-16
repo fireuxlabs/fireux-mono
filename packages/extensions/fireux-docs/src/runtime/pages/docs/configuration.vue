@@ -94,6 +94,27 @@
         </p>
       </UPageSection>
 
+      <UPageSection title="Publish App metadata">
+        <p>
+          Authored App metadata supplies public copy, search defaults and
+          App-specific legal notices. Page content and page-specific SEO stay
+          with their owning pages.
+        </p>
+        <p>
+          <ULink to="/api/app/meta" target="_blank" rel="noopener noreferrer"
+            >Read this App's public metadata JSON</ULink
+          >
+          to inspect Core's selected public fields. The response excludes raw
+          runtime configuration and private App or operational records.
+        </p>
+        <p>
+          Apps can opt into the <code>FireMeta</code> reading surface inside an
+          App-owned reference route. The App chooses its layout, head and
+          navigation. FireUX and Misebox use this presentation; installing the
+          App bundle does not create a metadata page automatically.
+        </p>
+      </UPageSection>
+
       <UPageSection title="Presentation">
         <p>
           Keep Nuxt UI settings, navigation and your optional semantic
@@ -124,10 +145,14 @@
 </template>
 
 <script setup lang="ts">
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+
 definePageMeta({ layout: 'docs', title: 'App configuration' })
-useSeoMeta({
+useSeo({
   title: 'App configuration · FireUX Docs',
   description: 'Set the identity, layers, and modules for a FireUX App.',
+  path: '/docs/configuration',
+  image: '/img/app/cover.png',
 })
 
 const example = `import { defineFireuxApp } from 'fireux-app/config'

@@ -8,6 +8,7 @@ import {
   requireUnambiguousKitchenTeamLink,
 } from '../../runtime/kitchen/server/team/account-link.ts'
 import { resolveKitchenAllowance } from '../../runtime/kitchen/utils/kitchen-capacity.ts'
+import { starterMenu } from '../../runtime/menu/content/starter-menu.ts'
 const load = (path, names, deps = {}) =>
   compileFunction(
     `${stripTypeScriptTypes(
@@ -28,6 +29,7 @@ const defaults = load(
   `${base}index/onboarding/system-menus.ts`,
   'readKitchenManagementMenus, createKitchenSystemMenus',
   {
+    starterMenu,
     randomUUID: (() => {
       let n = 0
       return () => `new-${++n}`
@@ -170,7 +172,7 @@ test('new management root gets the same defaults', async () => {
     at: root.created.at,
     by: 'actor',
   })
-  assert.equal(h.writes.filter((x) => x.target === 'menus').length, 2)
+  assert.equal(h.writes.filter((x) => x.target === 'menus').length, 1)
 })
 test('existing customized and archived Menus are preserved without adding missing starters', async () => {
   const menus = [

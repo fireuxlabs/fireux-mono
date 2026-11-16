@@ -3,7 +3,6 @@ export const itemCataloguePath = '/workspace/kitchen/menu/items'
 export type ItemCatalogueState = {
   kind: 'all' | 'food' | 'drink'
   search: string
-  category: string
   filter: 'all' | 'image' | 'description'
   layout: 'list' | 'grid'
   page: number
@@ -16,7 +15,6 @@ export function readItemCatalogueQuery(
   return {
     kind: query.kind === 'food' || query.kind === 'drink' ? query.kind : 'all',
     search: typeof query.search === 'string' ? query.search : '',
-    category: typeof query.category === 'string' ? query.category : 'all',
     filter:
       query.filter === 'image' || query.filter === 'description'
         ? query.filter
@@ -32,7 +30,6 @@ export function itemCatalogueQuery(
   return {
     kind: state.kind,
     search: state.search,
-    category: state.category,
     filter: state.filter,
     layout: state.layout,
     page: String(state.page),

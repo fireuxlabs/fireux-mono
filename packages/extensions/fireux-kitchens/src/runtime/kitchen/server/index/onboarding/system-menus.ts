@@ -3,14 +3,14 @@ import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/
 import type { FirestoreMutationTarget } from 'fireux-core/runtime/types/firestore-mutations'
 import type { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import type { Menu } from '../../../../menu/models/menu.model'
+import { starterMenu } from '../../../../menu/content/starter-menu'
 
-export const KitchenSystemMenuKinds = ['main', 'drinks'] as const
+export const KitchenSystemMenuKinds = [starterMenu.slug] as const
 
 export type KitchenSystemMenuKind = (typeof KitchenSystemMenuKinds)[number]
 
 const names: Record<KitchenSystemMenuKind, string> = {
-  main: 'Main',
-  drinks: 'Drinks',
+  main: starterMenu.name,
 }
 
 export function buildKitchenSystemMenu<TCreated, TUpdated>(input: {
@@ -27,7 +27,7 @@ export function buildKitchenSystemMenu<TCreated, TUpdated>(input: {
     description: '',
     status: 'draft',
     format: 'interactive',
-    sort_order: input.kind === 'main' ? 10 : 20,
+    sort_order: 10,
     created: input.created,
     updated: input.updated,
   }

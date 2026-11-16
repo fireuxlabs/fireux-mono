@@ -4,7 +4,7 @@
     <UPageHeader
       headline="About Misebox"
       title="Menus, recipes and orders for your Kitchen team."
-      description="Publish menus, record recipes and dish specifications, and follow incoming orders through preparation and handoff in a Kitchen Workspace."
+      description="Publish menus, manage Menu Items and recipes, and follow incoming Collection orders through preparing and ready states in a Kitchen Workspace."
       :links="[
         {
           label: 'Get started',
@@ -162,12 +162,12 @@ const operatingLoop = [
   },
   {
     title: 'Structure',
-    copy: 'Connect dishes to recipes, ingredients, allergens, prices, and supplier knowledge.',
+    copy: 'Organise Menu Items, prices, recipes and ingredients in the Kitchen tools that own them.',
     icon: 'i-lucide-network',
   },
   {
     title: 'Process orders',
-    copy: 'Confirm collection requests, start preparation, mark orders ready and record handoff.',
+    copy: 'Confirm Collection requests, start preparation and mark orders ready.',
     icon: 'i-lucide-clipboard-check',
   },
   {
@@ -187,9 +187,9 @@ const audiences = [
   },
   {
     title: 'Service teams',
-    copy: 'Explore the Kitchen operations for handling guest choices and service handoff.',
-    action: 'Explore Kitchen operations',
-    to: '/operations',
+    copy: 'Follow incoming Collection orders and their preparing and ready states on the Kitchen order board.',
+    action: 'Open the order board',
+    to: '/workspace/kitchen/orders/board',
     icon: 'i-lucide-bell-ring',
   },
 ] as const
@@ -230,7 +230,7 @@ definePageMeta({
 useSeo({
   title: 'About Misebox · Restaurant menu and Kitchen workflow',
   description:
-    'Misebox connects menus, dishes, recipes, incoming orders and Kitchen handoff for restaurant teams.',
+    'Misebox connects menus, Menu Items, recipes and incoming Collection orders for restaurant teams.',
   path: '/about',
   image: '/img/app/cover.png',
   jsonLdBuilder: (context) =>

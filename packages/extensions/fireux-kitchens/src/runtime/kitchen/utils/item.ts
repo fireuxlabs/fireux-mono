@@ -19,7 +19,6 @@ export type ItemCollectionRow = Item &
     slug: string
     kitchen_id: string
     item_kind?: string
-    category?: string
     pricing_error?: string
     is_flagship: boolean
     group_ids: string[]
@@ -91,8 +90,5 @@ export function normalizeItem(value: unknown): ItemCollectionRow {
     is_flagship: normalizeItemFlagshipFlag(source.is_flagship),
     image: pickString(source.image),
     kitchen_id: pickString(source.kitchen_id),
-    ...(typeof source.category === 'string' && source.category.trim()
-      ? { category: source.category.trim() }
-      : {}),
   }
 }

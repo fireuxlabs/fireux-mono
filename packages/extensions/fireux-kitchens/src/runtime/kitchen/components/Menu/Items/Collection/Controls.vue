@@ -9,7 +9,7 @@
         v-if="!readOnly && ['ready', 'empty'].includes(outcome)"
         label="Add item"
         icon="i-lucide-plus"
-        @click="emit('create', 'food')"
+        @click="emit('create', kind === 'drink' ? 'drink' : 'food')"
       />
     </template>
   </WorkspacePageHeader>
@@ -23,6 +23,15 @@
     :singular="catalogue.singular"
     :count="visibleItems.length"
   >
+    <template #filters>
+      <USelect
+        v-model="kind"
+        :items="kindFilters"
+        value-key="value"
+        label-key="label"
+        aria-label="Item type"
+      />
+    </template>
     <template #controls>
       <UTooltip :text="view === 'grid' ? 'Show list' : 'Show image grid'">
         <UButton
@@ -42,7 +51,8 @@
 import { useKitchenItemsContext } from '../../../../composables/workspace/items/useKitchenItemsContext'
 import { useItemCatalogueContext } from '../../../../composables/workspace/items/useItemCatalogue'
 const { catalogue, readOnly, outcome } = useKitchenItemsContext()
-const { query, view, visibleItems } = useItemCatalogueContext()
+const { query, kind, kindFilters, view, visibleItems } =
+  useItemCatalogueContext()
 const emit = defineEmits<{
   create: [kind: 'food' | 'drink']
 }>()

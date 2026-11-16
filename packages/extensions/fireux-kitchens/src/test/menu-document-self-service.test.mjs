@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { createHash, timingSafeEqual } from 'node:crypto'
 import QRCode from 'qrcode'
+import { starterMenu } from '../runtime/menu/content/starter-menu.ts'
 import { readMembershipAccessIds } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts'
 import { loadOfferingSource as load } from './offering-test-helpers.mjs'
 
@@ -115,6 +116,7 @@ function fixture() {
     return result
   }
   const deps = {
+    starterMenu,
     ...keys,
     ...guest,
     ...metadata,
@@ -339,8 +341,8 @@ test('free guest upload → publish → public file → reload → replace retai
   assert.equal((await h.publicMenu()).menuData.doc.url, firstUrl)
   assert.equal(
     h.children('kitchens/guest-123/menus').length,
-    2,
-    'uses the existing Main Menu'
+    1,
+    'uses the existing combined Menu'
   )
   assert.equal(
     [...h.records.keys()].some(
@@ -383,7 +385,7 @@ test('free guest upload → publish → public file → reload → replace retai
       .bytes.toString(),
     '%PDF-replacement-menu'
   )
-  assert.equal(h.children('kitchens/guest-123/menus').length, 2)
+  assert.equal(h.children('kitchens/guest-123/menus').length, 1)
 })
 
 test('the private recovery proof works in a new browser identity without changing Menu identity', async () => {
@@ -400,6 +402,12 @@ test('the private recovery proof works in a new browser identity without changin
 test('wrong recovery proof, cross-App proof and another Menu cannot write or upload', async () => {
   const h = fixture()
   await h.start()
+  h.records.set('kitchens/guest-123/menus/retained-drinks', {
+    slug: 'drinks',
+    name: 'Drinks',
+    status: 'draft',
+    format: 'interactive',
+  })
   const before = structuredClone(h.records)
   await assert.rejects(
     h.read({ claimSecret: 'b'.repeat(64) }),
@@ -552,7 +560,7 @@ test('repeated document replacements retain one Menu identity and never create r
     assert.equal((await h.read()).revision, result.revision)
     assert.equal((await h.publicMenu()).menuData.doc.url, resultUrl)
   }
-  assert.equal(h.children('kitchens/guest-123/menus').length, 2)
+  assert.equal(h.children('kitchens/guest-123/menus').length, 1)
   assert.equal(
     [...h.records.keys()].some((path) => /^(apps|users)\//.test(path)),
     false
@@ -633,12 +641,19 @@ test('Workspace uses the same file command on Free and its ordinary publication 
   )
   assert.equal((await h.publicMenu()).menuData.doc.url, draftUrl)
   assert.equal(h.records.get('apps/app/users/owner').subscription, 'free')
-  assert.equal(h.children('kitchens/guest-123/menus').length, 2)
+  assert.equal(h.children('kitchens/guest-123/menus').length, 1)
 })
 
 test('account readers choose an active Menu when Main is archived; guest proof remains bound to Main', async () => {
   const h = fixture()
   await h.start()
+  h.records.set('kitchens/guest-123/menus/retained-drinks', {
+    slug: 'drinks',
+    name: 'Drinks',
+    status: 'draft',
+    format: 'interactive',
+    created: { by: 'retained-owner', app_id: 'app' },
+  })
   const menus = h.children('kitchens/guest-123/menus')
   const main = menus.find((menu) => menu.data.slug === 'main')
   const drinks = menus.find((menu) => menu.data.slug === 'drinks')

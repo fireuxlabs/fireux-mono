@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-11-16
-Ref: a068b6eaa
+Ref: e71fff3f0
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -674,8 +674,10 @@ its strict provided context never acquires another collection. Dialogs owns loca
 the creation disclosure, clearing it on Kitchen changes. Controls
 and Results emit actions without owning commands or dialog state.
 Kind-specific detail contexts retain their filtering and authority. Catalogue
-URLs and editor return links retain kind, search, category, completeness filter,
-layout and page using `kitchen/utils/item-catalogue-route.ts`. Both editors return
+URLs and editor return links retain kind, search, completeness filter, layout
+and page using `kitchen/utils/item-catalogue-route.ts`; legacy category query
+values are ignored and stripped. Add item follows the selected Drinks type;
+unknown historical kinds remain visible under All. Both editors return
 to the combined catalogue; initial loading preserves the requested page, while
 settled shorter results clamp it. See `item-reader-internals.test.mjs`.
 
@@ -701,8 +703,8 @@ See `src/test/kitchen/item/foundation.test.mjs` for scope, old-record and
 read-outcome checks.
 
 `MenuItem` remains the section placement; `PublicMenuItem` remains the resolved
-guest projection. Pricing/choices, Kitchen-selected flagship, operator categories,
-preparation and effective public offers require their own explicit ownership;
+guest projection. Pricing/choices, Kitchen-selected flagship, preparation and
+effective public offers require their own explicit ownership;
 the identity model is not a replacement for their contracts. Historical storage
 fields do not make those fields Item-owned, and old readers/commands must not
 reintroduce them into the identity model to satisfy compilation.
@@ -977,8 +979,8 @@ requested identity grants no access.
   `useWorkspaceEntryCta` so App-owned paths and separate Workspace origins remain
   respected.
 - Menus and Orders remain their own records beneath their proved owner. Every
-  newly created Kitchen atomically receives ordinary draft `main` and `drinks`
-  Menus. There is no primary/specials Menu configuration on Kitchen.
+  newly created Kitchen atomically receives the ordinary draft interactive Menu
+  defined by the [Menu allowance and starter contract](#menu-operator-entitlements). There is no primary/specials Menu configuration on Kitchen.
   Their parent-scoped ids may repeat across Kitchens; public Menu
   projections remain separate and use Kitchen-qualified ids when these defaults
   are published.
@@ -1079,8 +1081,8 @@ categories; never infer venue relationships from matching names.
 
 `menu/models/menu-directory.response.ts` owns the bounded public contract.
 The server resolves optional Kitchen enrichment. Menus have no food/drink
-classification or special deletion status. Main and Drinks are ordinary starter
-Menu names; content classification belongs to items. Do not infer it from Menu
+classification or special deletion status. Existing Main and Drinks labels remain
+ordinary saved names; content classification belongs to items. Do not infer it from Menu
 names or ids. Search uses published names, descriptions and venue names;
 interaction filters use the projected supported contexts, not a promise of current
 opening or checkout availability. Filters apply to loaded pages, with an explicit
@@ -1250,14 +1252,10 @@ membership grants nothing after rejoining. Team labels do not
 gate workspace access. Subscription limits remain enforced; every person counts
 toward Team capacity. Individual role restrictions are deferred for development.
 
-Menus owns its creation allowance in
-`packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-storage.model.ts`:
-Free allows two retained Menu records per Kitchen; Pro and Business are
-unlimited. This policy uses the acting user's actual AppUser subscription,
-separately from Kitchen membership, and is consumed by the Workspace, its AI
-context and trusted creation commands. It is not App Nuxt configuration.
-Existing menus survive downgrade; price correction, item availability and
-unpublish remain available to associated members regardless of their tier.
+Menu creation follows the [scoped allowance and starter contract](#menu-operator-entitlements).
+Capacity is owned by the Menu domain, not App Nuxt configuration. Existing
+menus survive downgrade; price correction, item availability and unpublish remain
+available to associated members regardless of their tier.
 The trusted boundaries and retained legacy writers are mapped in
 `docs/concepts/menu-ordering.md`.
 
@@ -1462,9 +1460,10 @@ index, CMS override layer or entity/relationship/route catalogue. The existing
 [Core reader](../../../../core/fireux-core/src/runtime/app/server/index/meta.ts)
 owns the public projection and App-media selection.
 The App-owned [public metadata page](../../../../../projects/misebox/misebox-app/app/pages/meta.vue)
-reads `/api/app/meta` once and supplies public App literature to its named
-[Copy section](../../../../../projects/misebox/misebox-app/app/components/Meta/Copy.vue),
-alongside SEO/social and normalized legal information. It is a read-only,
+opts into the [shared App reference](../../../../extensions/fireux-app/src/runtime/components/Meta/Index.vue),
+which reads `/api/app/meta` once and supplies public App literature to its named
+Copy, Search and sharing, and Legal sections. The App keeps its default shell,
+route, header, JSON link, navigation and head. It is a read-only,
 `noindex,follow` reference to that allowlisted response, not a view of raw
 runtime configuration, App/Entity records or an editor. Core retains the public
 response boundary; adding a field to authored App metadata does not publish it
@@ -1727,15 +1726,29 @@ page does not adopt their ecosystem endpoint dependency. Verify with
 
 ## Menu operator entitlements
 
-Free permits two retained Menus, with Main and Drinks as new-Kitchen starters.
-Pro and Business operators may rename Menus and have the existing unlimited
-Menu allowance. Business additionally permits multiple Kitchens.
-Name editing requires the acting User's Pro entitlement and Kitchen write
-access, not a Kitchen subscription or another Team member's entitlement.
-Downgrade preserves all existing Menus and saved names; future creation and
-renaming follow the actor's current entitlement. Basic Kitchen colours remain
-Free. The name editor and trusted rename command enforce this gate; creation
-offers Main and Drinks for Free creation; existing Food names remain accepted without renaming stored records. Kitchen-owned Menus store an explicit
+[Menu storage](../../../../../packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-storage.model.ts)
+defines Free capacity as one Menu; Pro and Business are unlimited. The acting
+User's AppUser subscription and Kitchen authority are separate requirements.
+[Creation capacity](../../../../../packages/extensions/fireux-kitchens/src/runtime/menu/server/creation-capacity.ts)
+counts all retained Menus, including archived records, and gates new creation only.
+Existing over-cap records remain readable and manageable; this policy merges,
+deletes and renames none. Paid distinctions are additional/custom and Daily
+Menus, not Item category counts. Paid custom naming/renaming and dated daily editing
+retain their existing entitlement gates; optional daily/chalkboard workflows are
+not required for every Kitchen and gain no Free entitlement here.
+
+The shared [starter definition](../../../../../packages/extensions/fireux-kitchens/src/runtime/menu/content/starter-menu.ts)
+names one Food & Drinks Menu with initial slug `main`.
+[New-Kitchen initialization](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/system-menus.ts)
+creates it as an ordinary draft interactive Menu with a generated record ID.
+Onboarding creation/resume uses this default; management initialization of an
+existing root preserves its Menus and never recreates missing starters.
+The [Free creation form](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Create/Form.vue)
+presents Food & Drinks. The [creation command](../../../../../packages/extensions/fireux-kitchens/src/runtime/menu/server/records/create.ts)
+admits only normalized `food-drinks` for Free and stores the exact Food & Drinks
+name; other names require a paid acting account. Existing saved names are not rewritten. Guest document
+recovery remains pinned to its original Main Menu. Business's multiple-Kitchen
+allowance remains separate. Kitchen-owned Menus store an explicit
 unique sibling slug. New records use generated document IDs; workspace and public
 links use the slug while mutations and ordering references use the stable ID.
 Menu `name` is customer-facing; optional `internal_name` distinguishes versions
@@ -1894,7 +1907,7 @@ Workspace. Directory contribution and management access retain separate actions.
 Place-derived directory contribution writes only the Kitchen listing (and a
 non-physical Place for name-only creation), retaining attribution and existing
 records without Team/access grants. It does not seed Menus or a Pass. Authorized
-management completion creates Main/Drinks draft starters only when it creates a new Kitchen root. It never adds or recreates Menus on an existing Kitchen, including an empty collection after deletion. Pass initialization remains separate; existing records are preserved. Guest creation/adoption and explicit shell provisioning
+management completion uses the [starter contract](#menu-operator-entitlements) only when it creates a new Kitchen root. It never adds or recreates Menus on an existing Kitchen, including an empty collection after deletion. Pass initialization remains separate; existing records are preserved. Guest creation/adoption and explicit shell provisioning
 retain their separate contracts. See `kitchen/server/index/onboarding/directory.ts`,
 `commands.ts`, `system-menus.ts` and `src/test/kitchen/kitchen-management-defaults.test.mjs`.
 The service entrance keeps a directory result visible with an access-check and
@@ -2149,14 +2162,25 @@ composition. `Menu` and `PrepAndProduction` group their actual domain
 responsibilities rather than following arbitrary sidebar labels. Menu, ordering
 and command ownership are unchanged. App-specific entry presentation stays in
 `misebox-app/app/components/Workspace/Kitchen/Home` with distinct generated names.
-Food and drink catalogue routes share `Menu/Items/Read.vue` and its
-card components. The catalogue defaults to a compact list with category and
-completion filters; cards open the specification directly. Kitchen AI is an explicit
-side-panel action. Optional Dish `category` describes culinary role independently
-of Menu sections or breakfast/service context. `Categories.vue` retains the existing scoped Item update command; categories are operator-authored
-text and stored values remain readable without a system whitelist. Menu item selection reuses the Kitchen’s current
-category values and excludes dishes already in that section. Creation visibility uses selected-Kitchen
-membership, matching Ingredients; command authorization remains authoritative.
+[Items/Index.vue](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Items/Index.vue)
+consumes the route-provided all-Item context and gates collection rendering. Its
+[Collection/Index.vue](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Items/Collection/Index.vue)
+provides `useItemCatalogue` and composes Controls, Results and dialogs.
+The catalogue defaults to a compact list with visible search,
+All/Food/Drinks and list/grid controls; cards open the Item detail. Completion
+filtering remains URL/controller state without a visible completeness control.
+Items AI is an inline coming-soon Focus. Food/Drink is Item type; there is no Item category feature or
+paid category count. The [catalogue controller](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/items/useItemCatalogue.ts)
+and [row projection](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/item.ts) do not expose legacy
+category values, and the [Item update command](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/items/update.ts)
+rejects category changes while preserving stored values during unrelated updates.
+The [Menu Item picker](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Items/Add/Repertoire.vue)
+searches reusable Items and excludes Items already placed in that Section; it
+does not offer category filtering. Menu-owned Sections and placements reference
+Items through `dish_id`, with the persisted child collection still named `items`.
+Creation visibility uses selected-Kitchen membership; command authorization
+remains authoritative. Ingredient taxonomy, discovery categories and external
+FoodBooking category-to-Section mapping retain their separate contracts.
 
 The all-Workspace contract is `docs/concepts/components.md`; verify moved
 consumers against Nuxt registration, Vue compilation and App typechecking.
@@ -2194,8 +2218,8 @@ availability and override responsibilities; this slice adds no Menu-specific
 pricing schema or automatic production/stock relationship.
 
 Collection rows are presentation projections named `ItemCollectionRow` in
-`utils/item.ts`, not a second Item model. They retain historical category/kind
-and presentation fields for existing consumers. A malformed selling value is
+`utils/item.ts`, not a second Item model. They retain historical kind and
+presentation fields for existing consumers, without projecting Item category. A malformed selling value is
 flagged on its row without hiding the identity or breaking the whole collection.
 The existing broader update command still validates its explicitly submitted
 historical Station/specification fields for remaining consumers; those fields do
@@ -2526,7 +2550,7 @@ Workspace route metadata and indexing headers remain covered by the App-owned
 
 Kitchen working collection pages distinguish target readiness, loading, failure and settled empty results. Orders draft reads mask obsolete scope results; Sales invalidates obsolete account, App membership, Kitchen and range reads and closes transaction details when the report is unavailable. An unavailable or empty parent Kitchen masks retained reports. A settled Sales query with zero results remains a readable empty report. Supplier association reads retain their binding and projection failures. Overview Activity consumes read-only owned sources, never station-default setup or write controllers solely to display counts. Ingredient and Supplier counts measure associations; completed-Sales counts do not establish payment receipts or profit. The family contract and optional-extension composition live in `docs/concepts/family-workspace-entity.md`. Verify these boundaries through `fireux-kitchens/src/test/kitchen/capability-read-state.test.mjs` and consuming App checks; signed-in browser evidence remains separate.
 
-Misebox's pricing wrapper derives its Menu allowance and supported actions from current commands: Free supports two Menus, with Main and Drinks as new-Kitchen starters, Plus permits custom regular Menus and the existing domain tools. Team roster/invitation support does not claim fine-grained permissions; preparation execution, tables, costing and outgoing finance must not appear in pricing without connected source. Existing Jobs and Engagement claims have their own owners and require separate verification. No local copy or controlled test establishes an accepted commercial price, live provider readiness or shipping authorization.
+Misebox's pricing wrapper derives its Menu allowance and supported actions from current commands: the [Menu allowance and starter contract](#menu-operator-entitlements) governs Free creation; paid custom regular Menus and existing domain tools retain their own gates. Team roster/invitation support does not claim fine-grained permissions; preparation execution, tables, costing and outgoing finance must not appear in pricing without connected source. Existing Jobs and Engagement claims have their own owners and require separate verification. No local copy or controlled test establishes an accepted commercial price, live provider readiness or shipping authorization.
 
 Kitchen Orders has its index and `/orders/board` under `/workspace/kitchen`.
 Services is a separate visible capability at `/workspace/kitchen/menu/services`,
@@ -2566,9 +2590,21 @@ Verify `daily-menu.test.mjs`, `daily-menu-publication.test.mjs` and
 
 ## Ordinary Menu creation formats
 
-Kitchen Menu creation starts with Interactive or Document, independently of daily
-specials. `Create/Index.vue` owns that choice and `Create/Form.vue` creates a draft
-with its format. Existing records without a format retain their document metadata
+The blank [creation Form](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Create/Form.vue)
+offers Pro/Business Regular or Daily, defaulting to Regular, through the existing
+interactive create command. A Daily draft needs no service date and is not
+automatically published. Entitlement loss resets/guards Daily creation within the
+existing command scope; Free remains one combined regular Menu.
+[Menu Settings](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Detail/Settings.vue)
+reuses `WorkspaceKitchenContext` for Daily as well as regular Menus, with existing
+record `canWrite` authority. This private operator context changes no customer
+copy, prices, schedule or publication. See the
+[Menu family contract](../../../../../docs/concepts/family-menu.md#daily-menu-publication)
+for creation/context owners and the separate dated-publication boundary.
+
+`Create/Index.vue` exposes PDF or photos, Menu URL, and Start blank as creation
+methods. The blank `Create/Form.vue` creates an interactive draft and owns the
+Regular/Daily choice; interactive and document are stored formats. Existing records without a format retain their document metadata
 or interactive content. Interactive imports remain source/AI review workflows;
 `Detail/Document.vue` instead uploads one guest-facing PDF or image through
 `document-upload.post.ts` and the shared `saveKitchenDocumentMenu` document writer

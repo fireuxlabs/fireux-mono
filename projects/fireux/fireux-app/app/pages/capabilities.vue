@@ -70,6 +70,8 @@
 </template>
 
 <script setup lang="ts">
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+
 definePageMeta({
   layout: 'framework',
   requiresAuth: false,
@@ -80,9 +82,11 @@ definePageMeta({
     layouts: ['framework'],
   },
 })
-useSeoMeta({
+useSeo({
   title: 'Business capabilities · FireUX',
   description:
     'Explore FireUX business capabilities, their current source and the boundary between shared foundations and industry rules.',
+  path: '/capabilities',
+  image: '/img/app/cover.png',
 })
 </script>

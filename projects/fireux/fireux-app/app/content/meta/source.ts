@@ -84,21 +84,21 @@ export const sourceMeta = {
   landing: {
     brand: {
       appName: 'fireux',
-      bigPersonality: 'Ignite With',
-      headline: 'FireUX',
+      bigPersonality: fireuxOffer.headline,
+      headline: fireuxOffer.category,
     },
     heroPrimaryLine: fireuxOffer.heroDescription,
     primaryCtaLabel: 'Get started',
     secondaryCtaLabel: 'Browse apps',
     secondaryCtaTo: '/apps',
     workspaceBridgeLine:
-      'The Project Workspace brings Ignition, Apps, the selected Ecosystem, and new users together for each FireUX Project.',
+      'Review Project identity, connected Apps, Ecosystem and team in the Project Workspace. FireUX App administrators manage Ignition requests through a separate intake and delivery workflow.',
     heroBullets: fireuxOffer.heroBullets,
     rightPanelItems: [
       {
         title: 'Ignition',
         description:
-          'Capture an App request and work through its launch checklist.',
+          'FireUX App administrators review App requests and their delivery checklist.',
         icon: 'i-lucide-rocket',
       },
       {
@@ -214,8 +214,8 @@ export const sourceMeta = {
         {
           name: 'Project Workspace',
           summary:
-            'The Project workspace for Ignition, Apps, Ecosystem, and Users.',
-          entities: ['Project', 'Ignition request', 'App', 'Ecosystem', 'User'],
+            'Review Project identity, connected Apps, Ecosystem and team. Ignition intake and delivery remain a FireUX App administrator workflow.',
+          entities: ['Project', 'App', 'Ecosystem', 'User'],
         },
         {
           name: 'Public catalogues',
@@ -269,9 +269,9 @@ export const sourceMeta = {
         },
         {
           name: 'Ignition request',
-          purpose: 'A request to configure and launch an App.',
+          purpose: 'An App-owned Conversation for request review and delivery.',
           keyFields: ['status', 'business', 'app_job', 'access', 'delivery'],
-          linksTo: ['Project'],
+          linksTo: ['App', 'Conversation'],
         },
         {
           name: 'Module package manifest',
@@ -296,7 +296,7 @@ export const sourceMeta = {
           kind: 'workspace',
         },
         {
-          label: 'Project Ignition',
+          label: 'Ignition administration',
           path: '/workspace/project/ignitions',
           kind: 'workspace',
         },
@@ -324,7 +324,7 @@ User
   -> App membership
 
 Ignition request
-  -> Project launch pipeline
+  -> FireUX App intake and delivery
 
 Module package manifest
   -> App build and runtime composition

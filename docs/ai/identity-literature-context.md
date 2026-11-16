@@ -1,9 +1,9 @@
 # Identity and product literature context
 
-Updated: 2026-11-15
-Ref: a068b6eaa
+Updated: 2026-11-16
+Ref: e71fff3f0
 Role: living context
-Scope: cross-system Main App identity, landing, pricing, and product literature
+Scope: cross-system Main App identity, landing, pricing, product literature and public metadata references
 
 ## Inheritance
 
@@ -15,8 +15,8 @@ inherit the relevant App or ecosystem context.
 
 Keep the Main App family understandable in normal English while preserving the
 real identity and capability boundary of each product. Use this context for
-recurring cross-system landing, pricing, Workspace, Capability, Tool, Solution,
-and ecosystem literature work.
+recurring cross-system landing, pricing, public metadata reference, Workspace,
+Capability, Tool, Solution, and ecosystem literature work.
 
 ## Scope
 
@@ -179,6 +179,28 @@ they do not replace repository guidance or make release claims. Attribute
 external patterns to the actual author and link the specific source. Use
 original prose and diagrams, distinguishing FireUX adaptations from the source.
 Review implementation claims when their referenced owners change.
+
+## Public metadata reference
+
+Core's [public metadata reader](../../packages/core/fireux-core/src/runtime/app/server/index/meta.ts)
+owns the allowlisted copy, SEO/social, legal and public-image response. Authored
+App metadata and page-specific content keep their existing owners; a metadata
+reference is an inspection surface, not a complete account of page overrides.
+
+`fireux-app` owns the [shared reading surface](../../packages/extensions/fireux-app/src/runtime/components/Meta/Index.vue)
+and named Copy, Search and sharing, and Legal presentation. It acquires the
+existing public response once through native Nuxt data, uses Core read outcomes
+and error retry, displays copy as escaped plain text and reuses the shared Legal
+notice presenter. It owns no publication policy, configuration registry or editor.
+
+The [Misebox](../../projects/misebox/misebox-app/app/pages/meta.vue) and
+[FireUX](../../projects/fireux/fireux-app/app/pages/meta.vue) routes opt in
+explicitly. Each App owns its shell, route, header, JSON link, navigation and
+`noindex,follow` policy. The App bundle adds no automatic `/meta` route. The
+[consumer checks](../../packages/extensions/fireux-app/src/test/components/Meta.test.mjs)
+cover both adapters; verify actual public API, head, desktop/mobile reading and
+links when changing this surface. Page-specific head repairs use the existing
+Core SEO owner and retain deliberate audience and indexing differences.
 
 ## Current source
 

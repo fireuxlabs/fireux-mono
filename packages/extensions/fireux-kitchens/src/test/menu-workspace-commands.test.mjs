@@ -10,9 +10,15 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
+import { starterMenu } from '../runtime/menu/content/starter-menu.ts'
 
 function load(relative, deps, names) {
-  deps = { readAppUserSubscription, ...itemPricingHelpers, ...deps }
+  deps = {
+    readAppUserSubscription,
+    ...itemPricingHelpers,
+    starterMenu,
+    ...deps,
+  }
 
   const source = readFileSync(new URL(relative, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -128,7 +134,7 @@ function harness({
     async readAll(_target, limit) {
       return Array.from({ length: Math.min(count, limit) }, (_, i) => ({
         id: String(i),
-        data: {},
+        data: _target === 'pizza/menus' ? { status: menu.status } : {},
       }))
     },
     async query(target, query) {
@@ -229,11 +235,15 @@ const item = {
   itemId: 'margherita',
 }
 
-test('Free creation allows the second menu and blocks a third without deleting retained menus', async () => {
-  const allowed = harness({ count: 1 })
-  await allowed.createKitchenMenu({}, { kitchenId: 'pizza', name: 'drinks' })
+test('Free creation allows one combined Menu and blocks further creation without deleting retained menus', async () => {
+  const allowed = harness({ count: 0 })
+  await allowed.createKitchenMenu(
+    {},
+    { kitchenId: 'pizza', name: starterMenu.name }
+  )
   assert.equal(allowed.calls[0][0], 'create')
-  for (const count of [2, 20]) {
+  assert.equal(allowed.calls[0][3].name, starterMenu.name)
+  for (const count of [1, 2, 20]) {
     const denied = harness({ count })
     await assert.rejects(
       denied.createKitchenMenu({}, { kitchenId: 'pizza', name: 'Lunch' }),
@@ -241,6 +251,39 @@ test('Free creation allows the second menu and blocks a third without deleting r
     )
     assert.deepEqual(denied.calls, [])
   }
+})
+test('an archived Menu still occupies the Free creation allowance', async () => {
+  const h = harness({ count: 1, menuStatus: 'archived' })
+  await assert.rejects(
+    h.createKitchenMenu({}, { kitchenId: 'pizza', name: starterMenu.name }),
+    /allowance/
+  )
+  assert.deepEqual(h.calls, [])
+})
+for (const subscription of ['pro', 'business'])
+  test(`${subscription} can create a private Daily Menu before choosing any service date`, async () => {
+    const h = harness({ subscription, count: 0 })
+    await h.createKitchenMenu(
+      {},
+      { kitchenId: 'pizza', name: 'Daily menu', schedule: 'daily' }
+    )
+    assert.equal(h.calls.length, 1)
+    assert.equal(h.calls[0][0], 'create')
+    assert.equal(h.calls[0][3].schedule, 'daily')
+    assert.equal(h.calls[0][3].status, 'draft')
+    assert.equal('published_dates' in h.calls[0][3], false)
+    assert.equal('date' in h.calls[0][3], false)
+  })
+test('Free cannot create a Daily Menu even with an unused Menu allowance', async () => {
+  const h = harness({ count: 0 })
+  await assert.rejects(
+    h.createKitchenMenu(
+      {},
+      { kitchenId: 'pizza', name: starterMenu.name, schedule: 'daily' }
+    ),
+    /Daily menus require Pro/
+  )
+  assert.deepEqual(h.calls, [])
 })
 test('Pro and Business allow more than twenty menus', async () => {
   for (const subscription of ['pro', 'business']) {
@@ -355,30 +398,37 @@ test('Create cannot overwrite Food or publish without validation', async () => {
 })
 
 test('Menu creation stores a generated stable identity with its separate slug and canonical Free name', async () => {
-  const h = harness({ count: 1 })
+  const h = harness({ count: 0 })
   const result = await h.createKitchenMenu(
     {},
-    { kitchenId: 'pizza', name: 'DRINKS' }
+    { kitchenId: 'pizza', name: 'FOOD & DRINKS' }
   )
   assert.deepEqual(result, {
     created: true,
     id: 'generated-stable-id',
-    slug: 'drinks',
+    slug: 'food-drinks',
     kitchenId: 'pizza',
   })
   const write = h.calls[0]
   assert.equal(write[2], result.id)
-  assert.equal(write[3].slug, 'drinks')
-  assert.equal(write[3].name, 'Drinks')
+  assert.equal(write[3].slug, 'food-drinks')
+  assert.equal(write[3].name, 'Food & Drinks')
   assert.equal(Object.hasOwn(write[3], 'id'), false)
   assert.equal(Object.hasOwn(write[3], 'kitchen_id'), false)
   assert.equal(Object.hasOwn(write[3], 'ordering'), false)
-  const custom = harness({ count: 0 })
-  await assert.rejects(
-    custom.createKitchenMenu({}, { kitchenId: 'pizza', name: 'Lunch' }),
-    /Pro/
-  )
-  assert.deepEqual(custom.calls, [])
+  for (const name of ['Main', 'Food', 'Drinks', 'Lunch']) {
+    const custom = harness({ count: 0 })
+    await assert.rejects(
+      custom.createKitchenMenu({}, { kitchenId: 'pizza', name }),
+      /Pro/
+    )
+    assert.deepEqual(custom.calls, [])
+    for (const subscription of ['pro', 'business']) {
+      const paid = harness({ subscription, count: 0, menuSlug: 'existing' })
+      await paid.createKitchenMenu({}, { kitchenId: 'pizza', name })
+      assert.equal(paid.calls[0][3].name, name)
+    }
+  }
 })
 test('trusted rename preserves public slug and record identity', async () => {
   for (const subscription of ['pro', 'business']) {
@@ -422,7 +472,7 @@ test('Free downgrade preserves custom names; duplicate display name leaves slug 
   assert.equal(collision.calls.filter((call) => call[0] === 'update').length, 1)
 })
 
-test('Kitchen onboarding creates two generated Menu identities with stable Main and Drinks slugs', () => {
+test('Kitchen onboarding creates one combined Menu with a generated identity and stable main slug', () => {
   let sequence = 0
   const {
     createKitchenSystemMenus,
@@ -450,10 +500,7 @@ test('Kitchen onboarding creates two generated Menu identities with stable Main 
   createKitchenSystemMenus(input)
   assert.deepEqual(
     writes.map(([target, id, menu]) => [target, id, menu.slug, menu.name]),
-    [
-      ['k/menus', 'stable-1', 'main', 'Main'],
-      ['k/menus', 'stable-2', 'drinks', 'Drinks'],
-    ]
+    [['k/menus', 'stable-1', starterMenu.slug, starterMenu.name]]
   )
   assert.ok(
     writes.every(
@@ -465,7 +512,7 @@ test('Kitchen onboarding creates two generated Menu identities with stable Main 
     () => createKitchenSystemMenus({ ...input, menus: [{ id: 'orphan' }] }),
     /without its Kitchen/
   )
-  assert.equal(writes.length, 2)
+  assert.equal(writes.length, 1)
 })
 
 test('unpublishing a missing Menu performs no writes', async () => {

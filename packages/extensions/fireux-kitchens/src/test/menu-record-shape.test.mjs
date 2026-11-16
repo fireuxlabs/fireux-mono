@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { menuDocumentFilePath } from '../runtime/menu/utils/navigation/route.ts'
+import { starterMenu } from '../runtime/menu/content/starter-menu.ts'
 import {
   readRecord,
   readRecordString,
@@ -43,7 +44,8 @@ const build = load(
 )
 const defaultMenu = load(
   '../runtime/kitchen/server/index/onboarding/system-menus.ts',
-  'buildKitchenSystemMenu'
+  'buildKitchenSystemMenu',
+  { starterMenu }
 )
 
 test('new Menu is catalogue-only without duplicated relationship or unused settings', () => {
@@ -58,7 +60,7 @@ test('new Menu is catalogue-only without duplicated relationship or unused setti
     created: 'created',
     updated: 'updated',
   })
-  assert.equal(menu.name, 'Main')
+  assert.equal(menu.name, starterMenu.name)
   for (const key of [
     'id',
     'kitchen_id',

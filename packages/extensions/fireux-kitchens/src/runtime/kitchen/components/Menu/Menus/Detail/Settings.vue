@@ -16,7 +16,7 @@
       class="menu-settings__link"
     />
     <WorkspaceKitchenContext
-      v-if="menu && menu.schedule !== 'daily'"
+      v-if="menu"
       :key="`${kitchenId}/${menu.id}`"
       :kitchen-id="kitchenId"
       :menu-id="menu.id"

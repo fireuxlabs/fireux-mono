@@ -1,6 +1,6 @@
 # Menu family
 
-Updated: 2026-11-15
+Updated: 2026-11-16
 Ref: a068b6eaa
 Role: map, not canon
 
@@ -30,6 +30,18 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 | Promotion        | Kitchen-scoped | Item offers or meal deals with set price, choices and supplements              |
 | MenuSourceUpload | Kitchen-scoped | Source material awaiting review; not a published Menu                          |
 
+Kitchen Items are reusable across Menus. Each Menu owns its Sections and
+[MenuItem placements](../../packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-item.model.ts),
+which reference Items through `dish_id` (or a meal deal through `promotion_id`).
+The persisted Section child remains `items`; calling these entries or placements
+does not rename storage. Food/Drink is the Item type, not a Menu Section or an
+Item category tier. Legacy stored category values remain untouched by unrelated
+updates, but have no catalogue projection, filter, caption or editor and are not
+accepted by the [Item update command](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/items/update.ts).
+Ingredient taxonomy, discovery categories and external menu-category imports
+retain their separate owners. Paid Menu distinctions concern additional/custom
+and Daily Menus, not Item category counts.
+
 The Item identity foundation is `kitchen/item/models/model.ts`. Its reader and
 read adapter live in that same Item spine and retain the existing `dishes`
 collection path. The canonical model exposes only identity. The same document listener exposes
@@ -49,8 +61,9 @@ creation, publication, audience and QR flow. Daily specials retain their separat
 per-date publication feature.
 
 Kitchen's combined Food & drinks catalogue filters the same Item family by
-`item_kind`; Menu names do not classify Items. Its URL retains kind, search,
-category, completeness filter, layout and page. Food and drink editors return to
+`item_kind` through All/Food/Drinks; unknown historical kinds remain under All.
+Menu names do not classify Items. Its URL retains kind, search, completeness
+filter, layout and page; legacy category query values are ignored and stripped. Food and drink editors return to
 that combined catalogue through `kitchen/utils/item-catalogue-route.ts`; loading
 does not reset a restored page, and settled results clamp an obsolete page.
 `item-reader-internals.test.mjs` covers the round trip and delayed Kitchen/data
@@ -267,8 +280,12 @@ Menu utilities contain pure calculations grouped under `calendar`, `catalogue`,
 `navigation`, `ordering` and `records`; publication readiness remains a named
 standalone calculation. Item, Section and source-upload storage definitions live
 with their existing models. Menu storage owns its creation-capacity definition.
-Kitchen onboarding owns its Main/Drinks initialization in
-`kitchen/server/index/onboarding/system-menus.ts`.
+Kitchen onboarding owns new-Kitchen initialization in
+[system-menus.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/system-menus.ts),
+using the shared [starter definition](../../packages/extensions/fireux-kitchens/src/runtime/menu/content/starter-menu.ts).
+The [Misebox allowance and starter contract](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md#menu-operator-entitlements)
+maps creation-only capacity and preservation of existing Menus; initialization
+of an existing Kitchen does not recreate missing starters.
 
 Create Menu exposes PDF or photos, Menu URL, and Start blank as separate methods.
 URL imports open source review without requiring a Menu name first.
@@ -486,6 +503,22 @@ Nuxt registrations. No storage schema or publication authority changes accompany
 this organisation.
 
 ## Daily Menu publication
+
+The blank [Menu Form](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Create/Form.vue)
+defaults to Regular and offers Regular/Daily to Pro and Business actors. Daily
+uses the existing [interactive creation command](../../packages/extensions/fireux-kitchens/src/runtime/menu/server/records/create.ts)
+without a service date or automatic publication; choosing a schedule creates
+nothing before submission. Lost entitlement resets the form to Regular and guards
+Daily dispatch; schedule and paid availability join the existing command scope.
+Free retains its one combined regular Menu policy.
+
+[Menu Settings](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Detail/Settings.vue)
+also exposes the existing `WorkspaceKitchenContext` for Daily Menus, with editing
+controlled by the record's `canWrite`. It reuses the scoped
+[authorized context endpoint](../../packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/context.get.ts)
+and [command](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/context/command.ts).
+Private operator context is separate from customer description, prices, schedule
+and publication, and is omitted from customer projections. Daily usage is optional.
 
 Daily Menus retain dated MenuSections and ordinary dish-backed items. The focused
 `Menu/Menus/Publication/Daily.vue` control reviews the chosen date through

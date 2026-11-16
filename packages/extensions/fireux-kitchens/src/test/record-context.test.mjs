@@ -3,8 +3,20 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
-import { computed, effectScope, ref, toValue, watch } from 'vue'
+import {
+  compile,
+  computed,
+  createSSRApp,
+  effectScope,
+  h,
+  ref,
+  toValue,
+  watch,
+} from 'vue'
+import { renderToString } from 'vue/server-renderer'
 import { useCommandScope } from '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
+import { menuSourceFromData } from '../runtime/menu/server/payload/source.ts'
+import { menuPayloadPresentation } from '../runtime/menu/server/payload/presentation.ts'
 
 function load(path, result, dependencies) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -82,6 +94,121 @@ function fixture() {
     },
   }
 }
+test('regular and Daily Menu Settings reuse the scoped private context editor with existing write authority', async () => {
+  const source = readFileSync(
+    new URL(
+      '../runtime/kitchen/components/Menu/Menus/Detail/Settings.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+  const template = source.slice(
+    source.indexOf('<template>') + 10,
+    source.lastIndexOf('</template>')
+  )
+  for (const schedule of ['regular', 'daily'])
+    for (const canWrite of [false, true]) {
+      const observed = []
+      const app = createSSRApp({
+        setup: () => ({
+          kitchenId: 'baren',
+          menu: { id: 'trial', schedule },
+          canWrite,
+        }),
+        render: compile(template),
+      })
+      app.config.warnHandler = (message) => {
+        throw new Error(message)
+      }
+      for (const name of [
+        'KitchenMenuMenusEditDetails',
+        'KitchenMenuMenusDetailSummary',
+        'KitchenMenuMenusDetailAudience',
+        'KitchenMenuMenusDetailHours',
+        'KitchenMenuMenusDetailOfferings',
+        'KitchenMenuMenusDetailRemove',
+        'UButton',
+      ])
+        app.component(name, { render: () => null })
+      app.component('WorkspaceKitchenContext', {
+        props: ['kitchenId', 'menuId', 'subject', 'title', 'canWrite'],
+        setup: (props) => () => {
+          observed.push({ ...props })
+          return h('section', { 'aria-label': props.title })
+        },
+      })
+      const html = await renderToString(app)
+      assert.ok(html.includes('aria-label="Menu context"'), html)
+      assert.deepEqual(observed, [
+        {
+          kitchenId: 'baren',
+          menuId: 'trial',
+          subject: 'menu',
+          title: 'Menu context',
+          canWrite,
+        },
+      ])
+    }
+})
+test('a Daily trial context remains private background and does not choose or publish a service date', async () => {
+  const f = fixture()
+  const path = 'kitchens/baren/menus/trial'
+  const menu = {
+    context: '',
+    name: 'Daily menu',
+    schedule: 'daily',
+    status: 'draft',
+  }
+  f.roots.set(path, menu)
+  const trial =
+    'Undated trial: octopus roll with fries, target CHF 25. Standard pulpo portion is provisional; owner to confirm.'
+  const scope = { kitchenId: 'baren', subject: 'menu', menuId: 'trial' }
+  await f.command({}, { ...scope, context: trial, previous: '' }, true)
+  assert.deepEqual(f.roots.get(path), {
+    ...menu,
+    context: trial,
+    updated: { by: 'actor' },
+  })
+  assert.equal((await f.command({}, scope)).context, trial)
+  assert.equal(f.writes.length, 1)
+})
+test('the public Daily manifest excludes private trial context while retaining customer copy', async () => {
+  const build = load(
+    '../runtime/menu/server/payload/manifest.ts',
+    'buildMenuManifestPayload',
+    {
+      readRecordString,
+      menuSourceFromData,
+      menuPayloadPresentation,
+      readMenuManifestSections: (sections) => sections,
+      menuOfferingProfile: () => ({ orderingEnabled: false, choices: [] }),
+    }
+  )
+  const privateNote =
+    'PRIVATE TRIAL: octopus portion is provisional; owner to confirm.'
+  const payload = await build(
+    'daily-menu',
+    {
+      name: 'Daily menu',
+      description: 'Today at La Tap',
+      schedule: 'daily',
+      context: privateNote,
+    },
+    {
+      kitchenId: 'la-tap',
+      kitchenMenuId: 'daily-menu',
+      currencyCode: 'CHF',
+      daily: { date: '2026-11-17', timezone: 'Europe/Zurich' },
+      sections: [],
+    }
+  )
+  assert.equal(payload.manifest.content.description, 'Today at La Tap')
+  assert.equal('context' in payload.manifest.content, false)
+  assert.doesNotMatch(
+    JSON.stringify(payload),
+    /PRIVATE TRIAL|provisional|owner to confirm/
+  )
+})
 for (const subject of ['kitchen', 'venue', 'menu', 'recipe', 'dish']) {
   test(`${subject}: context is a string on its document, preserves other fields and rejects stale edits`, async () => {
     const f = fixture()

@@ -17,6 +17,7 @@ import {
 import { menuNameAndSlug, requireAvailableMenuSlug } from '../name'
 import { requireMenuCreationCapacity } from '../creation-capacity'
 import type { MenuDocument } from '../../models/menu.model'
+import { starterMenu } from '../../content/starter-menu'
 
 export async function createKitchenMenu(event: H3Event, input: unknown) {
   let value: MenuCreateInput
@@ -66,22 +67,12 @@ export async function stageCreateKitchenMenu(
       statusCode: 409,
       statusMessage: 'Set the Kitchen currency before creating menus.',
     })
-  if (
-    access.subscription === 'free' &&
-    !['main', 'food', 'drinks'].includes(slug)
-  )
+  if (access.subscription === 'free' && slug !== 'food-drinks')
     throw createError({
       statusCode: 403,
       statusMessage: 'Custom Menu names require Pro.',
     })
-  const canonicalName =
-    access.subscription === 'free'
-      ? slug === 'main'
-        ? 'Main'
-        : slug === 'food'
-          ? 'Food'
-          : 'Drinks'
-      : name
+  const canonicalName = access.subscription === 'free' ? starterMenu.name : name
   await requireAvailableMenuSlug(tx, kitchenId, slug)
   const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
   tx.create(serverKitchenMenusTarget(kitchenId), menuId, {

@@ -9,6 +9,14 @@
         :items="miseboxDocsNavigation"
         aria-label="Misebox documentation"
       />
+      <p class="fx-type-body">
+        Inspect Misebox's <ULink to="/meta">public metadata</ULink> or
+        <ULink to="/api/app/meta" target="_blank" rel="noopener noreferrer"
+          >read the JSON response</ULink
+        >
+        for its published copy, search defaults and legal notices. Individual
+        pages keep their own content and metadata.
+      </p>
       <DocsSetup />
       <DocsArchitecture />
       <section aria-labelledby="docs-foundations">
@@ -34,6 +42,7 @@
 
 <script setup lang="ts">
 import { miseboxDocsNavigation, miseboxDocsResources } from '../../content/docs'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 definePageMeta({
   layout: 'default',
@@ -48,9 +57,11 @@ definePageMeta({
     layouts: ['default', 'landing'],
   },
 })
-useSeoMeta({
+useSeo({
   title: 'Developer docs · Misebox',
   description:
     'Build Misebox Apps with supported configuration, domain components and explicit data boundaries.',
+  path: '/docs',
+  image: '/img/app/cover.png',
 })
 </script>

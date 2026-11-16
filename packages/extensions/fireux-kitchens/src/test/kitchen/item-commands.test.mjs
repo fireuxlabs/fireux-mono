@@ -298,7 +298,7 @@ test('update validates nested specification; deletion remains document-only', as
     {
       kitchenId: 'k',
       dishId: 'existing',
-      changes: { name: ' New ', category: 'main', spec },
+      changes: { name: ' New ', spec },
     }
   )
   assert.equal(h.writes[0][3].name, 'New')
@@ -334,19 +334,30 @@ test('all commands enforce transaction-time current membership and bound Kitchen
       assert.equal(h.writes.length, 0)
     }
 })
-test('Item categories accept operator vocabulary and can be cleared', async () => {
-  for (const [category, expected] of [
-    ['  House favourites  ', 'House favourites'],
-    ['', ''],
-    ['main', 'main'],
-  ]) {
+test('retired Item category writes are rejected without changing records', async () => {
+  for (const category of ['main', 'House favourites', '', null]) {
     const h = harness()
-    await h.updateItem(
-      {},
-      { kitchenId: 'k', dishId: 'existing', changes: { category } }
+    await assert.rejects(
+      h.updateItem(
+        {},
+        { kitchenId: 'k', dishId: 'existing', changes: { category } }
+      ),
+      /Unsupported/
     )
-    assert.equal(h.writes[0][3].category, expected)
+    assert.equal(h.writes.length, 0)
   }
+})
+test('ordinary Item updates preserve stored legacy category values without projecting a new category change', async () => {
+  const h = harness()
+  h.records.get('dishes/k/existing').category = 'main'
+  await h.updateItem(
+    {},
+    { kitchenId: 'k', dishId: 'existing', changes: { name: 'Renamed' } }
+  )
+  assert.equal(h.records.get('dishes/k/existing').category, 'main')
+  assert.deepEqual(h.writes[0].slice(0, 3), ['update', 'dishes/k', 'existing'])
+  assert.equal(h.writes[0][3].name, 'Renamed')
+  assert.equal(Object.hasOwn(h.writes[0][3], 'category'), false)
 })
 test('update rejects protected/unknown fields, malformed spec and missing records', async () => {
   for (const changes of [

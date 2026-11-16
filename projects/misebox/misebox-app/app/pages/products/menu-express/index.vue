@@ -59,6 +59,7 @@
 import { reactive } from 'vue'
 import { useMenuDocument } from 'fireux-kitchens/runtime/menu/composables/useMenuDocument'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 const menu = reactive(useMenuDocument())
 const { openWorkspace } = useWorkspaceEntryCta('kitchen')
@@ -77,10 +78,12 @@ definePageMeta({
     layouts: ['default', 'landing'],
   },
 })
-useSeoMeta({
+useSeo({
   title: 'Free Menu Hosting & QR Code · Misebox',
   description:
     'Upload your PDF or menu image, publish it online for free and download its QR. Replace your menu later without changing the link or QR.',
+  path: '/products/menu-express',
+  image: '/img/app/cover.png',
   robots: 'index, follow',
 })
 </script>

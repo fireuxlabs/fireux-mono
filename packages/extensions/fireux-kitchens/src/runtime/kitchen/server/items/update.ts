@@ -26,7 +26,6 @@ export async function updateItem(event: H3Event, input: unknown) {
     'name',
     'slug',
     'description',
-    'category',
     'preparation_station_ids',
     'spec',
     'price',
@@ -54,7 +53,6 @@ export async function updateItem(event: H3Event, input: unknown) {
   if ('slug' in changes) patch.slug = itemText(changes.slug)
   if ('description' in changes)
     patch.description = itemText(changes.description)
-  if ('category' in changes) patch.category = itemText(changes.category)
   if ('spec' in changes)
     patch.spec = validateItemInput(() =>
       validateItemSpecification(changes.spec)

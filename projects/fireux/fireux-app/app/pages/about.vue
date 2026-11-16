@@ -58,11 +58,8 @@
               {{ appMeta.aboutSections.keyConceptsTitle }}
             </h2>
             <ol class="fx-list-stack">
-              <li
-                v-for="(concept, index) in appMeta.keyConcepts"
-                :key="concept.title"
-              >
-                <span>{{ index + 1 }}. {{ concept.title }}</span
+              <li v-for="concept in appMeta.keyConcepts" :key="concept.title">
+                <span>{{ concept.title }}</span
                 ><br />
                 {{ concept.description }}
               </li>
@@ -87,29 +84,22 @@
         </div>
 
         <UCard>
-          <UAccordion type="multiple">
-            <UAccordionItem
-              v-for="(module, index) in appSpec.modules"
-              :key="module.name"
-              :value="`module-${index}`"
-              :title="module.name"
-            >
-              <template #body>
-                <div class="pagebody">
-                  <p class="fx-type-body">{{ module.summary }}</p>
-                  <div class="card__badges">
-                    <UBadge
-                      v-for="entityName in module.entities"
-                      :key="`${module.name}-${entityName}`"
-                      color="neutral"
-                      variant="soft"
-                    >
-                      {{ entityName }}
-                    </UBadge>
-                  </div>
+          <UAccordion :items="moduleItems" type="multiple">
+            <template #body="{ item }">
+              <div class="pagebody">
+                <p class="fx-type-body">{{ item.content }}</p>
+                <div class="card__badges">
+                  <UBadge
+                    v-for="entityName in item.entities"
+                    :key="`${item.label}-${entityName}`"
+                    color="neutral"
+                    variant="soft"
+                  >
+                    {{ entityName }}
+                  </UBadge>
                 </div>
-              </template>
-            </UAccordionItem>
+              </div>
+            </template>
           </UAccordion>
         </UCard>
       </UContainer>
@@ -163,7 +153,7 @@
         </div>
 
         <UCard>
-          <pre class="overflow-x-auto">{{ relationshipMap }}</pre>
+          <pre>{{ relationshipMap }}</pre>
         </UCard>
 
         <UCard>
@@ -196,6 +186,7 @@
 
 <script setup lang="ts">
 import { appMeta } from '../meta'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 type AppSpec = {
   name: string
@@ -233,9 +224,11 @@ definePageMeta({
   },
 })
 
-useSeoMeta({
+useSeo({
   title: appMeta.seoAbout.title,
   description: appMeta.seoAbout.description,
+  path: '/about',
+  image: '/img/app/cover.png',
 })
 
 const appSpec: AppSpec = {
@@ -247,4 +240,9 @@ const appSpec: AppSpec = {
   routes: appMeta.routes,
 }
 const relationshipMap = appMeta.relationshipMap
+const moduleItems = appSpec.modules.map((module) => ({
+  label: module.name,
+  content: module.summary,
+  entities: module.entities,
+}))
 </script>

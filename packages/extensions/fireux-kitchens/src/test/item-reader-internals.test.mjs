@@ -9,6 +9,12 @@ import {
   itemCatalogueReturn,
 } from '../runtime/kitchen/utils/item-catalogue-route.ts'
 import { itemPricingHelpers } from './helpers/item-pricing.mjs'
+import {
+  readItemChoiceGroups,
+  itemChoiceRule,
+  priceItemChoices,
+} from '../runtime/kitchen/utils/item-choices.ts'
+import { readPlaceCurrencyCode } from '../../../fireux-places/src/runtime/place/utils/place-spine.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -424,9 +430,9 @@ function components(app) {
     'UPagination',
     'USelect',
     'UCheckbox',
-    'KitchenMenuItemsCategories',
     'WorkspaceKitchenAICapability',
     'WorkspaceKitchenAICapabilityInfo',
+    'WorkspaceKitchenAIFocus',
     'KitchenMenuItemsEdit',
     'KitchenMenuItemsPhoto',
     'KitchenMenuItemsGroups',
@@ -528,8 +534,12 @@ function readView(overrides = {}) {
     selected: [],
     moreActions: [],
     view: 'list',
-    category: 'all',
-    categoryFilters: [{ value: 'all', label: 'All dishes', count: 0 }],
+    kind: 'all',
+    kindFilters: [
+      { value: 'all', label: 'All Items' },
+      { value: 'food', label: 'Food' },
+      { value: 'drink', label: 'Drinks' },
+    ],
     filters: [{ value: 'all', label: 'All', count: 0 }],
     filter: 'all',
     page: 1,
@@ -567,6 +577,29 @@ function recordView(overrides = {}) {
     ...overrides,
   }
 }
+test('Items prices use the supplied Kitchen currency projection and keep missing currency explicit', () => {
+  const selectedKitchen = ref({ id: 'mine', currency_code: 'CHF' })
+  const priceLabel = load(
+    'kitchen/components/Menu/Items/Collection/Results.vue',
+    'priceLabel',
+    {
+      computed,
+      defineEmits: () => () => {},
+      useKitchenItemsContext: () => ({ selectedKitchen }),
+      useItemCatalogueContext: () => ({}),
+      readPlaceCurrencyCode,
+      readItemChoiceGroups,
+      itemChoiceRule,
+      priceItemChoices,
+    }
+  )
+  assert.match(priceLabel({ price: 12.5 }), /CHF/)
+  assert.match(priceLabel({ price: 12.5 }), /12\.50/)
+  selectedKitchen.value = { id: 'mine' }
+  assert.equal(priceLabel({ price: 12.5 }), 'Currency not set')
+  assert.equal(priceLabel({}), 'Not set')
+  assert.equal(priceLabel({ pricing_error: true }), 'Review price & choices')
+})
 test('actual Item index distinguishes Kitchen loading, failure, missing and inactive selection', async () => {
   for (const [outcome, expected] of [
     ['pending', 'Loading Kitchen'],
@@ -702,12 +735,15 @@ test('Item projection preserves canonical pricing and excludes the removed deal 
     price_options: [{ label: 'Large', quantity: 0, unit: '', price: 18 }],
     add_ons: [{ id: 'cheese', label: 'Cheese', price: 2 }],
     is_deal: true,
+    category: 'main',
   }
   const dish = normalizeItem(input)
   assert.equal(dish.price, 13)
   assert.deepEqual(dish.price_options, input.price_options)
   assert.deepEqual(dish.add_ons, input.add_ons)
   assert.equal(Object.hasOwn(dish, 'is_deal'), false)
+  assert.equal(Object.hasOwn(dish, 'category'), false)
+  assert.equal(input.category, 'main')
   assert.equal(Object.hasOwn(normalizeItem({ id: 'new-dish' }), 'price'), false)
   assert.equal(normalizeItem({ id: 'free-dish', price: 0 }).price, 0)
 })
@@ -869,6 +905,33 @@ test('Food & drinks item round trip restores kind, search, filters, layout and p
   f.scope.stop()
 })
 
+test('obsolete category links cannot hide Items and retain the type and restored page', async () => {
+  const f = workspaceFixture()
+  f.settle(
+    catalogueRows().map((item, index) => ({
+      ...item,
+      category: index % 2 ? 'main' : 'side',
+    }))
+  )
+  const { view, route } = catalogueView(f, {
+    kind: 'drink',
+    category: 'category:main',
+    page: '2',
+  })
+  await nextTick()
+  assert.equal(view.visibleItems.value.length, 100)
+  assert.equal(view.kind.value, 'drink')
+  assert.equal(view.page.value, 2)
+  assert.equal(Object.hasOwn(route.query, 'category'), false)
+  assert.equal(
+    new URL(view.itemLink('drink-1'), 'http://localhost').searchParams.has(
+      'category'
+    ),
+    false
+  )
+  f.scope.stop()
+})
+
 test('restored catalogue page survives loading, clamps after results settle, and resets when filters change', async () => {
   const f = workspaceFixture()
   f.raw.pending.value = true
@@ -888,7 +951,7 @@ test('restored catalogue page survives loading, clamps after results settle, and
   f.scope.stop()
 })
 
-test('catalogue return keeps food categories and accepts only catalogue state', () => {
+test('catalogue return ignores retired categories and accepts only catalogue state', () => {
   assert.deepEqual(
     itemCatalogueReturn({
       kind: 'food',
@@ -902,7 +965,6 @@ test('catalogue return keeps food categories and accepts only catalogue state', 
     }).query,
     {
       kind: 'food',
-      category: 'mains',
       search: 'pizza',
       filter: 'description',
       layout: 'list',

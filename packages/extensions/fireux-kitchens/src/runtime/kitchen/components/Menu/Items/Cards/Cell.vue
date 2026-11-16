@@ -16,7 +16,6 @@
       <p v-if="expanded && description" class="item-card__description">
         {{ description }}
       </p>
-      <p v-if="meta" class="item-card__meta">{{ meta }}</p>
       <div v-if="priceLabel || choicesLabel" class="item-card__footer">
         <strong v-if="priceLabel" class="item-card__price">{{
           priceLabel
@@ -43,7 +42,6 @@ type Props = {
   description?: string
   expanded?: boolean
   list?: boolean
-  meta?: string
   choicesLabel?: string
   priceLabel?: string
   link?: boolean
@@ -60,7 +58,6 @@ withDefaults(defineProps<Props>(), {
   description: '',
   expanded: false,
   list: false,
-  meta: '',
   choicesLabel: '',
   priceLabel: '',
   link: false,
@@ -107,12 +104,6 @@ withDefaults(defineProps<Props>(), {
   color: var(--ui-text-muted);
   font-size: var(--text-sm);
   line-height: var(--leading-snug);
-}
-.item-card__meta {
-  margin: 0;
-  color: var(--ui-text-muted);
-  font-size: var(--text-xs);
-  overflow-wrap: anywhere;
 }
 .item-card__footer {
   display: flex;

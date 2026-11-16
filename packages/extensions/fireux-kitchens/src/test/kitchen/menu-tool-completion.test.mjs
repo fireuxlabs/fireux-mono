@@ -3,6 +3,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import { starterMenu } from '../../runtime/menu/content/starter-menu.ts'
 import {
   computed,
   ref,
@@ -12,8 +13,10 @@ import {
   watch,
   onScopeDispose,
   effectScope,
+  nextTick,
 } from 'vue'
 function load(path, result, deps = {}) {
+  deps = { starterMenu, ...deps }
   let source = readFileSync(new URL(path, import.meta.url), 'utf8')
   if (source.includes('<script setup'))
     source = source.match(/<script setup[^>]*>([\s\S]*?)<\/script>/)[1]
@@ -140,6 +143,128 @@ const changes = [
   'route',
   'dispose',
 ]
+test('Free Menu creation starts with the combined Menu and respects unavailable creation', async () => {
+  const h = context()
+  const canCreateMenu = ref(false)
+  const api = h.run(
+    'kitchen/components/Menu/Menus/Create/Form.vue',
+    '({ save, name })',
+    {
+      defineModel: () => ref(''),
+      useMenuRecordNavigation: () => ({ openView: () => {} }),
+      useKitchenMenusContextSource: () => ({
+        kitchenId: h.kitchenId,
+        canCreateMenu,
+        menuCreateBlockedMessage: ref('Allowance reached'),
+        subscription: ref('free'),
+        createMenu: (input) => h.calls.push(input),
+      }),
+    }
+  )
+  assert.equal(api.name.value, starterMenu.name)
+  await api.save()
+  assert.deepEqual(h.calls, [])
+  h.lifetime.stop()
+})
+function scheduledForm(h, subscription) {
+  let intentCurrent
+  const api = h.run(
+    'kitchen/components/Menu/Menus/Create/Form.vue',
+    '({ save, name, description, schedule, canPlanDaily, busy, error })',
+    {
+      defineModel: () => ref(''),
+      useMenuRecordNavigation: () => ({
+        openView: (...args) => h.effects.push(args),
+      }),
+      useKitchenMenusContextSource: () => ({
+        kitchenId: h.kitchenId,
+        canCreateMenu: ref(true),
+        menuCreateBlockedMessage: ref(''),
+        subscription,
+        createMenu: (input, isCurrent) => {
+          intentCurrent = isCurrent
+          h.calls.push(structuredClone(input))
+          return h.response.promise
+        },
+      }),
+    }
+  )
+  return { api, current: () => intentCurrent?.() }
+}
+test('paid operators can create an undated Daily Menu through the existing form', async () => {
+  for (const tier of ['pro', 'business']) {
+    const h = context()
+    try {
+      const { api } = scheduledForm(h, ref(tier))
+      assert.equal(api.canPlanDaily.value, true)
+      assert.equal(api.schedule.value, 'regular')
+      api.name.value = 'Daily menu'
+      api.schedule.value = 'daily'
+      h.response.resolve({ slug: 'daily-menu' })
+      await api.save()
+      assert.deepEqual(h.calls, [
+        {
+          name: 'Daily menu',
+          description: '',
+          format: 'interactive',
+          schedule: 'daily',
+        },
+      ])
+      assert.deepEqual(h.effects, [['daily-menu', 'content']])
+    } finally {
+      h.lifetime.stop()
+    }
+  }
+})
+test('the Free form keeps the combined regular Menu and cannot dispatch a Daily request', async () => {
+  const h = context()
+  try {
+    const { api } = scheduledForm(h, ref('free'))
+    assert.equal(api.canPlanDaily.value, false)
+    assert.equal(api.name.value, starterMenu.name)
+    api.schedule.value = 'daily'
+    await api.save()
+    assert.deepEqual(h.calls, [])
+    api.schedule.value = 'regular'
+    h.response.resolve({ slug: 'food-drinks' })
+    await api.save()
+    assert.deepEqual(h.calls, [
+      { name: starterMenu.name, description: '', format: 'interactive' },
+    ])
+  } finally {
+    h.lifetime.stop()
+  }
+})
+test('schedule changes and loss of Daily entitlement invalidate an in-flight creation intent', async () => {
+  for (const changed of ['schedule', 'subscription']) {
+    const h = context()
+    try {
+      const subscription = ref('pro')
+      const { api, current } = scheduledForm(h, subscription)
+      api.name.value = 'Daily menu'
+      api.schedule.value = 'daily'
+      const pending = api.save()
+      if (changed === 'schedule') {
+        api.schedule.value = 'regular'
+        api.schedule.value = 'daily'
+      } else {
+        subscription.value = 'free'
+        await nextTick()
+        assert.equal(api.schedule.value, 'regular')
+        assert.equal(api.name.value, starterMenu.name)
+      }
+      assert.equal(current(), false)
+      api.busy.value = true
+      h.response.resolve({ slug: 'daily-menu' })
+      await pending
+      assert.deepEqual(h.effects, [])
+      assert.equal(api.error.value, '')
+      assert.equal(api.busy.value, true)
+    } finally {
+      h.lifetime.stop()
+    }
+  }
+})
 test('Menu creation suppresses obsolete navigation, errors and busy-state completion', async () => {
   for (const changed of changes)
     for (const failed of [false, true]) {

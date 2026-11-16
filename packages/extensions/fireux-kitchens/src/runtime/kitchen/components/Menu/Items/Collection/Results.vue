@@ -85,7 +85,6 @@
       :title="dish.name || dish.id"
       :image-url="dish.image"
       :description="dish.description"
-      :meta="tileMeta(dish)"
       :choices-label="choiceSummary(dish)"
       :price-label="priceLabel(dish)"
       :list="false"
@@ -111,7 +110,6 @@ import {
   itemChoiceRule,
   priceItemChoices,
 } from '../../../../utils/item-choices'
-import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import type { ItemCollectionRow } from '../../../../utils/item'
 import { useKitchenItemsContext } from '../../../../composables/workspace/items/useKitchenItemsContext'
 import { useItemCatalogueContext } from '../../../../composables/workspace/items/useItemCatalogue'
@@ -134,7 +132,7 @@ const {
   pageSize,
 } = useItemCatalogueContext()
 const emit = defineEmits<{ create: [kind: 'food' | 'drink'] }>()
-const currency = computed(() => readPlaceCurrencyCode(selectedKitchen.value))
+const currency = computed(() => selectedKitchen.value?.currency_code || '')
 function choiceSummary(dish: ItemCollectionRow) {
   return readItemChoiceGroups(dish)
     .map(
@@ -142,9 +140,6 @@ function choiceSummary(dish: ItemCollectionRow) {
         `${group.name} · ${itemChoiceRule(group)} · ${group.options.length} ${group.options.length === 1 ? 'choice' : 'choices'}`
     )
     .join(' / ')
-}
-function tileMeta(dish: ItemCollectionRow) {
-  return dish.category || ''
 }
 function priceLabel(dish: ItemCollectionRow) {
   if (dish.pricing_error) return 'Review price & choices'
@@ -154,6 +149,7 @@ function priceLabel(dish: ItemCollectionRow) {
     !groups.some((group) => group.pricing === 'full')
   )
     return 'Not set'
+  if (!currency.value) return 'Currency not set'
   const selections = Object.fromEntries(
     groups.map((group) => [
       group.id,

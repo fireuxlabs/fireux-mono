@@ -8,11 +8,15 @@ import { ModuleKind, transpileModule } from 'typescript'
 import { parse, compileScript } from 'vue/compiler-sfc'
 import { createSSRApp, h, ref } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { resolveReadOutcome } from '../../../../../packages/core/fireux-core/src/runtime/utils/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../../../packages/core/fireux-core/src/runtime/utils/read-outcome.ts'
 
 const require = createRequire(import.meta.url)
-const appRoot = new URL('../', import.meta.url)
-const root = new URL('../../../../', appRoot)
+const root = new URL('../../../../../../', import.meta.url)
+const appRoots = {
+  misebox: new URL('projects/misebox/misebox-app/app/', root),
+  fireux: new URL('projects/fireux/fireux-app/app/', root),
+}
+const runtime = new URL('packages/extensions/fireux-app/src/runtime/', root)
 
 function load(file, dependencies = {}, bindings = {}) {
   const { descriptor } = parse(readFileSync(file, 'utf8'), {
@@ -96,7 +100,7 @@ function fixture() {
 async function render({
   response = fixture(),
   state = 'success',
-  consumer = 'meta',
+  consumer = 'misebox',
 } = {}) {
   const status = ref(state)
   const data = ref(response)
@@ -109,48 +113,47 @@ async function render({
     requests.push({ url, options })
     return response
   }
-  const page = load(
-    consumer === 'meta'
-      ? new URL('pages/meta.vue', appRoot)
-      : new URL(
-          'packages/extensions/fireux-app/src/runtime/components/Legal/AppNotices.vue',
-          root
-        ),
-    {
-      '#imports': {
-        async useAsyncData(key, handler) {
-          acquisitions++
-          assert.equal(
-            key,
-            consumer === 'meta' ? 'misebox-public-meta' : 'legal-app-meta'
-          )
-          const acquire = () =>
-            handler({}, { signal: new AbortController().signal })
-          await acquire()
-          return {
-            data,
-            status,
-            async refresh() {
-              status.value = 'pending'
-              data.value = await acquire()
-              status.value = 'success'
-            },
-          }
-        },
-      },
-      'fireux-core/runtime/utils/read-outcome': { resolveReadOutcome },
-      'fireux-core/runtime/composables/fireux/seo/useSeo': {
-        useSeo: (value) => {
-          seo = value
-        },
+  const dependencies = {
+    '#imports': {
+      async useAsyncData(key, handler) {
+        acquisitions++
+        assert.equal(
+          key,
+          consumer === 'legal' ? 'legal-app-meta' : 'public-app-meta'
+        )
+        const acquire = () =>
+          handler({}, { signal: new AbortController().signal })
+        await acquire()
+        return {
+          data,
+          status,
+          async refresh() {
+            status.value = 'pending'
+            data.value = await acquire()
+            status.value = 'success'
+          },
+        }
       },
     },
-    {
-      definePageMeta: (value) => {
-        pageMeta = value
+    'fireux-core/runtime/utils/read-outcome': { resolveReadOutcome },
+    'fireux-core/runtime/composables/fireux/seo/useSeo': {
+      useSeo: (value) => {
+        seo = value
       },
-      $fetch: fetch,
-    }
+    },
+  }
+  const bindings = {
+    definePageMeta: (value) => {
+      pageMeta = value
+    },
+    $fetch: fetch,
+  }
+  const page = load(
+    consumer === 'legal'
+      ? new URL('components/Legal/AppNotices.vue', runtime)
+      : new URL('pages/meta.vue', appRoots[consumer]),
+    dependencies,
+    bindings
   )
   const app = createSSRApp(page)
   const wrapper = {
@@ -161,6 +164,7 @@ async function render({
   }
   for (const name of [
     'UPage',
+    'UContainer',
     'UPageBody',
     'UPageGrid',
     'UPageList',
@@ -214,49 +218,61 @@ async function render({
       )
     )
   )
+  app.component(
+    'FireMeta',
+    load(new URL('components/Meta/Index.vue', runtime), dependencies, bindings)
+  )
   for (const name of ['Copy', 'Seo', 'Legal'])
     app.component(
-      `Meta${name}`,
-      load(new URL(`components/Meta/${name}.vue`, appRoot))
+      `FireMeta${name}`,
+      load(new URL(`components/Meta/${name}.vue`, runtime))
     )
   const html = await renderToString(app)
   return { html, requests, actions, pageMeta, seo, acquisitions, status }
 }
 
-test('public page acquires once and renders readable public copy without interpreting markup', async () => {
-  const result = await render()
-  assert.equal(result.acquisitions, 1)
-  assert.equal(result.requests.length, 1)
-  assert.equal(result.requests[0].url, '/api/app/meta')
-  assert.deepEqual(Object.keys(result.requests[0].options), ['signal'])
-  assert.equal(result.html.match(/<h1>/g)?.length, 1)
-  assert.match(result.html, /Public summary/)
-  assert.match(result.html, /App SEO default/)
-  assert.equal(result.html.match(/App SEO default/g)?.length, 1)
-  assert.equal(result.html.match(/App description/g)?.length, 1)
-  assert.match(result.html, /Public notice/)
-  assert.match(result.html, /href="\/api\/app\/meta"/)
-  assert.match(result.html, /href="\/legal"/)
-  assert.match(result.html, /href="https:\/\/example.test\/public.png"/)
-  assert.equal(
-    result.html.match(/href="https:\/\/example.test\/public.png"/g)?.length,
-    1
-  )
-  assert.match(result.html, /<h2[^>]*>Copy<\/h2>/)
-  assert.match(result.html, /Public headline/)
-  assert.match(result.html, /Public copy, ready to read\./)
-  assert.match(result.html, /Safe &amp; readable &lt;unfinished/)
-  assert.equal(result.actions.has('Refresh metadata'), false)
-  assert.doesNotMatch(
-    result.html,
-    /<script>|<strong>|&lt;strong|&lt;script|Refresh metadata|Messaging|DO_NOT_RENDER_PRIVATE_EXTRA|<input|<form|<textarea/
-  )
-  assert.equal(result.pageMeta.layout, 'default')
-  assert.equal(result.pageMeta.sitemap, false)
-  assert.equal(result.seo.path, '/meta')
-  assert.equal(result.seo.title, 'Public metadata · Misebox')
-  assert.equal(result.seo.robots, 'noindex,follow')
-})
+for (const [consumer, appName] of [
+  ['misebox', 'Misebox'],
+  ['fireux', 'FireUX'],
+]) {
+  test(`${appName} opts into one public read with its own route policy and readable copy`, async () => {
+    const result = await render({ consumer })
+    assert.equal(result.acquisitions, 1)
+    assert.equal(result.requests.length, 1)
+    assert.equal(result.requests[0].url, '/api/app/meta')
+    assert.deepEqual(Object.keys(result.requests[0].options), ['signal'])
+    assert.equal(result.html.match(/<h1>/g)?.length, 1)
+    assert.match(result.html, /Public summary/)
+    assert.match(result.html, /App SEO default/)
+    assert.equal(result.html.match(/App SEO default/g)?.length, 1)
+    assert.equal(result.html.match(/App description/g)?.length, 1)
+    assert.match(result.html, /Public notice/)
+    assert.match(result.html, /href="\/api\/app\/meta"/)
+    assert.match(result.html, /href="\/legal"/)
+    assert.match(result.html, /href="https:\/\/example.test\/public.png"/)
+    assert.equal(
+      result.html.match(/href="https:\/\/example.test\/public.png"/g)?.length,
+      1
+    )
+    assert.match(result.html, /<h2[^>]*>Copy<\/h2>/)
+    assert.match(result.html, /Public headline/)
+    assert.match(result.html, /Public copy, ready to read\./)
+    assert.match(result.html, /Safe &amp; readable &lt;unfinished/)
+    assert.equal(result.actions.has('Refresh metadata'), false)
+    assert.doesNotMatch(
+      result.html,
+      /<script>|<strong>|&lt;strong|&lt;script|Refresh metadata|Messaging|DO_NOT_RENDER_PRIVATE_EXTRA|<input|<form|<textarea/
+    )
+    assert.equal(
+      result.pageMeta.layout,
+      consumer === 'fireux' ? 'framework' : 'default'
+    )
+    assert.equal(result.pageMeta.sitemap, false)
+    assert.equal(result.seo.path, '/meta')
+    assert.equal(result.seo.title, `Public metadata · ${appName}`)
+    assert.equal(result.seo.robots, 'noindex,follow')
+  })
+}
 
 test('distinct social copy and images remain visible without repeating search defaults', async () => {
   const response = fixture()

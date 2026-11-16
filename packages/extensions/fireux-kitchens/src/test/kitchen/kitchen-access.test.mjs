@@ -431,10 +431,11 @@ test('shell creation commits Kitchen, Place, menus, Team and scoped access witho
   const menus = [...h.records].filter(([path]) =>
     path.startsWith('kitchens/user/menus/')
   )
-  assert.deepEqual(menus.map(([, value]) => value.slug).sort(), [
-    'drinks',
-    'main',
-  ])
+  assert.deepEqual(
+    menus.map(([, value]) => value.slug),
+    ['main']
+  )
+  assert.equal(menus[0][1].name, 'Food & Drinks')
   assert.ok(
     menus.every(([path, value]) => path.split('/').at(-1) !== value.slug)
   )
@@ -954,7 +955,12 @@ test('guest start creates one unpublished Kitchen with default menus, resumes it
   assert.equal(records.get('kitchens/guest123').identity.visibility, false)
   assert.equal(records.get('places/guest123').name, 'kitchen-guest1')
   assert.equal(records.get('kitchens/guest123/stations/pass').name, 'Pass')
-  assert.equal(records.size, 7)
+  assert.equal(records.size, 6)
+  const menus = [...records].filter(([path]) =>
+    path.startsWith('kitchens/guest123/menus/')
+  )
+  assert.equal(menus.length, 1)
+  assert.equal(menus[0][1].name, 'Food & Drinks')
   const before = structuredClone([...records])
   await start({}, { claim_secret: 'b'.repeat(64) })
   assert.deepEqual([...records], before)
