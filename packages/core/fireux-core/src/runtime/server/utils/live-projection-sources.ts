@@ -41,27 +41,26 @@ export function collectLiveProjectionSources() {
       options: { authority?: boolean } = {}
     ): T {
       if (failure) throw failure
-      if (
-        !source ||
-        typeof source.onSnapshot !== 'function' ||
-        typeof source.isEqual !== 'function' ||
-        !source.firestore ||
-        typeof source.firestore !== 'object'
-      )
-        reject('A live projection requires native Firestore sources.')
-      let existing: LiveProjectionDependency | undefined
       try {
-        existing = sources.find((current) =>
+        if (
+          !source ||
+          typeof source.onSnapshot !== 'function' ||
+          typeof source.isEqual !== 'function' ||
+          !source.firestore ||
+          typeof source.firestore !== 'object'
+        )
+          reject('A live projection requires native Firestore sources.')
+        const existing = sources.find((current) =>
           sameLiveProjectionSource(current.source, source)
         )
+        if (existing) existing.authority ||= options.authority === true
+        else {
+          if (sources.length >= 4096)
+            reject('The live projection source budget was exceeded.')
+          sources.push({ source, authority: options.authority === true })
+        }
       } catch {
         reject('The live projection source could not be validated.')
-      }
-      if (existing) existing.authority ||= options.authority === true
-      else {
-        if (sources.length >= 4096)
-          reject('The live projection source budget was exceeded.')
-        sources.push({ source, authority: options.authority === true })
       }
       return source
     },

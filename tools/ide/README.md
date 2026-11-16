@@ -63,6 +63,10 @@ They cover direct owners; a shared change can require checks of dependent Apps
 and live verification. No applicable tests/typecheck is not proof of coverage.
 `pnpm format` remains the explicit repository-wide formatting command.
 
+The controlled [native live API fixture](fixtures/live-api/README.md) exercises
+Core delivery through real Kitchen and Project consumers in isolated Nuxt Apps
+and local Firebase emulators, including named databases and protected sessions.
+
 ## Choosing tests
 
 Keep tests beside their package owner, normally in `src/test`; App consumer

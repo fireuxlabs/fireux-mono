@@ -16,7 +16,8 @@ review and confirmation. Supply a `BookingConfiguration` and a
 The configuration is `{ title, slots: [{ id, startAt, endAt }] }`; time values
 are local `YYYY-MM-DDTHH:mm` strings whose timezone meaning belongs to the host.
 The handler receives `{ requestId, slotId, contact: { name, email } }` and
-returns `{ reference }` after authoritative confirmation. It must validate the
+returns a receipt after authoritative confirmation: a `reference` and optional
+plain-text `details: [{ label, value }]` supplied by the host. It must validate the
 offer, availability, authority, allocation and persistence for its domain.
 Use `requestId` for idempotency, including retries after uncertain results.
 A rejected promise keeps the customer on review and presents the handler's
@@ -44,9 +45,9 @@ The form accepts `BookingCustomerDetails`, `BookingAvailabilityView` and
 `fireux-bookings/runtime/types/customer-booking-form`. It emits customer edits
 and a submit event; it does not fetch availability or submit a booking. The
 consuming App owns service choices, schedules, prices, calendar policy, records,
-and booking commands. Interlaken Bike Tours currently consumes this form.
-Blank and Docs consume `BookingsSurface` described above; the existing form
-remains a separate contract for its maintained App consumer.
+and booking commands. Interlaken Bike Tours, Blank and Docs consume
+`BookingsSurface`, described above. The customer form is a separate component
+and does not run the reservation lifecycle.
 
 The current shared API exposes `queryGoogleCalendarBusy` and
 `createGoogleCalendarEvent` from `fireux-bookings/runtime/server/google-calendar`.

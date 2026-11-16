@@ -3,6 +3,7 @@ import { createError } from 'h3'
 import type { Firestore } from 'firebase-admin/firestore'
 import type { GuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
 import type { FirestoreMutationTarget } from '../../../types/firestore-mutations'
+import type { LiveProjectionSources } from '../../../server/utils/live-projection-sources'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 import { getRuntimeIdentityFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { normalizeUser } from '../../../user/utils/normalize-user'
@@ -124,17 +125,16 @@ export async function deleteTeamMember(
 
 export async function enrichTeamMembers(
   records: Array<{ id: string; data: Record<string, unknown> }>,
-  identityDb: Firestore
+  identityDb: Firestore,
+  sources?: LiveProjectionSources
 ) {
   const ids = [
     ...new Set(records.map((row) => text(row.data.user_id)).filter(Boolean)),
   ]
   ids.forEach((id) => requireFirestoreDocumentId(id, 'User id'))
-  const snapshots = ids.length
-    ? await identityDb.getAll(
-        ...ids.map((id) => identityDb.collection('users').doc(id))
-      )
-    : []
+  const refs = ids.map((id) => identityDb.collection('users').doc(id))
+  refs.forEach((ref) => sources?.watch(ref))
+  const snapshots = refs.length ? await identityDb.getAll(...refs) : []
   const users = new Map(
     snapshots.flatMap((snapshot) => {
       const user = snapshot.exists

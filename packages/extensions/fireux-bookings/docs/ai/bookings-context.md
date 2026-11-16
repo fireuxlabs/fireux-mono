@@ -1,7 +1,7 @@
 # FireUX Bookings context
 
-Updated: 2026-11-11
-Ref: 614700fd9
+Updated: 2026-11-16
+Ref: fee1d0036
 Role: living context
 Scope: reusable booking lifecycle and calendar integrations
 
@@ -88,9 +88,10 @@ verify how external conflicts and failed event writes affect their own workflow.
   and `projects/fireux/fireux-blank/test/booking-sandbox.test.mjs`. It is development-only and uses an
   in-memory fake Calendar; it is not an App domain or persistence example.
 - App registration and direct dependency:
-  `projects/slap/interlaken-bike-tours/app/ignition/brief.ts`,
   `projects/slap/interlaken-bike-tours/package.json`, and
-  `projects/slap/interlaken-bike-tours/nuxt.config.ts`.
+  `projects/slap/interlaken-bike-tours/nuxt.config.ts`. Its
+  `app/composables/useTourBooking.ts` maps the selected catalogue tour’s meeting
+  point into receipt details; `tests/booking-flow.test.mjs` checks that mapping.
 
 Property Reservation records and night locks remain in
 `fireux-reservations`; Kitchen table service and order records remain in

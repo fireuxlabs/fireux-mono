@@ -104,7 +104,16 @@ export function useTourBooking() {
           'A request for this departure has already been sent. Please contact Ben before booking again.'
         )
       submittedRequestId = input.requestId
-      submission ??= $fetch<{ booking: { id: string } }>('/api/bookings', {
+      submission ??= $fetch<{
+        booking: {
+          id: string
+          status: 'confirmed'
+          groupSize: number
+          totalPriceChf: number
+          departureTime: string
+          timeZone: string
+        }
+      }>('/api/bookings', {
         method: 'POST',
         body: {
           tourSlug: selectedTour.slug,
@@ -115,12 +124,36 @@ export function useTourBooking() {
           guestEmail: input.contact.email,
         },
       })
-        .then((result) => ({
-          reference: result.booking.id,
-          details: [
-            { label: 'Meeting point', value: selectedTour.meetingPoint },
-          ],
-        }))
+        .then(({ booking }) => {
+          if (
+            booking?.status !== 'confirmed' ||
+            typeof booking.id !== 'string' ||
+            !booking.id.trim() ||
+            !Number.isSafeInteger(booking.groupSize) ||
+            booking.groupSize < 1 ||
+            !Number.isFinite(booking.totalPriceChf) ||
+            booking.totalPriceChf < 0 ||
+            typeof booking.departureTime !== 'string' ||
+            !/^\d{2}:\d{2}$/.test(booking.departureTime) ||
+            typeof booking.timeZone !== 'string' ||
+            !booking.timeZone.trim()
+          )
+            throw new Error('The booking response did not confirm the tour.')
+          return {
+            reference: booking.id,
+            details: [
+              { label: 'Tour', value: selectedTour.name },
+              { label: 'Date', value: selectedDate },
+              {
+                label: 'Departure',
+                value: `${booking.departureTime} (${booking.timeZone})`,
+              },
+              { label: 'Group', value: `${booking.groupSize} people` },
+              { label: 'Total', value: `CHF ${booking.totalPriceChf}` },
+              { label: 'Meeting point', value: selectedTour.meetingPoint },
+            ],
+          }
+        })
         .catch(() => {
           throw new Error(
             'We could not verify confirmation. Please contact Ben before trying again; your request may have been received.'

@@ -6,10 +6,7 @@ import test from 'node:test'
 
 function mechanics() {
   const source = readFileSync(
-    new URL(
-      '../runtime/workspace/server/team/members.ts',
-      import.meta.url
-    ),
+    new URL('../runtime/workspace/server/team/members.ts', import.meta.url),
     'utf8'
   )
     .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
@@ -127,4 +124,54 @@ test('read enrichment keeps stored roles and local identity fallback', async () 
   assert.deepEqual(members[0].roleIds, ['operator'])
   assert.equal(members[1].name, 'Alex')
   assert.equal(members[1].linked, false)
+})
+
+test('live enrichment declares each exact linked User before the same deduplicated getAll', async () => {
+  const { enrichTeamMembers } = mechanics()
+  const calls = []
+  const refs = new Map()
+  const identityDb = {
+    collection: (path) => ({
+      doc: (id) => {
+        const ref = { firestore: identityDb, path: `${path}/${id}` }
+        refs.set(id, ref)
+        return ref
+      },
+    }),
+    getAll: async (...targets) => {
+      calls.push(['getAll', targets])
+      return targets.map((ref) => ({
+        id: ref.path.split('/').at(-1),
+        exists: false,
+      }))
+    },
+  }
+  const sources = {
+    watch: (ref) => {
+      calls.push(['watch', ref])
+      return ref
+    },
+  }
+  const members = await enrichTeamMembers(
+    [
+      { id: 'a', data: { name: 'First', user_id: 'u' } },
+      { id: 'b', data: { name: 'Second', user_id: 'u' } },
+      { id: 'c', data: { name: 'Third', user_id: 'v' } },
+      { id: 'local', data: { name: 'Local' } },
+    ],
+    identityDb,
+    sources
+  )
+  assert.deepEqual(calls, [
+    ['watch', refs.get('u')],
+    ['watch', refs.get('v')],
+    ['getAll', [refs.get('u'), refs.get('v')]],
+  ])
+  assert.deepEqual(
+    members.map((member) => member.name),
+    ['First', 'Second', 'Third', 'Local']
+  )
+  calls.length = 0
+  await enrichTeamMembers([], identityDb, sources)
+  assert.deepEqual(calls, [])
 })

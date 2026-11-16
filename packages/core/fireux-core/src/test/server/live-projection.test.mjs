@@ -163,13 +163,26 @@ test('the domain can declare a protected query variant before returning any DTO'
 })
 
 test('a domain fallback cannot swallow invalid source or budget declarations', async () => {
-  for (const budget of [false, true]) {
+  for (const scenario of ['invalid', 'budget', 'getter']) {
     const { event, headers } = request()
     const handler = defineLiveProjection({
       access: 'public',
       read: (_event, sources) => {
         try {
-          if (!budget) sources.watch({ onSnapshot() {} })
+          sources.watch(document('records/valid'))
+          if (scenario === 'invalid') sources.watch({ onSnapshot() {} })
+          else if (scenario === 'getter')
+            sources.watch(
+              Object.defineProperty(
+                { onSnapshot() {}, isEqual() {} },
+                'firestore',
+                {
+                  get() {
+                    throw new Error('Invalid source getter')
+                  },
+                }
+              )
+            )
           else
             for (let index = 0; index <= 4096; index++)
               sources.watch({
