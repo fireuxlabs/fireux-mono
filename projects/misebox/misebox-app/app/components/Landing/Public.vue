@@ -7,6 +7,7 @@
       icon="i-lucide-chef-hat"
     />
     <UPageBody id="directory">
+      <LandingSpecials />
       <FireState v-bind="page.state" retryable @retry="refresh()" />
       <PublicKitchenCollection v-show="page.ready" :kitchens="kitchens" />
       <LandingWorkspaceEntry />

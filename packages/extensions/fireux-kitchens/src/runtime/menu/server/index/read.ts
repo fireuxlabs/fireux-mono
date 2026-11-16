@@ -28,6 +28,7 @@ export type ReadMenuDirectoryPageInput = {
   kitchenSlug?: unknown
   cursor?: unknown
   limit?: unknown
+  specials?: unknown
 }
 
 async function readMenuDirectoryBatch(
@@ -229,6 +230,7 @@ export async function readMenuDirectoryPage(
             ).length > 0)
     )
     for (const menu of eligible) {
+      if (input.specials === 'true' && !menu.special) continue
       if (
         input.offering &&
         !menu.offerings?.some(

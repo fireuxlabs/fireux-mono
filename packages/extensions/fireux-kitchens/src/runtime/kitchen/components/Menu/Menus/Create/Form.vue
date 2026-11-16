@@ -18,7 +18,7 @@
     /></UFormField>
     <UFormField
       v-if="canPlanDaily"
-      label="Menu schedule"
+      label="Menu type"
       help="Daily menus stay private until you publish a date. You can choose service dates later."
     >
       <USelect
@@ -66,10 +66,14 @@ const {
 } = useKitchenMenusContextSource()
 const name = defineModel<string>('name', { default: '' })
 const freeMenuNames: string[] = [starterMenu.name]
-const schedule = ref<'regular' | 'daily'>('regular')
-const scheduleOptions: { label: string; value: 'regular' | 'daily' }[] = [
+const schedule = ref<'regular' | 'daily' | 'specials'>('regular')
+const scheduleOptions: {
+  label: string
+  value: 'regular' | 'daily' | 'specials'
+}[] = [
   { label: 'Regular menu', value: 'regular' },
   { label: 'Daily menu', value: 'daily' },
+  { label: 'Specials board', value: 'specials' },
 ]
 const canPlanDaily = computed(() =>
   ['pro', 'business'].includes(subscription.value)
@@ -106,7 +110,7 @@ async function save() {
   if (
     !canCreateMenu.value ||
     busy.value ||
-    (schedule.value === 'daily' && !canPlanDaily.value)
+    (schedule.value !== 'regular' && !canPlanDaily.value)
   )
     return
   const isCurrent = captureScope()
@@ -118,7 +122,10 @@ async function save() {
         name: name.value.trim(),
         description: description.value.trim(),
         format: 'interactive',
-        ...(schedule.value === 'daily' ? { schedule: 'daily' as const } : {}),
+        ...(schedule.value !== 'regular' ? { schedule: 'daily' as const } : {}),
+        ...(schedule.value === 'specials'
+          ? { purpose: 'specials' as const }
+          : {}),
       },
       isCurrent
     )

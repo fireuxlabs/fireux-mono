@@ -512,3 +512,25 @@ test('Menu archive UI shows affected services and restores only to draft', async
     h.lifetime.stop()
   }
 })
+
+test('paid Specials board preset creates a daily Menu with explicit purpose', async () => {
+  const h = context()
+  try {
+    const { api } = scheduledForm(h, ref('business'))
+    api.name.value = 'Specials'
+    api.schedule.value = 'specials'
+    h.response.resolve({ slug: 'specials' })
+    await api.save()
+    assert.deepEqual(h.calls, [
+      {
+        name: 'Specials',
+        description: '',
+        format: 'interactive',
+        schedule: 'daily',
+        purpose: 'specials',
+      },
+    ])
+  } finally {
+    h.lifetime.stop()
+  }
+})

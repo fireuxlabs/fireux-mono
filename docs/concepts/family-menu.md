@@ -223,6 +223,16 @@ See `menu/server/publication/state.ts`, `menu/server/records/delete.ts` and `kit
 Source-owned `menu-publication-client.test.mjs` and `menu-publication.test.mjs`
 protect the publication boundary; they do not prove live operator acceptance.
 
+Specials boards use explicit `Menu.purpose: 'specials'` with a daily schedule,
+separate from generic Daily Menus such as conference or staff catering. The
+[date selector](../../packages/extensions/fireux-kitchens/src/runtime/menu/utils/calendar/daily.ts)
+chooses today's explicitly published release, otherwise the next published date,
+for specials only. Public directory entries expose a bounded special date and
+next local refresh boundary; `specials=true` filters before paging completes.
+The existing public Menu reader renders that selected date. Expired, draft and
+nonpublic specials do not advertise a homepage entry. No root Kitchen flag or
+name-based identity is introduced.
+
 ## Menu doorways
 
 | Scope             | Index                          | Detail                                   | Why it differs                                                                                 |

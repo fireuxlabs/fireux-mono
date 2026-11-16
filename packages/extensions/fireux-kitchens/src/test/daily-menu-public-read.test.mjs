@@ -99,7 +99,7 @@ test('canonical Menu uses its published-date gate and expose no private sections
     const deps = {
       defineEventHandler: (fn) => fn,
       getRuntimeFirestore: () => ({}),
-      dailyMenuToday: () => daily,
+      dailyMenuSelection: () => daily,
       readKitchenMenuSections: async (_db, input) => {
         reads.push(input)
         return [{ id: 'today' }]

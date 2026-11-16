@@ -650,3 +650,41 @@ test('Menu availability is scoped to Kitchen hours and excludes Daily specials',
     /regular interactive/
   )
 })
+
+test('specials purpose requires a daily interactive Menu and paid actor', async () => {
+  for (const input of [
+    { purpose: 'conference' },
+    { purpose: 'specials' },
+    { purpose: 'specials', schedule: 'daily', format: 'document' },
+  ])
+    assert.throws(() =>
+      creationInput.normalizeMenuCreateInput({ name: 'Specials', ...input })
+    )
+  for (const subscription of ['pro', 'business']) {
+    const h = harness({ subscription })
+    await h.createKitchenMenu(
+      {},
+      {
+        kitchenId: 'pizza',
+        name: 'Specials',
+        purpose: 'specials',
+        schedule: 'daily',
+      }
+    )
+    assert.equal(h.calls[0][3].purpose, 'specials')
+  }
+  const h = harness()
+  await assert.rejects(
+    h.createKitchenMenu(
+      {},
+      {
+        kitchenId: 'pizza',
+        name: 'Specials',
+        purpose: 'specials',
+        schedule: 'daily',
+      }
+    ),
+    /Pro/
+  )
+  assert.deepEqual(h.calls, [])
+})

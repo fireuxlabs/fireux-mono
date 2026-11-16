@@ -3,6 +3,7 @@ import test from 'node:test'
 import {
   menuLocalDate,
   dailyMenuToday,
+  dailyMenuSelection,
 } from '../runtime/menu/utils/calendar/daily.ts'
 import { harness, menuPath, rootPath } from './helpers/menu-publication.mjs'
 
@@ -152,4 +153,48 @@ test('a current Kitchen writer can withdraw a date after downgrade or timezone l
   await h.daily('2026-10-15', false)
   assert.deepEqual(h.records.get(menuPath).published_dates, [])
   assert.equal(h.records.get(menuPath).status, 'published')
+})
+
+test('specials choose today before the next release, expire locally and leave ordinary daily menus unchanged', () => {
+  const menu = {
+    purpose: 'specials',
+    published_dates: ['2026-11-23', '2026-11-25'],
+  }
+  const before = new Date('2026-11-16T12:00:00Z')
+  assert.equal(
+    dailyMenuSelection(menu, 'Europe/Zurich', before).date,
+    '2026-11-23'
+  )
+  assert.equal(
+    dailyMenuSelection(menu, 'Europe/Zurich', before).published,
+    true
+  )
+  assert.equal(
+    dailyMenuSelection(menu, 'Europe/Zurich', new Date('2026-11-23T12:00:00Z'))
+      .date,
+    '2026-11-23'
+  )
+  assert.equal(
+    dailyMenuSelection(menu, 'Europe/Zurich', new Date('2026-11-23T23:00:00Z'))
+      .date,
+    '2026-11-25'
+  )
+  assert.equal(
+    dailyMenuSelection(menu, 'Europe/Zurich', new Date('2026-11-25T23:00:00Z'))
+      .published,
+    false
+  )
+  assert.equal(
+    dailyMenuSelection({ ...menu, purpose: undefined }, 'Europe/Zurich', before)
+      .published,
+    false
+  )
+  assert.equal(
+    dailyMenuSelection(
+      { purpose: 'specials', published_dates: [] },
+      'Europe/Zurich',
+      before
+    ).published,
+    false
+  )
 })

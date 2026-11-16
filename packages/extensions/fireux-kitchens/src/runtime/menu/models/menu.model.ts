@@ -24,6 +24,8 @@ export type Menu = FireuxStamped & {
   /** No override means available throughout each linked service. */
   serving_hours?: WeekdayTimeWindowsConfig | null
   schedule?: 'regular' | 'daily'
+  /** Explicit public specials-board purpose; a daily schedule alone is not a special. */
+  purpose?: 'specials'
   /** Dates explicitly released for public browsing; content remains section-owned. */
   published_dates?: string[]
   audience?: 'public' | 'private_link' | 'protected_group'

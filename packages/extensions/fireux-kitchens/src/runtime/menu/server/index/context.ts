@@ -12,6 +12,7 @@ export type MenuDirectoryContext = {
   kitchen?: MenuDirectoryKitchen
   kitchenName?: string
   kitchenSlug?: string
+  timezone?: string
 }
 
 export async function readScopedMenuDirectoryContext(
@@ -24,7 +25,11 @@ export async function readScopedMenuDirectoryContext(
   const kitchen = identity.name
     ? {
         name: identity.name,
-        services_title: String((scope.rootKitchenData.services as { title?: string } | undefined)?.title || '').trim() || 'Food & drinks',
+        services_title:
+          String(
+            (scope.rootKitchenData.services as { title?: string } | undefined)
+              ?.title || ''
+          ).trim() || 'Food & drinks',
         ...(identity.tagline ? { description: identity.tagline } : {}),
         ...(identity.logoImageUrl
           ? { logo_image_url: identity.logoImageUrl }
@@ -38,6 +43,7 @@ export async function readScopedMenuDirectoryContext(
     place: placeData,
   })
   return {
+    timezone: String(placeData.timezone || ''),
     kitchenOfferings,
     ...(includeOtherOfferings
       ? {

@@ -1757,6 +1757,17 @@ to `name`. Public directory projections use only `name`; changing either label
 does not change the saved slug, content or service references.
 Standalone document Menus retain their own existing identity authority.
 
+Specials boards are ordinary interactive Daily Menus with explicit `purpose: 'specials'`;
+a daily schedule alone does not identify a board. The paid blank-Menu form offers
+this preset without another creation command. Published public boards expose today's
+release first, otherwise the next explicitly published date, using the linked Place's
+timezone. The existing Menu directory's `specials=true` filter excludes drafts,
+private audiences, expired dates and unrelated daily/event Menus before pagination.
+Misebox's homepage composes `Landing/Specials.vue` through that same directory reader;
+it links to the canonical Menu and refreshes at the next venue date boundary.
+Content and publication remain owned by dated Sections, reusable Items and the existing
+Daily publication command. The homepage stores no copied special or Kitchen boolean.
+
 ## Kitchen offerings
 
 Named offerings are independently managed Kitchen child records at

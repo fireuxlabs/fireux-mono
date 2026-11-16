@@ -5,7 +5,7 @@ import {
   getQuery,
   getRouterParam,
 } from 'h3'
-import { dailyMenuToday } from '../../../menu/utils/calendar/daily'
+import { dailyMenuSelection } from '../../../menu/utils/calendar/daily'
 
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
@@ -69,7 +69,7 @@ async function readKitchenMenu(
   const data = target.menuData
   const daily =
     data.schedule === 'daily'
-      ? dailyMenuToday(data, target.scope.kitchenTimezone || '')
+      ? dailyMenuSelection(data, target.scope.kitchenTimezone || '')
       : undefined
   const [sections, choices] = await Promise.all([
     daily && !daily.published

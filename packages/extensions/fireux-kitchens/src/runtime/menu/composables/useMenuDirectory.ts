@@ -47,6 +47,7 @@ type UseMenuDirectoryOptions = {
   offering?: MaybeRefOrGetter<string>
   search?: MaybeRefOrGetter<string>
   pageSize?: number
+  specials?: boolean
 }
 
 type MenuCollectionControls = Pick<
@@ -107,6 +108,7 @@ export function useMenuDirectory(
   const pageSize = normalizePageSize(options.pageSize)
   const baseEndpoint = computed(() => {
     const query = new URLSearchParams({ limit: String(pageSize) })
+    if (options.specials) query.set('specials', 'true')
     if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
     if (service.value) query.set('service', service.value)
     const offering = toValue(options.offering)
@@ -126,6 +128,7 @@ export function useMenuDirectory(
       `kitchen=${encodeURIComponent(kitchenSlug.value)}`,
       `limit=${pageSize}`,
       `service=${initialService || 'browse'}`,
+      `specials=${Boolean(options.specials)}`,
     ].join('|')
   )
   const pageCount = ref(1)

@@ -29,6 +29,7 @@ export type MenuDirectoryEntry = {
   name: string
   description?: string
   other_offerings?: Array<{ id: string; name: string; menu_slug: string }>
+  special?: { date: string; today: boolean; nextChangeAt: number }
   matching_dishes?: Array<{ id: string; name: string }>
   status: 'published'
   sort_order?: number
