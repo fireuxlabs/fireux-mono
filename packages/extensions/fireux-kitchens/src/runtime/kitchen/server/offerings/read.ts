@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { resolveKitchenOperationHours } from '../../utils/kitchen-readers'
 import { resolveServiceHours } from '../../utils/service-hours'
 import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -9,10 +10,16 @@ import { serverKitchenOfferingsTarget } from './target'
 export async function readKitchenOfferings(
   db: ReturnType<typeof getRuntimeFirestore>,
   kitchenId: string,
-  parents?: { kitchen: Record<string, unknown>; place: Record<string, unknown> }
+  parents?: {
+    kitchen: Record<string, unknown>
+    place: Record<string, unknown>
+  },
+  sources?: LiveProjectionSources
 ) {
   const id = requireFirestoreDocumentId(kitchenId, 'Kitchen id')
-  const snapshot = await db.collection(`kitchens/${id}/offerings`).get()
+  const query = db.collection(`kitchens/${id}/offerings`)
+  sources?.watch(query)
+  const snapshot = await query.get()
   const offerings = readKitchenOfferingRecords(
     snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
   )

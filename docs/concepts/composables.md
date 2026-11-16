@@ -1,7 +1,7 @@
 # Composables spine map
 
 Updated: 2026-11-16
-Ref: a068b6eaa
+Ref: e7fa1f63c
 Role: map, not canon
 
 ## Purpose
@@ -783,22 +783,38 @@ updates. See Kitchen `src/test/kitchen/offering-tool-internals.test.mjs`, `offer
 
 ## Native API read ownership
 
-Nuxt `useAsyncData` and `useFetch` own API acquisition, keyed state, SSR hydration,
-cancellation and refresh. Entity readers retain scope, domain normalization and
-request-key checks. API authorization and database selection stay server-owned.
-Core `runtime/composables/http/readPages.ts` only aggregates the requested cursor
-pages through a supplied native fetcher; it does not own an HTTP transport.
+Core's [useApiRead](../../packages/core/fireux-core/src/runtime/composables/http/useApiRead.ts)
+is the supported reader for mutable trusted API projections. It wraps native
+Nuxt `useAsyncData`, which retains acquisition, keyed state, SSR hydration,
+cancellation, transformations and explicit refresh. Entity readers retain scope,
+normalization, request-key checks and pagination meaning. API authorization,
+database selection and safe DTOs stay server-owned through the
+[live projection contract](server-api.md#api-reads-and-refresh).
+`readPages` aggregates the requested cursor chain through the supplied fetcher;
+it does not select or manage a live transport.
 
 App collection appends request only the next cursor through their existing
 `useAsyncData` owner and merge by document id. Explicit refresh reacquires the
 loaded window through `readPages`. A failed append retains only that scope's
 last successful window; a later independent refresh failure remains an error.
 
-Successful actions use native `refreshNuxtData` to reacquire API projections.
-Direct Firestore views retain their existing Firebase listeners. Server-only
-views do not receive automatic changes from other browsers; they refresh after
-actions or on explicit request. There is no custom SSE bridge, connection pool,
-visibility/polling manager, protocol decoder or subscription-tracking proxy.
+Mutable API readers receive changes from other browsers automatically. Core
+shares one bounded connection per Nuxt App/identity scope, joins its notifications
+to the existing keyed reader, and owns reconnect, credential renewal, heartbeat
+failure, deduplication and disposal. Initial listener readiness and a fresh
+authorized read close hydration and source-install gaps. Scope changes discard
+obsolete work; permission loss clears protected DTOs. Ordinary consumers neither
+install listeners nor opt into transport. Direct Firestore views retain their
+existing VueFire/Firebase bindings.
+
+Successful actions keep native `refreshNuxtData`. Overlapping same-scope GETs
+share network ownership while preserving Nuxt's cancellation and dedupe defaults;
+matching live fingerprints avoid a second refresh. A later independent explicit
+refresh still performs a fresh read. One-shot `useAsyncData`/`useFetch` calls alone
+do not satisfy the mutable-reader contract; reconcile those consumers with the
+shared owner instead of adding local timers or streams. Public/protected joins,
+read budgets and actual cross-browser lifecycle evidence remain domain-specific
+verification responsibilities.
 
 Collection-page coordinators and the separate platform/ecosystem Apps routes
 retain their existing composition and SEO. Reader-owned scope versions prevent

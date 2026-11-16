@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
 Updated: 2026-11-16
-Ref: a068b6eaa
+Ref: e7fa1f63c
 Role: map, not canon
 
 ## Purpose
@@ -39,9 +39,13 @@ with registration; do not retain old-name aliases.
 
 Core's
 [`runtime/composables/http/readPages.ts`](../../packages/core/fireux-core/src/runtime/composables/http/readPages.ts)
-aggregates requested cursor pages through a supplied fetcher. API acquisition,
-cancellation, hydration and refresh stay with native Nuxt `useAsyncData` and
-`useFetch`; Entity readers retain domain scope and normalization. See
+aggregates requested cursor pages through a supplied fetcher. The supported
+mutable API reader is adjacent `useApiRead.ts`; it integrates shared live
+connections and overlapping-request ownership with native Nuxt acquisition,
+cancellation, hydration and refresh. Entity readers retain scope and
+normalization. Server projection declarations and source lifecycles live under
+`runtime/server/utils/live-projection*.ts`; the native `/api/live` adapter stays
+under `runtime/server/api`. See
 [native API read ownership](composables.md#native-api-read-ownership) for the
 current lifecycle contract and source-owned checks.
 

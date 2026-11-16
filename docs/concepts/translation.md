@@ -1,6 +1,6 @@
 # Translation and reviewed copy
 
-Updated: 2026-11-12
+Updated: 2026-11-16
 Ref: d6240d394
 Role: map, not canon
 
@@ -80,6 +80,14 @@ Map Sproochli's language support, localized fields and reviewed public copy.
   Readers require the provenance to be present and reject another project or
   database; Apps inside the same host project intentionally share translation
   memory, while complete-cache fingerprints retain source App identity.
+- Host cache and memory readers accept Core live-projection source declarations
+  through their existing server APIs. Sproochli owns the exact cache document,
+  current-fingerprint language query and memory references; the host passes its
+  current read scope without reproducing private storage paths. Only dependencies
+  actually read by that branch are observed. Complete-cache hits do not acquire
+  memory; Default does not generate translations. Provider, provenance and
+  first-writer-wins persistence remain unchanged. Source-owned checks live in
+  `packages/extensions/fireux-sproochli/src/test/server/menu/read-sources.test.mjs`.
 - Multilingual Menu-source extraction may seed aligned variants into that same
   memory directly inside the trusted host server. Imported variants retain
   source-document, extraction-provider, and model provenance but use the same

@@ -6,13 +6,15 @@ import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/acc
 import { createError, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from './app-targets'
 import { fireuxProjectsTarget } from './targets'
 import { serverProjectAccessTarget } from './access'
 
 export async function requireProjectOperator(
   event: H3Event,
-  projectIdInput: unknown
+  projectIdInput: unknown,
+  sources?: LiveProjectionSources
 ) {
   const { uid } = await requireFirebaseBearerUser(event)
   const projectId = requireFirestoreDocumentId(projectIdInput, 'Project id')
@@ -24,13 +26,16 @@ export async function requireProjectOperator(
   const appRef = db.collection('apps').doc(appId)
   const projectRef = db.collection('projects').doc(projectId)
   const teamRef = projectRef.collection('team')
+  const membershipRef = appRef.collection('users').doc(uid)
+  const accessRef = db
+    .collection(serverProjectAccessTarget(appId).collectionPath)
+    .doc(uid)
+  for (const ref of [appRef, membershipRef, accessRef, projectRef])
+    sources?.watch(ref, { authority: true })
   const [app, membership, access, project] = await Promise.all([
     appRef.get(),
-    appRef.collection('users').doc(uid).get(),
-    db
-      .collection(serverProjectAccessTarget(appId).collectionPath)
-      .doc(uid)
-      .get(),
+    membershipRef.get(),
+    accessRef.get(),
     projectRef.get(),
   ])
 

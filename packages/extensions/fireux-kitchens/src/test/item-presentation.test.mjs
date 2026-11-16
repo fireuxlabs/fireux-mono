@@ -96,6 +96,7 @@ async function renderItem(changes = {}) {
       }),
   })
   app.component('MenuItemImage', ItemImage)
+  app.component('MenuDetailItem', Item)
   app.component('MenuChoiceBubbles', ChoiceBubbles)
   app.component('MenuItemChoices', ItemChoices)
   app.component('MenuDetailMealDeal', { render: () => null })
@@ -177,6 +178,7 @@ function mount(Component, props) {
   })
   app.component('UIcon', { render: () => Vue.h('span') })
   app.component('MenuItemImage', ItemImage)
+  app.component('MenuDetailItem', Item)
   app.component('MenuChoiceBubbles', ChoiceBubbles)
   app.component('MenuItemChoices', ItemChoices)
   app.component(
@@ -189,6 +191,10 @@ function mount(Component, props) {
       avatar = props
       return () => Vue.h('span')
     },
+  })
+  app.component('UButton', {
+    props: ['to', 'label'],
+    setup: (props) => () => Vue.h('a', { href: props.to }, props.label),
   })
   app.component('FireActionSurface', Surface)
   app.component('MenuDetailMealDeal', { render: () => null })
@@ -546,4 +552,53 @@ test('operator photo layout remounts keep one stable shared delivery URL', () =>
     assert.equal(surface.find('img').props.style, undefined)
     surface.app.unmount()
   }
+})
+
+test('the specials card mounts the complete Menu Item surface and retains choice pricing without a Menu provider', async () => {
+  const CardSpecial = component(
+    'kitchen/components/Public/Collection/Card/Special.vue'
+  )
+  const props = Vue.reactive({
+    kitchenPath: '/kitchens/la-tapberne',
+    special: {
+      slug: 'specials',
+      date: '2026-11-23',
+      today: false,
+      currencyCode: 'CHF',
+      items: [
+        item({
+          price: 9,
+          priceOptions: [
+            { id: 'small', label: 'Small', price: 12 },
+            { id: 'large', label: 'Large', price: 18 },
+          ],
+        }),
+      ],
+    },
+  })
+  const before = structuredClone(Vue.toRaw(props.special.items[0]))
+  const mounted = mount(CardSpecial, props)
+  const text = (node) =>
+    [node?.text || '', ...(node?.children || []).map(text)].join('')
+  const price = () =>
+    text(
+      mounted
+        .all('span')
+        .find((node) => node.props.class === 'menu-browse-item__price')
+    )
+  assert.equal(mounted.all('article').length, 1)
+  assert.equal(mounted.all('h4').length, 1)
+  assert.equal(price(), '12 CHF')
+  mounted
+    .all('input')
+    .find((node) => node.props.value === 'large')
+    .props.onChange()
+  await Vue.nextTick()
+  assert.equal(price(), '18 CHF')
+  assert.equal(
+    mounted.find('a').props.href,
+    '/kitchens/la-tapberne/menus/specials'
+  )
+  assert.deepEqual(Vue.toRaw(props.special.items[0]), before)
+  mounted.app.unmount()
 })

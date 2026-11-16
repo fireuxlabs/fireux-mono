@@ -1,4 +1,5 @@
 import test from 'node:test'
+import { readMenuManifestSections } from '../runtime/menu/server/payload/sections.ts'
 import {
   dailyMenuSelection,
   menuLocalDate,
@@ -34,6 +35,7 @@ const readSummary = compileFunction(
     'dailyMenuSelection',
     'menuLocalDate',
     'readKitchenMenuSections',
+    'readMenuManifestSections',
   ]
 )(
   { documentId: () => '__name__' },
@@ -42,7 +44,8 @@ const readSummary = compileFunction(
   async (_db, input) => {
     previewReads.push(input)
     return [{ items: previewItems }]
-  }
+  },
+  readMenuManifestSections
 )
 const readPublishedPublicMenuSummary = (db, id, timezone, options = {}) =>
   readSummary(db, id, timezone, {
@@ -57,6 +60,7 @@ const hasPublishedPublicMenu = async (db, id) =>
 function database(rows, fail = false) {
   const calls = []
   const query = (after = '') => ({
+    scope: `kitchens/venue/menus:published:50:${after}`,
     where: (field, operator, value) => {
       assert.deepEqual([field, operator, value], ['status', '==', 'published'])
       return query(after)
@@ -271,7 +275,9 @@ test('special preview reads only its published date and returns bounded dish tru
     assert.equal(plain.special.items.length, 3)
     assert.equal(plain.special.items[0].name, 'Octopus Roll')
     assert.equal(plain.special.currencyCode, 'CHF')
-    assert.equal('imageUrl' in plain.special.items[0], false)
+    assert.equal(plain.special.items[0].imageUrl, '')
+    assert.deepEqual(plain.special.items[0].priceOptions, [])
+    assert.deepEqual(plain.special.items[0].addOns, [])
     assert.equal('context' in plain.special.items[0], false)
     assert.equal(previewReads.at(-1).date, '2099-11-23')
     assert.equal(previewReads.at(-1).menuId, 'special')
@@ -282,6 +288,24 @@ test('special preview reads only its published date and returns bounded dish tru
       { showItemImages: true }
     )
     assert.equal(pictured.special.items[0].imageUrl, '/octopus.jpg')
+    previewItems = [
+      {
+        ...original[0],
+        priceOptions: [{ id: 'large', label: 'Large', price: 30 }],
+        addOns: [{ id: 'extra', label: 'Extra aioli', price: 2 }],
+      },
+    ]
+    const choices = await readPublishedPublicMenuSummary(
+      database([menu]),
+      'venue',
+      'Europe/Zurich'
+    )
+    assert.deepEqual(choices.special.items[0].priceOptions, [
+      { ...previewItems[0].priceOptions[0], priceLabel: '30' },
+    ])
+    assert.deepEqual(choices.special.items[0].addOns, [
+      { ...previewItems[0].addOns[0], priceLabel: '2' },
+    ])
     previewItems = []
     assert.equal(
       (
@@ -296,4 +320,52 @@ test('special preview reads only its published date and returns bounded dish tru
   } finally {
     previewItems = original
   }
+})
+
+test('live special summary declares the exact paged publication authority and passes sources to selected content', async () => {
+  const watched = []
+  const sources = {
+    watch: (query, options) => {
+      watched.push([query.scope, options])
+      return query
+    },
+  }
+  const result = await readPublishedPublicMenuSummary(
+    database([
+      {
+        id: 'special',
+        status: 'published',
+        schedule: 'daily',
+        purpose: 'specials',
+        slug: 'specials',
+        published_dates: ['2099-11-23'],
+      },
+    ]),
+    'venue',
+    'Europe/Zurich',
+    { sources }
+  )
+  assert.equal(result.special.items[0].name, 'Octopus Roll')
+  assert.deepEqual(watched, [
+    ['kitchens/venue/menus:published:50:', { authority: true }],
+  ])
+  assert.equal(previewReads.at(-1).sources, sources)
+  const withdrawn = await readPublishedPublicMenuSummary(
+    database([]),
+    'venue',
+    'Europe/Zurich',
+    { sources }
+  )
+  assert.equal(withdrawn.special, undefined)
+  assert.equal(withdrawn.hasPublishedMenu, false)
+  await assert.rejects(
+    readPublishedPublicMenuSummary(database([]), 'venue', 'Europe/Zurich', {
+      sources: {
+        watch: () => {
+          throw new Error('source budget exceeded')
+        },
+      },
+    }),
+    /source budget exceeded/
+  )
 })

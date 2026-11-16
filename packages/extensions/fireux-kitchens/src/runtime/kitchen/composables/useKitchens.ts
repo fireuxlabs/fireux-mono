@@ -1,4 +1,4 @@
-import { useAsyncData } from 'nuxt/app'
+import { useApiRead } from 'fireux-core/runtime/composables/http/useApiRead'
 import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 
 import {
@@ -35,13 +35,12 @@ export function useKitchens(
       ? `/api/kitchens?placeId=${encodeURIComponent(placeId.value)}`
       : '/api/kitchens'
   )
-  const state = useAsyncData<KitchenDirectoryEntry[]>(
+  const state = useApiRead<KitchenDirectoryEntry[]>(
     () =>
       options.placeId === undefined
         ? 'kitchens'
         : `kitchens:place:${placeId.value || 'inactive'}`,
-    async (_nuxtApp, { signal }) => {
-      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+    async ({ fetch: fetchRead }) => {
       return active.value
         ? fetchRead<KitchenDirectoryEntry[]>(endpoint.value)
         : Promise.resolve([])

@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 
@@ -11,16 +12,18 @@ const text = (value: unknown) =>
 /** Resolve the authored Kitchen route slug to its stable canonical root. */
 export async function readKitchenByRouteSlug(
   db: RuntimeFirestore,
-  value: unknown
+  value: unknown,
+  sources?: LiveProjectionSources
 ) {
   const slug = text(value)
   if (!slug) return null
 
-  const matches = await db
+  const query = db
     .collection('kitchens')
     .where('identity.slug', '==', slug)
     .limit(2)
-    .get()
+  sources?.watch(query, { authority: true })
+  const matches = await query.get()
   if (matches.size > 1) {
     throw createError({
       statusCode: 409,

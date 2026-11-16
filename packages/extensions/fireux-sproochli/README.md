@@ -1,6 +1,6 @@
 # fireux-sproochli
 
-Updated: 2026-11-05
+Updated: 2026-11-16
 Role: package entrypoint; implementation authority remains current source and guards
 
 `fireux-sproochli` gives a host App Sproochli language selection, Menu
@@ -24,6 +24,11 @@ not be presented as reviewed safety, legal, or brand copy.
   host database credentials and performs no host persistence.
 - The browser selects a language. It never invokes the billable provider or
   writes translation records.
+
+Server cache and memory readers accept optional Core live-projection sources.
+They declare their existing exact cache, fingerprint-query and memory dependencies;
+hosts pass the read scope instead of copying Sproochli storage paths or installing
+listeners. This changes neither cache provenance nor provider and write authority.
 
 The installation invariant is: **one installation, one scoped host identity,
 host-owned storage, centrally provided translation intelligence**.

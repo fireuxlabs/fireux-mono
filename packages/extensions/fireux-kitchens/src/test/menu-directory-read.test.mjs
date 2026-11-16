@@ -59,7 +59,7 @@ test('Menu directory uses the shared live projection and replaces unpublished re
     watch,
     toValue,
     readPages,
-    useAsyncData: (_key, handler) => {
+    useApiRead: (_key, handler) => {
       directoryKey = _key
       state = {
         data: ref({
@@ -72,7 +72,7 @@ test('Menu directory uses the shared live projection and replaces unpublished re
         then: (fn) => Promise.resolve().then(fn),
         refresh: async () => {
           state.data.value = await ((currentReadFetch = fetch),
-          handler({}, { signal: new AbortController().signal }))
+          handler({ fetch, signal: new AbortController().signal }))
         },
       }
       return state

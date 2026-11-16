@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { normalizeKitchenPromotion } from '../../../kitchen/utils/promotions/pricing'
 import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
 import { readItemPricing } from '../../../kitchen/utils/item-pricing'
@@ -47,10 +48,13 @@ export async function readKitchenMenuSections(
     date?: string
     currencyCode?: string
     observe?: MenuReadObserver
+    sources?: LiveProjectionSources
   }
 ) {
   const basePath = `kitchens/${input.kitchenId}`
-  const dishesSnap = await db.collection(`${basePath}/dishes`).get()
+  const dishesQuery = db.collection(`${basePath}/dishes`)
+  input.sources?.watch(dishesQuery)
+  const dishesSnap = await dishesQuery.get()
   input.observe?.collection(
     serverKitchenItemsTarget(input.kitchenId),
     dishesSnap.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
@@ -61,9 +65,11 @@ export async function readKitchenMenuSections(
       readRecord({ id: doc.id, ...(doc.data() || {}) }),
     ])
   )
-  const sectionsSnap = await db
-    .collection(`${basePath}/menus/${input.menuId}/sections`)
-    .get()
+  const sectionsQuery = db.collection(
+    `${basePath}/menus/${input.menuId}/sections`
+  )
+  input.sources?.watch(sectionsQuery)
+  const sectionsSnap = await sectionsQuery.get()
   input.observe?.collection(
     serverKitchenMenuSectionsTarget(input.kitchenId, input.menuId),
     sectionsSnap.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
@@ -76,11 +82,11 @@ export async function readKitchenMenuSections(
       .sort((left, right) => sortOrder(left) - sortOrder(right))
       .map(async (section) => {
         const sectionId = text(section.id)
-        const itemsSnap = await db
-          .collection(
-            `${basePath}/menus/${input.menuId}/sections/${sectionId}/items`
-          )
-          .get()
+        const itemsQuery = db.collection(
+          `${basePath}/menus/${input.menuId}/sections/${sectionId}/items`
+        )
+        input.sources?.watch(itemsQuery)
+        const itemsSnap = await itemsQuery.get()
         input.observe?.collection(
           serverKitchenMenuItemsTarget(
             input.kitchenId,
@@ -99,10 +105,11 @@ export async function readKitchenMenuSections(
               if (promotionId) {
                 if (item.dish_id || input.date)
                   throw new Error('Invalid meal-deal placement.')
-                const snapshot = await db
+                const promotionRef = db
                   .collection(`${basePath}/promotions`)
                   .doc(promotionId)
-                  .get()
+                input.sources?.watch(promotionRef)
+                const snapshot = await promotionRef.get()
                 const data = snapshot.data()
                 input.observe?.document(
                   kitchenPromotionsTarget(input.kitchenId),

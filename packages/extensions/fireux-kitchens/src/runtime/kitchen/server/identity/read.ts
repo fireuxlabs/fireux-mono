@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import type { KitchenOffering } from '../../utils/offering-policy'
 import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -47,13 +48,15 @@ const number = (value: unknown) => {
 export async function readKitchenRelatedRecords(
   db: RuntimeFirestore,
   documents: KitchenRootRecord[],
-  _scope: KitchenReadScope
+  _scope: KitchenReadScope,
+  sources?: LiveProjectionSources
 ) {
   const references = new Map<string, ReturnType<typeof db.doc>>()
 
   for (const document of documents) {
     if (isFirestoreDocumentId(document.id)) {
       const placeRef = db.collection('places').doc(document.id)
+      sources?.watch(placeRef, { authority: true })
       references.set(placeRef.path, placeRef)
     }
   }

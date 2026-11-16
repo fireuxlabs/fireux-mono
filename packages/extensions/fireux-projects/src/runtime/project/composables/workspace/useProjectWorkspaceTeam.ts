@@ -1,8 +1,9 @@
-import { refreshNuxtData, useAsyncData } from 'nuxt/app'
+import { refreshNuxtData } from 'nuxt/app'
 
 import { computed, watchEffect } from 'vue'
 
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useApiRead } from 'fireux-core/runtime/composables/http/useApiRead'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -36,11 +37,9 @@ export function useProjectWorkspaceTeam() {
     data,
     pending: requestPending,
     error: requestError,
-  } = useAsyncData<ProjectTeamResponse>(
+  } = useApiRead<ProjectTeamResponse>(
     requestKey,
-    async (_nuxtApp, { signal }) => {
-      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
-
+    async ({ fetch: fetchRead }) => {
       const user = currentUser.value
       const id = projectId.value
       if (!user || !id) {

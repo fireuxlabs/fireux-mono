@@ -1,3 +1,4 @@
+import type { PublicMenuItem } from '../../menu/models/menu-detail.model'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { MediaBackdropColor } from 'fireux-places/runtime/place/utils/place-spine'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
@@ -22,13 +23,7 @@ export type KitchenDirectoryEntry = KitchenPublicSummary & {
     nextChangeAt: number
     slug: string
     currencyCode?: string
-    items: Array<{
-      id: string
-      name: string
-      description: string
-      price: number
-      imageUrl?: string
-    }>
+    items: PublicMenuItem[]
   }
 }
 

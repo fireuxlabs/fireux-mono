@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response'
 
@@ -19,19 +20,26 @@ export function matchesFoodSearch(value: unknown, query: string) {
 export async function readMatchingMenuItems(
   db: ReturnType<typeof getRuntimeFirestore>,
   menu: MenuDirectoryEntry,
-  query: string
+  query: string,
+  sources?: LiveProjectionSources
 ): Promise<Array<{ id: string; name: string }>> {
   const kitchenId = menu.source?.kitchen_id
   const menuId = menu.source?.menu_id
   if (!kitchenId || !menuId || menu.kind === 'doc') return []
   const base = `kitchens/${kitchenId}`
-  const sections = await db.collection(`${base}/menus/${menuId}/sections`).get()
+  const sectionsQuery = db.collection(`${base}/menus/${menuId}/sections`)
+  sources?.watch(sectionsQuery)
+  const sections = await sectionsQuery.get()
   const placements = await Promise.all(
     sections.docs
       .filter((doc) => doc.data().status !== 'archived')
-      .map((doc) =>
-        db.collection(`${base}/menus/${menuId}/sections/${doc.id}/items`).get()
-      )
+      .map((doc) => {
+        const placementsQuery = db.collection(
+          `${base}/menus/${menuId}/sections/${doc.id}/items`
+        )
+        sources?.watch(placementsQuery)
+        return placementsQuery.get()
+      })
   )
   const ids = [
     ...new Set(
@@ -51,9 +59,11 @@ export async function readMatchingMenuItems(
   const matches: Array<{ id: string; name: string }> = []
   for (let offset = 0; offset < ids.length; offset += 100) {
     const dishes = await db.getAll(
-      ...ids
-        .slice(offset, offset + 100)
-        .map((id) => db.doc(`${base}/dishes/${id}`))
+      ...ids.slice(offset, offset + 100).map((id) => {
+        const reference = db.doc(`${base}/dishes/${id}`)
+        sources?.watch(reference)
+        return reference
+      })
     )
     for (const dish of dishes) {
       const data = dish.data()

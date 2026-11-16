@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import type { MenuRouteContext } from '../../models/menu-context.model.ts'
 import type { ScopedTargetKind } from '../ownership/target-types'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
@@ -9,6 +10,7 @@ import type {
 } from 'fireux-sproochli/runtime/sproochli'
 
 export type MenuPayloadScope = {
+  sources?: LiveProjectionSources
   routeKind?: ScopedTargetKind
   daily?: {
     date: string

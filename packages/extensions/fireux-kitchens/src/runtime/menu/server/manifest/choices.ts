@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import type { KitchenOffering } from '../../../kitchen/utils/offering-policy'
 import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
 import { normalizeKitchenOfferings } from '../../../kitchen/utils/offering-policy'
@@ -17,6 +18,7 @@ import {
 } from '../offerings/projection.ts'
 
 type MenuChoiceInput = {
+  sources?: LiveProjectionSources
   offerings?: KitchenOffering[]
   appId: string
   kitchenId: string
@@ -131,8 +133,11 @@ export async function readKitchenMenuChoices(
   }
 
   const offerings =
-    input.offerings || (await readKitchenOfferings(db, input.kitchenId))
-  const snap = await db.collection(`kitchens/${input.kitchenId}/menus`).get()
+    input.offerings ||
+    (await readKitchenOfferings(db, input.kitchenId, undefined, input.sources))
+  const query = db.collection(`kitchens/${input.kitchenId}/menus`)
+  input.sources?.watch(query, { authority: true })
+  const snap = await query.get()
   const rows = snap.docs
     .map((doc) => ({
       id: doc.id,

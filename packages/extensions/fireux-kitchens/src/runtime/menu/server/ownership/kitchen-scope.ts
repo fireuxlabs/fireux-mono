@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import { readKitchenFulfilment } from '../../../kitchen/server/core/fulfilment.ts'
@@ -32,13 +33,15 @@ export type MenuKitchenScope = {
   sproochli?: SproochliAttachmentConfig
 }
 
-export async function readMenuKitchenPlaceData(kitchenId: string) {
+export async function readMenuKitchenPlaceData(
+  kitchenId: string,
+  sources?: LiveProjectionSources
+) {
   if (!kitchenId) return {}
 
-  const snap = await getRuntimeFirestore()
-    .collection('places')
-    .doc(kitchenId)
-    .get()
+  const place = getRuntimeFirestore().collection('places').doc(kitchenId)
+  sources?.watch(place, { authority: true })
+  const snap = await place.get()
 
   return snap.exists ? snap.data() || {} : {}
 }
@@ -47,6 +50,9 @@ export function readMenuKitchenFulfilment(kitchenId: string) {
   return readKitchenFulfilment(getRuntimeFirestore(), kitchenId)
 }
 
-export function readMenuKitchenBySlug(kitchenSlug: string) {
-  return readKitchenByRouteSlug(getRuntimeFirestore(), kitchenSlug)
+export function readMenuKitchenBySlug(
+  kitchenSlug: string,
+  sources?: LiveProjectionSources
+) {
+  return readKitchenByRouteSlug(getRuntimeFirestore(), kitchenSlug, sources)
 }

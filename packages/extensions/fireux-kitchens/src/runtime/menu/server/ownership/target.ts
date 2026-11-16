@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { createError } from 'h3'
 import { resolveTenantMenuScope, resolveDirectoryMenuScope } from './app-scope'
 import { scopedTarget } from './scoped-target'
@@ -13,7 +14,8 @@ const isFirestoreDocumentId = (value: string) =>
   new TextEncoder().encode(value).length <= 1_500
 export async function resolveMenuTarget(
   menuIdValue: unknown,
-  kitchenSlugValue?: unknown
+  kitchenSlugValue?: unknown,
+  sources?: LiveProjectionSources
 ): Promise<MenuTarget> {
   const menuId = text(menuIdValue)
   const kitchenSlug = text(kitchenSlugValue)
@@ -30,7 +32,7 @@ export async function resolveMenuTarget(
     })
   }
 
-  const tenantScope = await resolveTenantMenuScope()
+  const tenantScope = await resolveTenantMenuScope(sources)
   if (tenantScope) {
     if (kitchenSlug) {
       throw createError({
@@ -39,13 +41,13 @@ export async function resolveMenuTarget(
       })
     }
 
-    return scopedTarget('tenant-menu', menuId, tenantScope)
+    return scopedTarget('tenant-menu', menuId, tenantScope, sources)
   }
 
   if (kitchenSlug) {
-    const directoryScope = await resolveDirectoryMenuScope(kitchenSlug)
+    const directoryScope = await resolveDirectoryMenuScope(kitchenSlug, sources)
 
-    return scopedTarget('directory-menu', menuId, directoryScope)
+    return scopedTarget('directory-menu', menuId, directoryScope, sources)
   }
 
   throw createError({

@@ -1,4 +1,4 @@
-import { useAsyncData } from 'nuxt/app'
+import { useApiRead } from 'fireux-core/runtime/composables/http/useApiRead'
 import {
   useFirestoreCollectionState,
   type FirestoreCollectionOutcome,
@@ -140,10 +140,9 @@ export function useMenuDirectory(
     },
     { flush: 'sync' }
   )
-  const state = useAsyncData<MenuDirectoryPage>(
+  const state = useApiRead<MenuDirectoryPage>(
     key,
-    async (_nuxtApp, { signal }) => {
-      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+    async ({ fetch: fetchRead }) => {
       return readPages<MenuDirectoryPage>(
         fetchRead,
         baseEndpoint.value,

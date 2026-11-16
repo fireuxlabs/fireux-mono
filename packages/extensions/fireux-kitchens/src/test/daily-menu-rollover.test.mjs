@@ -49,7 +49,7 @@ test('the mounted reader clears yesterday and refreshes once at the server date 
     watch,
     onScopeDispose,
     useRoute: () => ({ query: {} }),
-    useAsyncData: () => state,
+    useApiRead: () => state,
     normalizeSproochliLanguage: () => '',
     normalizeMenuRouteContext: () => 'generic',
     menuRouteIndexPath: () => '/menus',

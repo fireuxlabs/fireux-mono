@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { useRuntimeConfig } from '#imports'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -24,16 +25,19 @@ export const requireMenuAppId = () => {
   throw configurationError('Menu App context is not configured.')
 }
 
-export async function resolveTenantMenuScope(): Promise<TenantMenuScope | null> {
+export async function resolveTenantMenuScope(
+  sources?: LiveProjectionSources
+): Promise<TenantMenuScope | null> {
   if (!isTenantMenuApp()) return null
 
   const appId = requireMenuAppId()
-  const targetSnapshot = await getRuntimeFirestore()
+  const targetQuery = getRuntimeFirestore()
     .collection('kitchens')
     .where('management.mode', '==', 'app')
     .where('management.app_id', '==', appId)
     .limit(2)
-    .get()
+  sources?.watch(targetQuery, { authority: true })
+  const targetSnapshot = await targetQuery.get()
   const [kitchen] = targetSnapshot.docs
   if (targetSnapshot.size !== 1 || !kitchen) {
     throw configurationError(
@@ -52,7 +56,8 @@ export async function resolveTenantMenuScope(): Promise<TenantMenuScope | null> 
 }
 
 export async function resolveDirectoryMenuScope(
-  kitchenSlugValue: unknown
+  kitchenSlugValue: unknown,
+  sources?: LiveProjectionSources
 ): Promise<TenantMenuScope> {
   const kitchenSlug = text(kitchenSlugValue)
   if (!kitchenSlug) {
@@ -62,7 +67,7 @@ export async function resolveDirectoryMenuScope(
     })
   }
 
-  const kitchen = await readMenuKitchenBySlug(kitchenSlug)
+  const kitchen = await readMenuKitchenBySlug(kitchenSlug, sources)
   if (!kitchen) {
     throw createError({
       statusCode: 404,

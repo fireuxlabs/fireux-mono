@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { FieldValue } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { SPROOCHLI_MUTATION_TARGETS } from './mutation-targets'
@@ -27,6 +28,7 @@ export type SproochliMenuTranslationCacheScope = {
   storage: SproochliHostStorage
   source: SproochliMenuTranslationCacheSource
   fields: SproochliMenuTranslationCacheField[]
+  sources?: LiveProjectionSources
 }
 
 export type SproochliMenuTranslationCacheInput =
@@ -128,10 +130,10 @@ export async function readSproochliMenuTranslationCache(
 ) {
   const normalized = normalize(input)
   if (!normalized) return null
-  const snapshot = await input.storage.db
+  const reference = input.storage.db
     .collection(SPROOCHLI_MENU_TRANSLATION_CACHE_COLLECTION)
     .doc(normalized.id)
-    .get()
+  const snapshot = await (input.sources?.watch(reference) ?? reference).get()
   const data = snapshot.data() || {}
   return snapshot.exists ? translationsFromData(input, normalized, data) : null
 }
@@ -142,10 +144,10 @@ export async function readSproochliMenuTranslationCacheLanguages(
   const scope = normalizeScope(input)
   if (!scope) return []
 
-  const snapshot = await input.storage.db
+  const query = input.storage.db
     .collection(SPROOCHLI_MENU_TRANSLATION_CACHE_COLLECTION)
     .where('fingerprint', '==', scope.fingerprint)
-    .get()
+  const snapshot = await (input.sources?.watch(query) ?? query).get()
   const languages = snapshot.docs
     .map((document) => {
       const targetLanguage = language(document.data().target_language)

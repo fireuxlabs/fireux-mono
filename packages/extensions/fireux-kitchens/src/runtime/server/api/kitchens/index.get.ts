@@ -1,11 +1,6 @@
-import {
-  defineEventHandler,
-  setResponseHeader,
-  createError,
-  getQuery,
-  setResponseHeaders,
-  type H3Event,
-} from 'h3'
+import { defineLiveProjection } from 'fireux-core/runtime/server/utils/live-projection'
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
+import { createError, getQuery, setResponseHeaders, type H3Event } from 'h3'
 
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -17,7 +12,8 @@ const text = (value: unknown) => String(value ?? '').trim()
 
 async function requireHiddenKitchenAccess(
   event: H3Event,
-  db: ReturnType<typeof getRuntimeFirestore>
+  db: ReturnType<typeof getRuntimeFirestore>,
+  sources: LiveProjectionSources
 ) {
   const { uid } = await requireFirebaseBearerUser(
     event,
@@ -25,7 +21,9 @@ async function requireHiddenKitchenAccess(
   )
   const { appId, developerId } = useFireUXConfig()
   const isDeveloper = import.meta.dev && uid === text(developerId)
-  const membership = await db.doc(`apps/${appId}/users/${uid}`).get()
+  const membershipRef = db.doc(`apps/${appId}/users/${uid}`)
+  sources.watch(membershipRef, { authority: true })
+  const membership = await membershipRef.get()
   const isAdmin = membership.exists && text(membership.data()?.role) === 'admin'
 
   if (!isDeveloper && !isAdmin) {
@@ -36,10 +34,10 @@ async function requireHiddenKitchenAccess(
   }
 }
 
-export default defineEventHandler(
-  async (event): Promise<KitchenDirectoryEntry[]> => {
-    setResponseHeader(event, 'Cache-Control', 'no-store')
-
+export default defineLiveProjection({
+  access: (event) =>
+    text(getQuery(event).includeHidden) === 'true' ? 'protected' : 'public',
+  read: async (event, sources): Promise<KitchenDirectoryEntry[]> => {
     const query = getQuery(event)
     const includeHidden = text(query.includeHidden) === 'true'
     if (query.includeHidden && !includeHidden) {
@@ -57,15 +55,18 @@ export default defineEventHandler(
     }
 
     const db = getRuntimeFirestore()
-    if (includeHidden) await requireHiddenKitchenAccess(event, db)
+    if (includeHidden) await requireHiddenKitchenAccess(event, db, sources)
     setResponseHeaders(event, {
       'Content-Type': 'application/json; charset=utf-8',
       'Cache-Control': 'no-store',
     })
 
-    return readKitchens({
-      placeId: query.placeId,
-      includeHidden,
-    })
-  }
-)
+    return readKitchens(
+      {
+        placeId: query.placeId,
+        includeHidden,
+      },
+      sources
+    )
+  },
+})

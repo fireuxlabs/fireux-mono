@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-11-16
-Ref: a068b6eaa
+Ref: e7fa1f63c
 Role: living context
 Scope: repository-wide
 
@@ -216,6 +216,15 @@ edit the selected Entity. Public projections omit protected data;
 hiding it in Vue is not authorization. Routes and UI availability grant no
 mutation authority. Protected writes use a named trusted command that validates
 the exact target.
+
+Supported mutable readers deliver authorized record changes to open pages by
+default, including changes made in another browser. Domains declare safe
+projections, exact scope and authority; Core owns shared connection, refresh,
+reconnect, deduplication and disposal. Direct Firestore bindings retain their
+native owner. Ordinary App consumers do not install listeners or select a live
+transport. The [server API contract](../concepts/server-api.md#api-reads-and-refresh)
+and [reader contract](../concepts/composables.md#native-api-read-ownership)
+locate the supported mechanics and verification boundaries.
 
 Concrete identity and membership contracts are mapped in
 [Core models](../concepts/core-models.md) and [Entities](../concepts/entities.md).

@@ -114,6 +114,20 @@ state, serving-time checks or submission authority into presentation components.
 
 - Menu reads use bounded server responses. Raw Menu
   Firestore rows are not the guest transport.
+- Kitchen discovery, Menu Directory and Menu detail acquire their mutable API
+  projections through Core `useApiRead`; their three JSON endpoints declare
+  `defineLiveProjection`. Existing domain readers pass `LiveProjectionSources`
+  explicitly through native query/document owners. Kitchen/Place existence,
+  route resolution, Menu publication and hidden-directory membership are
+  authority dependencies; selected sections, Items, offerings and promotions
+  are content dependencies. Core owns delivery, refresh and listener disposal.
+- Existing query windows and exact Kitchen subcollections retain their read
+  semantics. Some Kitchen-scoped collection reads have no record-count cap;
+  listener/re-evaluation cost and Core's source budget remain scaling limits,
+  never reasons to return partial successful data. Sproochli receives the same
+  source collector through its lower-owned helpers: cache hits observe the
+  exact cache and readiness query; memory is observed only when actually read.
+  Default-language browsing never generates translations.
 - `useMenuDirectory` owns Menu Directory outcomes, pagination, tenant redirect
   policy, and links.
 - `useMenu` owns one resolved detail response, render kind, safe
@@ -356,6 +370,15 @@ Menu interface language for labels such as sections, options, and
 allergy information. A visitor-selected `sproochli` language replaces that
 interface copy together with the translated Menu projection; the unselected
 default route never rewrites the original Menu content.
+
+`menu/components/Detail/Item.vue` owns the complete public Item surface: name,
+description, price, choices and optional image. Both the public Menu and Kitchen
+directory special consume `MenuDetailItem` directly. The card supplies canonical
+public Items through the existing Menu payload normalizer, preserving real
+choices without exposing private Item context. Selection and price calculation
+remain inside the Menu surface; neither consumer owns a parallel Item layout.
+The surface owns no reader or command and inherits Menu theme tokens with host
+UI fallbacks. Its heading level follows the consuming document hierarchy.
 
 Item owns reusable food media. MenuItem may reference Item but does not own a
 second food-image field. Kitchen `services.item_images` supplies the customer
@@ -769,8 +792,8 @@ Kitchen-owned `Public/Collection/Card/Index.vue` composes Identity, named label
 groups and a dedicated Special child using native Nuxt UI. Keywords use neutral
 filled tags; services use primary outlines. Group names remain accessible labels
 without visible headings. The special links directly to its canonical published Menu. Its dish-led preview
-reuses the public dated Section reader for up to three Item names, descriptions
-and normal prices, with currency from the linked Place. This adds one selected
+reuses the public dated Section reader and canonical public Item normalizer for
+up to three Items, including choices, with currency from the linked Place. This adds one selected
 Menu content acquisition only for Kitchens with an eligible special. Food images
 are optional: project them only when the Kitchen's existing item-image setting is
 enabled and an Item image exists. Missing or failed images produce no placeholder;

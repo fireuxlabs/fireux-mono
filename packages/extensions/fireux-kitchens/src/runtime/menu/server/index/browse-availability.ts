@@ -1,3 +1,5 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
+import { readMenuManifestSections } from '../payload/sections'
 import { readKitchenMenuSections } from '../manifest/sections'
 import { FieldPath } from 'firebase-admin/firestore'
 import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -13,6 +15,7 @@ export async function readPublishedPublicMenuSummary(
     appId: string
     currencyCode?: string
     showItemImages: boolean
+    sources?: LiveProjectionSources
   }
 ): Promise<{
   hasPublishedMenu: boolean
@@ -29,6 +32,7 @@ export async function readPublishedPublicMenuSummary(
       .orderBy(FieldPath.documentId())
       .limit(50)
     if (after) query = query.startAfter(after)
+    presentation.sources?.watch(query, { authority: true })
     const page = await query.get()
     for (const doc of page.docs) {
       const menu = doc.data()
@@ -74,18 +78,14 @@ export async function readPublishedPublicMenuSummary(
       menuId: specialMenuId,
       date: special.date,
       currencyCode: presentation.currencyCode,
+      sources: presentation.sources,
     })
-    special.items = sections
+    special.items = readMenuManifestSections(sections)
       .flatMap((section) => section.items)
       .slice(0, 3)
       .map((item) => ({
-        id: item.id,
-        name: item.name,
-        description: item.description,
-        price: item.price,
-        ...(presentation.showItemImages && item.image_url
-          ? { imageUrl: item.image_url }
-          : {}),
+        ...item,
+        imageUrl: presentation.showItemImages ? item.imageUrl : '',
       }))
     if (!special.items.length) special = undefined
   }

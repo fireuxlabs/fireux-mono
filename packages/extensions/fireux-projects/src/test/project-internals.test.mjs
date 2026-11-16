@@ -296,7 +296,7 @@ function removalFixture(t) {
           })),
           outcome: ref('ready'),
         }),
-        useAsyncData: () => ({ data, pending: ref(false), error: ref(null) }),
+        useApiRead: () => ({ data, pending: ref(false), error: ref(null) }),
         useWorkspaceTeam: ({ members }) => ({
           members,
           selectedTeamMemberId: selection,

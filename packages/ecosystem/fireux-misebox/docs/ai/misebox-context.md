@@ -1769,15 +1769,34 @@ directory card on `/` and `/kitchens`. Keywords and service labels have separate
 accessible groups with no visible headings: neutral filled keyword tags and primary
 outlined service badges. Browse menus is omitted from services in favour of the main View menus
 action. The Special child links directly to the published Menu and leads with
-up to three canonical dish names, descriptions and normal prices from that date's
-public Section reader; the date is secondary. Place owns currency. This content
+up to three canonical public Items from that date's public Section reader and Menu
+payload normalizer; the date is secondary. Both the public Menu and special card
+use the complete `MenuDetailItem` surface, including real choices, price calculation
+and optional `MenuItemImage`. The card has no separate Item presentation component.
+Place owns currency. This content
 read is acquired only for an eligible special, in addition to the existing Menu
 scan. Food images are optional across Kitchens: only an existing Item image plus
 Kitchen `services.item_images` opt-in allows a preview image. No placeholder or
 venue preference is inferred when an image is missing; text-only is complete.
 There is no
-standalone homepage specials block. `useKitchens` refreshes at the next venue date
-boundary, and the card retains its normal Menu chooser destination.
+standalone homepage specials block. `useKitchens`, `useMenuDirectory` and `useMenu`
+use Core `useApiRead` with their existing keys, pagination and outcomes. Their
+JSON endpoints use `defineLiveProjection`; native sources are declared by the
+existing Kitchen/Menu readers, including Place, offerings, selected dated
+placements, reusable Items and promotions. Authority dependencies cover Kitchen
+and Place existence, route/publication queries and exact App membership for
+hidden-directory access. Public DTO allowlists, private-link capability URLs and
+protected-group denial retain their existing meaning. No App or card installs a
+listener. Existing venue-date rollover timers remain because time itself is not
+a database change. The card retains its normal Menu chooser destination.
+Some exact Kitchen subcollection reads retain unbounded record cardinality, so
+listener counts and re-evaluation reads need measurement in controlled fixtures;
+source-budget failure remains an error. Sproochli receives the same source collector
+through its lower-owned cache and memory readers. Complete-cache hits observe
+the exact cache and current-fingerprint readiness query; memory dependencies
+exist only when that branch actually reads memory. Default never generates,
+and Kitchen owns no duplicated Sproochli storage paths. Core owns shared
+connection, cancellation, reconnection and disposal.
 Content and publication remain owned by dated Sections, reusable Items and the existing
 Daily publication command. The homepage stores no copied special or Kitchen boolean.
 

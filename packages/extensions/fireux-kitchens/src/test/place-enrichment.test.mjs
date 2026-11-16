@@ -45,7 +45,7 @@ test('Place Kitchen lookup stays scoped, uses public reads and hides stale or fa
       toValue,
       onMounted: () => {},
       onUnmounted: () => {},
-      useAsyncData: (_key, read) => {
+      useApiRead: (_key, read) => {
         fetcher = read
         return state
       },
@@ -70,7 +70,7 @@ test('Place Kitchen lookup stays scoped, uses public reads and hides stale or fa
     endpoint = url
     return []
   }),
-  fetcher({}, { signal: new AbortController().signal }))
+  fetcher({ fetch: currentReadFetch, signal: new AbortController().signal }))
   assert.equal(endpoint, '/api/kitchens?placeId=CaseSensitivePlace')
   state.data.value = [{ id: 'CaseSensitivePlace' }, { id: 'unrelated' }]
   assert.deepEqual(
@@ -91,7 +91,7 @@ test('Place Kitchen lookup stays scoped, uses public reads and hides stale or fa
     called = true
     return []
   }),
-  fetcher({}, { signal: new AbortController().signal }))
+  fetcher({ fetch: currentReadFetch, signal: new AbortController().signal }))
   assert.equal(
     called,
     false,
@@ -212,7 +212,7 @@ test('ordinary Kitchen directories retain their reader key and hide records duri
       toValue,
       onMounted: () => {},
       onUnmounted: () => {},
-      useAsyncData: (sourceKey, read) => {
+      useApiRead: (sourceKey, read) => {
         key = sourceKey
         fetcher = read
         return state
@@ -228,7 +228,10 @@ test('ordinary Kitchen directories retain their reader key and hide records duri
     assert.equal(url, '/api/kitchens')
     return Promise.resolve(records)
   }
-  await fetcher({}, { signal: new AbortController().signal })
+  await fetcher({
+    fetch: currentReadFetch,
+    signal: new AbortController().signal,
+  })
   assert.deepEqual(collection.collection.value, records)
   state.pending.value = true
   assert.deepEqual(collection.collection.value, [])
@@ -261,7 +264,7 @@ test('Kitchen discovery refreshes at a special date boundary and clears its time
       toValue,
       watch,
       resolveReadOutcome,
-      useAsyncData: () => state,
+      useApiRead: () => state,
       onMounted: (callback) => callback(),
       onUnmounted: (callback) => {
         disposed = callback

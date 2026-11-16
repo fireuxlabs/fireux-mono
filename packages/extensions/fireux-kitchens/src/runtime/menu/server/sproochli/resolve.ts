@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import {
   normalizeSproochliLanguage,
   type SproochliDefaultLanguage,
@@ -164,7 +165,8 @@ function translatedMenu(
 export async function resolveMenuSproochli(
   menu: MenuManifest,
   requestedLanguage: SproochliLanguageCode,
-  defaultLanguage: SproochliDefaultLanguage = 'mixed'
+  defaultLanguage: SproochliDefaultLanguage = 'mixed',
+  sources?: LiveProjectionSources
 ): Promise<MenuManifest> {
   const defaultSurfaceCopy = resolveMenuBrowseSurfaceCopy(
     null,
@@ -179,6 +181,7 @@ export async function resolveMenuSproochli(
   ]
   const storage = resolveSproochliHostStorage()
   const cacheScope = {
+    sources,
     storage,
     source: menu.source,
     fields,
@@ -214,7 +217,11 @@ export async function resolveMenuSproochli(
           targetLanguage: requestedLanguage,
         })
       )
-      const memory = await readSproochliTranslationMemory(storage, candidates)
+      const memory = await readSproochliTranslationMemory(
+        storage,
+        candidates,
+        sources
+      )
       translations = new Map<string, string>()
       const missingFields: SproochliMenuTranslationField[] = []
 

@@ -1,4 +1,4 @@
-import { useAsyncData } from 'nuxt/app'
+import { useApiRead } from 'fireux-core/runtime/composables/http/useApiRead'
 import {
   onScopeDispose,
   watch,
@@ -166,11 +166,9 @@ export function useMenu(
     const qs = query.toString()
     return `/api/menus/${encodeURIComponent(id.value)}${qs ? `?${qs}` : ''}`
   })
-  const state = useAsyncData(
+  const state = useApiRead(
     key,
-    async (_nuxtApp, { signal }) => {
-      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
-
+    async ({ fetch: fetchRead }) => {
       if (!endpoint.value) return null
 
       try {

@@ -10,7 +10,12 @@
 
     <div class="menu-browse-item__copy">
       <div class="menu-browse-item__heading">
-        <h3 :id="itemNameId">{{ item.name }}</h3>
+        <component
+          :is="headingTag || 'h3'"
+          :id="itemNameId"
+          class="menu-browse-item__name"
+          >{{ item.name }}</component
+        >
         <span
           v-if="itemPrice"
           class="menu-browse-item__price"
@@ -59,6 +64,7 @@ import { formatCurrencyAmount } from '../../../utils/currency-display'
 import type { PublicMenuItem } from '../../models/menu-detail.model.ts'
 
 const props = defineProps<{
+  headingTag?: 'h3' | 'h4'
   accessibilityId: string
   availableOptionsLabel: string
   currencyCode: string
@@ -127,7 +133,8 @@ function formatPrice(price: number) {
   grid-template-columns: minmax(0, 1fr);
   gap: calc(var(--spacing) * 4);
   padding: calc(var(--spacing) * 5) 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--menu-text, var(--ui-text)) 12%, transparent);
 }
 
 .menu-browse-item:has(> .menu-item-image) {
@@ -145,11 +152,11 @@ function formatPrice(price: number) {
   align-items: baseline;
 }
 
-.menu-browse-item h3 {
+.menu-browse-item__name {
   min-width: 0;
   margin: 0;
-  color: var(--menu-title);
-  font-family: var(--menu-title-font);
+  color: var(--menu-title, var(--ui-text-highlighted));
+  font-family: var(--menu-title-font, inherit);
   font-size: 1.075rem;
   font-weight: var(--font-weight-extrabold);
   line-height: 1.35;
@@ -160,7 +167,7 @@ function formatPrice(price: number) {
   display: inline-flex;
   align-items: baseline;
   gap: 0.3rem;
-  color: var(--menu-primary);
+  color: var(--menu-primary, var(--ui-text-highlighted));
   font-size: 0.92rem;
   font-weight: var(--font-weight-extrabold);
   font-variant-numeric: tabular-nums;
@@ -169,7 +176,7 @@ function formatPrice(price: number) {
 
 .menu-browse-item__description {
   margin: 0.45rem 0 0;
-  color: var(--menu-muted);
+  color: var(--menu-muted, var(--ui-text-muted));
   font-size: 0.9rem;
   line-height: 1.55;
   overflow-wrap: anywhere;

@@ -43,7 +43,8 @@ export async function buildMenuManifestPayload(
           .flatMap((section) => section.items.map((item) => item.dishId))
           .filter(Boolean),
         scope.kitchenTimezone || '',
-        currencyCode
+        currencyCode,
+        scope.sources
       )
   const manifest: MenuManifest = {
     content: {
@@ -93,7 +94,8 @@ export async function buildMenuManifestPayload(
       ? await resolveMenuSproochli(
           manifest,
           normalizeSproochliLanguage(scope.sproochliLanguage),
-          scope.sproochli?.default_language || 'mixed'
+          scope.sproochli?.default_language || 'mixed',
+          scope.sources
         )
       : manifest,
   }

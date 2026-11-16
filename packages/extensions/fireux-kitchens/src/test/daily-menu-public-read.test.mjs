@@ -10,7 +10,14 @@ const compileFunction = (source, args = []) =>
     : compileNative(source, ['setResponseHeader', ...args]).bind(null, () => {})
 
 function load(path, names, deps) {
-  deps = { ...itemPricingHelpers, ...deps }
+  deps = {
+    ...itemPricingHelpers,
+    defineLiveProjection:
+      ({ read }) =>
+      (event) =>
+        read(event, { watch: (value) => value }),
+    ...deps,
+  }
 
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -35,6 +42,7 @@ test('the public section reader never acquires items from another calendar date'
   ]
   const db = {
     collection: (name) => ({
+      path: name,
       get: async () => {
         reads.push(name)
         const rows =
@@ -68,7 +76,14 @@ test('the public section reader never acquires items from another calendar date'
       normalizeItemAddOns: () => [],
     }
   )
+  const watched = []
   const result = await readKitchenMenuSections(db, {
+    sources: {
+      watch: (query) => {
+        watched.push(query.path)
+        return query
+      },
+    },
     appId: 'app',
     kitchenId: 'k',
     menuId: 'm',
@@ -82,6 +97,11 @@ test('the public section reader never acquires items from another calendar date'
     `${path}/dinner/items`,
     `${path}/lunch/items`,
   ])
+  assert.deepEqual(
+    watched.sort(),
+    reads.slice().sort(),
+    'watch exactly acquired native queries, including only selected date placements'
+  )
   assert.equal(JSON.stringify(result).includes('Secret tomorrow'), false)
 })
 

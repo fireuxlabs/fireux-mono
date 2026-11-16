@@ -1,6 +1,5 @@
-import { useAsyncData } from 'nuxt/app'
-
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useApiRead } from 'fireux-core/runtime/composables/http/useApiRead'
 type Member = { id?: string; memberId?: string; name: string; avatar: string }
 import { computed } from 'vue'
 import { useProjectWorkspace } from './workspace/useProjectWorkspace'
@@ -13,11 +12,9 @@ export function useProjectTeamSummary() {
     () =>
       `project-team-summary-${currentUser.value?.uid || ''}-${workspace.id.value}-${workspace.outcome.value}`
   )
-  const { data, status, error } = useAsyncData(
+  const { data, status, error } = useApiRead(
     key,
-    async (_nuxtApp, { signal }) => {
-      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
-
+    async ({ fetch: fetchRead }) => {
       const id = workspace.outcome.value === 'ready' ? workspace.id.value : ''
       const user = currentUser.value
       if (!id || !user) return null

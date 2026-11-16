@@ -1,4 +1,5 @@
 import { FieldValue } from 'firebase-admin/firestore'
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { SPROOCHLI_MUTATION_TARGETS } from './mutation-targets'
 import {
@@ -124,7 +125,8 @@ function usableMemoryRecord(
 
 export async function readSproochliTranslationMemory(
   storage: SproochliHostStorage,
-  candidates: SproochliTranslationMemoryCandidate[]
+  candidates: SproochliTranslationMemoryCandidate[],
+  sources?: LiveProjectionSources
 ) {
   const normalizedById = new Map(
     candidates
@@ -141,9 +143,12 @@ export async function readSproochliTranslationMemory(
   const entries = [...normalizedById.entries()]
   for (const group of chunks(entries, READ_BATCH_SIZE)) {
     const snapshots = await storage.db.getAll(
-      ...group.map(([id]) =>
-        storage.db.collection(TranslationMemoryStorage.collection).doc(id)
-      )
+      ...group.map(([id]) => {
+        const reference = storage.db
+          .collection(TranslationMemoryStorage.collection)
+          .doc(id)
+        return sources?.watch(reference) ?? reference
+      })
     )
 
     snapshots.forEach((snapshot, index) => {

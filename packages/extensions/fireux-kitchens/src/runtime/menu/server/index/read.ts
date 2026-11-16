@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { readMatchingMenuItems, matchesFoodSearch } from './food-search'
 import { MenuStorage } from '../../models/menu-storage.model'
 import {
@@ -28,20 +29,21 @@ export type ReadMenuDirectoryPageInput = {
   kitchenSlug?: unknown
   cursor?: unknown
   limit?: unknown
+  sources?: LiveProjectionSources
 }
 
 async function readMenuDirectoryBatch(
   input: ReadMenuDirectoryPageInput = {}
 ): Promise<MenuDirectoryPage> {
   const db = getRuntimeFirestore()
-  const tenantScope = await resolveTenantMenuScope()
+  const tenantScope = await resolveTenantMenuScope(input.sources)
   const kitchenSlug = text(input.kitchenSlug)
   if (tenantScope && kitchenSlug) {
     throw createError({ statusCode: 404, statusMessage: 'Menus not found.' })
   }
   const directoryScope =
     !tenantScope && kitchenSlug
-      ? await resolveDirectoryMenuScope(kitchenSlug)
+      ? await resolveDirectoryMenuScope(kitchenSlug, input.sources)
       : null
   const scopedKitchen = tenantScope || directoryScope
   const scope: MenuDirectoryScope = tenantScope
@@ -72,10 +74,9 @@ async function readMenuDirectoryBatch(
   menuQuery = menuQuery.orderBy(FieldPath.documentId()).limit(limit + 1)
   if (cursor) {
     if (scopedKitchen) {
-      const cursorDocument = await db
-        .collection(collectionPath)
-        .doc(cursor)
-        .get()
+      const cursorRef = db.collection(collectionPath).doc(cursor)
+      input.sources?.watch(cursorRef)
+      const cursorDocument = await cursorRef.get()
       const sortOrder = cursorDocument.data()?.sort_order
       if (!cursorDocument.exists || typeof sortOrder !== 'number') {
         throw createError({
@@ -88,6 +89,7 @@ async function readMenuDirectoryBatch(
       menuQuery = menuQuery.startAfter(cursor)
     }
   }
+  input.sources?.watch(menuQuery, { authority: true })
   const snap = await menuQuery.get()
   const hasMore = snap.docs.length > limit
   const pageDocs = hasMore ? snap.docs.slice(0, limit) : snap.docs
@@ -120,7 +122,13 @@ async function readMenuDirectoryBatch(
       ),
     ]
     const snapshots = kitchenIds.length
-      ? await db.getAll(...kitchenIds.map((id) => db.doc(`kitchens/${id}`)))
+      ? await db.getAll(
+          ...kitchenIds.map((id) => {
+            const reference = db.doc(`kitchens/${id}`)
+            input.sources?.watch(reference, { authority: true })
+            return reference
+          })
+        )
       : []
     await Promise.all(
       snapshots.map(async (snapshot) => {
@@ -145,7 +153,8 @@ async function readMenuDirectoryBatch(
           await readScopedMenuDirectoryContext(
             db,
             scope,
-            ['online', 'collection', 'delivery'].includes(text(input.service))
+            ['online', 'collection', 'delivery'].includes(text(input.service)),
+            input.sources
           )
         )
       })
@@ -155,7 +164,8 @@ async function readMenuDirectoryBatch(
     ? await readScopedMenuDirectoryContext(
         db,
         scopedKitchen,
-        ['online', 'collection', 'delivery'].includes(text(input.service))
+        ['online', 'collection', 'delivery'].includes(text(input.service)),
+        input.sources
       )
     : null
   const items = documents
@@ -243,7 +253,8 @@ export async function readMenuDirectoryPage(
       const dishes = await readMatchingMenuItems(
         getRuntimeFirestore(),
         menu,
-        search
+        search,
+        input.sources
       )
       const metadata = [
         menu.name,

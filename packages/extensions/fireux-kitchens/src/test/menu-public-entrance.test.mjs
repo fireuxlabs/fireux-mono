@@ -16,7 +16,11 @@ const compileFunction = (source, args = []) => {
     ...names.map((name) => mocks[name])
   )
 }
-import { computed, ref, toRef, compile, createSSRApp, h } from 'vue'
+import { computed, ref, watch, toRef, compile, createSSRApp, h } from 'vue'
+import {
+  readItemChoiceGroups,
+  priceItemChoices,
+} from '../runtime/kitchen/utils/item-choices.ts'
 import { renderToString } from 'vue/server-renderer'
 const base = new URL('../runtime/kitchen/components/', import.meta.url)
 const read = (path) => readFileSync(new URL(path, base), 'utf8')
@@ -125,6 +129,11 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
               items: [
                 {
                   id: 'entry',
+                  dishId: 'octopus-roll',
+                  imageUrl: '',
+                  priceLabel: '',
+                  priceOptions: [],
+                  addOns: [],
                   name: 'Octopus Roll',
                   description: 'Served with fries',
                   price: 25,
@@ -193,15 +202,44 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
       )(computed, () => props),
     render: compile(template(specialSource)),
   })
-  const itemSource = read('Public/Collection/Card/SpecialItem.vue')
-  app.component('PublicKitchenCollectionCardSpecialItem', {
-    props: ['item', 'currencyCode'],
+  const itemSource = readFileSync(
+    new URL('../runtime/menu/components/Detail/Item.vue', import.meta.url),
+    'utf8'
+  )
+  app.component('MenuDetailItem', {
+    props: [
+      'item',
+      'currencyCode',
+      'currencyFormat',
+      'showCurrency',
+      'showItemImages',
+      'accessibilityId',
+      'headingTag',
+      'availableOptionsLabel',
+      'optionalExtrasLabel',
+    ],
     setup: (props) =>
-      compileFunction(script(itemSource) + ';return {price}', [
-        'computed',
-        'defineProps',
-        'formatCurrencyAmount',
-      ])(computed, () => props, formatCurrencyAmount),
+      compileFunction(
+        script(itemSource) +
+          ';return {itemNameId,itemPrice,choiceGroups,selections}',
+        [
+          'computed',
+          'ref',
+          'watch',
+          'defineProps',
+          'readItemChoiceGroups',
+          'priceItemChoices',
+          'formatCurrencyAmount',
+        ]
+      )(
+        computed,
+        ref,
+        watch,
+        () => props,
+        readItemChoiceGroups,
+        priceItemChoices,
+        formatCurrencyAmount
+      ),
     render: compile(template(itemSource)),
   })
   app.component('MenuItemImage', {
@@ -210,17 +248,6 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
       props.enabled && props.imageUrl
         ? h('img', { src: props.imageUrl })
         : null,
-  })
-  app.component('UAlert', {
-    props: ['title', 'description', 'actions'],
-    setup: (props, ctx) => () =>
-      h('aside', [
-        props.title,
-        ctx.slots.description?.() || props.description,
-        ...props.actions.map((action) =>
-          h('a', { href: action.to }, action.label)
-        ),
-      ]),
   })
   for (const name of ['UCard', 'UBadge', 'UPageCard', 'UAvatar'])
     app.component(name, {
@@ -235,9 +262,13 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
   assert.ok(!html.includes('Browse menus'), html)
   assert.match(html, /aria-label="Keywords"/)
   assert.match(html, /aria-label="Services"/)
-  assert.match(html, /Upcoming special/)
+  assert.match(html, /aria-label="Specials"/)
   assert.match(html, /href="\/kitchens\/la-tapberne\/menus\/specials"/)
-  assert.match(html, /23 November 2026/)
+  assert.match(html, /23 Nov/)
+  assert.match(html, /datetime="2026-11-23"/)
+  assert.ok(
+    html.indexOf('Octopus Roll') < html.indexOf('kitchen-special__footer')
+  )
   assert.match(html, /Octopus Roll/)
   assert.match(html, /25 CHF/)
   assert.match(html, /Served with fries/)

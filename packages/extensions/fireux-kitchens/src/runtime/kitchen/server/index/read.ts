@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { currentMenuAppId } from '../../../menu/server/ownership/app-scope'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { readPublishedPublicMenuSummary } from '../../../menu/server/index/browse-availability'
@@ -27,7 +28,8 @@ export type ReadKitchensInput = {
 
 /** Server-resolved Kitchens. Every Kitchen includes its canonical same-ID Place. */
 export async function readKitchens(
-  input: ReadKitchensInput = {}
+  input: ReadKitchensInput = {},
+  sources?: LiveProjectionSources
 ): Promise<KitchenDirectoryEntry[]> {
   const requestedPlaceId = text(input.placeId)
   if (requestedPlaceId && !isFirestoreDocumentId(requestedPlaceId)) {
@@ -46,6 +48,7 @@ export async function readKitchens(
         .limit(1)
     : collection.orderBy(FieldPath.documentId()).limit(KITCHEN_COLLECTION_LIMIT)
 
+  sources?.watch(query, { authority: true })
   const snapshot = await query.get().catch(() => {
     throw createError({
       statusCode: 503,
@@ -57,14 +60,17 @@ export async function readKitchens(
     data: document.data() || {},
   }))
   const scope: KitchenReadScope = {}
-  const related = await readKitchenRelatedRecords(db, documents, scope).catch(
-    () => {
-      throw createError({
-        statusCode: 503,
-        statusMessage: 'Kitchen Places could not be read.',
-      })
-    }
-  )
+  const related = await readKitchenRelatedRecords(
+    db,
+    documents,
+    scope,
+    sources
+  ).catch(() => {
+    throw createError({
+      statusCode: 503,
+      statusMessage: 'Kitchen Places could not be read.',
+    })
+  })
 
   const kitchens = documents
     .map((document) => resolveKitchen(document, related, scope))
@@ -75,7 +81,7 @@ export async function readKitchens(
   return Promise.all(
     kitchens.map(async (kitchen) => {
       const [offerings, menus] = await Promise.all([
-        readKitchenOfferings(db, kitchen.id),
+        readKitchenOfferings(db, kitchen.id, undefined, sources),
         readPublishedPublicMenuSummary(
           db,
           kitchen.id,
@@ -84,6 +90,7 @@ export async function readKitchens(
             appId: currentMenuAppId(),
             currencyCode: readPlaceCurrencyCode(kitchen.place) || undefined,
             showItemImages: kitchen.services.item_images === true,
+            sources,
           }
         ),
       ])

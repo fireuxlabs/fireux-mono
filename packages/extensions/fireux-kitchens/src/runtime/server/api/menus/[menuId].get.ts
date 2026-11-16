@@ -1,10 +1,6 @@
-import {
-  defineEventHandler,
-  setResponseHeader,
-  createError,
-  getQuery,
-  getRouterParam,
-} from 'h3'
+import { defineLiveProjection } from 'fireux-core/runtime/server/utils/live-projection'
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
+import { createError, getQuery, getRouterParam } from 'h3'
 import { dailyMenuSelection } from '../../../menu/utils/calendar/daily'
 
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -63,7 +59,8 @@ async function readKitchenMenu(
   target: ScopedMenuTarget,
   menuContext: ReturnType<typeof normalizeMenuRouteContext>,
   sproochliLanguage: SproochliLanguageCode,
-  kitchenOfferingId: string
+  kitchenOfferingId: string,
+  sources: LiveProjectionSources
 ) {
   const db = getRuntimeFirestore()
   const data = target.menuData
@@ -80,10 +77,12 @@ async function readKitchenMenu(
           menuId: target.sourceMenuId,
           date: daily?.date,
           currencyCode: target.scope.currencyCode,
+          sources,
         }),
     daily
       ? []
       : readKitchenMenuChoices(db, {
+          sources,
           appId: target.appId,
           kitchenId: target.kitchenId,
           kitchenSlug: target.kitchenSlug,
@@ -95,6 +94,7 @@ async function readKitchenMenu(
 
   return await buildMenuPayload(target.routeMenuId, data, {
     ...target.scope,
+    sources,
     routeKind: target.kind,
     daily,
     menuContext,
@@ -105,52 +105,54 @@ async function readKitchenMenu(
   })
 }
 
-export default defineEventHandler(async (event) => {
-  setResponseHeader(event, 'Cache-Control', 'no-store')
+export default defineLiveProjection({
+  access: 'public',
+  read: async (event, sources) => {
+    setCorsHeaders(event, {
+      methods: ['GET'],
+    })
 
-  setCorsHeaders(event, {
-    methods: ['GET'],
-  })
+    try {
+      const routeTarget = parseMenuRouteTarget(getRouterParam(event, 'menuId'))
+      const query = getQuery(event)
+      const menuId = routeTarget.menuId
+      const kitchenSlug = text(query.kitchenSlug)
+      const menuContext = Object.hasOwn(query, 'context')
+        ? normalizeMenuRouteContext(query.context)
+        : routeTarget.context
+      const sproochliLanguage = normalizeSproochliLanguage(query.sproochli)
+      const kitchenOfferingId =
+        typeof query.offering === 'string' ? text(query.offering) : ''
 
-  try {
-    const routeTarget = parseMenuRouteTarget(getRouterParam(event, 'menuId'))
-    const query = getQuery(event)
-    const menuId = routeTarget.menuId
-    const kitchenSlug = text(query.kitchenSlug)
-    const menuContext = Object.hasOwn(query, 'context')
-      ? normalizeMenuRouteContext(query.context)
-      : routeTarget.context
-    const sproochliLanguage = normalizeSproochliLanguage(query.sproochli)
-    const kitchenOfferingId =
-      typeof query.offering === 'string' ? text(query.offering) : ''
+      if (!menuId) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Menu path is required.',
+        })
+      }
 
-    if (!menuId) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Menu path is required.',
-      })
+      const target = await resolveMenuTarget(menuId, kitchenSlug, sources)
+      const content = target.menuData
+      if (content.schedule === 'daily' && menuContext !== 'generic')
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'Daily Menus support browsing only.',
+        })
+      if (menuContext === 'kiosk')
+        throw createError({
+          statusCode: 410,
+          statusMessage:
+            'Per-Menu Kiosk URLs are not supported. Use the Kitchen Kiosk entrance.',
+        })
+      return await readKitchenMenu(
+        target,
+        menuContext,
+        sproochliLanguage,
+        kitchenOfferingId,
+        sources
+      )
+    } catch (error) {
+      throw safeMenuError(error)
     }
-
-    const target = await resolveMenuTarget(menuId, kitchenSlug)
-    const content = target.menuData
-    if (content.schedule === 'daily' && menuContext !== 'generic')
-      throw createError({
-        statusCode: 409,
-        statusMessage: 'Daily Menus support browsing only.',
-      })
-    if (menuContext === 'kiosk')
-      throw createError({
-        statusCode: 410,
-        statusMessage:
-          'Per-Menu Kiosk URLs are not supported. Use the Kitchen Kiosk entrance.',
-      })
-    return await readKitchenMenu(
-      target,
-      menuContext,
-      sproochliLanguage,
-      kitchenOfferingId
-    )
-  } catch (error) {
-    throw safeMenuError(error)
-  }
+  },
 })

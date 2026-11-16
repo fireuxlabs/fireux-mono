@@ -1,7 +1,7 @@
 # Server API family
 
-Updated: 2026-10-12
-Ref: 2807ceca9
+Updated: 2026-11-16
+Ref: e7fa1f63c
 Role: map, not canon
 
 ## Purpose
@@ -65,27 +65,61 @@ by `docs/concepts/workspace.md`.
 
 ## API reads and refresh
 
-Server-owned projections use normal H3 `defineEventHandler` routes. Their existing
-authorization, database selection, joins and public DTO boundaries remain on the
-server. Mutable read routes set `Cache-Control: no-store` using H3's native header
-API. Firestore accessors return the native Admin SDK instance without observation
-proxies or request-local subscription collection.
+Mutable server projections use Core's
+[`defineLiveProjection`](../../packages/core/fireux-core/src/runtime/server/utils/live-projection.ts)
+over native H3 handlers. The domain retains input parsing, fixed-runtime scope,
+authorization, database selection, joins and the allowlisted DTO. Its read
+declares exact native document/query dependencies through `sources.watch`;
+membership, grant, existence and publication authority sources use
+`{ authority: true }`. Queries retain their exact owned collection or active
+window and their existing cardinality, including unbounded subcollection reads.
+Live adoption adds no silent row cap or pagination migration. Dependency-budget
+or source-validation failure is sticky and rejects the response even when a
+domain fallback catches the declaration error; it never returns a partial DTO.
+Firestore
+accessors remain native Admin SDK instances; there is no database observation
+proxy or client-selected Firestore path.
 
-Browser API consumers use native Nuxt `useAsyncData` or `useFetch`. A composed
-reader can create a native `$fetch` instance bound to Nuxt's request signal and
-`cache: 'no-store'`; Core `runtime/composables/http/readPages.ts` only walks the
-requested cursor chain through that supplied fetcher. It owns no connection,
-subscription, retry manager or server authority.
+Browser domain readers use
+[`useApiRead`](../../packages/core/fireux-core/src/runtime/composables/http/useApiRead.ts).
+Native Nuxt `useAsyncData` still owns keyed state, SSR payloads, hydration,
+cancellation, transformations and explicit refresh. The supplied fetcher records
+only API URLs, safe projection versions and representation headers for hydration;
+it serializes no credentials. `readPages` continues to walk the requested cursor
+chain through that fetcher. Apps neither opt into transport nor wire connections.
 
-Successful client write requests refresh Nuxt data through native `onResponse`
-hooks at their action owners. Shared direct-Firestore create/update/delete
-operations also refresh API projections after the committed write. Native Firebase
-listeners continue to own direct Firestore views. Server-only projections refresh
-after actions or explicit refresh; changes in another browser are not pushed.
+Core's [shared feed](../../packages/core/fireux-core/src/runtime/server/utils/live-projection-feed.ts)
+serves one bounded POST `/api/live` SSE connection per browser Nuxt App/identity
+scope. Native H3 emits standard SSE and `eventsource-parser` decodes it. The feed
+dispatches ordinary same-origin GETs through native server routing, rechecking
+middleware and domain authority. It sends changed DTO fingerprints and control
+messages; the existing JSON route remains the only API data response. No raw
+document, query path, or bearer token enters a stream URL or event.
 
-The custom live HTTP bridge, multiplex endpoint, SSE codec, polling/visibility
-manager, streaming CORS middleware and subscription-tracking proxy are removed.
-There are no forwarding aliases or separate streaming deployment settings.
+The [source owner](../../packages/core/fireux-core/src/runtime/server/utils/live-projection-sources.ts)
+shares native Admin listeners and releases them with the last subscriber.
+Initial snapshots are awaited and the projection reread before readiness;
+changed joins are installed before old dependencies are released. Only changed
+authorized DTOs invalidate readers. After 403/404, data listeners stop and only
+explicit authority sources remain to detect recovery. Protected credentials
+are reacquired in headers on reconnect. Membership/access watches revalidate
+immediately; Firebase Auth disable/revocation without a data event is bounded
+by a maximum 60-second lease and token expiry.
+
+Successful writes retain their native `refreshNuxtData` hooks. Shared keyed
+coordination and overlapping GET ownership coalesce their live echo while
+preserving explicit refresh and native cancellation defaults. Direct Firestore
+views retain existing VueFire/Firebase listeners. One-shot requests alone do
+not implement the mutable-reader contract; adopt the shared reader rather than
+adding per-domain streams, polling or write-side notification documents.
+
+Read budgets include listener installation, joined projection recomputation and
+JSON refresh after a changed fingerprint. The feed bounds subscriptions and
+request size, coalesces bursts and slow-reader output, and closes obsolete
+scope work. Verify source coverage and actual read counts at real consumers.
+Core Node tests cover protocol, authority transitions, readiness races,
+deduplication and cleanup; framework completion also requires real cross-browser
+update, reconnect, scope-change and unsubscribe evidence in distinct consumers.
 
 ## Endpoint spine
 

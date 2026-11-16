@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { readOtherMenuOfferings } from './other-offerings'
 import { readKitchenPresentation } from '../../../kitchen/utils/kitchen-presentation'
 import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
@@ -17,9 +18,10 @@ export type MenuDirectoryContext = {
 export async function readScopedMenuDirectoryContext(
   _db: ReturnType<typeof getRuntimeFirestore>,
   scope: TenantMenuScope,
-  includeOtherOfferings = false
+  includeOtherOfferings = false,
+  sources?: LiveProjectionSources
 ): Promise<MenuDirectoryContext> {
-  const placeData = await readMenuKitchenPlaceData(scope.kitchenId)
+  const placeData = await readMenuKitchenPlaceData(scope.kitchenId, sources)
   const identity = readKitchenPresentation(scope.rootKitchenData, placeData)
   const kitchen = identity.name
     ? {
@@ -37,10 +39,15 @@ export async function readScopedMenuDirectoryContext(
         ...(identity.imageShade ? { image_shade: identity.imageShade } : {}),
       }
     : undefined
-  const kitchenOfferings = await readKitchenOfferings(_db, scope.kitchenId, {
-    kitchen: scope.rootKitchenData,
-    place: placeData,
-  })
+  const kitchenOfferings = await readKitchenOfferings(
+    _db,
+    scope.kitchenId,
+    {
+      kitchen: scope.rootKitchenData,
+      place: placeData,
+    },
+    sources
+  )
   return {
     kitchenOfferings,
     ...(includeOtherOfferings
@@ -48,7 +55,8 @@ export async function readScopedMenuDirectoryContext(
           otherOfferings: await readOtherMenuOfferings(
             _db,
             scope.kitchenId,
-            kitchenOfferings
+            kitchenOfferings,
+            sources
           ),
         }
       : {}),

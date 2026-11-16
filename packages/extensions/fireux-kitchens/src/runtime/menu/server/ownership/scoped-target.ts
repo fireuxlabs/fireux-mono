@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { readKitchenPresentation } from '../../../kitchen/utils/kitchen-presentation'
 import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
 import { createError } from 'h3'
@@ -14,15 +15,17 @@ export const scopedTarget = async (
     kitchenId: string
     kitchenSlug: string
     rootKitchenData: Record<string, unknown>
-  }
+  },
+  sources?: LiveProjectionSources
 ): Promise<ScopedMenuTarget> => {
+  const menuQuery = getRuntimeFirestore()
+    .collection(`kitchens/${input.kitchenId}/menus`)
+    .where('slug', '==', menuId)
+    .limit(2)
+  sources?.watch(menuQuery, { authority: true })
   const [menuSnapshot, placeData] = await Promise.all([
-    getRuntimeFirestore()
-      .collection(`kitchens/${input.kitchenId}/menus`)
-      .where('slug', '==', menuId)
-      .limit(2)
-      .get(),
-    readMenuKitchenPlaceData(input.kitchenId),
+    menuQuery.get(),
+    readMenuKitchenPlaceData(input.kitchenId, sources),
   ])
   if (
     menuSnapshot.docs.length !== 1 ||
@@ -46,13 +49,15 @@ export const scopedTarget = async (
   const kitchenPlaceId = input.kitchenId
   const sproochli = await readKitchenSproochliAttachment(
     getRuntimeFirestore(),
-    input.kitchenId
+    input.kitchenId,
+    sources
   )
 
   const offerings = await readKitchenOfferings(
     getRuntimeFirestore(),
     input.kitchenId,
-    { kitchen: input.rootKitchenData, place: placeData }
+    { kitchen: input.rootKitchenData, place: placeData },
+    sources
   )
   return {
     orderingSource: {

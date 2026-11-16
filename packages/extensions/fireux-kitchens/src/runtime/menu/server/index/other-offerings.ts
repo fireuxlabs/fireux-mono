@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import type { KitchenOffering } from '../../../kitchen/utils/offering-policy'
 import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 
@@ -5,7 +6,8 @@ import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRu
 export async function readOtherMenuOfferings(
   db: ReturnType<typeof getRuntimeFirestore>,
   kitchenId: string,
-  offerings: KitchenOffering[]
+  offerings: KitchenOffering[],
+  sources?: LiveProjectionSources
 ): Promise<Array<{ id: string; name: string; menu_slug: string }>> {
   const active = offerings.filter(
     (offering) =>
@@ -34,9 +36,11 @@ export async function readOtherMenuOfferings(
   const result: Array<{ id: string; name: string; menu_slug: string }> = []
   for (let offset = 0; offset < ids.length; offset += 100) {
     const menus = await db.getAll(
-      ...ids
-        .slice(offset, offset + 100)
-        .map((id) => db.doc(`kitchens/${kitchenId}/menus/${id}`))
+      ...ids.slice(offset, offset + 100).map((id) => {
+        const reference = db.doc(`kitchens/${kitchenId}/menus/${id}`)
+        sources?.watch(reference, { authority: true })
+        return reference
+      })
     )
     for (const menu of menus) {
       const data = menu.data()

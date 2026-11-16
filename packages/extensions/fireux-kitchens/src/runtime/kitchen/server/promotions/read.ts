@@ -1,3 +1,4 @@
+import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { normalizeKitchenPromotion } from '../../utils/promotions/pricing'
 import type { PublicKitchenPromotion } from '../../models/promotion.model'
@@ -6,13 +7,15 @@ export async function readMenuPromotions(
   kitchenId: string,
   itemIds: string[],
   timezone: string,
-  currency: string
+  currency: string,
+  sources?: LiveProjectionSources
 ): Promise<PublicKitchenPromotion[]> {
   if (!kitchenId || !itemIds.length) return []
-  const snapshot = await getRuntimeFirestore()
+  const query = getRuntimeFirestore()
     .collection(`kitchens/${kitchenId}/promotions`)
     .where('status', '==', 'active')
-    .get()
+  sources?.watch(query)
+  const snapshot = await query.get()
   return snapshot.docs
     .flatMap((doc) => {
       const data = doc.data()
