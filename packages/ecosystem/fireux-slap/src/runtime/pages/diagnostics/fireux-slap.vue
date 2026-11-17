@@ -51,7 +51,7 @@ definePageMeta({
     icon: 'i-lucide-store',
     desktop: true,
     group: 'slap',
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
   },
 })
 

@@ -15,8 +15,8 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'create',
   visibility: { modules: ['fireux-reservations'] },
   requiresAuth: true,

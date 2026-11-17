@@ -7,7 +7,7 @@ definePageMeta({
   layout: 'dashboard',
   nav: {
     hidden: true,
-    layouts: ['dashboard'],
+    menus: ['dashboard'],
   },
   requiresAuth: true,
 })

@@ -1,8 +1,8 @@
 <template><KitchenPrepAndProductionPlanning /></template>
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspace: 'kitchen',
   workspaceSurface: 'browse',
   requiresAuth: true,

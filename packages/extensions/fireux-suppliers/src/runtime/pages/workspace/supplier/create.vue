@@ -20,8 +20,8 @@
 const canCreate = true
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'create',
   visibility: { modules: ['fireux-suppliers'] },
   nav: {
@@ -33,7 +33,7 @@ definePageMeta({
     order: 5,
     desktop: false,
     mobile: false,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: false,

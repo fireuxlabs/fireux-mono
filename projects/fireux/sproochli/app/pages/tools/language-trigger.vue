@@ -1,15 +1,17 @@
 <template>
-  <UPage ref="toolRoot">
-    <SproochliProviderToolsLanguageTrigger
-      :selected-language="config.selectedLanguage"
-      :default-language="config.defaultLanguage"
-      :attached-languages="config.attachedLanguages"
-      :cached-languages="config.cachedLanguages"
-      :public-languages="config.publicLanguages"
-      :on-demand-languages="config.onDemandLanguages"
-      :show-group-labels="config.showGroupLabels"
-    />
-  </UPage>
+  <UMain>
+    <UPage ref="toolRoot">
+      <SproochliProviderToolsLanguageTrigger
+        :selected-language="config.selectedLanguage"
+        :default-language="config.defaultLanguage"
+        :attached-languages="config.attachedLanguages"
+        :cached-languages="config.cachedLanguages"
+        :public-languages="config.publicLanguages"
+        :on-demand-languages="config.onDemandLanguages"
+        :show-group-labels="config.showGroupLabels"
+      />
+    </UPage>
+  </UMain>
 </template>
 
 <script setup lang="ts">

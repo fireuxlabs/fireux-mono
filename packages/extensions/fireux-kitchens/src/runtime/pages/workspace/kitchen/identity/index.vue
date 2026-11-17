@@ -24,8 +24,8 @@ watchEffect(() =>
 )
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
@@ -40,7 +40,7 @@ definePageMeta({
     order: 1,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
     children: [
       {
         label: 'Context',

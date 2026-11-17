@@ -11,7 +11,7 @@
       </NuxtLink>
     </header>
 
-    <slot />
+    <UMain><slot /></UMain>
 
     <BookWithNatsNav />
     <footer class="nats-footer">

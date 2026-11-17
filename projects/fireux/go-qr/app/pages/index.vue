@@ -64,7 +64,7 @@ definePageMeta({
     order: 0,
     desktop: true,
     mobile: true,
-    layouts: ['landing'],
+    menus: ['landing'],
   },
 })
 

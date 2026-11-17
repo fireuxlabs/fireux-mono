@@ -5,8 +5,8 @@
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 const id = useRouteParam('preparationId')
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceHeader: 'content',
   workspaceSurface: 'detail',
   requiresAuth: true,

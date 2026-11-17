@@ -17,27 +17,27 @@ export default defineAppConfig({
     overrides: {
       kitchens: {
         order: 10,
-        layouts: ['default', 'landing'],
+        menus: ['default', 'landing'],
         position: 'top',
       },
       menus: {
         order: 11,
         desktop: true,
         mobile: true,
-        layouts: ['default', 'landing'],
+        menus: ['default', 'landing'],
         position: 'top',
       },
       jobs: {
         label: 'Misebox Jobs',
         order: 40,
         position: 'bottom',
-        layouts: ['default', 'landing'],
+        menus: ['default', 'landing'],
       },
       professionals: {
         label: 'Hospitality professionals',
         order: 41,
         position: 'bottom',
-        layouts: ['default'],
+        menus: ['default'],
       },
     },
   },

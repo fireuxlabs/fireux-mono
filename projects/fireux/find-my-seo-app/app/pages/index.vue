@@ -5,9 +5,7 @@
       description="Search-led profiles help you compare specialists by service, sector and proof."
     >
       <template #headline>
-        <UBadge color="primary" variant="soft">
-          SEO Professional Pool
-        </UBadge>
+        <UBadge color="primary" variant="soft"> SEO Professional Pool </UBadge>
       </template>
 
       <template #links>
@@ -41,7 +39,7 @@ definePageMeta({
     icon: 'i-lucide-home',
     desktop: true,
     mobile: true,
-    layouts: ['landing'],
+    menus: ['landing'],
   },
 })
 

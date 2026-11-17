@@ -67,7 +67,7 @@ definePageMeta({
     icon: 'i-lucide-circle-user-round',
     desktop: true,
     group: 'core',
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
     order: 45,
   },
 })

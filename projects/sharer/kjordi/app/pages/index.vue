@@ -1,10 +1,12 @@
 <template>
-  <UPageHero title="Kjordy">
-    <template #headline>
-      <UAvatar src="/img/app/logo.png" alt="Kjordy" size="3xl" />
-    </template>
-    <ShareProfilePublicLinks />
-  </UPageHero>
+  <UMain>
+    <UPageHero title="Kjordy">
+      <template #headline>
+        <UAvatar src="/img/app/logo.png" alt="Kjordy" size="3xl" />
+      </template>
+      <ShareProfilePublicLinks />
+    </UPageHero>
+  </UMain>
 </template>
 
 <script setup lang="ts">

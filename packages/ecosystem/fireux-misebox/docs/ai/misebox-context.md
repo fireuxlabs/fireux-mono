@@ -617,7 +617,8 @@ Overview presents one entrance per visible Kitchen area, using route-owned names
 descriptions and destinations; it does not flatten child pages or show placeholder
 summaries. Group labels open their indexes. Orders, Prep & Production, Stock &
 Purchasing, Food Safety, Team, Reports and Settings use the same
-Core named Workspace composition with route-owned content and one NuxtPage outlet.
+Core native Workspace layout with route-owned content and one App-supplied
+NuxtPage outlet.
 Their indexes are mini overviews; the child pages remain the working surfaces.
 Menus is the group index at `/workspace/kitchen/menu`
 route. Its shared page header and Menu status precede KitchenAI; Items, Promotions
@@ -1714,11 +1715,14 @@ Missing or cleared titles display “Food & drinks”. Public food portal cards 
 this title rather than concatenating Menu names; service configurations remain
 separate Kitchen-owned records.
 
-Kitchen pages declare `workspacePage: true` and `layout: false`. Core FireuxApp
-selects `workspace/components/Index.vue`, composing Sidebar and Page. Page owns
-Navbar, Breadcrumbs and the root NuxtPage outlet. Domain routes supply named
-content components; group indexes use PageLinks when they need navigation cards.
-The old Workspace layout and GroupPage shell are retired. Native Nuxt UI slots
+Kitchen pages select native `layout: 'workspace'`. Core FireuxApp supplies one
+NuxtPage to NuxtLayout; the native Workspace layout composes Sidebar and Page.
+Page owns the main, Navbar, Breadcrumbs and error boundary and consumes the
+supplied page slot. Domain routes retain named content and authority; group
+indexes use PageLinks when they need navigation cards. Explicit group indexes
+and trails with only a current-page label omit breadcrumbs; child/detail pages
+retain useful registered ancestry. Navigation placement uses `nav.menus`
+independently of native layout selection. Native Nuxt UI slots
 remain component API details, not custom FireUX page-composition contracts.
 
 The Menus group overview composes `Menu/Index.vue` with one shared

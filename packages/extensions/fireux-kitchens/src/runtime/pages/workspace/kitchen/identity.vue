@@ -4,8 +4,8 @@
 
 <script setup>
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   requiresAuth: true,
   requiresSelection: true,
 })

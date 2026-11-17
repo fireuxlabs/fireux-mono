@@ -1,78 +1,80 @@
 <!-- Concurrent edit — 2026-07-21 16:56 CEST — Dashboard Family pass: keep the profile control aligned with sidebar collapse state. -->
 <template>
-  <UDashboardGroup unit="rem" class="workspace-shell">
-    <UDashboardSidebar
-      id="core-dashboard"
-      v-model:open="open"
-      collapsible
-      resizable
-      class="workspace-sidebar"
-      :ui="{
-        body: 'workspace-sidebar__body',
-      }"
-    >
-      <template #header="{ collapsed }">
-        <div class="workspace-sidebar__brand">
-          <FireLayoutsDashboardProfileButton
-            v-if="!collapsed"
-            :collapsed="false"
-          />
-          <UDashboardSidebarCollapse
-            :class="
-              collapsed
-                ? 'workspace-sidebar__toggle--compact'
-                : 'workspace-sidebar__toggle'
-            "
-          />
-        </div>
-      </template>
+  <div>
+    <UDashboardGroup unit="rem" class="workspace-shell">
+      <UDashboardSidebar
+        id="core-dashboard"
+        v-model:open="open"
+        collapsible
+        resizable
+        class="workspace-sidebar"
+        :ui="{
+          body: 'workspace-sidebar__body',
+        }"
+      >
+        <template #header="{ collapsed }">
+          <div class="workspace-sidebar__brand">
+            <FireLayoutsDashboardProfileButton
+              v-if="!collapsed"
+              :collapsed="false"
+            />
+            <UDashboardSidebarCollapse
+              :class="
+                collapsed
+                  ? 'workspace-sidebar__toggle--compact'
+                  : 'workspace-sidebar__toggle'
+              "
+            />
+          </div>
+        </template>
 
-      <template #default="{ collapsed }">
-        <div class="workspace-sidebar__navigation">
-          <UNavigationMenu
-            v-if="topNav.length"
-            :collapsed="collapsed ?? false"
-            :items="topNav"
-            orientation="vertical"
-          />
+        <template #default="{ collapsed }">
+          <div class="workspace-sidebar__navigation">
+            <UNavigationMenu
+              v-if="topNav.length"
+              :collapsed="collapsed ?? false"
+              :items="topNav"
+              orientation="vertical"
+            />
 
-          <USeparator
-            v-if="topNav.length && (middleNav.length || bottomNav.length)"
-          />
+            <USeparator
+              v-if="topNav.length && (middleNav.length || bottomNav.length)"
+            />
 
-          <UNavigationMenu
-            v-if="middleNav.length"
-            :collapsed="collapsed ?? false"
-            :items="middleNav"
-            orientation="vertical"
-          />
+            <UNavigationMenu
+              v-if="middleNav.length"
+              :collapsed="collapsed ?? false"
+              :items="middleNav"
+              orientation="vertical"
+            />
 
-          <USeparator v-if="middleNav.length && bottomNav.length" />
+            <USeparator v-if="middleNav.length && bottomNav.length" />
 
-          <UNavigationMenu
-            v-if="bottomNav.length"
-            :collapsed="collapsed ?? false"
-            :items="bottomNav"
-            orientation="vertical"
-          />
-        </div>
-      </template>
+            <UNavigationMenu
+              v-if="bottomNav.length"
+              :collapsed="collapsed ?? false"
+              :items="bottomNav"
+              orientation="vertical"
+            />
+          </div>
+        </template>
 
-      <template #footer="{ collapsed }">
-        <FireLayoutsSharedSideBarFooter :collapsed="collapsed ?? false" />
-      </template>
-    </UDashboardSidebar>
+        <template #footer="{ collapsed }">
+          <FireLayoutsSharedSideBarFooter :collapsed="collapsed ?? false" />
+        </template>
+      </UDashboardSidebar>
 
-    <div class="fx-dashboard-content">
-      <slot />
-    </div>
-  </UDashboardGroup>
+      <div class="fx-dashboard-content">
+        <UMain><slot /></UMain>
+      </div>
+    </UDashboardGroup>
 
-  <FireLayoutsSharedRoleBadge />
+    <FireLayoutsSharedRoleBadge />
 
-  <FireLayoutsSharedNotificationsSlideover
-    v-model:open="isNotificationsSlideoverOpen"
-  />
+    <FireLayoutsSharedNotificationsSlideover
+      v-model:open="isNotificationsSlideoverOpen"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">

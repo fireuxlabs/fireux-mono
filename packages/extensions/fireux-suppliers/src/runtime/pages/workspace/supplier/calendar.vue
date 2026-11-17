@@ -13,8 +13,8 @@
 </template>
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   pageTransition: false,
   workspace: 'supplier',
   workspaceSurface: 'browse',
@@ -28,7 +28,7 @@ definePageMeta({
     order: 1,
     desktop: false,
     mobile: false,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: true,

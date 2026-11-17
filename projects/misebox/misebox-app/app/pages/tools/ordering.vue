@@ -1,9 +1,11 @@
 <template>
-  <UPage>
-    <div ref="toolRoot">
-      <ProviderToolsOrdering />
-    </div>
-  </UPage>
+  <UMain>
+    <UPage>
+      <div ref="toolRoot">
+        <ProviderToolsOrdering />
+      </div>
+    </UPage>
+  </UMain>
 </template>
 
 <script setup lang="ts">

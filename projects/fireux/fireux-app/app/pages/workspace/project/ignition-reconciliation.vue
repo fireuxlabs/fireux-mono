@@ -108,8 +108,8 @@ const searchStatusLabels = {
   declared: 'Declared',
 } satisfies Record<typeof report.search.status, string>
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   requiresAuth: true,
   requiresSelection: false,

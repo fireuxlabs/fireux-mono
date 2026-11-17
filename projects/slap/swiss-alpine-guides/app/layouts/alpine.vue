@@ -2,7 +2,7 @@
   <div class="alpine-shell">
     <a class="alpine-skip" href="#content">Skip to content</a>
     <NavigationHeader />
-    <slot />
+    <UMain><slot /></UMain>
     <footer class="alpine-footer">
       <span>SWISS ALPINE GUIDES</span>
       <p>

@@ -21,8 +21,8 @@ const route = useRoute()
 const test = useProjectWorkspaceTest()
 const recordId = computed(() => String(route.params.id || ''))
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   pageTransition: false,
   workspace: 'project',
   workspaceSurface: 'detail',

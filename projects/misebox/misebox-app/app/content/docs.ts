@@ -69,7 +69,7 @@ export default defineFireuxApp({
 })`
 
 export const miseboxRootExample = `<template>
-  <FireuxWorkspaceApp />
+  <FireuxApp />
 </template>`
 
 export const miseboxDocsResources = [

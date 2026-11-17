@@ -33,7 +33,7 @@
 
     <div class="fx-layout-main">
       <UContainer>
-        <slot />
+        <UMain><slot /></UMain>
       </UContainer>
     </div>
 

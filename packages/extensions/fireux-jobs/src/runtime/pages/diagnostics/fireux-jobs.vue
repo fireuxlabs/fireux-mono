@@ -72,7 +72,7 @@ definePageMeta({
     icon: 'i-lucide-briefcase',
     desktop: true,
     group: 'ext',
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
   },
 })
 </script>

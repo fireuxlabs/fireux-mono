@@ -1,8 +1,8 @@
 <template><KitchenMenuServices /></template>
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   requiresAuth: true,
   requiresSelection: true,
   visibility: { modules: ['fireux-kitchens'] },
@@ -15,7 +15,7 @@ definePageMeta({
     icon: 'i-lucide-shopping-bag',
     position: 'top',
     order: 12,
-    layouts: ['workspace'],
+    menus: ['workspace'],
     desktop: true,
     mobile: true,
   },

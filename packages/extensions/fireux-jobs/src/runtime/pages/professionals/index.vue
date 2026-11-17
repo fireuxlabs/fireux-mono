@@ -23,7 +23,6 @@ definePageMeta({
     order: 62,
     desktop: true,
     mobile: true,
-    layouts: ['default'],
   },
   title: 'Professionals',
   description:

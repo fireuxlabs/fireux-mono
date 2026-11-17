@@ -23,7 +23,6 @@ definePageMeta({
     order: 65,
     desktop: false,
     mobile: false,
-    layouts: ['default'],
   },
   title: 'Hiring profiles',
   description:

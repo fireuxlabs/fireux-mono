@@ -55,8 +55,8 @@ import type { KitchenLandingIntent } from '../../../kitchen/content/landing-inte
 const performLandingAction = (intent: KitchenLandingIntent) =>
   workspaceSurface.value?.performAction(intent) ?? false
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   pageTransition: false,
   workspace: 'kitchen',
   workspaceSurface: 'browse',

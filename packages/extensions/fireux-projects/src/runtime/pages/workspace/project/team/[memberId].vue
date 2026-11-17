@@ -41,8 +41,8 @@ const member = computed(() =>
   team.state.value.team.members.find((member) => member.id === memberId.value)
 )
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   pageTransition: false,
   workspace: 'project',
   workspaceSurface: 'detail',

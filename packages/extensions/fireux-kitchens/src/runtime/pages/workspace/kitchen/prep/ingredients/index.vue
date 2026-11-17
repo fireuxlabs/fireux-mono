@@ -10,8 +10,8 @@ import { provideKitchenIngredientsContext } from '../../../../../kitchen/composa
 provideKitchenIngredientsContext()
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },
@@ -27,7 +27,7 @@ definePageMeta({
     order: 33,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: false,
   requiresSelection: false,

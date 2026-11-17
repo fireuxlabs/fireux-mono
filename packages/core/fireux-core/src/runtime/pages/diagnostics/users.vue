@@ -119,7 +119,7 @@ definePageMeta({
     icon: 'i-lucide-users',
     desktop: true,
     group: 'core',
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
     order: 30,
   },
   title: 'Diagnostics · Users',

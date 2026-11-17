@@ -7,8 +7,8 @@ import { provideKitchenItemsContext } from '../../../../../kitchen/composables/w
 provideKitchenItemsContext('all')
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceHeader: 'content',
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
@@ -24,7 +24,7 @@ definePageMeta({
     order: 10,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: false,
   requiresSelection: false,

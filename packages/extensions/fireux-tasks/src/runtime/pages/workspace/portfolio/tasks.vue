@@ -6,8 +6,8 @@
 import PortfolioTasks from '../../../portfolio/components/Workspace/Tasks/Index.vue'
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-tasks'] },
   nav: {
@@ -18,7 +18,7 @@ definePageMeta({
     order: 50,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: true,

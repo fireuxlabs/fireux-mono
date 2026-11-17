@@ -24,7 +24,6 @@ definePageMeta({
     order: 43,
     desktop: false,
     mobile: false,
-    layouts: ['default'],
   },
   layout: 'default',
   name: 'DriversIndexPage',

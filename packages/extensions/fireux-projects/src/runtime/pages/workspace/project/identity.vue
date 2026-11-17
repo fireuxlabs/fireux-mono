@@ -34,8 +34,8 @@ watchEffect(() =>
   })
 )
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   nav: {
     key: 'workspace-project-identity',
@@ -45,7 +45,7 @@ definePageMeta({
     order: 3,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: true,

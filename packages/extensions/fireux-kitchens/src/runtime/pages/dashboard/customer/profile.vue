@@ -34,7 +34,7 @@ definePageMeta({
     icon: 'i-lucide-receipt-text',
     position: 'middle',
     desktop: true,
-    layouts: ['dashboard'],
+    menus: ['dashboard'],
     group: 'profiles',
     profileId: 'customer',
   },

@@ -11,7 +11,7 @@ export default defineAppConfig({
         label: 'Showcase',
         icon: '',
         order: 50,
-        layouts: ['default', 'landing', 'framework'],
+        menus: ['default', 'landing', 'framework'],
       },
     },
   },

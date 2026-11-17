@@ -1,5 +1,7 @@
 <template>
-  <MenuKiosk :kitchen-slug="kitchenSlug" />
+  <UMain>
+    <MenuKiosk :kitchen-slug="kitchenSlug" />
+  </UMain>
 </template>
 
 <script setup lang="ts">

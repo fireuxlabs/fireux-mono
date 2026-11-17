@@ -6,8 +6,8 @@
 import PortfolioDocuments from '../../../portfolio/components/Workspace/Documents/Index.vue'
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-documents'] },
   nav: {
@@ -18,7 +18,7 @@ definePageMeta({
     order: 40,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: true,

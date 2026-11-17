@@ -69,7 +69,7 @@ definePageMeta({
     key: 'framework-theme',
     label: 'Theme',
     order: 30,
-    layouts: ['framework'],
+    menus: ['framework'],
   },
 })
 useSeoMeta({

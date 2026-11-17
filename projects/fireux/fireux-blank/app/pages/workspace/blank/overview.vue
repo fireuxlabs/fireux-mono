@@ -12,8 +12,8 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   nav: {
     key: 'workspace-blank-overview',
@@ -23,7 +23,7 @@ definePageMeta({
     order: 0,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: true,

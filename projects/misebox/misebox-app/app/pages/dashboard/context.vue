@@ -79,7 +79,7 @@ definePageMeta({
     position: 'middle',
     order: 11,
     desktop: true,
-    layouts: ['dashboard'],
+    menus: ['dashboard'],
   },
 })
 useHead({ title: 'AI context | Misebox' })

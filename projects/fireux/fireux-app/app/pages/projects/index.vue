@@ -25,7 +25,7 @@ definePageMeta({
     order: 60,
     desktop: true,
     mobile: true,
-    layouts: ['default', 'landing'],
+    menus: ['default', 'landing'],
   },
   title: 'Projects',
   description: 'Browse active FireUX Projects.',

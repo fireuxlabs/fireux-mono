@@ -160,8 +160,8 @@ const reuseLabel = (
     'needs-implementation': 'Implementation still needed.',
   })[reuse]
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   requiresAuth: true,
   requiresSelection: false,

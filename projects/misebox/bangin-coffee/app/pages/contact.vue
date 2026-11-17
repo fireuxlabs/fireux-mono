@@ -74,7 +74,7 @@ definePageMeta({
     icon: 'i-lucide-message-circle',
     desktop: true,
     mobile: true,
-    layouts: ['landing'],
+    menus: ['landing'],
   },
 })
 

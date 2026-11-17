@@ -1,24 +1,29 @@
 <template>
-  <UContainer>
-    <UPage>
-      <UPageHeader
-        title="Bookings"
-        description="Configure the inputs, then try the booking experience."
-      />
-      <UPageBody>
-        <div class="booking-playground">
-          <UPageCard
-            title="Input"
-            icon="i-lucide-sliders-horizontal"
-            variant="subtle"
-          >
-            <BookingSandboxConfiguration v-model="configuration" />
-          </UPageCard>
-          <BookingsSurface :configuration="configuration" :confirm="confirm" />
-        </div>
-      </UPageBody>
-    </UPage>
-  </UContainer>
+  <UMain>
+    <UContainer>
+      <UPage>
+        <UPageHeader
+          title="Bookings"
+          description="Configure the inputs, then try the booking experience."
+        />
+        <UPageBody>
+          <div class="booking-playground">
+            <UPageCard
+              title="Input"
+              icon="i-lucide-sliders-horizontal"
+              variant="subtle"
+            >
+              <BookingSandboxConfiguration v-model="configuration" />
+            </UPageCard>
+            <BookingsSurface
+              :configuration="configuration"
+              :confirm="confirm"
+            />
+          </div>
+        </UPageBody>
+      </UPage>
+    </UContainer>
+  </UMain>
 </template>
 
 <script setup lang="ts">

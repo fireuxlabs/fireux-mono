@@ -59,7 +59,7 @@ definePageMeta({
     icon: 'i-lucide-chef-hat',
     desktop: true,
     group: 'ext',
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
   },
 })
 </script>

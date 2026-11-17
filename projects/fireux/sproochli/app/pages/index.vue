@@ -163,7 +163,7 @@ definePageMeta({
     icon: 'i-lucide-home',
     desktop: true,
     mobile: true,
-    layouts: ['landing'],
+    menus: ['landing'],
   },
 })
 

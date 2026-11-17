@@ -2,12 +2,10 @@ import { addComponent, type Resolver } from '@nuxt/kit'
 import { registerComponentsDir } from './module-helpers.ts'
 
 export function configureComponents(resolver: Resolver) {
-  for (const name of ['FireuxApp', 'FireuxWorkspaceApp']) {
-    addComponent({
-      name,
-      filePath: resolver.resolve(`./runtime/app/components/${name}.vue`),
-    })
-  }
+  addComponent({
+    name: 'FireuxApp',
+    filePath: resolver.resolve('./runtime/app/components/FireuxApp.vue'),
+  })
   // Shared Fire components are registered by the native runtime layer.
   registerComponentsDir(resolver, './runtime/workspace/components', {
     global: false,
@@ -19,7 +17,7 @@ export function configureComponents(resolver: Resolver) {
     global: false,
     pathPrefix: true,
     prefix: 'App',
-    ignore: ['FireuxApp.vue', 'FireuxWorkspaceApp.vue'],
+    ignore: ['FireuxApp.vue'],
   })
 
   registerComponentsDir(resolver, './runtime/app/app-user/components', {

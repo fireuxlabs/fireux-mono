@@ -2,7 +2,7 @@
   <div class="fx-layout-shell">
     <FrameworkHeader />
     <div class="fx-layout-main fx-layout-main--landing">
-      <slot />
+      <UMain><slot /></UMain>
     </div>
     <FrameworkFooter />
   </div>

@@ -28,7 +28,7 @@ definePageMeta({
     position: 'middle',
     order: 10,
     desktop: true,
-    layouts: ['dashboard'],
+    menus: ['dashboard'],
   },
   requiresAuth: true,
   roles: ['admin'],

@@ -13,8 +13,8 @@
 </template>
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   pageTransition: false,
   workspace: 'blank',
   workspaceSurface: 'browse',
@@ -28,7 +28,7 @@ definePageMeta({
     order: 900,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
 })
 useSeoMeta({

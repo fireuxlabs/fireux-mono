@@ -382,7 +382,8 @@ test('shared Workspace breadcrumbs own Kitchen route ancestry', () => {
     compilerOptions: { target: ts.ScriptTarget.ESNext },
   }).outputText
   const prep = navigation(join(root, 'prep/index.vue'))
-  const project = (path) =>
+  const menus = navigation(join(root, 'menu/index.vue'))
+  const project = (path, nav) =>
     Function(
       'computed',
       'useRoute',
@@ -398,11 +399,7 @@ test('shared Workspace breadcrumbs own Kitchen route ancestry', () => {
       }),
       () => ({
         path,
-        meta: {
-          nav: {
-            label: path.endsWith('recipes') ? 'Recipes' : 'Menuss',
-          },
-        },
+        meta: { nav },
       }),
       () => ({
         currentWorkspace: { value: 'kitchen' },
@@ -414,6 +411,7 @@ test('shared Workspace breadcrumbs own Kitchen route ancestry', () => {
               to: '/workspace/kitchen/overview',
             },
             { ...prep, to: '/workspace/kitchen/prep' },
+            { ...menus, to: '/workspace/kitchen/menu' },
           ],
         },
       }),
@@ -421,13 +419,20 @@ test('shared Workspace breadcrumbs own Kitchen route ancestry', () => {
       () => 'Kitchen'
     )
   assert.deepEqual(
-    project('/workspace/kitchen/prep/recipes').map((item) => item.to),
+    project('/workspace/kitchen/prep/recipes', { label: 'Recipes' }).map(
+      (item) => item.to
+    ),
     ['/workspace/kitchen/prep', undefined]
   )
   assert.deepEqual(
-    project('/workspace/kitchen/menu/items').map((item) => item.to),
-    [undefined]
+    project(
+      '/workspace/kitchen/menu/items',
+      navigation(join(root, 'menu/items/index.vue'))
+    ).map((item) => item.to),
+    ['/workspace/kitchen/menu', undefined]
   )
+  assert.deepEqual(project('/workspace/kitchen/menu', menus), [])
+  assert.deepEqual(project('/workspace/kitchen/prep', prep), [])
 })
 
 test('Developer is not a Workspace navigation or Overview entrance', () => {
@@ -623,7 +628,7 @@ test('every declared Kitchen group index is content under the Workspace page own
           )
         : source
     assert.ok(!composition.includes('WorkspaceGroupPage'), relative(root, file))
-    assert.match(source, /workspacePage: true/, relative(root, file))
+    assert.match(source, /layout: 'workspace'/, relative(root, file))
     assert.ok(!composition.includes('<UDashboardPanel'), relative(root, file))
   }
   assert.equal(existsSync(join(root, 'menu-setup.vue')), false)

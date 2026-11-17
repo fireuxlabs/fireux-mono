@@ -66,8 +66,8 @@ const project = computed(() =>
 const loading = source.pending
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   pageTransition: false,
   workspace: 'project',
   workspaceSurface: 'detail',

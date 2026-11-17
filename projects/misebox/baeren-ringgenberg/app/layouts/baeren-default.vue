@@ -6,7 +6,7 @@
       class="baeren-default-layout__body"
       aria-label="Hotel Bären Ringgenberg"
     >
-      <slot />
+      <UMain><slot /></UMain>
     </section>
 
     <BaerenNav v-if="!chromeHidden" />

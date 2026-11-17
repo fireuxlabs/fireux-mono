@@ -37,6 +37,7 @@ export function useWorkspacePageNavigation() {
   const contentHeader = computed(() => route.meta.workspaceHeader === 'content')
   const children = computed(() => current.value?.children || [])
   const breadcrumbs = computed(() => {
+    if (metadata.value?.groupIndex || current.value?.groupIndex) return []
     const items: { label: string; to?: string }[] = []
     const seen = new Set<string>([route.path])
     const add = (label: string, to?: string) => {
@@ -56,7 +57,7 @@ export function useWorkspacePageNavigation() {
         add(item.label, item.to)
     }
     items.push({ label: title.value })
-    return items
+    return items.length > 1 ? items : []
   })
   return { title, description, contentHeader, children, breadcrumbs }
 }

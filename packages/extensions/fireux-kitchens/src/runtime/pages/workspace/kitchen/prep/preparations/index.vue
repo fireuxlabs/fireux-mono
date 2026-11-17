@@ -3,8 +3,8 @@
 </template>
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceHeader: 'content',
   workspaceSurface: 'browse',
   requiresAuth: true,

@@ -46,7 +46,7 @@ definePageMeta({
     icon: 'i-lucide-package',
     desktop: true,
     group: 'ext',
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
   },
 })
 </script>

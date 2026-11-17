@@ -3,7 +3,7 @@
     <LayoutsMiseboxTenantHeader v-if="!chromeHidden" />
 
     <section class="latap-default-layout__body" aria-label="La Tap Berne">
-      <slot />
+      <UMain><slot /></UMain>
     </section>
 
     <LaTapBerneNav v-if="!chromeHidden" />

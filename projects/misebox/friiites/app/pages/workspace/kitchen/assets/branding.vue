@@ -153,8 +153,8 @@ const brandObjects = computed(() => [
 ])
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   requiresAuth: true,
   requiresSelection: true,
@@ -166,7 +166,7 @@ definePageMeta({
     order: 4,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
 })
 </script>

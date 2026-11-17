@@ -25,7 +25,6 @@ definePageMeta({
     order: 50,
     desktop: false,
     mobile: false,
-    layouts: ['default'],
   },
   layout: 'default',
   name: 'SuppliersIndexPage',

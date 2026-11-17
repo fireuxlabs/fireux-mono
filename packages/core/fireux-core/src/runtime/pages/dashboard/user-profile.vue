@@ -22,7 +22,7 @@ definePageMeta({
     position: 'top',
     order: 30,
     desktop: true,
-    layouts: ['dashboard'],
+    menus: ['dashboard'],
   },
   requiresAuth: true,
 })

@@ -4,7 +4,7 @@
     <FriiitesOrderBanner />
 
     <div class="templates-layout__page">
-      <slot />
+      <UMain><slot /></UMain>
     </div>
   </div>
 </template>

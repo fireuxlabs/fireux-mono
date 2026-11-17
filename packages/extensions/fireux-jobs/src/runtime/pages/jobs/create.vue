@@ -90,7 +90,6 @@ definePageMeta({
     order: 61,
     desktop: false,
     mobile: false,
-    layouts: ['default'],
   },
   title: 'Post a job',
   requiresAuth: true,

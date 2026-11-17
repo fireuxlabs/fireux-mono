@@ -13,8 +13,8 @@ const intro = {
   ai: 'No AI actions are connected to this surface.',
 }
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   nav: {
     key: 'workspace-project-calendar',
@@ -24,7 +24,7 @@ definePageMeta({
     order: 2,
     desktop: false,
     mobile: false,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: true,

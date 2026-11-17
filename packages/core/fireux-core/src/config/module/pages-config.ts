@@ -1,6 +1,7 @@
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import { requireNativeRuntimeLayer } from './runtime-layer.ts'
+import { pageLayoutName } from '../../runtime/app/utils/page-layout.ts'
 
 export function configurePages(resolver: Resolver, nuxt: Nuxt) {
   requireNativeRuntimeLayer(resolver, nuxt)
@@ -18,13 +19,8 @@ export function configurePageTransitions(nuxt: Nuxt) {
   nuxt.hook('pages:resolved', (pages: any[]) => {
     const applyPolicy = (items: any[], parentLayout?: string | false) => {
       for (const page of items) {
-        const layout = page?.meta?.layout ?? parentLayout
-        if (
-          layout === 'dashboard' ||
-          page?.meta?.workspacePage === true ||
-          String(page?.path ?? '').startsWith('/workspace') ||
-          String(page?.file ?? '').includes('/pages/workspace/')
-        ) {
+        const layout = pageLayoutName(page?.meta?.layout) ?? parentLayout
+        if (layout === 'dashboard' || layout === 'workspace') {
           page.meta = { ...(page.meta || {}), pageTransition: false }
         }
         if (Array.isArray(page?.children)) {

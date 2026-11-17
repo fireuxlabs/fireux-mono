@@ -1,16 +1,17 @@
 # Layouts spine map
 
-Updated: 2026-11-15
-Ref: a068b6eaa
+Updated: 2026-11-17
+Ref: e20047a13
 Role: map, not canon
 
 ## Purpose and authority
 
-Map Nuxt route rendering and shared chrome ownership. Nuxt owns the layout and
-`NuxtPage` APIs; see the [Nuxt integration map](nuxt4.md) for upstream docs.
-Current source establishes implementation. FireUX's accepted Workspace route
-composition is recorded here; this map does not make another route-rendering
-layout pattern universal.
+Map native Nuxt route rendering, content landmarks and shared chrome ownership.
+Nuxt owns layout selection, asynchronous layout loading and `NuxtPage`; see the
+[Nuxt integration map](nuxt4.md) and the official
+[layout guide](https://nuxt.com/docs/4.x/directory-structure/app/layouts).
+Current source and exercised checks establish implementation. Human product
+requirements establish the intended differences between surfaces.
 
 ## Links
 
@@ -21,208 +22,171 @@ layout pattern universal.
 
 ## Rendering ownership across surfaces
 
-| Surface                                  | Route outlet owner                                        | Surrounding UI and content                                                              |
-| ---------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| Public pages and Entity indexes/details  | FireuxApp or the App root supplies NuxtPage to NuxtLayout | Layout owns site chrome; Entity routes compose their named content, readers and actions |
-| Auth                                     | The same App-root outlet, inside the Auth layout slot     | Auth keeps its client-only account surface                                              |
-| Dashboard and Diagnostics                | The same App-root outlet, inside the selected layout slot | Each layout keeps its navigation; page content stays route-owned                        |
-| Workspace, including Entity capabilities | Core WorkspacePage                                        | One shared panel, Navbar, breadcrumbs and error boundary; domain pages supply content   |
-| Genuine nested route                     | Its route parent                                          | Kitchen Identity delegates to its real child pages through a nested NuxtPage            |
-| Embedded tool                            | Its explicit App branch                                   | Go QR keeps a UApp-wrapped tool outlet without ordinary site chrome                     |
+| Surface                                                  | Route outlet owner                            | Content landmark and surrounding UI                                                                                                                             |
+| -------------------------------------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Public, Auth, Dashboard, Diagnostics and product layouts | FireuxApp supplies one NuxtPage to NuxtLayout | The selected native layout consumes that slot inside one main; its existing chrome remains outside the landmark.                                                |
+| Workspace and Entity capabilities                        | The same FireuxApp outlet                     | Native workspace layout supplies the persistent frame; WorkspacePage owns its main, Navbar, breadcrumbs and error boundary and consumes the supplied page slot. |
+| Effective layout: false after middleware                 | The same FireuxApp outlet                     | Rendered route content supplies its own UMain. Empty placeholders and redirect-only pages require no invented content or frame.                                 |
+| Genuine nested route                                     | Its route parent                              | A real parent/child relationship can require a nested NuxtPage, as with Kitchen Identity. It shares the selected layout's landmark.                             |
+| Go QR embedded tool                                      | Its explicit App branch                       | The existing UApp/UMain-wrapped outlet bypasses ordinary chrome and App initialization.                                                                         |
+| Standalone error page                                    | ErrorPage                                     | Its UMain remains independent of the ordinary App shell.                                                                                                        |
 
-One owner applies at each route boundary. A real parent/child route can require
-another outlet; a layout must consume the page it was supplied. A public Entity
-header introduces a record or collection, while a Workspace navbar identifies
-the active operational context. Similar titles alone do not make them the same
-responsibility.
+One owner applies at each route boundary. A layout consumes the page it receives;
+it does not open another page outlet. Layouted route pages and their descendants
+reuse that landmark. A public Entity header introduces a record or collection;
+a Workspace navbar identifies the operational context. Similar titles do not
+merge those responsibilities.
 
 ## Layout admission
 
-A new Nuxt layout needs real repeated route-family chrome or lifecycle ownership.
-Name its consumers and exact difference from the nearest existing layout first;
-a folder, supported `<slot>` or valid Nuxt rendering alone does not prove that
-boundary. Use ordinary named component composition when the difference is only
-page content or local content presentation. The
+A new layout needs real repeated route-family chrome or lifecycle ownership.
+Name its consumers and the exact difference from the nearest maintained layout.
+Use ordinary named component composition for a page-content difference. The
 [component API rule](components.md#component-apis-and-extension-points) distinguishes
-native slot consumption from defining a custom shared extension point.
+native slot consumption from a new shared extension API.
 
-An admitted layout consumes the page supplied by the existing root. Preserve
-its route outlet, single content landmark, initialization, error/transition
-behavior and established header/footer responsibilities. Reuse existing shared
-chrome and style/token owners; retain a different owner only for an explicit
-product responsibility. A native layout slot does not authorize copying shared
-chrome or replacing it with unrelated local styling.
+A native layout has one real root, consumes the App-supplied page slot and
+preserves initialization, transition, cleanup and error behavior. Reuse shared
+chrome, semantic styles and tokens. A supported slot does not authorize copying
+chrome or creating a universal page/controller wrapper.
 
 ## App-root provider ownership
 
-The public [app.vue guide](../../packages/extensions/fireux-docs/src/runtime/pages/docs/app.vue) compares Nuxt, Nuxt UI and FireUX and explains the supported root constraints.
+Every ordinary App uses Core
+[FireuxApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxApp.vue),
+including Apps with declared Workspaces and the
+[starter](../../projects/templates/fireux-template/app/app.vue).
+It owns one UApp, PWA status, one NuxtLayout/NuxtPage pair, development-only
+controls and the current-App initialization blocker. App roots retain genuinely
+App-owned theme or language setup around that shared lifecycle.
 
-Core [FireuxApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxApp.vue)
-owns the stock UApp provider, PWA status, normal-page fallback, shared head policy and
-current-App initialization blocker. Workspace-capable Apps compose it through `FireuxWorkspaceApp`; ordinary Apps
-use it directly,
-including the [starter](../../projects/templates/fireux-template/app/app.vue).
-The starter home uses native UPage/UPageHeader beneath the default layout; the
-layout supplies its only container. Repeating UApp plus Workspace/NuxtLayout in an App root bypasses that lifecycle
-and is not a stock alternative.
+[Go QR](../../projects/fireux/go-qr/app/app.vue) keeps its deliberate `/tools/`
+embed branch. Its other routes use the same FireuxApp. Bangin Coffee and La Tap
+retain their theme setup; Interlaken Essen retains its language metadata.
+Those product differences do not create another shared route renderer.
 
-[Go QR](../../projects/fireux/go-qr/app/app.vue) retains one explicit exception:
-`/tools/` uses a UApp-wrapped NuxtPage without ordinary site chrome or App
-initialization. Other Go QR routes still use FireuxApp.
+[useAppHead](../../packages/core/fireux-core/src/runtime/app/composables/useAppHead.ts)
+owns the single reactive theme, robots and versioned-manifest registration.
+[useAppManifest](../../packages/core/fireux-core/src/runtime/app/composables/useAppManifest.ts)
+owns the App manifest path: a native Workspace layout and enabled family use the
+existing `useWorkspaceEntryCta` Home destination as `start_url`; other layouts
+use the ordinary manifest. It coordinates route/configuration policy without
+loading Workspace UI or acquiring domain records. The manifest endpoint retains
+its own scope validation. Rendering and route authority remain separate facts.
 
-Bangin Coffee and La Tap retain App-owned theme injection around their chosen root;
-Interlaken Essen retains its language metadata. These are product deltas, not
-alternative route outlets or initialization owners. They remain with those Apps.
-
-For ordinary routes, FireuxApp supplies one `UMain` around `NuxtPage` inside the
-selected Nuxt layout's slot. Layout headers, footers and navigation remain
-outside that landmark. Layouts, route pages and their child components do not
-add another `main`. This also covers routes with `layout: false`.
-WorkspacePage owns the Workspace `main`; that branch does not receive another
-FireuxApp wrapper. Go QR's embedded branch and the standalone ErrorPage each own
-their own `UMain` because they bypass the ordinary shell.
-
-`useAppHead` owns shared robots and versioned-manifest policy.
-`AppInitializationGate` owns its single App read and setup modal. Workspace
-manifest paths are supplied by FireuxWorkspaceApp; the ordinary root imports no
-Workspace code. The default header still uses the Workspace entry-link helper;
-this root split does not establish complete Workspace bundle isolation. Shared
-sign-in phase belongs to Core `composables/fireux/firebase/useAuthPhase`, not Workspace.
-
+[AppInitializationGate](../../packages/core/fireux-core/src/runtime/app/components/InitializationGate.vue)
+retains its single App read and setup modal.
 [AppDevControls](../../packages/core/fireux-core/src/runtime/app/components/DevControls.vue)
-owns the developer dock and its local feedback/cleanup. It consumes existing
-Diagnostics state and the existing media-sync command; moving the controls does
-not move command authority into FireuxApp or create another App reader.
-FireuxApp places it inside native `DevOnly`, whose production transform removes
-the component reference before bundling. The controls component must be absent
-from production executable code; a hidden template alone does not satisfy this
-boundary.
+retains its feedback, diagnostics and command owners. Native DevOnly surrounds
+its reference so production compilation can remove executable controls; a hidden
+interface alone is insufficient proof of production isolation.
 
-The focused foundation rules in `eslint.config.js` check semantic styling and
-SFC block order for App roots and the reviewed shared shell/chrome/disclosure
-owners. Other existing Core styles remain migration debt; that scoped check
-is not a repository-wide styling certificate.
+Each native layout owns the UMain around its slot. Workspace delegates this to
+WorkspacePage; content that remains bare after middleware owns its UMain; Go QR's embed and ErrorPage own their
+existing landmarks. This keeps the public header/footer outside main and avoids
+nesting the public root landmark inside the Workspace frame.
 
-Main App entrance purpose remains App-owned: the existing Workspace-first pattern
-and the explicit FireUX/Misebox public-root differences are mapped in
-[App configuration](app-config.md#app-entrance-and-optional-workspace). Misebox's
-public Home uses existing default chrome; its separate Workspace keeps the same
-frame/outlet contract. Separate Workspace domains remain a future product decision.
+Main App entrance purpose remains App-owned. The Workspace-first entrances and
+FireUX/Misebox public-root differences are mapped in
+[App configuration](app-config.md#app-entrance-and-optional-workspace).
 
 ## Workspace composition
 
-[FireuxWorkspaceApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxWorkspaceApp.vue)
-lazily selects the named `Workspace` composition when the App declares
-Workspaces and the current route has
-`workspacePage` metadata. Workspace routes disable the separate Nuxt layout.
-Other routes continue through `<NuxtLayout><NuxtPage /></NuxtLayout>`.
-App roots delegate that choice to FireuxWorkspaceApp instead of repeating the route branches.
+Pages select `layout: 'workspace'` through native `definePageMeta`.
+Core's [workspace.vue](../../packages/core/fireux-core/src/runtime/layouts/workspace.vue)
+is discovered through the native runtime layer and loaded asynchronously by
+Nuxt. It composes the existing Dashboard group, Sidebar, WorkspacePage and
+User-owned auxiliary controls within one layout root. The layout stays mounted
+while its supplied route content changes.
 
-Core [Workspace](../../packages/core/fireux-core/src/runtime/workspace/components/Index.vue)
-composes the dashboard group, sidebar and one
-[WorkspacePage](../../packages/core/fireux-core/src/runtime/workspace/components/Page.vue).
-WorkspacePage owns the panel, shared
-[Navbar](../../packages/core/fireux-core/src/runtime/workspace/components/Navbar.vue),
+[WorkspacePage](../../packages/core/fireux-core/src/runtime/workspace/components/Page.vue)
+owns the panel, [Navbar](../../packages/core/fireux-core/src/runtime/workspace/components/Navbar.vue),
 [breadcrumbs](../../packages/core/fireux-core/src/runtime/workspace/components/Breadcrumbs.vue),
-route error boundary and the Workspace `<NuxtPage />` outlet. The navigation
-composable derives the page title, description and breadcrumb ancestors from
-route metadata and registered Workspace navigation. Group index links use the
-ordinary [WorkspacePageLinks component](../../packages/core/fireux-core/src/runtime/workspace/components/PageLinks.vue).
-Core disables page transitions for Workspace routes through
-[pages-config.ts](../../packages/core/fireux-core/src/config/module/pages-config.ts)
-so the shared frame remains mounted while its page outlet changes.
+main and native error boundary. Its slot consumes the App's page. The boundary
+key retains Workspace family, selected Entity and route path so old page state
+is disposed when that context changes. Navbar and page-title responsibilities
+remain with the existing navigation owner.
 
-Workspace pages supply their domain content and route metadata. Shared chrome
-does not acquire domain data or mutation authority. Follow the
-[component API rule](components.md#component-apis-and-extension-points) without
-adding a second route frame.
-Nested Nuxt pages remain valid where the route tree has a real parent/child
-relationship.
+Group links use
+[WorkspacePageLinks](../../packages/core/fireux-core/src/runtime/workspace/components/PageLinks.vue)
+as ordinary content. Group indexes omit breadcrumb trails; other pages show a
+trail only when the existing registered navigation provides useful ancestors.
+See the [Workspace breadcrumb contract](workspace.md#breadcrumbs).
 
-## Other route composition lanes
+[Page transition policy](../../packages/core/fireux-core/src/config/module/pages-config.ts)
+follows native Workspace and Dashboard layout metadata, including inherited
+layouts and the supported layout object shape. Explicit child overrides remain
+native. URL prefixes and filenames do not select a renderer or transition policy.
 
-- Public Kitchen/Menu discovery, venue profiles, Menu choosers and
-  Collection/Delivery entrances use the existing default chrome. Kitchen owns
-  their named content components, including the native `UPageHeader` in
-  [Public Intro](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Intro.vue).
-  Core retains the shared header/navigation, account and Workspace controls,
-  footer/contact/admin presentation, content container and root landmark/outlet.
-  This content difference does not introduce a separate customer layout.
-  Authenticated creation and the themed Menu, QR and kiosk contracts retain
-  their existing route and authority boundaries. See [Menu family](family-menu.md).
+Domain routes retain their own readers, commands, access, selection and visibility
+metadata. The Workspace layout grants none of those capabilities. Optional
+Workspace availability remains an App configuration and middleware decision.
 
-- FireuxApp owns the normal layout and page fallback. FireuxWorkspaceApp supplies
-  its default slot only for Workspace routes; ordinary routes reuse the fallback.
-- The Kitchen [Menu layout](../../packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue)
-  uses Nuxt's layout slot for route-family chrome.
-- Core [default](../../packages/core/fireux-core/src/runtime/layouts/default.vue),
-  [landing](../../packages/core/fireux-core/src/runtime/layouts/landing.vue),
-  [auth](../../packages/core/fireux-core/src/runtime/layouts/auth.vue),
-  [diagnostics](../../packages/core/fireux-core/src/runtime/layouts/diagnostics.vue)
-  and [dashboard](../../packages/core/fireux-core/src/runtime/layouts/dashboard.vue)
-  consume NuxtLayout's native slot. FireuxApp or the App root supplies NuxtPage.
-  Auth and Diagnostics retain their client-only boundary; the other layouts
-  retain their existing chrome. This follows [Nuxt's layout composition](https://learn.nuxt.com/en/concepts/layout).
-- The neutral `landing` layout remains in Core for shared public and Chat shells.
-  Commercial/public content and landing styles are registered by `fireux-app/layer`;
-  Main discovery composition is registered by `fireux-ecosystem/layer`.
-- Core's [page policy](../../packages/core/fireux-core/src/config/module/pages-config.ts)
-  disables page transitions for Workspace routes and routes using the Dashboard
-  layout. Dashboard policy follows inherited layout metadata, including nested
-  pages, and respects an explicit layout override. It runs at `pages:resolved`,
-  after Nuxt extracts route metadata. Core requests native extraction of the
-  `layout` key explicitly; Dashboard's fragment-based pages retain their
-  previous unanimated behavior.
-- App/package layouts also consume native slots:
-  [Docs](../../packages/extensions/fireux-docs/src/runtime/layouts/docs.vue),
-  [Misebox Jobs](../../projects/misebox/misebox-app/app/layouts/misebox-jobs.vue),
-  [Friiites templates](../../projects/misebox/friiites/app/layouts/templates.vue),
-  [Bären](../../projects/misebox/baeren-ringgenberg/app/layouts/baeren-default.vue),
-  [La Tap Berne](../../projects/misebox/la-tap-berne/app/layouts/latap-default.vue),
-  [Slap landing](../../projects/slap/slap-app/app/layouts/landing.vue),
-  [Yellow Velo landing](../../projects/slap/yellow-velo/app/layouts/landing.vue),
-  and [Lifeguard Community default](../../projects/fireux/lifeguard-community/app/layouts/default.vue).
-  App roots supply their page; these layouts retain their real brand, navigation,
-  content and lifecycle differences. Slap's minimal landing layout keeps a real
-  element root around its slot, as required by native layout transitions.
-- App-local layouts remain appropriate for real product chrome. Compare the
-  nearest package or Ecosystem owner and keep the App-specific delta explicit.
+## Navigation placement
 
-## Accepted boundaries
+[useNav](../../packages/core/fireux-core/src/runtime/composables/navigation/useNav.ts)
+discovers authored `nav` descriptors. `nav.menus` selects navigation placement;
+`layout` selects rendering. Their names may coincide without coupling their
+meaning. Native Nuxt layout registration remains unchanged.
 
-These are accepted contracts, not blanket approval of every implementation listed
-above. New or changed layouts still need the admission evidence.
+| Descriptor                                                      | Placement               |
+| --------------------------------------------------------------- | ----------------------- |
+| No nav descriptor, or nav.hidden: true                          | No entry.               |
+| nav.menus absent or empty                                       | The default menu.       |
+| One or several explicit menu names                              | Those menu placements.  |
+| Any unspecified, named, false, inherited or object layout value | No effect on placement. |
 
-| Boundary                                                         | State      | Reason                                                                    |
-| ---------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------- |
-| Workspace route metadata selects one named shared composition    | `accepted` | Sidebar, page frame, Navbar and breadcrumbs have one owner.               |
-| WorkspacePage owns one shared route outlet                       | `accepted` | Route pages provide content without repeating the Workspace frame.        |
-| Native Nuxt UI slots extend native components                    | `accepted` | They are supported library composition APIs, not replacement page shells. |
-| Core Nuxt layouts consume the supplied page through native slots | `accepted` | App roots own the page outlet; layouts own chrome.                        |
-| App/package layouts consume the supplied page through slots      | `accepted` | App roots supply the page; branded chrome remains App-owned.              |
+App `navigation.overrides` apply before placement is resolved, followed by the
+existing hidden-key, App-role and scope filters. Multiple and cross-menu
+placements stay explicit. Only declarations equivalent to the shared default
+are redundant; an override of a different inherited placement remains explicit.
+No descriptor is created from a URL, layout, authority rule or visible page.
+Auth, roles, selection and domain visibility retain their existing owners.
 
-Dashboard navigation keeps permission-dependent entries hidden until the
-component mounts, using native VueUse mounted state. Cached client permissions
-therefore cannot change the server tree during hydration. After mounting, the
-existing current-account permission and Workspace checks still govern visibility.
-See [Dashboard navigation](../../packages/core/fireux-core/src/runtime/composables/navigation/useDashboardNav.ts)
-and its [regression check](../../packages/core/fireux-core/src/test/composables/navigation/useDashboardNav.test.mjs).
+## Runtime layout selection
 
-WorkspacePage supplies the native document-title fallback from its shared route
-title. Domain pages can still provide their more specific head metadata.
+Landmark review follows effective native layout metadata after middleware. The
+Menu projection middleware selects `menu` or `default` for the required Menu id;
+that page consumes the selected layout's landmark even though its initial
+metadata opts out. Misebox Jobs and Interlaken Essen select their existing named
+Jobs layouts. Their inherited route content supplies no additional main.
+Sharer's `/shared` opt-out currently serves an empty placeholder; adding visible
+content must establish its bare-page landmark owner. Go QR's embed retains its
+explicit App-owned landmark. No generic wrapper or URL-derived frame is added.
+
+## Other route families
+
+Core's default, landing, Auth, Dashboard and Diagnostics layouts consume native
+slots. Auth and Diagnostics retain their client-only content boundaries.
+Dashboard retains its mounted permission filtering and `useAuthRedirect`
+lifecycle. Workspace navigation does not replace Dashboard account navigation.
+
+Public Kitchen/Menu discovery keeps its existing default chrome. The Kitchen
+[Menu layout](../../packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue)
+retains its customer exit, presentation and kiosk-manifest responsibility.
+Public browse, QR, kiosk and ordering routes retain their existing access and
+service contracts; moving a landmark does not admit a new layout or capability.
+
+[Docs](../../packages/extensions/fireux-docs/src/runtime/layouts/docs.vue) and the
+maintained App-owned product layouts keep their own branding, navigation,
+headers, footers, theme and language differences. Their UMain consumes the same
+native page slot. The neutral landing layout stays in Core; commercial content
+remains with its existing App/Extension/Ecosystem owners.
 
 ## Verification and refresh
 
-Inspect FireuxApp, route metadata and generated routes, the nearest non-Workspace
-layout, and actual parent/child routes. Confirm each page renders once at its
-intended boundary; retain sidebar, session, transition, error and nested-route
-behavior. Refresh this map when the shell owner or route metadata contract
-changes. See [components](components.md) for shared component responsibilities
-and [Workspace composition](workspace.md) for domain boundaries.
+Inspect the common App root, native layout registration, route metadata, actual
+consumers and parent/child outlets. Check one page outlet per boundary, one main,
+persistent frame state, error-key cleanup, manifest paths and unchanged authority.
+Inspect both public and Workspace navigation after App overrides.
 
-`app-shell-composition.test.mjs` renders the ordinary, Docs, bare, Workspace and
-embedded compositions and checks their single content landmark. A fresh
-production build and route review verify native component behavior and the
-absence of executable developer-control code in the client and server artifacts;
-template tests
-alone do not prove production isolation.
+`app-shell-composition.test.mjs` exercises supplied-slot rendering, App lifecycle,
+landmarks and all maintained layout/bare-page owners. Focused navigation,
+Workspace group, route-auth, entrance, transition and native-default tests cover
+their exercised contracts. Native App typechecks and desktop/mobile interaction
+review remain required evidence for the consuming result. Production isolation
+of developer controls requires a fresh artifact inspection.
+
+Refresh this map with the source owners when rendering, landmark or navigation
+contracts change. Keep task status and temporary verification snapshots outside
+living context.

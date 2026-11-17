@@ -42,7 +42,7 @@ definePageMeta({
     icon: 'i-lucide-map-pin',
     desktop: true,
     group: 'ext',
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
   },
 })
 </script>

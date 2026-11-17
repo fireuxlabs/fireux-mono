@@ -21,7 +21,7 @@ definePageMeta({
     order: 210,
     desktop: true,
     group: 'ext',
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
   },
 })
 </script>

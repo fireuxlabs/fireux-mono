@@ -13,7 +13,7 @@ definePageMeta({
     order: 10,
     desktop: true,
     mobile: true,
-    layouts: ['dashboard'],
+    menus: ['dashboard'],
   },
   requiresAuth: true,
   layout: 'dashboard',

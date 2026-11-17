@@ -3,8 +3,8 @@
 </template>
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceHeader: 'content',
   workspace: 'kitchen',
   workspaceSurface: 'browse',
@@ -22,7 +22,7 @@ definePageMeta({
     position: 'top',
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
     children: [
       {
         label: 'Preparations',

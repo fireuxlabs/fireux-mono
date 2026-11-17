@@ -33,7 +33,7 @@ definePageMeta({
     position: 'bottom',
     order: 1000,
     desktop: true,
-    layouts: ['dashboard'],
+    menus: ['dashboard'],
   },
   requiresAuth: true,
 })

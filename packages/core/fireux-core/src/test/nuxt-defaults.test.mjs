@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { loadNuxt, build } from 'nuxt'
+import { pageLayoutName } from '../runtime/app/utils/page-layout.ts'
 
 const root = fileURLToPath(new URL('../../../../../', import.meta.url))
 const source = readFileSync(
@@ -23,8 +24,9 @@ const source = readFileSync(
   .replace(/^import .*\n/gm, '')
   .replace(/^export /gm, '')
 const configurePageTransitions = compileFunction(
-  `${stripTypeScriptTypes(source)};return configurePageTransitions`
-)()
+  `${stripTypeScriptTypes(source)};return configurePageTransitions`,
+  ['pageLayoutName']
+)(pageLayoutName)
 
 test('layered App source, native viewport, public assets and metadata timing preserve FireUX route policy', async () => {
   const fixture = mkdtempSync(join(tmpdir(), 'fireux-native-defaults-'))
@@ -47,6 +49,10 @@ test('layered App source, native viewport, public assets and metadata timing pre
       join(fixture, 'app/layouts/framework.vue'),
       '<template><div><slot /></div></template>'
     )
+    writeFileSync(
+      join(fixture, 'app/layouts/workspace.vue'),
+      '<template><div><main><slot /></main></div></template>'
+    )
     symlinkSync(
       join(root, 'projects/templates/fireux-template/node_modules'),
       join(fixture, 'node_modules'),
@@ -67,7 +73,7 @@ test('layered App source, native viewport, public assets and metadata timing pre
     )
     writeFileSync(
       join(fixture, 'app/pages/workspace.vue'),
-      `<template><p>Workspace</p></template><script setup>definePageMeta({ layout: false, workspacePage: true, nav: { key: 'workspace-fixture' } })</script>`
+      `<template><p>Workspace</p></template><script setup>definePageMeta({ layout: 'workspace', nav: { key: 'workspace-fixture', menus: ['workspace'] } })</script>`
     )
     writeFileSync(
       join(fixture, 'nuxt.config.ts'),
@@ -115,13 +121,17 @@ export default config
       readFileSync(join(nuxt.options.buildDir, 'types/layouts.d.ts'), 'utf8'),
       /framework:/
     )
+    assert.match(
+      readFileSync(join(nuxt.options.buildDir, 'types/layouts.d.ts'), 'utf8'),
+      /workspace:/
+    )
     const pages = nuxt.apps.default.pages
     assert.ok(pages.some((page) => page.path === '/from-layer'))
     const account = pages.find((page) => page.path === '/account')
     const workspace = pages.find((page) => page.path === '/workspace')
     assert.equal(account.meta.layout, 'dashboard')
     assert.equal(account.meta.pageTransition, false)
-    assert.equal(workspace.meta.workspacePage, true)
+    assert.equal(workspace.meta.layout, 'workspace')
     assert.equal(workspace.meta.nav.key, 'workspace-fixture')
     assert.equal(workspace.meta.pageTransition, false)
     const assets = publicAssets.filter(

@@ -1,5 +1,7 @@
 <template>
-  <div />
+  <UMain>
+    <div />
+  </UMain>
 </template>
 <script setup lang="ts">
 definePageMeta({ layout: false, pageTransition: false, requiresAuth: false })

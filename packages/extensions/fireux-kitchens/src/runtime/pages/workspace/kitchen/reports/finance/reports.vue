@@ -66,11 +66,11 @@ const unavailableReports = [
 ]
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
-  nav: { hidden: true, desktop: false, mobile: false, layouts: ['workspace'] },
+  nav: { hidden: true, desktop: false, mobile: false, menus: ['workspace'] },
   requiresAuth: true,
   requiresSelection: true,
 })

@@ -3,6 +3,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import { pageLayoutName } from '../runtime/app/utils/page-layout.ts'
 
 const source = readFileSync(
   new URL('../config/module/pages-config.ts', import.meta.url),
@@ -11,8 +12,9 @@ const source = readFileSync(
   .replace(/^import .*\n/gm, '')
   .replace(/^export /gm, '')
 const configure = compileFunction(
-  `${stripTypeScriptTypes(source)}; return configurePageTransitions`
-)()
+  `${stripTypeScriptTypes(source)}; return configurePageTransitions`,
+  ['pageLayoutName']
+)(pageLayoutName)
 
 test('Workspace transitions are disabled recursively without changing other route metadata', () => {
   const hooks = []
@@ -29,11 +31,12 @@ test('Workspace transitions are disabled recursively without changing other rout
   assert.equal(hooks[0].name, 'pages:resolved')
   const pages = [
     {
-      path: '/workspace/project',
-      meta: { layout: false, workspacePage: true, pageTransition: true },
+      path: '/operations/project',
+      meta: { layout: 'workspace', requiresAuth: true, pageTransition: true },
     },
     {
       path: '/',
+      meta: { layout: { name: 'workspace', props: { compact: true } } },
       children: [
         {
           path: 'identity',
@@ -46,8 +49,8 @@ test('Workspace transitions are disabled recursively without changing other rout
   ]
   hooks[0].callback(pages)
   assert.deepEqual(pages[0].meta, {
-    layout: false,
-    workspacePage: true,
+    layout: 'workspace',
+    requiresAuth: true,
     pageTransition: false,
   })
   assert.deepEqual(pages[1].children[0].meta, {
@@ -55,6 +58,28 @@ test('Workspace transitions are disabled recursively without changing other rout
     pageTransition: false,
   })
   assert.deepEqual(pages[2].meta, { pageTransition: { name: 'product' } })
+})
+
+test('a Workspace-looking path does not override its native layout or transition', () => {
+  let apply
+  configure({
+    options: { experimental: {} },
+    hook: (_name, callback) => {
+      apply = callback
+    },
+  })
+  const pages = [
+    {
+      path: '/workspace/public',
+      file: '/pages/workspace/public.vue',
+      meta: { layout: 'default', pageTransition: { name: 'public' } },
+    },
+  ]
+  apply(pages)
+  assert.deepEqual(pages[0].meta, {
+    layout: 'default',
+    pageTransition: { name: 'public' },
+  })
 })
 
 test('Dashboard layout policy follows nested routes and respects layout overrides', () => {

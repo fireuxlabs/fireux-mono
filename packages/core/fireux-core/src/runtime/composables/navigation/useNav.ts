@@ -15,12 +15,12 @@ import {
   normaliseNavVisibility,
 } from '../../utils/navigation/visibility'
 
-const DEFAULT_LAYOUT = 'default'
+const DEFAULT_MENU = 'default'
 const DEFAULT_ORDER = 999
 
 // Nav owns presentation: route-meta discovery, sidebar grouping, and
 // app-scope visibility. Canonical route keys/paths live under app/routing.
-type TargetLayouts = string | string[]
+type TargetMenus = string | string[]
 
 type RouteMetaLike = {
   nav?: NavMeta
@@ -37,9 +37,9 @@ function toArray<T>(value: T | T[] | undefined): T[] {
   return Array.isArray(value) ? value : [value]
 }
 
-function ensureLayouts(targetLayouts: TargetLayouts): string[] {
-  const arr = toArray(targetLayouts)
-  if (arr.length === 0) return [DEFAULT_LAYOUT]
+function ensureMenus(targetMenus: TargetMenus): string[] {
+  const arr = toArray(targetMenus)
+  if (arr.length === 0) return [DEFAULT_MENU]
   return arr
 }
 
@@ -62,9 +62,9 @@ function normalisePosition(value: unknown): NavPosition | undefined {
     : undefined
 }
 
-function resolveLayouts(nav: NavMeta): string[] {
-  const declared = toArray(nav.layouts)
-  return declared.length === 0 ? [DEFAULT_LAYOUT] : declared
+function resolveMenus(nav: NavMeta): string[] {
+  const declared = toArray(nav.menus)
+  return declared.length === 0 ? [DEFAULT_MENU] : declared
 }
 
 function resolvePath(route: RouteRecordNormalized): string {
@@ -100,14 +100,14 @@ function normaliseRoles(value: unknown): string[] | undefined {
 function buildNavItem(
   route: RouteRecordNormalized,
   nav: NavMeta,
-  targetLayouts: string[],
+  targetMenus: string[],
   routeVisibility?: NavVisibility,
   routeRequiresSelection?: boolean
 ): NavItem | null {
   if (nav.hidden === true) return null
 
-  const layouts = resolveLayouts(nav)
-  if (!layouts.some((layout) => targetLayouts.includes(layout))) return null
+  const menus = resolveMenus(nav)
+  if (!menus.some((menu) => targetMenus.includes(menu))) return null
 
   const to = resolvePath(route)
   const label = resolveLabel(route, nav, to)
@@ -147,7 +147,7 @@ function buildNavItem(
     order: normaliseOrder(nav.order),
     desktop: nav.desktop !== false,
     mobile: nav.mobile !== false,
-    layouts,
+    menus,
     requiresAuth: Boolean((route.meta as RouteMetaLike).requiresAuth),
     requiresSelection:
       typeof routeRequiresSelection === 'boolean'
@@ -198,10 +198,10 @@ function applyAppNavOverride(
 }
 
 export function useNav(
-  targetLayouts: MaybeRefOrGetter<TargetLayouts> = [DEFAULT_LAYOUT]
+  targetMenus: MaybeRefOrGetter<TargetMenus> = [DEFAULT_MENU]
 ) {
   const router = useRouter()
-  const wanted = computed(() => ensureLayouts(toValue(targetLayouts)))
+  const wanted = computed(() => ensureMenus(toValue(targetMenus)))
   const fireux = useFireUXConfig()
   const appConfig = useAppConfig()
 

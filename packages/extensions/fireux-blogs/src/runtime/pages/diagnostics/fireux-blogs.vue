@@ -90,7 +90,7 @@ definePageMeta({
     icon: 'i-lucide-newspaper',
     desktop: true,
     group: 'ext',
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
   },
 })
 

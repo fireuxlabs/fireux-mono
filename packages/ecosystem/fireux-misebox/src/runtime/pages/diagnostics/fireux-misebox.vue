@@ -104,7 +104,7 @@ definePageMeta({
     icon: 'i-lucide-utensils-crossed',
     desktop: true,
     group: 'misebox',
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
   },
 })
 

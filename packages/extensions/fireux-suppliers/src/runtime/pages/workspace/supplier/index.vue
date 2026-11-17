@@ -9,8 +9,8 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspace: 'supplier',
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-suppliers'] },
@@ -22,7 +22,7 @@ definePageMeta({
     order: 900,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: false,

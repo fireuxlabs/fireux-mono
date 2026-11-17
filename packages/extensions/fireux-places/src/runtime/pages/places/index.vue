@@ -33,7 +33,7 @@ definePageMeta({
     order: 25,
     desktop: false,
     mobile: false,
-    layouts: ['default', 'landing'],
+    menus: ['default', 'landing'],
   },
   name: 'PlacesIndexPage',
 })

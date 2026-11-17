@@ -174,7 +174,7 @@ definePageMeta({
     desktop: true,
     group: 'core',
     order: 96,
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
   },
 })
 </script>

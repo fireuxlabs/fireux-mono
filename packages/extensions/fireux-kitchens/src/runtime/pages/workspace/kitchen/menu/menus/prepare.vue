@@ -9,8 +9,8 @@
 import { provideKitchenMenusContext } from '../../../../../kitchen/composables/workspace/menus/useKitchenMenusContext'
 provideKitchenMenusContext()
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   requiresAuth: true,
   requiresSelection: true,
@@ -25,7 +25,7 @@ definePageMeta({
     hidden: true,
     desktop: false,
     mobile: false,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
 })
 </script>

@@ -29,7 +29,6 @@ definePageMeta({
     order: 40,
     desktop: true,
     mobile: true,
-    layouts: ['default'],
   },
   appRole: 'global',
   title: 'Apps',

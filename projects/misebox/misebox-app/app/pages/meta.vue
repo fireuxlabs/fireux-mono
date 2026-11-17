@@ -36,7 +36,7 @@ definePageMeta({
     position: 'bottom',
     desktop: true,
     mobile: true,
-    layouts: ['default', 'landing'],
+    menus: ['default', 'landing'],
   },
 })
 

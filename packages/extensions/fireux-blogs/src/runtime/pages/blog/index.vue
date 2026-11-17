@@ -21,7 +21,7 @@ definePageMeta({
     order: 30,
     desktop: true,
     mobile: true,
-    layouts: ['default', 'landing'],
+    menus: ['default', 'landing'],
   },
   name: 'BlogIndexPage',
 })

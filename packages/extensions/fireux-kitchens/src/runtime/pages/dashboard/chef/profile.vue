@@ -61,7 +61,7 @@ definePageMeta({
     icon: navIcon,
     position: 'middle',
     desktop: true,
-    layouts: ['dashboard'],
+    menus: ['dashboard'],
     group: 'profiles',
     profileId: profileKey,
   },

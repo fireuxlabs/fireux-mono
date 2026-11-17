@@ -19,8 +19,8 @@ import { provideKitchenWorkspaceStations } from '../../../../kitchen/composables
 provideKitchenWorkspaceStations()
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },
@@ -35,7 +35,7 @@ definePageMeta({
     order: 70,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
     hidden: true,
   },
   requiresAuth: false,

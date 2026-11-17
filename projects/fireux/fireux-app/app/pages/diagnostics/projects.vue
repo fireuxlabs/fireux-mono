@@ -100,7 +100,7 @@ definePageMeta({
     desktop: true,
     group: 'core',
     order: 25,
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
   },
 })
 

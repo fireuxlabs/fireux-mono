@@ -27,7 +27,6 @@ definePageMeta({
     icon: 'i-lucide-app-window',
     desktop: false,
     mobile: false,
-    layouts: ['default'],
   },
   name: 'AppsCreatePage',
 })

@@ -23,8 +23,7 @@ definePageMeta({
     icon: 'i-lucide-building-2',
     desktop: true,
     group: 'ext',
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
   },
 })
-
 </script>

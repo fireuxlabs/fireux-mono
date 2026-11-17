@@ -25,7 +25,6 @@ definePageMeta({
     order: 26,
     desktop: false,
     mobile: false,
-    layouts: ['default'],
   },
   head: { title: 'Add Place' },
   name: 'PlacesCreatePage',

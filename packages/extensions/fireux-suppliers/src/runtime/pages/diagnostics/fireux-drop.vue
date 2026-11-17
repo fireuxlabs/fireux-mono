@@ -140,7 +140,7 @@ definePageMeta({
     icon: 'i-lucide-truck',
     desktop: true,
     group: 'ext',
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
   },
 })
 

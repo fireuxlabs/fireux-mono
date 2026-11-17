@@ -38,7 +38,6 @@ definePageMeta({
     desktop: false,
     mobile: false,
     hidden: true,
-    layouts: ['default'],
   },
   requiresAuth: true,
   roles: ['admin'],

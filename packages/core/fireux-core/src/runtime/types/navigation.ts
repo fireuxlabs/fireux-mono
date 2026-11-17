@@ -42,7 +42,8 @@ export interface NavMeta {
   parked?: boolean
   desktop?: boolean
   mobile?: boolean
-  layouts?: string[]
+  /** Navigation menu placement; absent or empty retains the default menu. */
+  menus?: string[]
   visibility?: NavVisibility
 }
 
@@ -63,7 +64,7 @@ export interface NavItem {
   order: number
   desktop: boolean
   mobile: boolean
-  layouts: string[]
+  menus: string[]
   requiresAuth?: boolean
   requiresSelection?: boolean
   prominent?: boolean
@@ -81,13 +82,7 @@ export type NavigationConfig = {
     Partial<
       Pick<
         NavMeta,
-        | 'label'
-        | 'icon'
-        | 'position'
-        | 'order'
-        | 'desktop'
-        | 'mobile'
-        | 'layouts'
+        'label' | 'icon' | 'position' | 'order' | 'desktop' | 'mobile' | 'menus'
       >
     >
   >

@@ -26,8 +26,8 @@
 import { useProjectWorkspaceTest } from '../../../../project/composables/workspace/test/useProjectWorkspaceTest'
 const test = useProjectWorkspaceTest()
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   pageTransition: false,
   workspace: 'project',
   workspaceSurface: 'browse',
@@ -43,7 +43,7 @@ definePageMeta({
     prominent: false,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: true,

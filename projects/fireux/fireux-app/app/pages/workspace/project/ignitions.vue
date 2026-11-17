@@ -5,8 +5,8 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   visibility: { ecosystems: ['fireux'] },
   nav: {
@@ -17,7 +17,7 @@ definePageMeta({
     order: 50,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: false,

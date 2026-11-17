@@ -24,7 +24,7 @@
       </a>
     </header>
 
-    <slot />
+    <UMain><slot /></UMain>
 
     <footer class="yv-footer">
       <div class="yv-footer__lead">

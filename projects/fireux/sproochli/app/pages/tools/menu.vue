@@ -1,22 +1,24 @@
 <template>
-  <UPage ref="toolRoot">
-    <SproochliProviderToolsMenu
-      :title="config.title"
-      :description="config.description"
-      :source-url="config.sourceUrl"
-      :source-url-label="config.sourceUrlLabel"
-      :source-url-placeholder="config.sourceUrlPlaceholder"
-      :source-slug="config.sourceSlug"
-      :source-slug-label="config.sourceSlugLabel"
-      :document-id="config.documentId"
-      :document-id-label="config.documentIdLabel"
-      :source-language="config.sourceLanguage"
-      :source-language-label="config.sourceLanguageLabel"
-      :target-languages="config.targetLanguages"
-      :target-languages-label="config.targetLanguagesLabel"
-      :cta-label="config.ctaLabel"
-    />
-  </UPage>
+  <UMain>
+    <UPage ref="toolRoot">
+      <SproochliProviderToolsMenu
+        :title="config.title"
+        :description="config.description"
+        :source-url="config.sourceUrl"
+        :source-url-label="config.sourceUrlLabel"
+        :source-url-placeholder="config.sourceUrlPlaceholder"
+        :source-slug="config.sourceSlug"
+        :source-slug-label="config.sourceSlugLabel"
+        :document-id="config.documentId"
+        :document-id-label="config.documentIdLabel"
+        :source-language="config.sourceLanguage"
+        :source-language-label="config.sourceLanguageLabel"
+        :target-languages="config.targetLanguages"
+        :target-languages-label="config.targetLanguagesLabel"
+        :cta-label="config.ctaLabel"
+      />
+    </UPage>
+  </UMain>
 </template>
 
 <script setup lang="ts">

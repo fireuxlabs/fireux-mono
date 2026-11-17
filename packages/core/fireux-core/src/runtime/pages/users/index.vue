@@ -33,7 +33,6 @@ definePageMeta({
     order: 50,
     desktop: false,
     mobile: false,
-    layouts: ['default'],
   },
   title: 'Users',
   description: 'Browse users.',

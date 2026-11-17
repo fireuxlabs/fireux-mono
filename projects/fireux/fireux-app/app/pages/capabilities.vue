@@ -79,7 +79,7 @@ definePageMeta({
     key: 'framework-capabilities',
     label: 'Capabilities',
     order: 25,
-    layouts: ['framework'],
+    menus: ['framework'],
   },
 })
 useSeo({

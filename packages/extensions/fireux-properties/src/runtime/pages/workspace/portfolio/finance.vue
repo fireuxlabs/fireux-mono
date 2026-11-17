@@ -13,8 +13,8 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-properties'] },
   nav: {
@@ -25,7 +25,7 @@ definePageMeta({
     order: 25,
     desktop: false,
     mobile: false,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: true,

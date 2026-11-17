@@ -11,8 +11,8 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'create',
   visibility: { modules: ['fireux-kitchens'] },
   requiresAuth: true,
@@ -25,7 +25,7 @@ definePageMeta({
     hidden: true,
     desktop: false,
     mobile: false,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
 })
 </script>

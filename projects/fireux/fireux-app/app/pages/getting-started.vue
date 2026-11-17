@@ -79,7 +79,7 @@ definePageMeta({
     key: 'framework-docs',
     label: 'Docs',
     order: 10,
-    layouts: ['framework'],
+    menus: ['framework'],
   },
 })
 useSeoMeta({

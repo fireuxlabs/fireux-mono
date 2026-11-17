@@ -90,7 +90,7 @@ definePageMeta({
     position: 'middle',
     order: 20,
     desktop: true,
-    layouts: ['dashboard'],
+    menus: ['dashboard'],
   },
   requiresAuth: true,
   roles: ['developer'],

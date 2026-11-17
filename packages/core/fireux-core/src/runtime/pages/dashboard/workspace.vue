@@ -15,7 +15,7 @@ definePageMeta({
     order: 30,
     desktop: true,
     mobile: true,
-    layouts: ['dashboard'],
+    menus: ['dashboard'],
   },
   requiresAuth: true,
 })

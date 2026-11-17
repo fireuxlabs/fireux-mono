@@ -32,7 +32,6 @@ definePageMeta({
     order: 56,
     desktop: false,
     mobile: false,
-    layouts: ['default'],
   },
   name: 'SuppliersCreatePage',
 })

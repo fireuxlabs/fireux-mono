@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   requiresAuth: true,
   requiresSelection: true,
   visibility: { modules: ['fireux-kitchens'] },

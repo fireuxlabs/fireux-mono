@@ -9,8 +9,8 @@
 import BlankCreateSystem from '../../../components/Blank/Create/System.vue'
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'create',
   name: 'BlankWorkspaceCreatePage',
   nav: {
@@ -22,7 +22,7 @@ definePageMeta({
     order: 5,
     desktop: false,
     mobile: false,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: false,

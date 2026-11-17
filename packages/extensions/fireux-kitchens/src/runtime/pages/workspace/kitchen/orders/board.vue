@@ -7,8 +7,8 @@
 </template>
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   requiresAuth: false,

@@ -81,8 +81,8 @@ const liveIntro = computed(() => ({
 const { appName } = useFireUXConfig()
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   pageTransition: false,
   workspace: 'project',
   workspaceSurface: 'browse',
@@ -98,7 +98,7 @@ definePageMeta({
     prominent: false,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: true,

@@ -64,7 +64,7 @@ definePageMeta({
     key: 'framework-templates',
     label: 'Templates',
     order: 40,
-    layouts: ['framework'],
+    menus: ['framework'],
   },
 })
 useSeoMeta({

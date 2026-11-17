@@ -1,3 +1,3 @@
 <template>
-  <FireuxWorkspaceApp />
+  <FireuxApp />
 </template>

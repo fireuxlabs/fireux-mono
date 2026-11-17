@@ -37,8 +37,8 @@ useAppLandingSeo({
 })
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspace: 'property',
   pageTransition: false,
   workspaceSurface: 'browse',
@@ -51,7 +51,7 @@ definePageMeta({
     order: 6,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: true,

@@ -3,7 +3,9 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
-import { computed, ref, reactive } from 'vue'
+import { compile, computed, createSSRApp, h, ref, reactive } from 'vue'
+import { renderToString } from 'vue/server-renderer'
+import { parse } from 'vue/compiler-sfc'
 const source = readFileSync(
   new URL(
     '../runtime/workspace/composables/useWorkspacePageNavigation.ts',
@@ -54,12 +56,13 @@ test('Kitchen group framing starts at its group and retains navigation children'
         key: 'workspace-kitchen-menu-group',
         label: 'Food & drink',
         to: '/workspace/kitchen/menu',
+        groupIndex: true,
         children,
       },
     ],
     'workspace-kitchen-menu-group'
   )
-  assert.deepEqual(state.breadcrumbs.value, [{ label: 'Food & drink' }])
+  assert.deepEqual(state.breadcrumbs.value, [])
   assert.deepEqual(state.children.value, children)
 })
 test('another Workspace also omits synthetic entry prefixes', () => {
@@ -75,7 +78,7 @@ test('another Workspace also omits synthetic entry prefixes', () => {
     ],
     'workspace-project-delivery'
   )
-  assert.deepEqual(state.breadcrumbs.value, [{ label: 'Delivery' }])
+  assert.deepEqual(state.breadcrumbs.value, [])
   assert.deepEqual(state.children.value, [])
   assert.ok(!source.includes('/workspace/kitchen'))
   assert.ok(!source.includes('<slot'))
@@ -136,14 +139,15 @@ for (const [key, label, path] of [
   ['home', 'Kitchen Workspace', '/workspace/kitchen'],
   ['overview', 'Overview', '/workspace/kitchen/overview'],
 ]) {
-  test(`${key} remains a standalone current page`, () => {
+  test(`${key} keeps its title without a one-item breadcrumb trail`, () => {
     const state = group(
       'kitchen',
       '/workspace/kitchen',
       [{ key, label, to: path }],
       key
     )
-    assert.deepEqual(state.breadcrumbs.value, [{ label }])
+    assert.deepEqual(state.breadcrumbs.value, [])
+    assert.equal(state.title.value, label)
   })
 }
 
@@ -161,5 +165,68 @@ test('similar URL segments do not create unnamed breadcrumb ancestors', () => {
       meta: { nav: { label: 'Record' } },
     }
   )
-  assert.deepEqual(state.breadcrumbs.value, [{ label: 'Record' }])
+  assert.deepEqual(state.breadcrumbs.value, [])
+})
+
+test('an explicitly registered nested group index suppresses its trail even with a real ancestor', () => {
+  const items = [
+    {
+      key: 'parent',
+      label: 'Operations',
+      to: '/workspace/project/operations',
+      groupIndex: true,
+    },
+    {
+      key: 'child-group',
+      label: 'Delivery',
+      to: '/workspace/project/operations/delivery',
+      groupIndex: true,
+    },
+  ]
+  const state = group('project', '/workspace/project', items, 'child-group')
+  assert.deepEqual(state.breadcrumbs.value, [])
+  assert.equal(state.title.value, 'Delivery')
+})
+
+test('the actual breadcrumb component renders no empty landmark and keeps ancestor links with an unlinked current item', async () => {
+  const { descriptor } = parse(
+    readFileSync(
+      new URL(
+        '../runtime/workspace/components/Breadcrumbs.vue',
+        import.meta.url
+      ),
+      'utf8'
+    )
+  )
+  for (const trail of [
+    [],
+    [{ label: 'Menus', to: '/workspace/kitchen/menu' }, { label: 'Items' }],
+  ]) {
+    let mounts = 0
+    const app = createSSRApp({
+      setup: () => ({ breadcrumbs: ref(trail) }),
+      render: compile(descriptor.template.content),
+    })
+    app.component('UBreadcrumb', {
+      props: ['items'],
+      setup(props) {
+        mounts++
+        return () =>
+          h(
+            'nav',
+            props.items.map((item) =>
+              item.to
+                ? h('a', { href: item.to }, item.label)
+                : h('span', item.label)
+            )
+          )
+      },
+    })
+    const html = await renderToString(app)
+    assert.equal(mounts, trail.length ? 1 : 0)
+    if (trail.length) {
+      assert.match(html, /href="\/workspace\/kitchen\/menu"/)
+      assert.match(html, /<span>Items<\/span>/)
+    } else assert.doesNotMatch(html, /<nav\b/)
+  }
 })

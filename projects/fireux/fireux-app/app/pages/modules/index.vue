@@ -23,7 +23,7 @@ definePageMeta({
     order: 70,
     desktop: true,
     mobile: true,
-    layouts: ['default', 'landing'],
+    menus: ['default', 'landing'],
   },
   title: 'Modules',
   description: 'Browse reusable FireUX extension modules.',

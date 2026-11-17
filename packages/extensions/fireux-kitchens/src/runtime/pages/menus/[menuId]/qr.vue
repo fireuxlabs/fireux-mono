@@ -1,9 +1,11 @@
 <template>
-  <MenuQR
-    :menu-id="menuTarget.menuId"
-    :menu-context="menuTarget.context"
-    :menu-route-scope="menuRouteScope"
-  />
+  <UMain>
+    <MenuQR
+      :menu-id="menuTarget.menuId"
+      :menu-context="menuTarget.context"
+      :menu-route-scope="menuRouteScope"
+    />
+  </UMain>
 </template>
 
 <script setup lang="ts">

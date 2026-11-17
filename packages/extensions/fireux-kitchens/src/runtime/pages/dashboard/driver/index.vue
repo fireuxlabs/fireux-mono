@@ -21,7 +21,7 @@ definePageMeta({
     icon: 'i-lucide-car',
     position: 'middle',
     desktop: true,
-    layouts: ['dashboard'],
+    menus: ['dashboard'],
     group: 'profiles',
     profileId: 'driver',
   },

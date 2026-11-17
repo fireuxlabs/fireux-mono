@@ -18,8 +18,8 @@ import { useSeoMeta } from '#imports'
 import { appMeta } from '../../../meta'
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   pageTransition: false,
   workspace: 'supplier',
   workspaceSurface: 'browse',
@@ -33,7 +33,7 @@ definePageMeta({
     prominent: true,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: false,
   requiresSelection: false,

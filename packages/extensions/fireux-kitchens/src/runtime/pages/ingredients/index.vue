@@ -38,7 +38,6 @@ definePageMeta({
     order: 55,
     desktop: false,
     mobile: false,
-    layouts: ['default'],
   },
   name: 'IngredientsIndexPage',
 })

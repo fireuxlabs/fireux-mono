@@ -22,15 +22,9 @@
         </UCard>
       </UPageSection>
       <UPageSection title="What FireUX adds">
-        <p>
-          For an App without Workspaces, use this in <code>app/app.vue</code>:
-        </p>
+        <p>Use this shared root in <code>app/app.vue</code>:</p>
         <UCard variant="subtle">
           <pre><code>{{ fireuxExample }}</code></pre>
-        </UCard>
-        <p>If the App declares Workspaces, use the Workspace-capable root:</p>
-        <UCard variant="subtle">
-          <pre><code>{{ workspaceExample }}</code></pre>
         </UCard>
 
         <p>
@@ -40,11 +34,12 @@
           development.
         </p>
         <p>
-          Normal pages receive one <code>UMain</code> inside their layout. The
-          Workspace frame owns its own main content landmark.
-          <code>FireuxWorkspaceApp</code> adds that frame and its manifest path;
-          the ordinary root has no Workspace imports. Nuxt still owns routing
-          and layouts; Nuxt UI supplies the controls.
+          Each native layout owns one main content landmark around the page
+          supplied by the root. Pages select the Workspace frame with
+          <code>layout: 'workspace'</code>; Nuxt loads that layout
+          asynchronously. Its shared page frame owns the Workspace landmark,
+          Navbar, breadcrumbs and error boundary. The App manifest follows the
+          selected layout and configured Workspace entrance.
         </p>
       </UPageSection>
       <UPageSection title="Choose the entrance">
@@ -64,8 +59,7 @@
       <UPageSection title="Keep these boundaries">
         <ul class="fx-list-stack">
           <li>
-            Use one root: <code>FireuxApp</code> without Workspaces, or
-            <code>FireuxWorkspaceApp</code> with them. Do not repeat
+            Use one <code>FireuxApp</code> root for every App. Do not repeat
             <code>UApp</code>, the route outlet or App initialization around it.
           </li>
           <li>
@@ -73,8 +67,8 @@
             footers in layouts. Layouts consume their native slot.
           </li>
           <li>
-            Pages, layouts and their children do not add another
-            <code>main</code> landmark.
+            Pages using a layout consume its <code>main</code> landmark. A page
+            with <code>layout: false</code> supplies its own <code>UMain</code>.
           </li>
           <li>
             Declare identity, packages and Workspaces through App configuration.
@@ -131,8 +125,5 @@ const uiExample = `<template>
 </template>`
 const fireuxExample = `<template>
   <FireuxApp />
-</template>`
-const workspaceExample = `<template>
-  <FireuxWorkspaceApp />
 </template>`
 </script>

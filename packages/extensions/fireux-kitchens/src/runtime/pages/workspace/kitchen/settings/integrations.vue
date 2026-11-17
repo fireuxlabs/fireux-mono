@@ -7,8 +7,8 @@
 </template>
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspace: 'kitchen',
   requiresAuth: true,
   requiresSelection: true,

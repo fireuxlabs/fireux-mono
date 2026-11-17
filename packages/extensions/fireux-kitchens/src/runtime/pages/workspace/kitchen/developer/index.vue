@@ -3,8 +3,8 @@
 </template>
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspace: 'kitchen',
   workspaceSurface: 'browse',
   requiresAuth: true,
@@ -23,7 +23,7 @@ definePageMeta({
     order: 99,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
     children: [
       {
         label: 'Test',

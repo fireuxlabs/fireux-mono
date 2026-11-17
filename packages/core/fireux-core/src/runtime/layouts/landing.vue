@@ -4,7 +4,7 @@
 
     <div class="fx-layout-main fx-layout-main--landing">
       <UContainer>
-        <slot />
+        <UMain><slot /></UMain>
       </UContainer>
     </div>
 

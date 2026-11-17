@@ -37,12 +37,11 @@ definePageMeta({
     order: 35,
     desktop: true,
     mobile: true,
-    layouts: ['framework'],
+    menus: ['framework'],
   },
 })
 useSeoMeta({
   title: 'Products · FireUX',
-  description:
-    'Explore FireUX Apps, templates and modules.',
+  description: 'Explore FireUX Apps, templates and modules.',
 })
 </script>

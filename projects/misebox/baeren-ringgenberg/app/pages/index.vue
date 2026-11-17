@@ -11,7 +11,7 @@ definePageMeta({
     icon: 'i-lucide-house',
     desktop: true,
     mobile: true,
-    layouts: ['baeren-default'],
+    menus: ['baeren-default'],
   },
 })
 

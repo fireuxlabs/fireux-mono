@@ -6,8 +6,8 @@
 import PortfolioCompliance from '../../../portfolio/components/Workspace/Compliance/Index.vue'
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-compliance'] },
   nav: {
@@ -18,7 +18,7 @@ definePageMeta({
     order: 30,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: true,

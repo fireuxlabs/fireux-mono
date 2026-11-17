@@ -9,8 +9,8 @@
 </template>
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspace: 'kitchen',
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
@@ -29,7 +29,7 @@ definePageMeta({
     order: 70,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
     children: [
       {
         label: 'Sales',

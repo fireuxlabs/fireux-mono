@@ -107,7 +107,7 @@ definePageMeta({
     icon: 'i-lucide-store',
     desktop: true,
     group: 'bringli',
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
   },
 })
 

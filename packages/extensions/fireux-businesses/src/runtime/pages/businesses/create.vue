@@ -26,7 +26,6 @@ definePageMeta({
     order: 56,
     desktop: false,
     mobile: false,
-    layouts: ['default'],
   },
   head: { title: 'Create Business' },
   name: 'BusinessesCreatePage',

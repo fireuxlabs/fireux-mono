@@ -20,8 +20,8 @@ const route = useRoute()
 const test = useKitchenWorkspaceTest()
 const recordId = computed(() => String(route.params.id || ''))
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   pageTransition: false,
   workspace: 'kitchen',
   workspaceSurface: 'detail',

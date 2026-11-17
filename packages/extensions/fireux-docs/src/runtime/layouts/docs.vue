@@ -21,7 +21,7 @@
               />
             </UPageAside>
           </template>
-          <slot />
+          <UMain><slot /></UMain>
         </UPage>
       </UContainer>
     </div>

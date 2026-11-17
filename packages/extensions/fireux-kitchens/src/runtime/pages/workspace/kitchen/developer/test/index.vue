@@ -26,8 +26,8 @@
 import { useKitchenWorkspaceTest } from '../../../../../kitchen/composables/workspace/test/useKitchenWorkspaceTest'
 const test = useKitchenWorkspaceTest()
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   pageTransition: false,
   workspace: 'kitchen',
   workspaceSurface: 'browse',
@@ -45,7 +45,7 @@ definePageMeta({
     prominent: false,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: true,

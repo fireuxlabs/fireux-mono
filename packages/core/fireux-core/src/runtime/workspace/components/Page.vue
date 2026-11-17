@@ -13,7 +13,7 @@
         <NuxtErrorBoundary
           :key="workspace + ':' + selectedId + ':' + route.path"
         >
-          <NuxtPage />
+          <slot />
           <template #error="{ error, clearError }">
             <UAlert
               color="error"

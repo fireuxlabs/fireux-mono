@@ -75,8 +75,8 @@ const errorMessage = computed(() =>
 )
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   pageTransition: false,
   workspace: 'kitchen',
   workspaceSurface: 'detail',

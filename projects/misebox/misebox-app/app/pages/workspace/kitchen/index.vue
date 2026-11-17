@@ -2,8 +2,8 @@
 <script setup lang="ts">
 import KitchenHome from '../../../components/Workspace/KitchenHome.vue'
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   pageTransition: false,
   workspace: 'kitchen',
   workspaceSurface: 'browse',
@@ -17,7 +17,7 @@ definePageMeta({
     prominent: true,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: false,
   requiresSelection: false,

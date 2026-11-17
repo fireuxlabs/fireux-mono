@@ -13,8 +13,8 @@
 import { useBlankWorkspaceTeam } from '../../../composables/workspace/useBlankWorkspaceTeam'
 const team = useBlankWorkspaceTeam()
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   nav: {
     key: 'workspace-blank-team',
@@ -24,7 +24,7 @@ definePageMeta({
     order: 6,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: true,

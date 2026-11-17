@@ -16,7 +16,7 @@
     </header>
 
     <div>
-      <slot />
+      <UMain><slot /></UMain>
     </div>
 
     <AusfinnNav />

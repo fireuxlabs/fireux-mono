@@ -4,13 +4,9 @@
       <FirePwaStatus />
     </ClientOnly>
 
-    <slot>
-      <NuxtLayout>
-        <UMain>
-          <NuxtPage />
-        </UMain>
-      </NuxtLayout>
-    </slot>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
 
     <DevOnly>
       <AppDevControls />
@@ -20,10 +16,7 @@
 </template>
 <script setup lang="ts">
 import { useAppHead } from '../composables/useAppHead'
+import { useAppManifest } from '../composables/useAppManifest'
 
-const props = withDefaults(defineProps<{ manifestPath?: string }>(), {
-  manifestPath: '/manifest.webmanifest',
-})
-
-useAppHead(() => props.manifestPath)
+useAppHead(useAppManifest())
 </script>

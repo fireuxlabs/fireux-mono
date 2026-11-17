@@ -82,7 +82,7 @@ test('Misebox uses native same-origin routes and guest Workspace metadata', () =
     ),
     'utf8'
   )
-  assert.match(page, /workspacePage: true/)
+  assert.match(page, /layout: 'workspace'/)
   assert.match(page, /requiresAuth: false/)
 })
 

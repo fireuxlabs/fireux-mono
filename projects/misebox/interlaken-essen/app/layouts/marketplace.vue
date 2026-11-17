@@ -109,7 +109,7 @@
     </header>
 
     <div>
-      <slot />
+      <UMain><slot /></UMain>
     </div>
 
     <footer class="market-footer">

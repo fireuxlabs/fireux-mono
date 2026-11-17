@@ -21,7 +21,6 @@ definePageMeta({
     icon: 'i-lucide-user-plus',
     desktop: false,
     mobile: false,
-    layouts: ['default'],
   },
   name: 'UsersCreatePage',
 })

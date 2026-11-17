@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-11-16
-Ref: a068b6eaa
+Updated: 2026-11-17
+Ref: e20047a13
 Role: map, not canon
 
 ## Purpose and navigation
@@ -97,7 +97,7 @@ all their implementation or treating every shared component as a template:
 
 | Reference                                                                                                               | Classification and boundary                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [WorkspacePage](../../packages/core/fireux-core/src/runtime/workspace/components/Page.vue) consuming native panel slots | Supported native slot consumption; Core owns one frame/outlet and domains supply route content.                                                                                                                                                                                                                                                                                                                                                                                           |
+| [WorkspacePage](../../packages/core/fireux-core/src/runtime/workspace/components/Page.vue) consuming native panel slots | Supported native slot consumption; Core owns the frame and landmark, the App owns its page outlet, and domains supply route content.                                                                                                                                                                                                                                                                                                                                                      |
 | [FireOnboardingShell](../../packages/core/fireux-core/src/runtime/components/Onboarding/Shell.vue)                      | Bounded shared extension point for stage/progress/error framing, consumed by [Place](../../packages/extensions/fireux-places/src/runtime/place/components/Onboarding/Index.vue) and [Kitchen](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Onboarding/Index.vue). Their journey state, stage content and commands remain domain-owned.                                                                                                                        |
 | [WorkspaceCapability](../../packages/core/fireux-core/src/runtime/workspace/components/Capability.vue)                  | Bounded shared extension point for responsive collection/single panels and focus behavior, used by [Project Test](../../packages/extensions/fireux-projects/src/runtime/project/components/Workspace/Test/Index.vue), [Kitchen Test](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Test/Index.vue) and [Team](../../packages/core/fireux-core/src/runtime/workspace/components/Team/Editor.vue). It is a component, not a Nuxt layout or data owner. |
 | [WorkspaceOverview](../../packages/core/fireux-core/src/runtime/workspace/components/Overview/Index.vue)                | Project-only direct composition reference: the [Project consumer](../../packages/extensions/fireux-projects/src/runtime/project/components/Workspace/Overview/Index.vue) supplies default/attention content; `badge` has no current consumer. This does not establish a universal page-shell pattern or justify copying its extension API.                                                                                                                                                |
@@ -253,7 +253,7 @@ internal roots: `molecules/State.vue` exposes `FireState`. Public names omit
 the Atomic Design category. Other responsibility folders remain meaningful; for example
 Collection/Pagination.vue exposes FireCollectionPagination. `Fire` is not a
 physical responsibility folder. No old-name compatibility registrations remain.
-`FireuxApp` and `FireuxWorkspaceApp` are explicit application-root registrations; it is not part of
+`FireuxApp` is the explicit application-root registration; it is not part of
 the App-prefixed Entity scan. App-local overrides use the same Fire name; Entity and Workspace registrations
 keep their existing names. Nuxt UI keeps `U`.
 
@@ -304,14 +304,14 @@ semantic styles; controlled open state remains with the caller. The FireUX App e
 
 ## Workspace composition
 
-[FireuxWorkspaceApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxWorkspaceApp.vue)
-selects the named [Workspace composition](../../packages/core/fireux-core/src/runtime/workspace/components/Index.vue)
-through route metadata. It combines the shared sidebar and one
+[FireuxApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxApp.vue)
+supplies one page outlet to native NuxtLayout. Pages select the
+[Workspace layout](../../packages/core/fireux-core/src/runtime/layouts/workspace.vue)
+with `layout: 'workspace'`. It composes the shared sidebar and one
 [WorkspacePage](../../packages/core/fireux-core/src/runtime/workspace/components/Page.vue)
-frame. WorkspacePage owns the dashboard panel, Navbar, Breadcrumbs, error
-boundary and Workspace route outlet. App roots delegate to FireuxApp; they do
-not repeat its provider, route selection or initialization lifecycle.
-The old GroupPage and Workspace layout shell are retired.
+frame, which owns the dashboard panel, main, Navbar, Breadcrumbs and error
+boundary and consumes the supplied page slot. App roots retain one provider and
+initialization lifecycle. Domain pages supply content without another frame.
 
 Routes provide their content. Group indexes use
 [WorkspacePageLinks](../../packages/core/fireux-core/src/runtime/workspace/components/PageLinks.vue)

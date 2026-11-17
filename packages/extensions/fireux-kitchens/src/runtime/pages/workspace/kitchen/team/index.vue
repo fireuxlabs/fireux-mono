@@ -9,8 +9,8 @@
 </template>
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspace: 'kitchen',
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
@@ -27,7 +27,7 @@ definePageMeta({
     prominent: false,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
     children: [
       {
         label: 'People',

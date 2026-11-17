@@ -5,8 +5,8 @@
 <script setup lang="ts">
 import KitchenMenu from '../../../../kitchen/components/Menu/Index.vue'
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceHeader: 'content',
   workspace: 'kitchen',
   workspaceSurface: 'browse',
@@ -24,7 +24,7 @@ definePageMeta({
     order: 5,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
     children: [
       {
         key: 'items',

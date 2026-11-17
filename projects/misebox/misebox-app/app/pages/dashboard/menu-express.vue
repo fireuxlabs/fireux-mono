@@ -17,7 +17,7 @@ definePageMeta({
     position: 'middle',
     order: 12,
     desktop: true,
-    layouts: ['dashboard'],
+    menus: ['dashboard'],
   },
 })
 useSeoMeta({

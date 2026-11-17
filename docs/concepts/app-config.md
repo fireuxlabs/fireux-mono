@@ -1,7 +1,7 @@
 # App config spine map
 
-Updated: 2026-11-15
-Ref: a068b6eaa
+Updated: 2026-11-17
+Ref: e20047a13
 Role: map, not canon
 
 ## Purpose
@@ -295,11 +295,12 @@ or subscription.
 
 ## App entrance and optional Workspace
 
-Use `FireuxApp` when no Workspaces are declared, and `FireuxWorkspaceApp` when
-`workspaces` is non-empty. Global, tenant and standalone roles share this rule. `role` owns
-the App relationship, `workspaces` declares capabilities, and `homePath` owns
-the public Home navigation destination. An empty Workspace list loads no
-Workspace frame. Route metadata still selects the frame for each page.
+Every App uses `FireuxApp`, across global, tenant and standalone roles. `role`
+owns the App relationship, `workspaces` declares capabilities, and `homePath`
+owns the public Home destination. Pages select the native Workspace layout
+through `layout: 'workspace'`; Nuxt loads its UI asynchronously. An empty
+Workspace list retains the ordinary App root and exposes no Workspace entrance.
+The existing middleware checks configured availability independently of rendering.
 
 Workspace middleware reads this declaration through `useFireUXConfig` on both
 server and client before client sign-in checks. Route path and metadata identify

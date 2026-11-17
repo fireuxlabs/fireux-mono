@@ -24,7 +24,7 @@ definePageMeta({
     order: 50,
     desktop: true,
     mobile: true,
-    layouts: ['default', 'landing'],
+    menus: ['default', 'landing'],
   },
   title: 'Ecosystems',
   description: 'Browse published FireUX Ecosystems.',

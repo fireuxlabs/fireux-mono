@@ -10,7 +10,6 @@ definePageMeta({
     order: 10,
     desktop: true,
     mobile: true,
-    layouts: ['default'],
   },
 })
 </script>

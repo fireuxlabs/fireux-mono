@@ -17,8 +17,8 @@ import WorkspaceGuestWelcome from 'fireux-core/runtime/workspace/components/Gues
 import { useSeoMeta } from '#imports'
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   pageTransition: false,
   workspace: 'property',
   workspaceSurface: 'browse',
@@ -32,7 +32,7 @@ definePageMeta({
     prominent: true,
     desktop: true,
     mobile: true,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: false,
   requiresSelection: false,

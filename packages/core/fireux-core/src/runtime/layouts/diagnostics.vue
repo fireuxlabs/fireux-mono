@@ -8,7 +8,9 @@
       </UDashboardSidebar>
 
       <UDashboardPanel id="core-diagnostics-content">
-        <template #body><slot /></template>
+        <template #body
+          ><UMain><slot /></UMain
+        ></template>
       </UDashboardPanel>
     </UDashboardGroup>
   </ClientOnly>

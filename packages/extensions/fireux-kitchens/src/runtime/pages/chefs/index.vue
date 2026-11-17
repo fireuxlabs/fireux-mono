@@ -23,7 +23,6 @@ definePageMeta({
     order: 40,
     desktop: false,
     mobile: false,
-    layouts: ['default'],
   },
   title: 'Chefs',
   description:

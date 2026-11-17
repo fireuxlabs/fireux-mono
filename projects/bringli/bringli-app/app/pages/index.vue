@@ -1,4 +1,6 @@
-<template><div /></template>
+<template>
+  <UMain><div /></UMain>
+</template>
 <script setup lang="ts">
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 definePageMeta({ layout: false, pageTransition: false, requiresAuth: false })

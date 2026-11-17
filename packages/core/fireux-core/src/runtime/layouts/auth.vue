@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <slot />
+    <UMain><slot /></UMain>
   </ClientOnly>
 </template>
 

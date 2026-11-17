@@ -5,7 +5,6 @@ definePageMeta({
   nav: {
     key: 'kitchens',
     hidden: true,
-    layouts: ['default'],
   },
 })
 

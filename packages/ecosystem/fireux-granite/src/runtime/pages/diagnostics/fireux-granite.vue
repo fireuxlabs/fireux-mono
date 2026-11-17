@@ -35,7 +35,7 @@ definePageMeta({
     icon: 'i-lucide-building-2',
     desktop: true,
     group: 'granite',
-    layouts: ['diagnostics'],
+    menus: ['diagnostics'],
   },
 })
 

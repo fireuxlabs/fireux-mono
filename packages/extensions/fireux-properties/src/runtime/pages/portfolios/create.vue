@@ -7,7 +7,11 @@
     />
 
     <UPageBody class="pagebody">
-      <PortfolioCreateSystem mode="root" :cancel-to="cancelTo" :return-to="returnTo" />
+      <PortfolioCreateSystem
+        mode="root"
+        :cancel-to="cancelTo"
+        :return-to="returnTo"
+      />
     </UPageBody>
   </UPage>
 </template>
@@ -30,7 +34,6 @@ definePageMeta({
     order: 56,
     desktop: false,
     mobile: false,
-    layouts: ['default'],
   },
   name: 'PortfoliosCreatePage',
 })

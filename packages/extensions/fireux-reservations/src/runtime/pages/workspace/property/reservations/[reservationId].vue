@@ -17,8 +17,8 @@
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'detail',
   visibility: { modules: ['fireux-reservations'] },
   requiresAuth: true,

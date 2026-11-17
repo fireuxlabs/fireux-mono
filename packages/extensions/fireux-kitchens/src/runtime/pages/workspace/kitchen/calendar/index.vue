@@ -19,8 +19,8 @@ const intro = {
 }
 import KitchenCalendar from '../../../../kitchen/components/Calendar/Index.vue'
 definePageMeta({
-  layout: false,
-  workspacePage: true,
+  layout: 'workspace',
+
   workspaceSurface: 'browse',
   workspaceAccess: 'authenticated',
   visibility: { modules: ['fireux-kitchens'] },
@@ -33,7 +33,7 @@ definePageMeta({
     order: 50,
     desktop: false,
     mobile: false,
-    layouts: ['workspace'],
+    menus: ['workspace'],
   },
   requiresAuth: true,
   requiresSelection: true,

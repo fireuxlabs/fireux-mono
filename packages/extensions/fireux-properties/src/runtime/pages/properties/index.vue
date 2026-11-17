@@ -28,7 +28,7 @@ definePageMeta({
     order: 55,
     desktop: true,
     mobile: true,
-    layouts: ['default', 'landing'],
+    menus: ['default', 'landing'],
     // TODO: confirm whether app visibility hides nav only or route access,
     // and whether portfolios needs the same app gate.
     visibility: {

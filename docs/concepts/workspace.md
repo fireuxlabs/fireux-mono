@@ -1,7 +1,7 @@
 # Workspace
 
-Updated: 2026-11-16
-Ref: a068b6eaa
+Updated: 2026-11-17
+Ref: e20047a13
 Role: map, not canon
 
 Business is an additional Workspace Entity owned by `fireux-businesses`. Its first tools are business profile/contact editing, optional Place links and the organisational Team roster. Current source and authority are routed through `packages/extensions/fireux-businesses/docs/ai/businesses-context.md`.
@@ -51,9 +51,10 @@ Current Core entrypoints under `packages/core/fireux-core/src/runtime/`:
 - `workspace/composables/useWorkspace.ts`: active Entity selection.
 - `workspace/composables/useWorkspaceEntryCta.ts`: App-aware entry links.
 - `workspace/components/EntitySwitcher.vue`: selected-Entity switching control.
-- `app/components/FireuxApp.vue`: selects Workspace from route metadata.
-- `workspace/components/Index.vue`: sidebar, Workspace page and shared controls.
-- `workspace/components/Page.vue`: dashboard panel and one Workspace page outlet.
+- `app/components/FireuxApp.vue`: one native layout and page outlet.
+- `app/composables/useAppManifest.ts`: configured native Workspace manifest path.
+- `layouts/workspace.vue`: native sidebar, Workspace frame and shared controls.
+- `workspace/components/Page.vue`: dashboard panel, main and supplied page slot.
 - `workspace/components/Navbar.vue` and `Breadcrumbs.vue`: shared page framing.
 - `workspace/components/PageLinks.vue`: group navigation as page content.
 - `composables/fireux/useIdentity.ts` and `useWorkspaceTeam.ts`: shared interaction state.
@@ -85,10 +86,11 @@ Misebox domain groups, with Settings after domain work.
 Other families retain their own declared navigation; this is not a claim that
 all have adopted Kitchen's grouping or need the same number of groups.
 
-FireuxApp selects Core's named Workspace composition for routes marked by
-`workspacePage` metadata. Workspace composes the persistent sidebar, one page
-frame and shared Navbar/Breadcrumbs; the frame owns the route outlet and error
-boundary. Group indexes use `WorkspacePageLinks` as ordinary content. Route
+Pages select Core's native `workspace` layout through `layout: 'workspace'`.
+FireuxApp supplies the same page outlet used by every other native layout.
+Workspace composes the persistent sidebar, one page frame and shared
+Navbar/Breadcrumbs; the frame consumes the supplied page slot and owns its main
+and error boundary. Group indexes use `WorkspacePageLinks` as ordinary content. Route
 pages provide their domain surface without repeating the outer panel or header.
 The retired GroupPage shell is not the target for new routes. Apply the canonical
 [component API rule](components.md#component-apis-and-extension-points), including
@@ -105,11 +107,17 @@ Do not mount editing controllers merely to calculate overview counts.
 ## Breadcrumbs
 
 `useWorkspacePageNavigation` owns the shared trail consumed by native
-`UBreadcrumb`. Workspace Home and Overview are not prepended to other pages;
-the sidebar and selected-Entity navigation retain those entrances. Their own
-pages still show their current-page label. A group index starts at its group,
-and children retain the existing registered navigation ancestors and links.
-The current page remains an unlinked final item.
+`UBreadcrumb`. Core's `WorkspacePage` mounts `WorkspaceBreadcrumbs` once, before
+the route content; domain page headers and children do not mount another trail.
+An explicit registered `nav.groupIndex` suppresses its trail, including nested
+group indexes. A trail containing only the current-page label is also omitted
+because it supplies no ancestor navigation. This covers Home, Overview and
+standalone entrances without per-page suppression flags or URL-depth rules.
+`WorkspaceBreadcrumbs` renders no empty breadcrumb landmark.
+
+Child and detail pages retain useful registered ancestor links and their
+unlinked final current item. Workspace Home and Overview are not prepended;
+the sidebar and selected-Entity navigation retain those entrances.
 
 This simplification does not invent ancestry from individual URL segments or
 read record names. Existing registered ancestor matching remains unchanged.
@@ -121,9 +129,11 @@ a generic detail label is not evidence of a record's name.
 Core's [WorkspacePageHeader](../../packages/core/fireux-core/src/runtime/workspace/components/PageHeader.vue)
 is the shared Workspace introduction presentation, built on native `UPageHeader`.
 It accepts reactive `title` and `description` props, an optional `actions` slot,
-and `variant="primary"` (default) or `variant="child"`. Primary suits a group or
-working entrance; child gives a capability page a quieter visual title. Choose
-by responsibility, never URL depth or the presence of an index filename.
+and `variant="primary"` (default) or `variant="child"`. A group index or
+standalone working entrance uses primary; a group's child capability uses the
+quieter child presentation. For example, Kitchen `/menu` uses primary and
+`/menu/items` uses child. Choose by the named capability/navigation relationship,
+never URL depth or the presence of an index filename.
 Both variants retain native `h1` semantics for a separate page. Sections within
 that page use their own `h2` headings, not another page header.
 
@@ -150,6 +160,8 @@ existing page introduction when adopting this API; do not stack it alongside
 another `h1`, local collection header or frame description. Domain commands and
 action controls keep their existing owners. Existing specialised record headers
 are not automatically replaced by this bounded introduction pattern.
+Existing Workspace surfaces have not all adopted these shared variants; align
+the complete introduction and route metadata when touching that boundary.
 
 Group descriptions name their actual child capabilities. Useful spanning status
 or actions may accompany their entrances; detailed workflows remain child-owned.

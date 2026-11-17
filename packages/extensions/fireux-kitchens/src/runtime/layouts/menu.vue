@@ -13,7 +13,7 @@
       :to="exitPath"
     />
 
-    <slot />
+    <UMain><slot /></UMain>
   </div>
 </template>
 

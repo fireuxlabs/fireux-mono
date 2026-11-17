@@ -48,7 +48,6 @@ definePageMeta({
     order: 55,
     desktop: true,
     mobile: true,
-    layouts: ['default'],
   },
 })
 

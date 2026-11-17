@@ -1,25 +1,27 @@
 <template>
-  <TemplateOnePage v-if="projection" :projection="projection" />
+  <UMain>
+    <TemplateOnePage v-if="projection" :projection="projection" />
 
-  <UPage v-else>
-    <UContainer>
-      <UPageHeader
-        :title="presentation.name"
-        :description="presentation.summary"
-        :links="[
-          {
-            label: 'Back to templates',
-            to: `/templates?kitchen=${kitchen.id}`,
-            icon: 'i-lucide-arrow-left',
-          },
-        ]"
-      />
-      <UPageBody>
-        <TemplatesKitchenPalette :kitchen="kitchen" />
-        <TemplatesKitchenTypography :kitchen="kitchen" />
-      </UPageBody>
-    </UContainer>
-  </UPage>
+    <UPage v-else>
+      <UContainer>
+        <UPageHeader
+          :title="presentation.name"
+          :description="presentation.summary"
+          :links="[
+            {
+              label: 'Back to templates',
+              to: `/templates?kitchen=${kitchen.id}`,
+              icon: 'i-lucide-arrow-left',
+            },
+          ]"
+        />
+        <UPageBody>
+          <TemplatesKitchenPalette :kitchen="kitchen" />
+          <TemplatesKitchenTypography :kitchen="kitchen" />
+        </UPageBody>
+      </UContainer>
+    </UPage>
+  </UMain>
 </template>
 
 <script setup lang="ts">

@@ -34,7 +34,6 @@ definePageMeta({
     order: 60,
     desktop: true,
     mobile: true,
-    layouts: ['default'],
   },
   name: 'JobsIndexPage',
 })

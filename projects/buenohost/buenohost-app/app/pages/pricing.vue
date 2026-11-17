@@ -17,7 +17,7 @@ definePageMeta({
     position: 'bottom',
     desktop: true,
     mobile: true,
-    layouts: ['landing'],
+    menus: ['landing'],
   },
 })
 useSeoMeta({

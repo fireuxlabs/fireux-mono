@@ -32,7 +32,7 @@ definePageMeta({
     key: 'framework-components',
     label: 'Components',
     order: 20,
-    layouts: ['framework'],
+    menus: ['framework'],
   },
 })
 useSeoMeta({

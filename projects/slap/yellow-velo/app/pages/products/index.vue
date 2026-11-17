@@ -164,7 +164,7 @@ definePageMeta({
     order: 20,
     desktop: true,
     mobile: true,
-    layouts: ['default', 'landing'],
+    menus: ['default', 'landing'],
   },
 })
 

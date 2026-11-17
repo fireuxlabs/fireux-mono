@@ -9,9 +9,11 @@
       <UPageSection title="What FireuxApp provides">
         <p>
           Core’s <code>FireuxApp</code> sets up Nuxt UI’s <code>UApp</code> and
-          renders ordinary routes in a Nuxt layout. Workspace routes share a
-          sidebar, page header and breadcrumbs. Each Workspace page supplies its
-          own content.
+          supplies one page outlet to the selected native Nuxt layout. Workspace
+          routes select <code>layout: 'workspace'</code> and share a persistent
+          sidebar, page frame and error boundary. Each route supplies its own
+          content. Group entrances omit breadcrumbs; child pages retain useful
+          registered ancestry.
         </p>
       </UPageSection>
 
@@ -20,7 +22,9 @@
           Core provides <code>default</code> for ordinary site pages,
           <code>landing</code> for marketing pages, <code>dashboard</code> for
           signed-in navigation, <code>auth</code> for sign-in and
-          <code>diagnostics</code> for inspection tools.
+          <code>diagnostics</code> for inspection tools. The native
+          <code>workspace</code> layout supplies the operational frame. Layouts
+          consume the page slot inside one main landmark.
         </p>
         <p>
           The <ULink to="/about">FireUX About page</ULink> uses Core’s

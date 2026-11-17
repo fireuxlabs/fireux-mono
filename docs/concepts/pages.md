@@ -1,7 +1,7 @@
 # Pages
 
-Updated: 2026-11-09
-Ref: a801fb79f
+Updated: 2026-11-17
+Ref: e20047a13
 Role: map, not canon
 
 ## Purpose
@@ -32,10 +32,11 @@ Map how route pages should be built and where consensus is still forming.
 - A page owns route metadata, route outcome and high-level domain composition.
   Shared chrome belongs to a Nuxt layout or a named family composition; see
   [layouts](layouts.md) before changing route framing.
-- Workspace route pages set `layout: false` and `workspacePage: true`.
-  [FireuxWorkspaceApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxWorkspaceApp.vue)
-  selects Core's Workspace composition, whose page frame owns the nested
-  `<NuxtPage />` outlet. Workspace pages provide route content.
+- Workspace route pages select native `layout: 'workspace'`.
+  [FireuxApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxApp.vue)
+  supplies its single page outlet to the selected layout; the Workspace frame
+  consumes that slot. Layouts own their content landmark; `layout: false` pages
+  supply their own `UMain`. Workspace pages retain their domain content and authority.
 - Core supplies the app-wide Nuxt page transition and disables it for Workspace
   routes and routes using the Dashboard layout through
   [pages-config.ts](../../packages/core/fireux-core/src/config/module/pages-config.ts)
