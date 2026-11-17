@@ -50,3 +50,49 @@ First report a decision matrix: **accepted / already implemented / drift / to-co
 ## Guiding quality test
 
 A developer or coding agent unfamiliar with FireUX should independently arrive at the same answer to: **Who owns this? Where does it live? What is it named? How does it acquire/act? How is its correctness proved?** When the answer requires special historical knowledge, the rule or implementation still needs alignment.
+
+
+## Addendum — 2026-11-17: Menu and Prep & Production workspace-group composition audit
+
+**Scope and status:** Findings below were checked against the committed `main` source at `f132b89` after the handoff above. This addendum sharpens Codex's **immediate bounded audit/alignment assignment**, not authorization for an unreviewed rewrite, deployment or persisted-data migration. Local uncommitted changes must be inspected before edits.
+
+### User's intended workspace pattern
+
+The Kitchen Menu and Kitchen Prep & Production surfaces are **document-oriented workspace groups**: a group/index parent, child pages, simple references, reads, creation/editing, and group-specific summaries. They are **not** the same UX family as Orders, where opening a route leads into a full-screen operational application. Do not force these distinct experiences into the same component pattern merely for symmetry.
+
+The parent is a **logical capability/state owner**, not necessarily a permanently mounted Vue page wrapper. Nuxt page navigation can remount parent components, so the lifetime, injection scope, shared subscriptions and read acquisition must be explicit. Child pages should be lean, and component composables may delegate to the responsible parent/domain composables. Prefer one acquisition and one authority per scope; do not add compulsory wrappers.
+
+### Committed source evidence
+
+| Surface | Observed source | Finding |
+| --- | --- | --- |
+| Menu group entry | `runtime/pages/workspace/kitchen/menu/index.vue`; `runtime/kitchen/components/Menu/Index.vue` | Group entry mounts Menu index; nav children include Items, Promotions, Services. Menu overview also composes Menus. |
+| Menu shared parent | `runtime/kitchen/composables/workspace/menus/useKitchenMenusWorkspace.ts` and `workspace/menu-group/useMenuGroupIndex.ts` | Parent creates `createKitchenMenus(false)` and `createMenuGroupIndex(...)`, provides shared state; children inject the overview instead of independently constructing it. Preserve this good behavior. |
+| Menu overview | `runtime/kitchen/components/Menu/Menus/Overview.vue` | Contains an explicitly temporary `const canCreateMenu = true` presentation switch; check permissions and restore real write authority as a targeted behavior fix. |
+| Menu entry presentation | `runtime/kitchen/components/Menu/Index.vue` | Contains colored debug borders **and literal numbered text markers**; review and remove after checking intended UI, not as an automatic source-wide cleanup. |
+| Prep group entry | `runtime/pages/workspace/kitchen/prep/index.vue`; `runtime/kitchen/components/PrepAndProduction/Index.vue` | Nav links Preparations, Prep plan, Recipes, Ingredients, Stations and Batches; Stations routes to the separate `/workspace/kitchen/stations` family. |
+| Prep shared parent | `runtime/kitchen/composables/workspace/prep/useKitchenPrepWorkspace.ts` | Provides an injected parent state and strict child accessor; current parent mainly publishes description, readiness, and create target. |
+| Prep library | `runtime/kitchen/components/PrepAndProduction/LibraryRead.vue` | Coordinates Kitchen, Ingredient and Kitchen-association collections, Preparation and Recipe readers, view states and navigation, then passes multiple values to library/editor children. Review extraction to a responsibility-matched composable and bounded context, **without duplicating subscriptions or hiding required inputs**. |
+| Recipe editor | `runtime/kitchen/components/PrepAndProduction/Recipes/Editor.vue` | Nontrivial state, draft/change detection, preparation options, mutation coordination; a reasonable candidate for extracting component-specific behavior if it genuinely simplifies the file. Existing typed inputs and command authority must be preserved. |
+| Recipe read | `runtime/kitchen/recipe/composables/useKitchenRecipesRead.ts` | Currently authorization-gated to `kitchens/{kitchenId}/recipes`; inputs may reference an ingredient or preparation, and a recipe may identify an output preparation. |
+| Preparation read | `runtime/kitchen/preparation/composables/useKitchenPreparationsRead.ts` | Currently authorization-gated to `kitchens/{kitchenId}/prep-items`; includes legacy `recipe_id` association links. |
+
+The two group pages already use native Workspace layout and fairly lean page wrappers. **Do not claim the entire family is broken or that every child needs a new composable.** Also distinguish `/workspace/kitchen/prep` (route shorthand) from a desired source-spine classification: workspace routing is not Entity ownership.
+
+### Immediate Codex job (bounded and ordered)
+
+1. Audit **Menu and Prep & Production together** as candidate reference implementations for document-oriented Workspace groups, including their child routes, providers/consumers, reads, mutations, authorization, navigation and page-state publishing.
+2. Produce an evidence-backed **accepted / working / drift / needs decision** matrix with actual source paths, consumers and tests. Compare with the active local checkout, not just the remote commit.
+3. Align the **logical group owner → child → domain/data reader** responsibilities. Preserve Menu's functioning provide/inject pattern; examine Prep library's coordination and prop surface; remove duplicate acquisitions where demonstrated. Keep Nuxt routing and native component discovery.
+4. Fix targeted documented drift only after identifying behavioral effects (e.g. the Menu hardcoded `canCreateMenu`, temporary debug markers) and validating permissions, UI, SSR/hydration, reader lifecycle and disposal. Avoid source-wide renaming or mandatory one-component/one-composable pairing.
+5. Treat each group as a proof slice. Document the contract and validate a complete parent/child/read/edit path before applying the pattern to other Workspace families.
+
+### Separate culinary-domain decisions recorded today (NOT part of this composition migration)
+
+- **Recipe can exist independently of any Kitchen.** It can be authored by a chef or created in a Kitchen; ownership, creator attribution, visibility, publication rights and adoption are distinct. A Kitchen can adopt or reference a recipe, optionally keep its operational copy/version stable, and public association may support creator/kitchen discovery. The precise authorization, persistence and versioning contracts remain to be designed.
+- **Recipe and Preparation are different responsibilities.** A recipe combines direct ingredients and prepared inputs; preparation defines reusable transformations such as finely diced onion or boiled potato. Not every direct ingredient requires a preparation. Some preparations may feed other preparations, subject to cycle prevention.
+- **Mise en Place** is the operational planning layer: aggregate matching preparation demand across recipes/stations, account for prepared stock and yield, and coordinate kitchen tasks. Supplier offers, raw ingredient inventory, lead times, delivery calendars, purchasing approval and later sales-based low-stock alerts connect to this flow, but do not belong inside Recipe's model.
+- These are **product/architecture decisions or hypotheses from the discussion**, not claims that the current source implements them. The current Recipe reader remains Kitchen-scoped. No separate public Recipe storage, role policy, cross-Kitchen adoption, forecasting or procurement automation is authorized by this handoff.
+- Continue to investigate whether Preparation should be a standalone Entity or Kitchen-owned Record based on independence, reuse and lifecycle; don't infer its classification from today's route or Firestore path.
+
+**Acceptance criterion:** Another developer or Codex can build a third document-oriented Workspace group with a predictable group owner, child pages, document reader, component/composable naming and one tested write path—without special instructions or redundant state owners.
