@@ -1,7 +1,7 @@
 # Composables spine map
 
-Updated: 2026-11-16
-Ref: e7fa1f63c
+Updated: 2026-11-17
+Ref: e20047a13
 Role: map, not canon
 
 ## Purpose
@@ -75,16 +75,64 @@ File count alone proves neither alignment nor complexity.
 
 - `use<Entity>Read` acquires a live record and owns its exact scope, access gating
   and domain normalization. Reuse Core transport instead of adding another listener.
-- `use<Entity>Context` only provides/injects an already-owned instance to children.
-  It must not silently acquire another record or grant authority.
+- Provided capability consumers use the capability name, such as `useMenuSection`;
+  injection alone does not justify a `Context` suffix. Follow the lifecycle
+  distinction below rather than renaming a constructor into a getter.
 - `normalize<Entity>` selects and normalizes fields. Keep it private beside its
   reader unless independent consumers prove that it needs a separate owner.
 - The Entity model describes the record consumers can actually receive. Do not
   manufacture a second `Readable<Entity>` shape merely to mask absent fields;
   trusted creation commands independently enforce required creation data.
 
-Kitchen Item applies these names in `kitchen/item/composables`. Existing family
-names require review by responsibility; this is not a blanket rename instruction.
+Existing family names require review by responsibility; this is not a blanket
+rename instruction.
+
+### Provided capability lifecycle
+
+Name the consumer's job, not its delivery mechanism. A capability-group parent
+mounts `use{Entity}{Capability}Workspace()` once; a responsible child uses
+`use{Entity}{Capability}{Child}Workspace()` for its own derivations and interaction.
+Use the named capability hierarchy rather than `Context`, public `State` suffixes
+or a synthetic `*-group` folder. Internal strict injection helpers may remain
+private. Required absence throws; an optional lookup returns absence. A child
+consumer never silently initializes its parent, another reader, command owner or
+page publisher. Pure presentation continues to use typed props/events.
+The [group composition contract](family-workspace-entity.md#workspace-group-overview-composition)
+owns the bounded parent/child lifecycle and adoption rule.
+
+This is the accepted target, not a claim that existing exports have migrated.
+Kitchen's current `useKitchenMenusWorkspaceState` and `useMenuGroupIndex` are
+migration inputs; keep source links truthful until their complete consumer
+boundary moves. Lower reader and command constructors retain their own semantics.
+
+Specialist lower capabilities currently include
+[`provideMenuSection` / `useMenuSection`](../../packages/extensions/fireux-kitchens/src/runtime/menu/composables/useMenuSection.ts)
+and
+[`provideKitchenServiceEditor` / `useKitchenServiceEditor`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/offerings/useKitchenServiceEditor.ts).
+Their explicit provider plumbing is not the public group-parent naming template.
+Not every `useX` is an injected getter: ordinary readers, command
+adapters and local workflow composables retain their construction semantics.
+Workspace families also consume Core's
+[`defineWorkspace`](../../packages/core/fireux-core/src/runtime/workspace/composables/useWorkspace.ts)
+through capability names; its App-scoped instance and last-consumer cleanup are
+a separate, explicit sharing mechanism, not a reason to introduce providers.
+
+Keep meaningful scopes and lower responsibilities in names. `useMenuList` owns
+list interaction/projection over an existing source; a child summary does not
+need its own composable merely to match its component name. `Context` remains
+appropriate when the result actually is record/domain
+background, such as Core's
+[`useRecordContext`](../../packages/core/fireux-core/src/runtime/composables/shared/useRecordContext.ts);
+native APIs and internal injection types need no vocabulary replacement.
+
+When aligning an existing capability, inspect construction, providers, required
+and optional consumers, registration and disposal together. Resolve colliding
+constructor/getter names, move every affected import and update lifecycle tests;
+leave no compatibility aliases. Preserve source scope, authority, shared reader
+identity and optional absence. Any necessary standalone construction belongs to
+an explicit owning call site. Older implicit fallbacks and injection-only
+`Context` names are bounded migration work, not a repository-wide rename or proof
+that all families already follow this convention.
 
 ### Verification boundary
 
@@ -382,9 +430,12 @@ Storage paths and trusted command authority remain independent of that placement
 The [component surface convention](components.md#domain-component-surfaces) does
 not relocate domain state or data owners. Workspace-only controllers live under `composables/workspace/<capability>` with
 lowercase capability folders. Workspace selection and shared page mechanics sit
-directly under `workspace`; there is no extra `core` folder. Injected Dishes,
-Ingredients, Menus, Orders and Recipes page state uses explicit `Context` names;
-these providers own scope and are not aliases for their data controllers.
+directly under `workspace`; there is no extra `core` folder. Existing Kitchen
+capability providers include injection-only `Context` names and some implicit
+construction fallbacks. Align them by the
+[provided capability lifecycle](#provided-capability-lifecycle) when their complete
+consumer boundary is touched; their scope ownership remains distinct from lower
+data controllers.
 
 Ordering funnel controllers live directly under `order/funnel`, including the
 Collection, Delivery and PreOrder variants. Their model and pure input helpers

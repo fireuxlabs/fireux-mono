@@ -6,9 +6,11 @@ they hide other ecosystems' App folders in the Explorer. Search still covers the
 repository so cross-package consumers remain discoverable.
 
 Use Vue Official, ESLint, Prettier, EditorConfig and the official Codex
-extension recommended by this workspace. Explicit Save formats the file and applies configured ESLint/import
-actions; repository autosave is off so edits and fixes share one predictable
-trigger. Generated Nuxt directories remain excluded from watchers and search.
+extension recommended by this workspace. Autosave is enabled after a 1000 ms
+pause; preserve this preference in IDE optimisations. Explicit Save remains
+available for formatting and the configured explicit ESLint/import actions.
+The IDE generator does not overwrite `.vscode/settings.json`. Generated Nuxt
+directories remain excluded from watchers and search.
 
 ## Align the editor and checkout
 

@@ -25,9 +25,9 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
+import { useKitchenMenus } from '../../../composables/workspace/menus/useKitchenMenus'
 import { useKitchenWorkspaceMenuSources } from '../../../composables/workspace/menus/useKitchenWorkspaceMenuSources'
-const { outcome, error } = useKitchenMenusContext()
+const { outcome, error } = useKitchenMenus()
 const {
   menuSources,
   menuSourcesError,

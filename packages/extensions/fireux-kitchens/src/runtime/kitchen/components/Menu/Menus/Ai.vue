@@ -32,12 +32,12 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { navigateTo } from '#imports'
 import { menuWorkspaceDestination } from '../../../utils/menu-workspace-destination'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
+import { useKitchenMenus } from '../../../composables/workspace/menus/useKitchenMenus'
 import { useKitchenAIHandoff } from '../../../composables/workspace/useKitchenAIHandoff'
 import { currentKitchenAIHandoff } from '../../../utils/ai-handoff'
 import type { KitchenMenusIntent } from '../../../types/menus-intent'
 
-const workspace = useKitchenMenusContext()
+const workspace = useKitchenMenus()
 const { currentUser } = useAuth()
 const handoff = useKitchenAIHandoff()
 const prompt = ref('')

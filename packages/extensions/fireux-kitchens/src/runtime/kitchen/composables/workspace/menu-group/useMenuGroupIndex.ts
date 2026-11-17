@@ -1,6 +1,7 @@
+import { kitchenMenusWorkspaceKey } from '../menus/kitchen-menus-workspace-state'
 import type { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
-import { computed, watchEffect, onScopeDispose } from 'vue'
+import { computed, watchEffect, onScopeDispose, inject } from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { useFoodCatalogueSummary } from './useFoodCatalogueSummary'
 import { useKitchenOfferings } from '../../offerings/useKitchenOfferings'
@@ -10,11 +11,11 @@ import { serviceOverviewSnapshot } from '../../../utils/service-overview'
 import { foodServiceSummary } from '../../../utils/food-service-summary'
 
 /** One read-only overview shared by child surfaces, KitchenAI and page JSON. */
-export function useMenuGroupIndex(
+export function createMenuGroupIndex(
   menuCollection?: ReturnType<typeof useKitchenMenuCollection>
 ) {
   const workspace = useKitchenWorkspace()
-  const kitchenName = computed(() => workspace.data.value?.name || '')
+  const { kitchenName } = workspace
   const {
     kitchenId,
     storageKitchenId,
@@ -114,4 +115,12 @@ export function useMenuGroupIndex(
     ready,
     overview,
   }
+}
+
+/** Consume the overview owned by the mounted Menus workspace. */
+export function useMenuGroupIndex() {
+  const workspace = inject(kitchenMenusWorkspaceKey, null)
+  if (!workspace)
+    throw new Error('Menu group children require their workspace owner.')
+  return workspace.overview
 }

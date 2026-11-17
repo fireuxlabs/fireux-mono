@@ -354,7 +354,7 @@ test('source-only failure does not hide a loaded Menu, and upload-only entry nee
   assert.equal(state.source.value, null)
   f.source.error.value = null
   assert.equal(state.source.value.file_name, 'food.pdf')
-  for (const useRecord of [true, false]) {
+  for (const sourceKind of ['record', 'menus', 'standalone']) {
     let collectionCalls = 0
     const owner = effectScope()
     owner.run(() => {
@@ -373,8 +373,11 @@ test('source-only failure does not hide a loaded Menu, and upload-only entry nee
           useAuth: () => ({ currentUser: ref(null) }),
           useUserSession: () => ({ appUser: ref(null) }),
           normalizeSlug: (value) => value,
-          useOptionalKitchenMenuRecordContext: () => (useRecord ? state : null),
-          useKitchenMenusContextSource: () => {
+          useOptionalKitchenMenuRecordContext: () =>
+            sourceKind === 'record' ? state : null,
+          useOptionalKitchenMenus: () =>
+            sourceKind === 'menus' ? state : null,
+          useKitchenWorkspaceMenus: () => {
             collectionCalls++
             return { ...state, menu: ref(null) }
           },
@@ -382,7 +385,7 @@ test('source-only failure does not hide a loaded Menu, and upload-only entry nee
       ).useMenuSourceUpload({ uploadId: 'source-only' })
       assert.equal(typeof upload.uploadFiles, 'function')
       assert.equal(upload.currencyCode.value, state.currencyCode.value)
-      assert.equal(collectionCalls, useRecord ? 0 : 1)
+      assert.equal(collectionCalls, sourceKind === 'standalone' ? 1 : 0)
     })
     owner.stop()
   }

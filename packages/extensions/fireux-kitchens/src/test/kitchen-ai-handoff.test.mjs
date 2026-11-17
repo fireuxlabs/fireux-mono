@@ -80,7 +80,7 @@ function setup(handoffValue = record) {
       'watch',
       'navigateTo',
       'useAuth',
-      'useKitchenMenusContext',
+      'useKitchenMenus',
       'useKitchenAIHandoff',
       'currentKitchenAIHandoff',
       '$fetch',

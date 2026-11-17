@@ -34,6 +34,14 @@ The `fireux-app` bundle supplies Blogs and Products. Core owns Firebase integrat
 account/management routes, configured App initialization, SEO and the versioned
 PWA manifest. App-owned public tour pages
 use Core’s stock `default` layout and existing native page compositions; shared runtime routes retain their owning layouts. The App has no separate site-wide CSS system. `components/Booking/Index.vue` is registered by Nuxt as `Booking` and owns the visitor booking adapter UI.
+The App-owned `useTourBooking` adapter supplies the shared `BookingsSurface`.
+It validates the confirmed API response and passes the host’s reference, group,
+price, local departure/timezone and catalogue meeting point through the shared
+receipt-details contract. A failed or malformed completion remains uncertain;
+repeating that intent in the current form does not send another request.
+This is in-memory protection, not durable replay after reload. Source checks for
+this boundary live in `tests/composables/tour-booking.test.mjs`.
+
 Enquiry controls open a prepared WhatsApp/email draft; they do not persist
 enquiries or send messages. `/book` is the separate instant-confirmation flow.
 

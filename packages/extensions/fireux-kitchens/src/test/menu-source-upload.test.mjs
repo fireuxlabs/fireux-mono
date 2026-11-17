@@ -40,7 +40,7 @@ function harness(options = {}) {
     useFireUXConfig: () => config,
     useUserSession: () => ({ appUser }),
     useOptionalKitchenMenuRecordContext: () => null,
-    useKitchenMenusContextSource: () => ({
+    useOptionalKitchenMenus: () => ({
       kitchenId,
       activeKitchenAppId,
       canWrite,
@@ -250,7 +250,7 @@ test('URL intake retries its same source after a lost response', async () => {
     useAuth: () => ({
       currentUser: ref({ uid: 'operator', getIdToken: async () => 'fixture' }),
     }),
-    useKitchenMenusContextSource: () => ({
+    useOptionalKitchenMenus: () => ({
       activeKitchenAppId: ref('app'),
       kitchenId: ref('kitchen'),
       canWrite: ref(true),

@@ -23,11 +23,11 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useKitchenMenusContext } from '../../../../composables/workspace/menus/useKitchenMenusContext'
+import { useKitchenMenus } from '../../../../composables/workspace/menus/useKitchenMenus'
 import { useMenuRecordNavigation } from '../../../../composables/workspace/menus/useMenuRecordNavigation'
 import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 const { menus, subscription, canCreateMenu, createMenu, kitchenId } =
-  useKitchenMenusContext()
+  useKitchenMenus()
 const { openView } = useMenuRecordNavigation()
 const hasPro = computed(() => ['pro', 'business'].includes(subscription.value))
 const suggestions = computed(() =>

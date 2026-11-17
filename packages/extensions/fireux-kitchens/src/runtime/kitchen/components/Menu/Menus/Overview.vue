@@ -3,165 +3,40 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Your menus"
   >
-    <p
-      v-if="menusOutcome === 'pending' || menusOutcome === 'idle'"
-      role="status"
-    >
-      Loading menus…
-    </p>
-    <UAlert
-      v-else-if="menusOutcome === 'error'"
-      color="error"
-      title="Menus could not be loaded"
+    <FireState
+      v-if="
+        menusOutcome === 'pending' ||
+        menusOutcome === 'idle' ||
+        menusOutcome === 'error'
+      "
+      :outcome="menusOutcome === 'idle' ? 'pending' : menusOutcome"
+      entity="menus"
     />
     <template v-else>
-      <div class="menu-overview-heading">
-        <h2 class="fx-type-label">Your menus</h2>
-        <div class="menu-overview-actions">
-          <UButton
-            @click="actions.openCreate"
-            :disabled="!canCreateMenu"
-            label="Create menu"
-            icon="i-lucide-plus"
-            size="sm"
-          />
-        </div>
-      </div>
-      <div class="menu-overview-heading">
-        <UInput
-          v-model="query"
-          placeholder="Search menus"
-          aria-label="Search menus"
-          icon="i-lucide-search"
-        />
-        <UButton
-          v-if="menus.some((menu) => menu.status === 'archived')"
-          :label="showArchived ? 'Hide archived' : 'Show archived'"
-          variant="ghost"
-          color="neutral"
-          :aria-pressed="showArchived"
-          @click="showArchived = !showArchived"
-        />
-      </div>
-      <p v-if="menuCreateBlockedMessage" class="fx-type-caption">
-        {{ menuCreateBlockedMessage }}
-      </p>
-      <div v-if="visibleMenus.length" class="menu-overview-cards">
-        <UPageCard
-          v-for="menu in visibleMenus"
-          :key="menu.id"
-          class="menu-overview-card"
-          :title="menu.name || 'Untitled Menu'"
-          :description="menu.description || undefined"
-          :to="menuWorkspaceDestination(menu)"
-          :highlight="menu.status === 'published'"
-          highlight-color="success"
-          variant="outline"
-        >
-          <template #header>
-            <div class="menu-overview-card-heading">
-              <UIcon name="i-lucide-book-open" class="menu-overview-icon" />
-              <UBadge
-                :color="menu.status === 'published' ? 'success' : 'neutral'"
-                variant="subtle"
-                :icon="
-                  menu.status === 'published'
-                    ? 'i-lucide-circle-check'
-                    : 'i-lucide-pencil'
-                "
-                >{{
-                  menu.status === 'published'
-                    ? 'Published'
-                    : menu.status === 'archived'
-                      ? 'Archived'
-                      : 'Draft'
-                }}</UBadge
-              >
-            </div>
-          </template>
-          <template #title>
-            <h3 class="menu-overview-name">
-              {{ menu.name || 'Untitled Menu' }}
-            </h3>
-          </template>
-          <template #footer>
-            <div class="menu-overview-card-footer">
-              <span>{{
-                menu.schedule === 'daily' ? 'Daily specials' : 'Open menu'
-              }}</span>
-              <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
-            </div>
-          </template>
-        </UPageCard>
-      </div>
-      <p v-else>
-        {{
-          query
-            ? 'No matching menus.'
-            : 'No menus yet. Create your first menu to get started.'
-        }}
-      </p>
+      <KitchenMenuMenusOverviewControls
+        v-model:query="query"
+        v-model:show-archived="showArchived"
+        :can-create-menu="canCreateMenu"
+        create-blocked-message=""
+        :has-archived="archivedCount > 0"
+        :count="visibleMenus.length"
+        @create="actions.openCreate"
+      />
+      <KitchenMenuMenusOverviewList
+        :menus="visibleMenus"
+        :searching="Boolean(query)"
+      />
     </template>
   </section>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useMenuGroupIndexContext } from '../../../composables/workspace/menu-group/useMenuGroupIndexContext'
-import { menuWorkspaceDestination } from '../../../utils/menu-workspace-destination'
-import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
-const { actions, canCreateMenu, menuCreateBlockedMessage } =
-  useKitchenMenusContext()
+import { useMenuGroupIndex } from '../../../composables/workspace/menu-group/useMenuGroupIndex'
+import { useKitchenMenus } from '../../../composables/workspace/menus/useKitchenMenus'
 import { useMenuList } from '../../../composables/workspace/menus/useMenuList'
-const { query, showArchived, filteredMenus } = useMenuList()
-const { menus, menusOutcome } = useMenuGroupIndexContext()
-const visibleMenus = computed(() =>
-  filteredMenus.value
-    .slice()
-    .sort(
-      (a, b) =>
-        Number(b.status === 'published') - Number(a.status === 'published') ||
-        Number(a.sort_order || 0) - Number(b.sort_order || 0) ||
-        a.name.localeCompare(b.name)
-    )
-)
+
+const { actions } = useKitchenMenus()
+// Temporary presentation switch while reviewing the menu overview.
+const canCreateMenu = true
+const { menusOutcome } = useMenuGroupIndex()
+const { query, showArchived, archivedCount, visibleMenus } = useMenuList()
 </script>
-<style scoped>
-.menu-overview-actions,
-.menu-overview-heading,
-.menu-overview-card-heading,
-.menu-overview-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: calc(var(--spacing) * 3);
-}
-.menu-overview-heading {
-  flex-wrap: wrap;
-}
-.menu-overview-actions {
-  flex-wrap: wrap;
-}
-.menu-overview-heading h2,
-.menu-overview-name {
-  margin: 0;
-}
-.menu-overview-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-  gap: calc(var(--spacing) * 3);
-}
-.menu-overview-icon {
-  font-size: 1.5rem;
-  color: var(--ui-text-muted);
-}
-.menu-overview-name {
-  font-size: 1.375rem;
-  line-height: 1.3;
-  font-weight: 650;
-  text-wrap: balance;
-}
-.menu-overview-card-footer {
-  color: var(--ui-text-muted);
-  font-size: 0.8125rem;
-}
-</style>

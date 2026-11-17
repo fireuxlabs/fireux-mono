@@ -1,7 +1,7 @@
 # Components spine map
 
 Updated: 2026-11-17
-Ref: e20047a13
+Ref: b5995c8db
 Role: map, not canon
 
 ## Purpose and navigation
@@ -167,16 +167,26 @@ in `page-layouts.scss`; field groups reuse `pagebody` spacing.
 
 Human-approved rule review: **replace** the direct-Entity capability-screen and
 Workspace-only-mechanics convention with audience-owned Public and Workspace
-composition; **narrow** neutral sharing to proved lower responsibilities. This
-is the canonical placement and library-admission convention. Existing source
-that retains the former grouping is pending alignment, not another accepted
-convention or proof that a family has completed migration.
+composition; **replace** operator `Workspace<Entity>*` ordering with
+`<Entity>Workspace*`; **narrow** neutral sharing to proved lower responsibilities.
+This records the accepted placement, naming and library-admission convention.
+Existing source that retains the former grouping or operator naming is pending
+alignment, not another accepted convention or proof of a completed migration.
 
 | Surface                        | Owns                                                                                                                                                           | Registered naming                                                                               |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | Public                         | Customer-facing composition, including protected customer experiences. Authentication alone does not make a screen operator management.                        | A separate Public scan supplies `Public<Entity>*`.                                              |
-| Workspace                      | Complete operator capability screens and their children, including operational workflows, not only selection or coordination.                                  | A separate Workspace scan supplies `Workspace<Entity>*`.                                        |
+| Workspace                      | Complete operator capability screens and their children, including operational workflows, not only selection or coordination.                                  | A separate Workspace scan supplies `<Entity>Workspace<Capability>*`.                            |
 | Neutral lower domain component | A bounded responsibility with proved independent consumers and a shared/cross-Entity API. Several hosts of the same surface do not prove cross-audience reuse. | The neutral scan supplies `<Entity><Capability>*` and excludes both Public and Workspace trees. |
+
+The operator order is Entity, audience, then capability and responsible child.
+Kitchen's Menu target is `KitchenWorkspaceMenu`, composing
+`KitchenWorkspaceMenuOverview`, `KitchenWorkspaceMenuCreate`,
+`KitchenWorkspaceMenuAi`, `KitchenWorkspaceMenuItemsOverview`,
+`KitchenWorkspaceMenuPromotionsOverview` and `KitchenWorkspaceMenuServicesOverview`.
+The operational naming decision does not change `Public<Entity>*`. The
+[group composition contract](family-workspace-entity.md#workspace-group-overview-composition)
+owns the corresponding parent/child composable lifecycle and shared creation flow.
 
 Keep a single-surface leaf with that surface/capability. Do not create mandatory
 `Cards`, `Other` or `Shared` roots, or move useful children into neutral folders
@@ -192,17 +202,46 @@ Kitchen or another Workspace Entity. Models, public/presentation contracts,
 readers, commands and domain state stay outside this component grouping with
 their current owners.
 
-Core's dynamic `Workspace<Entity>Navigation` name remains an ABI: inspect the
+#### Registration and migration boundary
+
+Core's
+[registration helper](../../packages/core/fireux-core/src/config/module/module-helpers.ts)
+passes the supplied prefix, path and exclusions to Nuxt; it does not enforce
+Workspace-first Entity naming. Each registration owner must cut over its actual
+surface and consumers together. Current source remains mixed:
+
+| Owner/source                                                                                                                                                                                               | Current registration and adoption boundary                                                                                                                                 |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Kitchen](../../packages/extensions/fireux-kitchens/src/config/module/components-config.ts)                                                                                                                | `WorkspaceKitchen*` and `PublicKitchen*` scans; direct-root Menu components still expose `KitchenMenu*`. The Menu target above is not implemented by a prefix-only change. |
+| [Project](../../packages/extensions/fireux-projects/src/config/module/components-config.ts)                                                                                                                | `WorkspaceProject*` and `PublicProject*`; operator naming adoption remains pending.                                                                                        |
+| [Supplier](../../packages/extensions/fireux-suppliers/src/config/module/components-config.ts) and [Portfolio/Property](../../packages/extensions/fireux-properties/src/config/module/components-config.ts) | `WorkspaceSupplier*`, `WorkspacePortfolio*` and `WorkspaceProperty*`; operator naming adoption remains pending.                                                            |
+| [Business](../../packages/extensions/fireux-businesses/src/config/module/components-config.ts)                                                                                                             | The `BusinessWorkspace*` scan already uses the target order. This alone does not prove family-wide surface alignment.                                                      |
+| [Blank App](../../projects/fireux/fireux-blank/app/components/Workspace/Blank)                                                                                                                             | App-local `Workspace/Blank` components are a separate native discovery boundary, not another package-prefix declaration.                                                   |
+
+Core's shared
+[`Workspace*` tree](../../packages/core/fireux-core/src/config/module/components-config.ts)
+retains its shared Workspace owner and names. Classify Entity adapters such as
+Kitchen Navigation, Test and collection controls by their actual integration
+responsibility; do not blanket-rename every `WorkspaceKitchen*` reference. Core's
+dynamic `Workspace<Entity>Navigation` lookup remains the current ABI in
 [Sidebar](../../packages/core/fireux-core/src/runtime/workspace/components/Sidebar.vue)
-and [Navbar](../../packages/core/fireux-core/src/runtime/workspace/components/Navbar.vue)
-lookup before changing domain registration. Current registration owners include
-[Kitchen](../../packages/extensions/fireux-kitchens/src/config/module/components-config.ts)
-and [Project](../../packages/extensions/fireux-projects/src/config/module/components-config.ts);
-their current declarations establish implementation, not completion of every
-surface under this rule.
+and [Navbar](../../packages/core/fireux-core/src/runtime/workspace/components/Navbar.vue).
+Changing it requires a bounded cutover of both lookup sites, every registered
+navigation owner and their global registrations.
+
+Higher composition can deliberately override an Entity name. Granite's
+[`WorkspacePortfolioOverview`](../../packages/ecosystem/fireux-granite/src/config/module/components-config.ts)
+composes Portfolio with Documents, Tasks and Compliance; Reservations supplies
+[`WorkspacePropertyOverview`](../../packages/extensions/fireux-reservations/src/config/module/components-config.ts)
+above Properties. Preserve their ownership, direct imports and registration
+priority when their base family's public name moves. Their `workspace/` or
+Entity contribution paths do not make them shared Core components.
 
 Complete a bounded move with its scans/exclusions, real route and component
 consumers, explicit imports, source-owned checks and rendered/interaction review.
+Keep Public and Workspace excluded from the neutral scan and check generated
+names for duplicate registrations, including explicit navigation and override
+names. A directory move and a prefix change are separate parts of that contract.
 Preserve subject, state lifecycle and command authority. Retire old names and
 paths without aliases when that slice is complete; do not infer migration of
 untouched families or add placeholder trees. Specific source examples below
@@ -254,8 +293,10 @@ the Atomic Design category. Other responsibility folders remain meaningful; for 
 Collection/Pagination.vue exposes FireCollectionPagination. `Fire` is not a
 physical responsibility folder. No old-name compatibility registrations remain.
 `FireuxApp` is the explicit application-root registration; it is not part of
-the App-prefixed Entity scan. App-local overrides use the same Fire name; Entity and Workspace registrations
-keep their existing names. Nuxt UI keeps `U`.
+the App-prefixed Entity scan. App-local overrides use the same Fire name;
+Entity operator names follow the [surface convention](#domain-component-surfaces)
+with adoption established by their current registration. Shared Core Workspace
+components retain `Workspace`; Nuxt UI keeps `U`.
 
 - Core owns proved domain-neutral components and connected Core platform UI.
 - Entity UI belongs beneath the owning package's

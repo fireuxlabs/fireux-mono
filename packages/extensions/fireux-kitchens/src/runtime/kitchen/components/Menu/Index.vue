@@ -1,50 +1,26 @@
 <template>
   <WorkspacePageHeader
+    class="border border-red-500"
     title="Menus"
     :description="description"
     variant="primary"
   />
-  <KitchenMenuMenusOverview />
-  <KitchenMenuMenusCreateDialog />
-  <KitchenMenuAI />
-  <section
-    class="menu-summary"
+  <KitchenMenuMenusOverview class="border border-blue-500" /> 1
+  <KitchenMenuMenusCreateDialog class="border border-orange-500" />2
+  <KitchenMenuAI class="border border-purple-500" />3
+  <UPageGrid
+    as="section"
+    class="border border-pink-500"
     aria-label="Items, promotions and services summary"
   >
-    <KitchenMenuItemsOverview />
-    <KitchenMenuPromotionsOverview />
-    <KitchenMenuServicesOverview />
-  </section>
+    <KitchenMenuItemsOverview class="border border-green-500" />4
+    <KitchenMenuPromotionsOverview class="border border-yellow-500" />5
+    <KitchenMenuServicesOverview class="border border-cyan-500" />6
+  </UPageGrid>
 </template>
-<script setup lang="ts">
-import { computed, watch } from 'vue'
-import { provideMenuGroupIndex } from '../../composables/workspace/menu-group/useMenuGroupIndexContext'
-import { provideKitchenMenusContext } from '../../composables/workspace/menus/useKitchenMenusContext'
-import { useRoute, useRouter } from '#imports'
-const route = useRoute(),
-  router = useRouter()
-const menus = provideKitchenMenusContext(false)
-const { kitchenName } = provideMenuGroupIndex(menus.menuCollection)
-watch(
-  () => [route.query.create, menus.canCreateMenu.value],
-  () => {
-    if (route.query.create !== '1' || !menus.canCreateMenu.value) return
-    menus.actions.openCreate()
-    void router.replace({ query: { ...route.query, create: undefined } })
-  },
-  { immediate: true }
-)
-const description = computed(
-  () =>
-    `Manage ${kitchenName.value ? `${kitchenName.value}'s` : "your Kitchen's"} menus, items, promotions and services`
-)
-</script>
 
-<style scoped>
-.menu-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
-  gap: calc(var(--spacing) * 3);
-  align-items: start;
-}
-</style>
+<script setup lang="ts">
+import { useKitchenMenusWorkspace } from '../../composables/workspace/menus/useKitchenMenusWorkspace'
+
+const { description } = useKitchenMenusWorkspace()
+</script>

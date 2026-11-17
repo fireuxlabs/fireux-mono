@@ -179,12 +179,13 @@ test('the overview publishes the same current facts used by its AI and clears th
     'utf8'
   )
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
-    .replace('export function', 'function')
+    .replace(/^export /gm, '')
   const deps = {
+    provide: () => {},
     computed,
     watchEffect,
     onScopeDispose,
-    useKitchenWorkspace: () => ({ id: ref('k') }),
+    useKitchenWorkspace: () => ({ id: ref('k'), kitchenName: ref('Kitchen') }),
     useWorkspacePageState: () => page,
     useFoodCatalogueSummary: () => ref({}),
     useKitchenOfferings: (id) => {
@@ -212,7 +213,7 @@ test('the overview publishes the same current facts used by its AI and clears th
   const scope = effectScope()
   const state = scope.run(() =>
     compileFunction(
-      `${stripTypeScriptTypes(source)}; return useMenuGroupIndex()`,
+      `${stripTypeScriptTypes(source)}; return createMenuGroupIndex()`,
       Object.keys(deps)
     )(...Object.values(deps))
   )

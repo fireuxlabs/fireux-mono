@@ -39,9 +39,8 @@
 <script setup lang="ts">
 import { watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
-import { useKitchenMenusContext } from '../../../../composables/workspace/menus/useKitchenMenusContext'
-const { derived, error, actions, menuCreateBlockedMessage } =
-  useKitchenMenusContext()
+import { useKitchenMenus } from '../../../../composables/workspace/menus/useKitchenMenus'
+const { derived, error, actions, menuCreateBlockedMessage } = useKitchenMenus()
 const route = useRoute()
 const router = useRouter()
 watch(

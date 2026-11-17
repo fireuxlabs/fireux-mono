@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
-Updated: 2026-11-16
-Ref: e7fa1f63c
+Updated: 2026-11-17
+Ref: b5995c8db
 Role: map, not canon
 
 ## Purpose
@@ -34,6 +34,11 @@ The Core module registers its separate App, User, Ecosystem and Workspace trees
 with their existing prefixes. App-local shared-component overrides use their
 canonical Fire name. Keep one registration owner per tree and migrate consumers
 with registration; do not retain old-name aliases.
+
+Entity operator components follow the accepted `<Entity>Workspace<Capability>*`
+direction in the [component surface convention](components.md#domain-component-surfaces).
+That convention records current registration adoption separately; it does not
+rename Core's shared `Workspace*` components or imply a `Public<Entity>*` cutover.
 
 ## Shared HTTP reads
 
@@ -217,12 +222,13 @@ child Entity retains its product identity as `app-user`.
 ## Ordering inside an entity
 
 Entity scope comes first, then technical role, then the real product surface
-or capability:
+or capability. For operator components, the accepted shape is Entity, technical
+role, Workspace audience, then capability:
 
 ```text
 src/runtime/kitchen/
-├── components/Menu/Menus/
-├── composables/workspace/Menus/
+├── components/Workspace/Menu/
+├── composables/workspace/menu/
 ├── models/menu/
 └── server/operations/menus/
 ```
@@ -230,6 +236,18 @@ src/runtime/kitchen/
 This is an entity-scoped Nuxt runtime, not a capability-owned miniature
 application. Do not create `client`, `server`, `components`, and `models`
 inside an arbitrary feature root outside the entity scope.
+
+The Menu component and composable paths above are target ownership shapes, not
+a completed Kitchen move. Current Menu composition remains at
+[`kitchen/components/Menu/Index.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Index.vue)
+and registers as `KitchenMenu*`; its accepted target is `KitchenWorkspaceMenu*`.
+The current parent remains
+[`useKitchenMenusWorkspace`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/menus/useKitchenMenusWorkspace.ts)
+under `composables/workspace/menus/` pending its capability/child cutover.
+The component convention owns prefix adoption and scan exclusions. Composable
+capability names and the provided parent/child lifecycle follow
+[composables](composables.md#provided-capability-lifecycle); they do not require
+parallel component, reader and command directory moves.
 
 ## Workspace
 
@@ -257,10 +275,16 @@ Test controllers are `useWorkspaceTeam` and `useWorkspaceTest`.
 
 Package-wide Workspace composition belongs to the package that selects and
 combines its domain capabilities. Granite proves this at
-`fireux-granite/src/runtime/workspace/components/Portfolio/Overview/Index.vue`:
+[`fireux-granite/src/runtime/workspace/components/Portfolio/Overview/Index.vue`](../../packages/ecosystem/fireux-granite/src/runtime/workspace/components/Portfolio/Overview/Index.vue):
 it composes the Portfolio overview with Documents, Tasks and Compliance and
-registers the existing `WorkspacePortfolioOverview` name explicitly. Core does
-not import those domains, and Properties does not import its upper Ecosystem.
+registers the existing `WorkspacePortfolioOverview` name explicitly. This is an
+upper integration owner, distinct from Core's shared `Workspace*` tree and an
+Entity's operator component scan. Its explicit name and imports must move with
+the Portfolio family if that registration cuts over; changing a base prefix
+alone would leave the override under its former name. Reservations similarly
+contributes a Property overview from its
+[Property-scoped adapter](../../packages/extensions/fireux-reservations/src/runtime/property/components/Workspace/Overview/Index.vue).
+Core does not import those domains, and Properties does not import its upper Ecosystem.
 No package-level directory is required for a package containing only one Entity's
 Workspace implementation. Entity component placement follows the
 [Public/Workspace/lower-domain convention](components.md#domain-component-surfaces);
@@ -275,7 +299,11 @@ src/runtime/kitchen/server/
 ```
 
 The Entity's Workspace component group owns complete operator capability screens,
-not only coordination. Public/customer composition has its own scan; neutral
+not only coordination, exposing `<Entity>Workspace<Capability>*` as the accepted
+operator naming direction. Existing `Workspace<Entity>*` scans and direct-root
+capability components remain migration inputs until their bounded registration
+and consumer cutovers complete. This does not authorize a blanket rename of
+selection/navigation or shared-capability adapters. Public/customer composition has its own scan; neutral
 lower children require the admission evidence in
 [components](components.md#domain-component-surfaces). Former direct-root
 capability placement is pending alignment wherever its consumer cutover is not

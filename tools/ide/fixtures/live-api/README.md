@@ -22,6 +22,10 @@ projects. No deployed data, Rules, provider or App configuration is changed.
 Use one operator for the emulator and both App processes. Each foreground command
 owns its child process and forwards termination signals. Start the emulator first
 because the installed Nuxt VueFire module detects the emulator hub at startup.
+That detection also affects other Nuxt VueFire dev Apps started while this hub
+is running, even without emulator environment variables. Stop the fixture Apps
+and emulator before starting or restarting a normal App preview; verify that
+its startup log retains the intended Firebase binding.
 The runner uses task-local Java settings and needs the existing JRE at
 `/opt/homebrew/opt/openjdk@25/libexec/openjdk.jdk/Contents/Home`.
 

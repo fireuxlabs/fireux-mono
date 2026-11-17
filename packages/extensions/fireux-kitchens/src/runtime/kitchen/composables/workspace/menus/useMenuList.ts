@@ -1,17 +1,13 @@
 import { computed } from 'vue'
 import { useState } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
-import { useKitchenMenusContext } from './useKitchenMenusContext'
+import { useKitchenMenus } from './useKitchenMenus'
 
 type MenuListChoices = { query: string; showArchived: boolean }
 
 /** List choices survive editor navigation, isolated by App, account and Kitchen. */
 export function useMenuList() {
-  const {
-    rawMenus: menus,
-    activeKitchenAppId,
-    kitchenId,
-  } = useKitchenMenusContext()
+  const { rawMenus: menus, activeKitchenAppId, kitchenId } = useKitchenMenus()
   const session = useAppSession()
   const choices = useState<Record<string, MenuListChoices>>(
     'kitchen-menu-list',
@@ -61,6 +57,16 @@ export function useMenuList() {
           .includes(query.value.trim().toLocaleLowerCase())
       )
   )
+  const visibleMenus = computed(() =>
+    filteredMenus.value
+      .slice()
+      .sort(
+        (a, b) =>
+          Number(b.status === 'published') - Number(a.status === 'published') ||
+          Number(a.sort_order || 0) - Number(b.sort_order || 0) ||
+          a.name.localeCompare(b.name)
+      )
+  )
   const groups = computed(() =>
     [
       {
@@ -84,5 +90,12 @@ export function useMenuList() {
       },
     ].filter((group) => group.menus.length)
   )
-  return { query, showArchived, archivedCount, filteredMenus, groups }
+  return {
+    query,
+    showArchived,
+    archivedCount,
+    filteredMenus,
+    visibleMenus,
+    groups,
+  }
 }

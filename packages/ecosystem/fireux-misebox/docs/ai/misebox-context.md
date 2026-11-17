@@ -1727,12 +1727,34 @@ remain component API details, not custom FireUX page-composition contracts.
 
 The Menus group overview composes `Menu/Index.vue` with one shared
 Service/Menu acquisition for its summary, page JSON and slim KitchenAI composer.
-`useMenuGroupIndex` owns that shared read coordination and safe page publication;
-the parent provides it once through `useMenuGroupIndexContext` and assembles
-Menu status, AI and the Items, Promotions and Services children without threading state props.
-Consumers require that mounted provider and never create another overview.
-Children own their presentation and
-local interaction state, while the shared overview avoids duplicate readers.
+The parent calls `useKitchenMenusWorkspace` once. It constructs the existing
+Menus capability and group overview with the exact same Menu collection, then
+provides one combined workspace state object. Its parent-facing return contains
+only `description`; `useKitchenMenusWorkspaceState` strictly consumes the mounted
+state. The existing `useMenuGroupIndex` and `useKitchenMenus` child getters select
+the overview and capability from that owner without constructing either.
+The parent directly assembles Menu status, AI and the Items, Promotions and
+Services children without forwarding operational state props or a Content wrapper.
+The separate menu-source preparation route mounts its standalone Menus capability
+with `provideKitchenMenus`; its descendants reuse that route-owned instance.
+`useOptionalKitchenMenus` only looks up an existing capability. Standalone
+Create Form, URL and source-upload workflows explicitly construct the existing
+`useKitchenWorkspaceMenus` lower owner when no suitable provided owner exists;
+source upload prefers its mounted Menu-record owner first. No getter hides reader
+or page-publisher construction. `useMenuList` owns search/archive choices and the
+sorted visible collection, including its existing archive count. These bounded
+names follow `docs/concepts/composables.md#provided-capability-lifecycle`; other
+Kitchen providers retain their current names pending their own touched scope.
+The primary `Menu/Menus/Overview.vue` composes controlled Controls, List and
+Card children under `Menus/Overview/`; these reuse the existing Workspace
+collection toolbar, shared `FireState` and native `UPageGrid`/`UPageCard`.
+The Overview retains collection coordination; controls and cards receive typed
+props/events and do not acquire data or recreate command authority. The recurring
+Workspace group composition is documented in
+`docs/concepts/family-workspace-entity.md#workspace-group-overview-composition`;
+it requires no generic wrapper or fixed set of summaries. Children own their
+presentation and local interaction state, while the shared overview avoids
+duplicate readers.
 It reuses `serviceOverviewSnapshot` for setup facts; AI receives the same page
 context rather than acquiring another catalogue. Home, Menus and Food & drink
 inherit the Kitchen-owned `kitchen/server/ai/role.ts` instruction: one KitchenAI

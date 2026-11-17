@@ -56,14 +56,15 @@ import { starterMenu } from '../../../../../menu/content/starter-menu'
 import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import { useMenuRecordNavigation } from '../../../../composables/workspace/menus/useMenuRecordNavigation'
 const { openView } = useMenuRecordNavigation()
-import { useKitchenMenusContextSource } from '../../../../composables/workspace/menus/useKitchenMenusContext'
+import { useOptionalKitchenMenus } from '../../../../composables/workspace/menus/useKitchenMenus'
+import { useKitchenWorkspaceMenus } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenus'
 const {
   createMenu,
   kitchenId,
   canCreateMenu,
   menuCreateBlockedMessage,
   subscription,
-} = useKitchenMenusContextSource()
+} = useOptionalKitchenMenus() ?? useKitchenWorkspaceMenus()
 const name = defineModel<string>('name', { default: '' })
 const freeMenuNames: string[] = [starterMenu.name]
 const schedule = ref<'regular' | 'daily' | 'specials'>('regular')

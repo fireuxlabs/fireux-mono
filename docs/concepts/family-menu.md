@@ -977,7 +977,24 @@ comparison and Menu Express delivery reject groups they cannot represent.
 
 The landing composes Menu discovery and creation over one Menu collection;
 the group overview reuses that collection rather than opening a second reader.
-The former collection entrance renders this same composition. The record builder
+The former collection entrance renders this same composition.
+`Menu/Index.vue` composes the entrance and operational children; `Menus/Overview.vue` coordinates its primary
+menu collection from the existing contexts. Its controlled `Overview/Controls`
+reuses `WorkspaceKitchenCollectionToolbar`, `Overview/List` owns native
+`UPageGrid` and empty results, and `Overview/Card` owns one Menu's status,
+destination and presentation. Shared `FireState` owns loading/error feedback.
+`useMenuList` owns search/archive scope, archive count and published/order/name
+sorting; Overview consumes those projections. The parent calls
+`useKitchenMenusWorkspace`, which owns the entrance description and coordinates
+`createKitchenMenus` and `createMenuGroupIndex` internally, sharing one Menu
+collection and providing one workspace state object. The preparation-source
+route separately mounts its standalone Menus capability. `useKitchenMenus` and
+`useMenuGroupIndex` require those instances, while optional Menus lookup never
+constructs. Standalone creation/source workflows explicitly own their lower
+construction. Reads, permissions and creation commands retain their existing
+owners. Other Kitchen provided capabilities are outside this naming slice. This follows the
+[Workspace group overview convention](family-workspace-entity.md#workspace-group-overview-composition).
+The record builder
 mounts one inline section editor at a time through `Sections/Inline.vue`, reusing
 its existing Menu record context and lower Section provider. Shared Item edits
 retain return-to-section intent. Standalone section links remain supported.

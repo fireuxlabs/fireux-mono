@@ -39,6 +39,6 @@
   </WorkspaceKitchenNavigationChild>
 </template>
 <script setup lang="ts">
-import { useMenuGroupIndexContext } from '../../../composables/workspace/menu-group/useMenuGroupIndexContext'
-const { rows, pending, failed } = useMenuGroupIndexContext()
+import { useMenuGroupIndex } from '../../../composables/workspace/menu-group/useMenuGroupIndex'
+const { rows, pending, failed } = useMenuGroupIndex()
 </script>

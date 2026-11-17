@@ -9,6 +9,6 @@
   </WorkspaceKitchenNavigationChild>
 </template>
 <script setup lang="ts">
-import { useMenuGroupIndexContext } from '../../../composables/workspace/menu-group/useMenuGroupIndexContext'
-const { catalogue } = useMenuGroupIndexContext()
+import { useMenuGroupIndex } from '../../../composables/workspace/menu-group/useMenuGroupIndex'
+const { catalogue } = useMenuGroupIndex()
 </script>

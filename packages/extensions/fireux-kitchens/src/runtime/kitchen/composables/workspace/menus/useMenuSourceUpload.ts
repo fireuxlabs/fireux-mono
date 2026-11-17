@@ -10,7 +10,8 @@ import { navigateTo, useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorScope'
 import { useOptionalKitchenMenuRecordContext } from './useKitchenMenuRecordContext'
-import { useKitchenMenusContextSource } from './useKitchenMenusContext'
+import { useOptionalKitchenMenus } from './useKitchenMenus'
+import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
 
 export function useMenuSourceUpload(
   options: {
@@ -21,7 +22,9 @@ export function useMenuSourceUpload(
   } = {}
 ) {
   const { kitchenId, activeKitchenAppId, canWrite, currencyCode } =
-    useOptionalKitchenMenuRecordContext() ?? useKitchenMenusContextSource()
+    useOptionalKitchenMenuRecordContext() ??
+    useOptionalKitchenMenus() ??
+    useKitchenWorkspaceMenus()
   const { currentUser } = useAuth()
   const route = useRoute()
   const pending = ref(false)

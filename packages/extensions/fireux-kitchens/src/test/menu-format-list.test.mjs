@@ -24,7 +24,7 @@ function listFixture(records) {
     computed,
     useState: () => state,
     useAppSession: () => ({ uid }),
-    useKitchenMenusContext: () => ({
+    useKitchenMenus: () => ({
       rawMenus: menus,
       kitchenId,
       activeKitchenAppId,
@@ -151,4 +151,29 @@ test('Menu list choices are isolated by account, Kitchen and App, and follow liv
   assert.equal(list.showArchived.value, true)
   fixture.menus.value = [{ id: 'old', name: 'Old menu', status: 'archived' }]
   assert.equal(list.filteredMenus.value[0].id, 'old')
+})
+
+test('list owner sorts published first then saved order and name without mutating the source', () => {
+  const records = [
+    { id: 'draft', name: 'Draft', status: 'draft', sort_order: 0 },
+    { id: 'z', name: 'Zulu', status: 'published', sort_order: 2 },
+    { id: 'a', name: 'Alpha', status: 'published', sort_order: 2 },
+    { id: 'first', name: 'First', status: 'published', sort_order: 1 },
+    { id: 'old', name: 'Old', status: 'archived', sort_order: 0 },
+  ]
+  const before = structuredClone(records)
+  const list = listFixture(records).mount()
+  assert.deepEqual(
+    list.visibleMenus.value.map((menu) => menu.id),
+    ['first', 'a', 'z', 'draft']
+  )
+  assert.equal(list.archivedCount.value, 1)
+  list.query.value = 'old'
+  assert.deepEqual(list.visibleMenus.value, [])
+  list.showArchived.value = true
+  assert.deepEqual(
+    list.visibleMenus.value.map((menu) => menu.id),
+    ['old']
+  )
+  assert.deepEqual(records, before)
 })

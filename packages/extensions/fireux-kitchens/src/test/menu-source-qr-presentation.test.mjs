@@ -189,8 +189,8 @@ test('an applied source retains its Menu destination after reload', async () => 
 
 test('Kitchen Menu preparation is usable without a Product, purchase or service request', async () => {
   const Express = component('kitchen/components/Menu/Menus/Prepare.vue', {
-    '../../../composables/workspace/menus/useKitchenMenusContext': {
-      useKitchenMenusContext: () => ({
+    '../../../composables/workspace/menus/useKitchenMenus': {
+      useKitchenMenus: () => ({
         outcome: Vue.ref('ready'),
         error: Vue.ref(null),
       }),

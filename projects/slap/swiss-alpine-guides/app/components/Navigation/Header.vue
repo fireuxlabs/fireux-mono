@@ -136,7 +136,8 @@ const items = [
       }
 )
 </script>
-<style scoped>
+<!-- UHeader has fragment roots: target its explicit Alpine classes without a Vue scope attribute. -->
+<style>
 .alpine-header {
   background: #f3f3efed;
   border-color: transparent;
@@ -161,13 +162,13 @@ const items = [
   color: #fff;
   text-shadow: 0 1px 12px #071c2950;
 }
-.alpine-header--over-image .alpine-header__navigation :deep([data-slot='link']),
-.alpine-header--over-image :deep([data-slot='toggle']) {
+.alpine-header--over-image .alpine-header__navigation [data-slot='link'],
+.alpine-header--over-image [data-slot='toggle'] {
   color: #fff;
 }
 .alpine-header--over-image
   .alpine-header__navigation
-  :deep([data-slot='link']::before) {
+  [data-slot='link']::before {
   background: transparent;
 }
 .alpine-header--over-image .alpine-header__enquire {

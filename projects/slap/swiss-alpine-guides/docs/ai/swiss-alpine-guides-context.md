@@ -1,6 +1,6 @@
 # Swiss Alpine Guides context
 
-Updated: 2026-11-14
+Updated: 2026-11-16
 Role: living context
 Scope: Swiss Alpine Guides App
 
@@ -22,8 +22,10 @@ link, native content slot and footer. The public header reuses native `UHeader`
 and `UNavigationMenu` with Home, the seasonal activity catalogue, rentals,
 vouchers, About and Contact;
 Nuxt UI owns its mobile overlay and focus handling. The header overlays image-led
-routes with a transparent background and light navigation. Its local scroll/resize
-coordinator changes contrast after the image section; listeners, animation frames
+routes with a transparent background and light navigation. App-namespaced,
+unscoped header styles target native `UHeader` fragment roots, which do not
+inherit the caller's Vue scope attribute. Its local scroll/resize coordinator
+changes contrast after the image section; listeners, animation frames
 and the page-finish hook are cleaned up with the header. Content-only routes
 retain ordinary header spacing. The image-led opening retains its small summit
 padding within the full viewport, behind the transparent header. Hero text appears

@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-11-16
-Ref: a068b6eaa
+Updated: 2026-11-17
+Ref: e20047a13
 Role: map, not canon
 
 ## Purpose
@@ -1218,6 +1218,79 @@ extending them. Their names do not require identical Main children or controller
 The old `workspace-pages.mjs` guard is retired. Other capability controllers are
 outside this contract.
 
+### Workspace group overview composition
+
+A capability group's `Index.vue` composes its overview rather than absorbing
+its working children. It directly names the header, supported overview/actions,
+optional group-focused AI and summaries linking to child working pages. The
+overview may present a collection or current state; creation, AI, a collection
+and a fixed number of summaries are not mandatory. Do not hide this composition
+in a forwarding `Content.vue` or generic slot shell.
+
+The parent mounts one domain-owned `use{Entity}{Capability}Workspace()` for the
+entrance description and real group state/lifecycle coordination. Its public
+parent-facing result contains only `description`; internal shared capability state
+is not a controller bag passed through the template. Named child responsibilities
+use `use{Entity}{Capability}{Child}Workspace()` to consume that mounted owner and
+own their relevant derivations or interaction. Internal injection stays strict:
+absence never silently constructs another owner. Public `State`/`Context` suffixes
+and synthetic `*-group` folders are not the target. Keep ordinary presentation
+props/events for pure presentation children. This naming applies to capability
+group entrances, not every selected-Entity Workspace, lower reader or record editor.
+
+For Kitchen's `/menu` capability the target parent is
+`useKitchenMenuWorkspace()`: singular `Menu` identifies the capability, while
+`menus` still names its record collection. Its six named children use
+`useKitchenMenuOverviewWorkspace`, `useKitchenMenuCreateWorkspace`,
+`useKitchenMenuAiWorkspace`, `useKitchenMenuItemsWorkspace`,
+`useKitchenMenuPromotionsWorkspace` and `useKitchenMenuServicesWorkspace`.
+These are target APIs, not current source exports. Child-specific derivations may
+initially reuse parent-provided data; Services owns service-specific derivations
+rather than leaving them in an oversized group index. Do not duplicate acquisition
+or page publication to make each child independent. This six-part product
+composition does not require six children in every other capability group.
+
+Components expose the corresponding Entity/audience/capability hierarchy under
+`<Entity>Workspace<Capability><Child>`; registration and current-source migration
+status are owned by the [component surface convention](components.md#domain-component-surfaces).
+The existing Menu creation method selector and upload/URL/blank workflows remain
+one reusable creation flow, composed by both the modal and standalone preparation
+page. The dialog owns its open state and frame; it does not become a competing
+creation implementation merely to obtain a shorter name.
+
+The coordinator composes existing readers/controllers and shares their exact
+sources; it does not acquire another collection, duplicate command authority or
+become an all-purpose Entity controller. It must have a real coordination job,
+not merely move a description into another file. Native frame/navigation ownership
+and individual record editors remain separate. Lower provider APIs and publication
+switches are implementation details, not a shared group template.
+
+For collection-oriented overviews, the Overview coordinates existing domain
+state and outcomes, controlled Controls own search/filter/action presentation,
+List owns the native collection layout and empty results, and Card owns one
+record's presentation and destination. Reuse the current collection controls,
+feedback and native Nuxt UI primitives. Keep acquisition, permission checks,
+commands and lifecycle with their existing owners; pure presentation children
+receive typed props/events rather than opening another reader or provider.
+
+The Kitchen Menus source composition is
+[`Menu/Index.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Index.vue)
+with [`Menus/Overview.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Overview.vue),
+group-focused KitchenAI and Items, Promotions and Services summaries. Its
+Overview composes Controls and List, and List composes Card; Controls reuses
+`WorkspaceKitchenCollectionToolbar`, feedback reuses `FireState`, and the list
+uses native `UPageGrid`. Its group owner is
+[`useKitchenMenusWorkspace`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/menus/useKitchenMenusWorkspace.ts).
+The distinct [Prep parent](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/Index.vue)
+mounts [`useKitchenPrepWorkspace`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/prep/useKitchenPrepWorkspace.ts),
+whose Overview/Create children consume its strict state lookup. These are current
+source references pending the target naming and responsibility cutover above;
+they illustrate different coordination needs, not identical internals or completed
+adoption by other groups. Align another family only with a bounded owner/consumer change.
+Verify parent mounting, child reuse, scope changes/disposal and the actual group
+route's states/interactions. Overview presentation tests alone do not establish
+group-owner lifecycle correctness.
+
 ### Identity composition proving pair
 
 Kitchen and Project Identity use named `useKitchenWorkspaceIdentity` and
@@ -1453,7 +1526,7 @@ before navigating; the named Menus AI consumes it once after its context is read
 bound to the signed-in user, selected Kitchen and a two-minute lifetime. It does
 not persist a transcript or share parent-chat context.
 
-Menus consumes the same `useKitchenMenusContext` state and action availability
+Menus consumes the same `useKitchenMenus` state and action availability
 as its manual UI. Its intent endpoint prepares existing controls and review routes;
 normal commands retain mutation authority. The focused `kitchen-ai-handoff` and
 `menus-intent` tests cover identity, expiry, stale responses, projection and

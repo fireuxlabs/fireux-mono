@@ -98,11 +98,15 @@ its bounded shared extension points. See the
 [layouts map](layouts.md#workspace-composition) and
 [component map](components.md#workspace-composition).
 
-Kitchen's `Menu/Index.vue` demonstrates the composed form: group AI,
-Items, Menus, Promotions and Services overview components. Children own local
-imports and state; one page-provided overview supports genuinely shared AI and
-page JSON. Status and missing-data flags come from records and policy, not AI.
-Do not mount editing controllers merely to calculate overview counts.
+Group-parent components directly compose their introduction and supported
+overview, actions, AI and child summaries. One domain-owned
+`use{Entity}{Capability}Workspace()` mounts their real shared coordination;
+responsible children consume that owner through named child Workspace composables,
+with strict internal lookup rather than public `State` APIs. See the
+[group composition contract](family-workspace-entity.md#workspace-group-overview-composition)
+for Kitchen Menu/Prep source examples and bounded adoption. Native framing and
+record editors retain their own owners. Do not mount editing controllers merely
+to calculate overview counts; status comes from records and policy, not AI.
 
 ## Breadcrumbs
 

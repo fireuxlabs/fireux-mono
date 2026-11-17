@@ -27,9 +27,9 @@
   </WorkspaceKitchenAIFocus>
 </template>
 <script setup lang="ts">
-import { useMenuGroupIndexContext } from '../../composables/workspace/menu-group/useMenuGroupIndexContext'
+import { useMenuGroupIndex } from '../../composables/workspace/menu-group/useMenuGroupIndex'
 import { useFoodOverviewAI } from '../../composables/workspace/menu-group/useFoodOverviewAI'
-const { kitchenId, ready, overview } = useMenuGroupIndexContext()
+const { kitchenId, ready, overview } = useMenuGroupIndex()
 const { prompt, message, error, submitting, ask } = useFoodOverviewAI({
   kitchenId,
   ready,

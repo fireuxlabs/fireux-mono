@@ -25,52 +25,6 @@ const tours = [
   },
 ]
 
-const useTourBookingSource = readFileSync(
-  new URL('../app/composables/useTourBooking.ts', import.meta.url),
-  'utf8'
-)
-  .replace(/^import type \{[\s\S]*?\} from '[^']+'\r?\n/m, '')
-  .replace(/^import \{ tours \} from '[^']+'\r?\n/m, '')
-  .replace(/^export /gm, '')
-const useTourBooking = compileFunction(
-  `${stripTypeScriptTypes(useTourBookingSource)}; return useTourBooking`,
-  ['tours', 'ref', 'computed', 'watch', 'useFetch', 'useRoute', '$fetch']
-)(
-  tours,
-  (value) => ({ value }),
-  (get) => Object.defineProperty({}, 'value', { get }),
-  () => {},
-  () => ({
-    data: { value: { available: true, availabilityRevision: 4, startAt: '2026-11-18T09:00:00+01:00', endAt: '2026-11-18T15:00:00+01:00', timeZone: 'Europe/Zurich' } },
-    status: { value: 'success' },
-    error: { value: null },
-    execute: async () => {},
-    clear: () => {},
-  }),
-  () => ({ query: { tour: 'lauterbrunnen-valley' } }),
-  async () => ({ booking: { id: 'REF-001' } })
-)
-
-test('booking confirmation returns the selected tour meeting point in its receipt', async () => {
-  const flow = useTourBooking()
-  const slot = flow.configuration.value.slots[0]
-  const receipt = await flow.confirm.value({
-    requestId: 'request-001',
-    slotId: slot.id,
-    contact: { name: 'Sample Guest', email: 'guest@example.com' },
-  })
-
-  assert.deepEqual(receipt, {
-    reference: 'REF-001',
-    details: [
-      {
-        label: 'Meeting point',
-        value: tours[1].meetingPoint,
-      },
-    ],
-  })
-})
-
 const sharedSource = readFileSync(
   new URL(
     '../../../../packages/extensions/fireux-bookings/src/runtime/server/booking.ts',

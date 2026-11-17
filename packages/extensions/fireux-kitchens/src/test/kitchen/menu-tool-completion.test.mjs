@@ -152,7 +152,7 @@ test('Free Menu creation starts with the combined Menu and respects unavailable 
     {
       defineModel: () => ref(''),
       useMenuRecordNavigation: () => ({ openView: () => {} }),
-      useKitchenMenusContextSource: () => ({
+      useOptionalKitchenMenus: () => ({
         kitchenId: h.kitchenId,
         canCreateMenu,
         menuCreateBlockedMessage: ref('Allowance reached'),
@@ -176,7 +176,7 @@ function scheduledForm(h, subscription) {
       useMenuRecordNavigation: () => ({
         openView: (...args) => h.effects.push(args),
       }),
-      useKitchenMenusContextSource: () => ({
+      useOptionalKitchenMenus: () => ({
         kitchenId: h.kitchenId,
         canCreateMenu: ref(true),
         menuCreateBlockedMessage: ref(''),
@@ -278,7 +278,7 @@ test('Menu creation suppresses obsolete navigation, errors and busy-state comple
             useMenuRecordNavigation: () => ({
               openView: (...args) => h.effects.push(args),
             }),
-            useKitchenMenusContextSource: () => ({
+            useOptionalKitchenMenus: () => ({
               kitchenId: h.kitchenId,
               canCreateMenu: ref(true),
               menuCreateBlockedMessage: ref(''),
@@ -328,7 +328,7 @@ test('URL source captures its body and blocks stale credentials and obsolete com
           {
             crypto: { randomUUID: () => 'test-source' },
             navigateTo: (path) => h.effects.push(path),
-            useKitchenMenusContextSource: () => ({
+            useOptionalKitchenMenus: () => ({
               activeKitchenAppId: h.activeKitchenAppId,
               canWrite: h.canWrite,
               kitchenId: h.kitchenId,
@@ -417,7 +417,7 @@ test('Menu suggestions stay locked for Free and create ordinary interactive draf
       'kitchen/components/Menu/Menus/Collection/Suggestions.vue',
       '({create,hasPro,suggestions})',
       {
-        useKitchenMenusContext: () => ({
+        useKitchenMenus: () => ({
           menus: ref([]),
           subscription: ref(tier),
           canCreateMenu: ref(true),
@@ -532,5 +532,72 @@ test('paid Specials board preset creates a daily Menu with explicit purpose', as
     ])
   } finally {
     h.lifetime.stop()
+  }
+})
+
+test('standalone blank and URL creation explicitly construct their lower owner while provided flows reuse it', async () => {
+  for (const provided of [false, true]) {
+    const h = context()
+    let constructions = 0
+    const owner = {
+      kitchenId: h.kitchenId,
+      activeKitchenAppId: h.activeKitchenAppId,
+      canCreateMenu: ref(true),
+      menuCreateBlockedMessage: ref(''),
+      subscription: ref('pro'),
+      canWrite: h.canWrite,
+      currencyCode: ref('CHF'),
+      createMenu: async (input) => {
+        h.calls.push(input)
+        return { slug: 'created' }
+      },
+    }
+    const dependencies = {
+      useOptionalKitchenMenus: () => (provided ? owner : null),
+      useKitchenWorkspaceMenus: () => {
+        constructions++
+        return owner
+      },
+      defineModel: () => ref('Standalone menu'),
+      useMenuRecordNavigation: () => ({
+        openView: (...args) => h.effects.push(args),
+      }),
+      crypto: { randomUUID: () => 'source-id' },
+      $fetch: async (_url, request) => {
+        h.calls.push(request.body)
+        return { ok: true, id: request.body.uploadId }
+      },
+      navigateTo: async (value) => h.effects.push(value),
+    }
+    try {
+      const form = h.run(
+        'kitchen/components/Menu/Menus/Create/Form.vue',
+        '({ save })',
+        dependencies
+      )
+      await form.save()
+      assert.equal(h.calls[0].name, 'Standalone menu')
+      assert.deepEqual(h.effects[0], ['created', 'content'])
+      const url = h.run(
+        'kitchen/components/Menu/Menus/Create/Url.vue',
+        '({ save, sourceUrl })',
+        dependencies
+      )
+      url.sourceUrl.value = 'https://example.test/menu'
+      h.token.resolve('token')
+      await url.save()
+      assert.equal(h.calls[1].sourceUrl, 'https://example.test/menu')
+      assert.equal(
+        h.effects[1],
+        '/workspace/kitchen/menu/menus/uploads/source-source-id'
+      )
+      assert.equal(
+        constructions,
+        provided ? 0 : 2,
+        'only the two independent standalone workflow owners construct'
+      )
+    } finally {
+      h.lifetime.stop()
+    }
   }
 })

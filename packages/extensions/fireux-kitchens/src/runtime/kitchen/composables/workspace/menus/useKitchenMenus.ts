@@ -9,14 +9,13 @@ import {
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/workspace/models/capability-context'
 import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
+import { kitchenMenusWorkspaceKey } from './kitchen-menus-workspace-state'
 
-export type KitchenMenusContext = ReturnType<typeof createKitchenMenusWorkspace>
+export type KitchenMenus = ReturnType<typeof createKitchenMenus>
 
-const kitchenMenusWorkspaceKey: InjectionKey<KitchenMenusContext> = Symbol(
-  'KitchenMenusContext'
-)
+const kitchenMenusKey: InjectionKey<KitchenMenus> = Symbol('KitchenMenus')
 
-function createKitchenMenusWorkspace(publishPage = true) {
+export function createKitchenMenus(publishPage = true) {
   const workspace = useKitchenWorkspaceMenus()
   const pageState = useWorkspacePageState('kitchen')
   const createOpen = ref(false)
@@ -103,14 +102,14 @@ function createKitchenMenusWorkspace(publishPage = true) {
   }
 }
 
-export function provideKitchenMenusContext(publishPage = true) {
-  const workspace = createKitchenMenusWorkspace(publishPage)
-  provide(kitchenMenusWorkspaceKey, workspace)
+export function provideKitchenMenus(publishPage = true) {
+  const workspace = createKitchenMenus(publishPage)
+  provide(kitchenMenusKey, workspace)
   return workspace
 }
 
-export function useKitchenMenusContext() {
-  const workspace = inject(kitchenMenusWorkspaceKey)
+export function useKitchenMenus() {
+  const workspace = useOptionalKitchenMenus()
   if (!workspace) {
     throw new Error('Kitchen Menus workspace is not available')
   }
@@ -118,6 +117,11 @@ export function useKitchenMenusContext() {
   return workspace
 }
 
-export function useKitchenMenusContextSource() {
-  return inject(kitchenMenusWorkspaceKey, null) ?? useKitchenWorkspaceMenus()
+/** Optional lookup never creates readers, commands or page publishers. */
+export function useOptionalKitchenMenus() {
+  return (
+    inject(kitchenMenusKey, null) ??
+    inject(kitchenMenusWorkspaceKey, null)?.menus ??
+    null
+  )
 }

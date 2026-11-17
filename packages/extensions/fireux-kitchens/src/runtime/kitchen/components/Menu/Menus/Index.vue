@@ -34,9 +34,9 @@
 </template>
 <script setup lang="ts">
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
-import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
+import { useKitchenMenus } from '../../../composables/workspace/menus/useKitchenMenus'
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
-const { storageKitchenId, outcome, error } = useKitchenMenusContext()
+const { storageKitchenId, outcome, error } = useKitchenMenus()
 </script>
 
 <style src="../../../../menu/assets/styles/menu-editor.css"></style>

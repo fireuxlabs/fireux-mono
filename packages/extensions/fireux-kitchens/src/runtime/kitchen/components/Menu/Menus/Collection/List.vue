@@ -75,10 +75,10 @@
 <script setup lang="ts">
 import { useMenuList } from '../../../../composables/workspace/menus/useMenuList'
 import { menuWorkspaceDestination } from '../../../../utils/menu-workspace-destination'
-import { useKitchenMenusContext } from '../../../../composables/workspace/menus/useKitchenMenusContext'
+import { useKitchenMenus } from '../../../../composables/workspace/menus/useKitchenMenus'
 import type { Menu } from '../../../../../menu/models/menu-storage.model.ts'
 
-const { rawMenus: menus, pending } = useKitchenMenusContext()
+const { rawMenus: menus, pending } = useKitchenMenus()
 const { query, showArchived, archivedCount, filteredMenus, groups } =
   useMenuList()
 
