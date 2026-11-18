@@ -1,25 +1,19 @@
 <template>
   <FireCollectionRow>
-    <div class="workspace-surface__primary">
-      <h3 class="fx-type-card-heading">
-        <NuxtLink v-if="row.dishId" :to="itemDestination">{{
-          row.label
-        }}</NuxtLink>
-        <span v-else>{{ row.label }}</span>
-      </h3>
+    <MenuItemDisplay
+      as="div"
+      :name="row.label"
+      :name-to="row.dishId ? itemDestination : undefined"
+      :description="row.dish?.description"
+      :image-url="row.dish?.image"
+      show-item-images
+      :price="priceLabel"
+      class="menu-editor-item"
+    >
       <span v-if="row.item.status === 'archived'" class="fx-type-caption"
         >Off menu</span
       >
-    </div>
-    <template #value>
-      <span class="menu-item-value">{{
-        row.price === undefined
-          ? 'Price not set'
-          : row.priceOptions.length
-            ? 'Multiple prices'
-            : editor.formatPrice(row.price)
-      }}</span>
-    </template>
+    </MenuItemDisplay>
     <template #actions>
       <UDropdownMenu :items="actions">
         <UButton
@@ -49,6 +43,11 @@ const itemDestination = computed(() => ({
     ...(props.editor.embedded ? { inline: '1' } : {}),
   },
 }))
+const priceLabel = computed(() => {
+  if (props.row.price === undefined) return 'Price not set'
+  if (props.row.priceOptions.length) return 'Multiple prices'
+  return props.editor.formatPrice(props.row.price)
+})
 const actions = computed(() => [
   [
     ...(props.editor.canWrite
@@ -105,10 +104,7 @@ const actions = computed(() => [
 </script>
 
 <style scoped>
-.menu-item-value {
-  text-align: right;
-  overflow-wrap: anywhere;
-  font-size: var(--text-sm);
-  color: var(--ui-text-muted);
+.menu-editor-item {
+  border-bottom: 0;
 }
 </style>

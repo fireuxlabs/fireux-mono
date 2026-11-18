@@ -33,7 +33,7 @@
         :to="publicUrl"
         target="_blank"
         rel="noopener"
-        label="View guest menu"
+        label="View menu"
         icon="i-lucide-external-link"
         color="neutral"
         variant="outline"
@@ -106,21 +106,7 @@ const statusLabel = computed(() =>
   border: 1px solid var(--ui-border);
   border-inline-start: 3px solid var(--menu-heading-accent, var(--ui-primary));
   border-radius: calc(var(--ui-radius) * 2);
-  background:
-    linear-gradient(
-      110deg,
-      color-mix(
-        in srgb,
-        var(--menu-heading-accent, transparent) 14%,
-        transparent
-      ),
-      transparent 70%
-    ),
-    color-mix(
-      in srgb,
-      var(--menu-heading-canvas, var(--ui-bg-elevated)) 65%,
-      var(--ui-bg-elevated)
-    );
+  background-color: var(--menu-heading-canvas, var(--ui-bg-elevated));
 }
 .menu-identity-bar {
   display: grid;

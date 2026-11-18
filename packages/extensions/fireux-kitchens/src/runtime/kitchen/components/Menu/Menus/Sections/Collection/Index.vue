@@ -3,7 +3,7 @@
     <FireCopyError v-if="editor.moveError" :message="editor.moveError" />
     <FireCopyError v-if="editor.statusError" :message="editor.statusError" />
     <KitchenMenuMenusSectionsCollectionSchedule
-      v-if="editor.menu"
+      v-if="editor.menu && editor.daily"
       v-model="editor.selectedDate"
     />
     <UAlert
@@ -14,33 +14,7 @@
       :description="editor.emptyDescription"
     />
 
-    <UCard v-else>
-      <template #header>
-        <div class="menu-editor-actions">
-          <div>
-            <h2 class="fx-type-card-heading">
-              {{ editor.daily ? editor.formattedDate : 'Menu sections' }}
-            </h2>
-          </div>
-          <UButton
-            v-if="!editor.daily"
-            size="sm"
-            color="neutral"
-            variant="soft"
-            :icon="
-              editor.showCreateSection ? 'i-lucide-minus' : 'i-lucide-plus'
-            "
-            :label="editor.showCreateSection ? 'Cancel' : 'Add section'"
-            :disabled="
-              !editor.canWrite ||
-              editor.sectionsPending ||
-              Boolean(editor.sectionsError)
-            "
-            @click="editor.showCreateSection = !editor.showCreateSection"
-          />
-        </div>
-      </template>
-
+    <template v-else>
       <FireCopyError
         v-if="editor.sectionsError"
         :message="String(editor.sectionsError)"
@@ -52,7 +26,7 @@
       >
         Loading sections…
       </p>
-      <div v-else class="workspace-surface workspace-surface--compact">
+      <template v-else>
         <KitchenMenuMenusSectionsCreate
           v-if="editor.showCreateSection"
           :editor="editor"
@@ -72,23 +46,52 @@
               : `Archived sections (${editor.archivedSections.length})`
           }}
         </UButton>
-        <div v-if="sections.length" class="menu-section-workbench">
-          <nav aria-label="Menu sections" class="menu-section-workbench__nav">
+        <div class="menu-section-workbench">
+          <div
+            v-if="sections.length || !editor.daily"
+            class="menu-section-workbench__sidebar"
+          >
+            <nav
+              v-if="sections.length"
+              aria-label="Menu sections"
+              class="menu-section-workbench__nav"
+            >
+              <UButton
+                v-for="section in sections"
+                :key="section.id"
+                type="button"
+                :label="editor.displaySectionLabel(section)"
+                icon="i-lucide-list"
+                :color="
+                  activeSection?.id === section.id ? 'primary' : 'neutral'
+                "
+                :variant="activeSection?.id === section.id ? 'soft' : 'ghost'"
+                :aria-current="
+                  activeSection?.id === section.id ? 'true' : undefined
+                "
+                class="menu-section-workbench__link"
+                @click="openSection = section.id"
+              />
+            </nav>
             <UButton
-              v-for="section in sections"
-              :key="section.id"
-              type="button"
-              :label="editor.displaySectionLabel(section)"
-              icon="i-lucide-list"
-              :color="activeSection?.id === section.id ? 'primary' : 'neutral'"
-              :variant="activeSection?.id === section.id ? 'soft' : 'ghost'"
-              :aria-current="
-                activeSection?.id === section.id ? 'true' : undefined
-              "
+              v-if="!editor.daily"
               class="menu-section-workbench__link"
-              @click="openSection = section.id"
+              size="sm"
+              color="neutral"
+              variant="soft"
+              :icon="
+                editor.showCreateSection ? 'i-lucide-minus' : 'i-lucide-plus'
+              "
+              :label="editor.showCreateSection ? 'Cancel' : 'Add section'"
+              :aria-expanded="editor.showCreateSection"
+              :disabled="
+                !editor.canWrite ||
+                editor.sectionsPending ||
+                Boolean(editor.sectionsError)
+              "
+              @click="editor.showCreateSection = !editor.showCreateSection"
             />
-          </nav>
+          </div>
           <section
             v-if="activeSection"
             :key="activeSection.id"
@@ -101,19 +104,18 @@
             />
             <KitchenMenuMenusSectionsInline :section-id="activeSection.id" />
           </section>
+          <p v-else class="fx-type-caption">
+            {{
+              editor.showArchived
+                ? 'No archived sections.'
+                : editor.daily
+                  ? 'Nothing planned for this date.'
+                  : 'No sections yet. Add a section to start placing items.'
+            }}
+          </p>
         </div>
-
-        <p v-else class="fx-type-caption">
-          {{
-            editor.showArchived
-              ? 'No archived sections.'
-              : editor.daily
-                ? 'Nothing planned for this date.'
-                : 'No sections yet. Add a section to start placing items.'
-          }}
-        </p>
-      </div>
-    </UCard>
+      </template>
+    </template>
     <UModal
       :open="Boolean(editor.archiveCandidate)"
       @update:open="
@@ -198,11 +200,14 @@ watch(openSection, (section) => {
   grid-template-columns: minmax(0, 1fr);
   gap: calc(var(--spacing) * 4);
 }
+.menu-section-workbench__sidebar,
 .menu-section-workbench__nav {
   display: grid;
   align-content: start;
   gap: var(--spacing);
   min-width: 0;
+}
+.menu-section-workbench__sidebar {
   padding: calc(var(--spacing) * 2);
   background: var(--ui-bg-elevated);
   border-radius: var(--ui-radius);

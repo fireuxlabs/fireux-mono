@@ -221,7 +221,7 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
     setup: (props) =>
       compileFunction(
         script(itemSource) +
-          ';return {itemNameId,itemPrice,choiceGroups,selections}',
+          ';return {itemNameId,itemPrice,choiceGroups,selections,hasPriceOptions}',
         [
           'computed',
           'ref',
@@ -241,6 +241,26 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
         formatCurrencyAmount
       ),
     render: compile(template(itemSource)),
+  })
+  const displaySource = readFileSync(
+    new URL('../runtime/menu/components/ItemDisplay.vue', import.meta.url),
+    'utf8'
+  )
+  app.component('MenuItemDisplay', {
+    props: [
+      'as',
+      'headingTag',
+      'nameId',
+      'nameTo',
+      'name',
+      'price',
+      'priceKind',
+      'description',
+      'promotionLabel',
+      'imageUrl',
+      'showItemImages',
+    ],
+    render: compile(template(displaySource)),
   })
   app.component('MenuItemImage', {
     props: ['enabled', 'imageUrl'],

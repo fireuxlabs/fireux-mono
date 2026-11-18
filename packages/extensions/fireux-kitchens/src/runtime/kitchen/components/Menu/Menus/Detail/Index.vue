@@ -42,12 +42,12 @@
         color="neutral"
       />
       <KitchenMenuMenusDetailSettings v-if="view === 'details'" />
-      <section v-else-if="view === 'content'" class="workspace-surface">
+      <template v-else-if="view === 'content'">
         <KitchenMenuMenusDetailDocument
           v-if="menu.format === 'document' || menu.doc?.url"
         />
         <KitchenMenuMenusSectionsCollection v-else />
-      </section>
+      </template>
       <KitchenMenuMenusPublication v-else-if="view === 'publishing'" />
       <KitchenMenuMenusDetailSource v-else />
       <details class="menu-record-ai">

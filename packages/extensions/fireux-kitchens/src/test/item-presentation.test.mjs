@@ -60,6 +60,7 @@ test('zero is a visible amount while missing and invalid terms remain absent', (
 const Item = component('menu/components/Detail/Item.vue', {
   '../../../utils/currency-display': currency,
 })
+const ItemDisplay = component('menu/components/ItemDisplay.vue')
 const ItemImage = component('menu/components/ItemImage.vue')
 const ChoiceBubbles = component('menu/components/ChoiceBubbles.vue')
 const ItemChoices = component('menu/components/ItemChoices.vue')
@@ -96,6 +97,7 @@ async function renderItem(changes = {}) {
       }),
   })
   app.component('MenuItemImage', ItemImage)
+  app.component('MenuItemDisplay', ItemDisplay)
   app.component('MenuDetailItem', Item)
   app.component('MenuChoiceBubbles', ChoiceBubbles)
   app.component('MenuItemChoices', ItemChoices)
@@ -178,6 +180,7 @@ function mount(Component, props) {
   })
   app.component('UIcon', { render: () => Vue.h('span') })
   app.component('MenuItemImage', ItemImage)
+  app.component('MenuItemDisplay', ItemDisplay)
   app.component('MenuDetailItem', Item)
   app.component('MenuChoiceBubbles', ChoiceBubbles)
   app.component('MenuItemChoices', ItemChoices)

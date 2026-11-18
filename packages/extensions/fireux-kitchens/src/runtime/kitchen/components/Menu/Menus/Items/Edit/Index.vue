@@ -1,20 +1,18 @@
 <template>
   <div class="menu-items-editor workspace-surface workspace-surface--compact">
     <FireCopyError v-if="editor.moveError" :message="editor.moveError" />
-    <div class="menu-editor-actions">
-      <UButton
-        v-if="!embedded"
-        :to="`/workspace/kitchen/menu/${encodeURIComponent(editor.menuSlug)}`"
-        @click="editor.rememberView(editor.menuSlug, 'content', $event)"
-        color="neutral"
-        variant="ghost"
-        icon="i-lucide-arrow-left"
-        size="sm"
-      >
-        Back to sections
-      </UButton>
-      <KitchenMenuMenusItemsAdd v-if="editor.section" />
-    </div>
+    <UButton
+      v-if="!embedded"
+      class="menu-items-editor__action"
+      :to="`/workspace/kitchen/menu/${encodeURIComponent(editor.menuSlug)}`"
+      @click="editor.rememberView(editor.menuSlug, 'content', $event)"
+      color="neutral"
+      variant="ghost"
+      icon="i-lucide-arrow-left"
+      size="sm"
+    >
+      Back to sections
+    </UButton>
 
     <FireCopyError
       v-if="editor.sectionsError"
@@ -29,45 +27,43 @@
       description="Choose an existing menu section."
     />
 
-    <UCard v-else>
-      <template #header>
-        <FireCollectionRow as="div" class="menu-item-heading">
-          <div>
-            <div class="menu-editor-actions">
-              <h2 class="fx-type-card-heading">
-                {{ editor.section.label }}
-              </h2>
-              <span
-                v-if="!editor.itemsPending && !editor.itemsError"
-                class="fx-type-caption"
-                :aria-label="`${editor.itemRows.length} items`"
-                >{{ editor.itemRows.length }}</span
-              >
-            </div>
-            <UBadge
-              v-if="editor.section.status === 'archived'"
-              color="neutral"
-              variant="soft"
-              >Archived section</UBadge
-            >
-            <p v-if="editor.section.date" class="fx-type-caption">
-              {{ editor.section.date }}
-            </p>
-          </div>
-          <template #value>
+    <template v-else>
+      <FireCollectionRow v-if="!embedded" as="div" class="menu-item-heading">
+        <div>
+          <div class="menu-editor-actions">
+            <h2 class="fx-type-card-heading">
+              {{ editor.section.label }}
+            </h2>
             <span
-              v-if="editor.currencyCode"
-              class="menu-item-value"
-              :aria-label="`Prices in ${editor.currencyCode}`"
-              >{{ editor.currencyCode }}</span
+              v-if="!editor.itemsPending && !editor.itemsError"
+              class="fx-type-caption"
+              :aria-label="`${editor.itemRows.length} items`"
+              >{{ editor.itemRows.length }}</span
             >
-            <span v-else aria-hidden="true" />
-          </template>
-          <template #actions
-            ><span class="menu-item-action-placeholder" aria-hidden="true"
-          /></template>
-        </FireCollectionRow>
-      </template>
+          </div>
+          <UBadge
+            v-if="editor.section.status === 'archived'"
+            color="neutral"
+            variant="soft"
+            >Archived section</UBadge
+          >
+          <p v-if="editor.section.date" class="fx-type-caption">
+            {{ editor.section.date }}
+          </p>
+        </div>
+        <template #value>
+          <span
+            v-if="editor.currencyCode"
+            class="menu-item-value"
+            :aria-label="`Prices in ${editor.currencyCode}`"
+            >{{ editor.currencyCode }}</span
+          >
+          <span v-else aria-hidden="true" />
+        </template>
+        <template #actions
+          ><span class="menu-item-action-placeholder" aria-hidden="true"
+        /></template>
+      </FireCollectionRow>
 
       <FireCopyError
         v-if="editor.itemsError"
@@ -86,7 +82,10 @@
       <p v-else class="fx-type-caption">
         No entries have been added to this section yet.
       </p>
-    </UCard>
+      <div class="menu-items-editor__action">
+        <KitchenMenuMenusItemsAdd />
+      </div>
+    </template>
   </div>
 </template>
 
@@ -100,6 +99,9 @@ const editor = reactive(useMenuSectionItemsEditor(Boolean(props.embedded)))
 <style src="../../../../../../menu/assets/styles/menu-editor.css"></style>
 
 <style scoped>
+.menu-items-editor__action {
+  justify-self: start;
+}
 .menu-item-value {
   text-align: right;
   overflow-wrap: anywhere;
