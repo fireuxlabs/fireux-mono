@@ -111,7 +111,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import type { Order } from '../../models/order.model'
+import type { Order } from '../../records/order'
 const props = withDefaults(
   defineProps<{
     order: Order

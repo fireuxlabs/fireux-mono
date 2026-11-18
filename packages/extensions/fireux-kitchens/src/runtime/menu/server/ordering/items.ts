@@ -7,7 +7,7 @@ import {
   promotionPricedItem,
 } from '../../../kitchen/utils/promotions/pricing'
 import type { PublicMenuItem } from '../../models/menu-detail.model'
-import type { PublicKitchenPromotion } from '../../../kitchen/models/promotion.model'
+import type { PublicKitchenPromotion } from '../../../kitchen/records/menus/promotions/promotion'
 
 /** Canonical commercial terms, acquired inside the existing submission transaction. */
 export function orderItemReader(

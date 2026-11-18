@@ -42,10 +42,10 @@ Ingredient taxonomy, discovery categories and external menu-category imports
 retain their separate owners. Paid Menu distinctions concern additional/custom
 and Daily Menus, not Item category counts.
 
-The Item identity foundation is `kitchen/records/item.ts`. Its reader and
+The Item identity foundation is `kitchen/records/menus/items/item.ts`. Its reader and
 context live under `kitchen/composables/items` in the Kitchen spine and retain
 the existing `dishes` collection path. The canonical model exposes only identity. The same document listener exposes
-selling defaults separately through `records/item-offer.ts`; `utils/item-identity.ts` selects
+selling defaults separately through `records/menus/items/item-offer.ts`; `utils/item-identity.ts` selects
 identity without adding those values to Item. Preparation and Kitchen-selected
 presentation retain separate ownership. Menu editors share this reader rather
 than acquiring the whole catalogue for labels. Historical editor
@@ -70,7 +70,7 @@ does not reset a restored page, and settled results clamp an obsolete page.
 resolution. Item detail has two views: Details and Appears on. Preparation specification,
 prep requirements and Station management belong to Prep & Production; the Menu
 Item route does not acquire their readers. Preparation owns reusable output
-identity in `kitchen/records/preparation.ts`; Recipe owns inputs, method
+identity in `kitchen/records/prep/preparations/preparation.ts`; Recipe owns inputs, method
 and expected yield in `kitchen/recipe/models/model.ts`. Their library lives under
 `/workspace/kitchen/prep`, with historical `prep-items` and `recipes` storage
 paths retained by their owning readers. See the Misebox context’s
@@ -420,7 +420,7 @@ Misebox context and `menu-record-controller.test.mjs` for this boundary.
 The [Workspace operational currency rule](family-workspace-entity.md#operational-default-currency)
 assigns the optional default to the selected Kitchen root. Retained selling
 terms belong to the existing
-[`ItemOffer`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/item-offer.ts),
+[`ItemOffer`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/menus/items/item-offer.ts),
 not a new offer Entity, a Menu placement or a retired Sellable runtime.
 
 The accepted adoption contract adds explicit `currency_code` to those Item
@@ -495,7 +495,7 @@ Start with:
 
 - Menu declaration and storage: `runtime/menu/models/menu.model.ts` and
   `runtime/menu/models/menu-storage.model.ts`.
-- Normal commercial terms: `runtime/kitchen/records/item.ts` and
+- Normal commercial terms: `runtime/kitchen/records/menus/items/item.ts` and
   `runtime/kitchen/utils/item-pricing.ts`.
 - Direct discovery: `runtime/menu/server/index/read.ts` and
   `src/test/menu-canonical-discovery.test.mjs`.
@@ -1087,7 +1087,7 @@ this lower presentation or data lifecycle.
 
 ## Kitchen Item read ownership
 
-Kitchen Item's canonical record definition is `kitchen/records/item.ts`. Its optional stamps
+Kitchen Item's canonical record definition is `kitchen/records/menus/items/item.ts`. Its optional stamps
 represent missing historical provenance honestly; trusted Item creation still
 writes both creation and update stamps. `useKitchenItemRead` owns acquisition,
 Kitchen access gating and private normalization through Core's Firestore reader.

@@ -38,7 +38,7 @@ Capture the decisions and design preferences discussed after the spine migration
 1. **Workspace status:** Is it best described as a first-class shared FireUX capability/surface or simply a composition pattern? Existing runtime map describes Core `workspace/` as a shared owner **not an Entity**. Inspect source and consumers before changing the contract. Entity-owned Workspace experiences remain under the Entity, and the existence of an admin dashboard does not mandate a Workspace Entity.
 2. **Preparation:** Record or separate Entity? Decide from ownership, identity, lifetime and reuse.
 3. **Recipe authority:** independent owner and editing policy; how a Kitchen associates with a Recipe without duplicating canonical truth.
-4. **Naming/shape details:** choose one minimal convention for canonical `models/model.ts`, `records/item.ts`, colocated field/transport types and generated public names. Do not introduce redundant filename suffixes or generic types roots by default.
+4. **Naming/shape details:** choose one minimal convention for canonical `models/model.ts`, `records/menus/items/item.ts`, colocated field/transport types and generated public names. Do not introduce redundant filename suffixes or generic types roots by default.
 5. **Component composable scope:** when is matching composition actually useful, and how does the child consume its parent without hidden second reader/command construction? Preserve the existing provided-parent lifecycle and distinguish independent public lower readers from injected child projections.
 
 ## Suggested handoff to Codex

@@ -176,7 +176,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { type Order, type OrderLine } from '../../../models/order.model'
+import { type Order, type OrderLine } from '../../../records/order'
 import { readOrder } from '../../../utils/ordering'
 import { orderSubmissionIssues } from '../../../utils/order-submission'
 const channels = [

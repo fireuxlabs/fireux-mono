@@ -467,7 +467,7 @@ identify reads and commands without additional `fetch`, `mutations`, or
 `utils/paths` folders. Item readers, context and mutation adapters live together under
 `kitchen/composables/items`; canonical Item and selling contracts are in
 `kitchen/records`, with stateless normalization in `kitchen/utils`. Preparation follows the same Record boundary: its definition is in
-`kitchen/records/preparation.ts`, reader in `composables/preparations`, validator
+`kitchen/records/prep/preparations/preparation.ts`, reader in `composables/preparations`, validator
 in `utils/preparation-changes.ts`, and trusted actions in `server/preparations`.
 Recipe retains its current nested source pending its independent-domain transition. The
 retired Recipe and Prep Item client directories are not alternate reader owners.
@@ -494,7 +494,7 @@ is not a required template for them.
 ## Shared prices and Orders responsibilities
 
 Kitchen selling defaults belong to
-[ItemOffer](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/item-offer.ts),
+[ItemOffer](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/menus/items/item-offer.ts),
 separately from reusable Item identity and Menu placement. Shared
 [item pricing](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/item-pricing.ts)
 owns pricing normalization and validation; trusted

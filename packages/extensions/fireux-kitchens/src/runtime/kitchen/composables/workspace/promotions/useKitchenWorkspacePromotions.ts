@@ -9,7 +9,7 @@ import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands
 import type {
   KitchenPromotion,
   KitchenPromotionInput,
-} from '../../../models/promotion.model'
+} from '../../../records/menus/promotions/promotion'
 
 export function useKitchenWorkspacePromotions() {
   const identity = useKitchenWorkspaceIdentity()

@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useIdentityEditor } from 'fireux-core/runtime/composables/fireux/useIdentityEditor'
-import type { Preparation } from '../../../records/preparation'
+import type { Preparation } from '../../../records/prep/preparations/preparation'
 import { readPreparationChanges } from '../../../utils/preparation-changes'
 import { usePrepMutation } from '../../../composables/prep/usePrepMutation'
 const props = defineProps<{

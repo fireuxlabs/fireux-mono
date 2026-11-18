@@ -84,7 +84,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { OrderSubmission } from '../../../kitchen/models/order-submission.model'
+import type { OrderSubmission } from '../../../kitchen/records/order-submission'
 import type { KitchenDetailPresentation } from '../../../kitchen/types/public'
 import { formatCurrencyAmount } from '../../../utils/currency-display'
 const props = defineProps<{

@@ -161,11 +161,11 @@ import { useKitchenOrderDraftCollection } from '../../../composables/useKitchenO
 import { useKitchenAccess } from '../../../composables/useKitchenAccess'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useOrderExchange } from '../../../composables/useOrderExchange'
-import type { SavedOrderDraft } from '../../../models/order.model'
+import type { SavedOrderDraft } from '../../../records/order'
 import type {
   OrderSubmission,
   OrderSubmissionState,
-} from '../../../models/order-submission.model'
+} from '../../../records/order-submission'
 const workspace = useKitchenWorkspace()
 const access = useKitchenAccess()
 const session = useAppSession()

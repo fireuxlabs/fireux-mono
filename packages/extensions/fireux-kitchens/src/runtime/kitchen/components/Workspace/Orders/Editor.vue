@@ -130,7 +130,7 @@ import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWo
 import { useKitchenOrderDraftSave } from '../../../composables/useKitchenOrderDraftSave'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUserRead } from 'fireux-core/runtime/user/composables/useUserRead'
-import type { Order, SavedOrderDraft } from '../../../models/order.model'
+import type { Order, SavedOrderDraft } from '../../../records/order'
 const props = defineProps<{ initialOrder?: SavedOrderDraft }>()
 const workspace = useKitchenWorkspace()
 const active = computed(() => workspace.outcome.value === 'ready')

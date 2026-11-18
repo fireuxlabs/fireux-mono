@@ -1,7 +1,7 @@
 import { computed, type Ref } from 'vue'
 import { useKitchenChildCollection } from '../../useKitchenChildCollection'
 import type { ItemCollectionRow } from '../../../utils/item'
-import type { KitchenPromotion } from '../../../models/promotion.model'
+import type { KitchenPromotion } from '../../../records/menus/promotions/promotion'
 import type { Menu } from '../../../../menu/models/menu.model'
 import {
   foodItemSummary,

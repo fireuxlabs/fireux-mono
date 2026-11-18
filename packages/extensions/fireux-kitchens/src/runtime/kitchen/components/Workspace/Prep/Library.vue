@@ -198,7 +198,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import type { Preparation } from '../../../records/preparation'
+import type { Preparation } from '../../../records/prep/preparations/preparation'
 import type { Recipe } from '../../../recipe/models/model'
 const props = withDefaults(
   defineProps<{

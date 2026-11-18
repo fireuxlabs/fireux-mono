@@ -13,7 +13,7 @@ import type {
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPlace,
   KitchenOnboardingPreview,
-} from '../models/kitchen-onboarding.model.ts'
+} from '../server/index/onboarding/kitchen-onboarding.ts'
 import { useKitchenCreate } from './useKitchenCreate'
 
 export type KitchenOnboardingStepId = 'review'

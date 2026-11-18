@@ -18,7 +18,7 @@ import {
   interactionValidation,
   testKitchenHours,
 } from './offering-test-helpers.mjs'
-import { KitchenOrderTypes } from '../runtime/kitchen/models/offering-interaction-types.model.ts'
+import { KitchenOrderTypes } from '../runtime/kitchen/utils/interaction-types.ts'
 
 const errors = {
   createError: (value) => Object.assign(new Error(value.statusMessage), value),

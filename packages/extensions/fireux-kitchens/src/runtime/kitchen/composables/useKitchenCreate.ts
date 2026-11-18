@@ -16,14 +16,14 @@ import { usePlaceCreate } from 'fireux-places/runtime/place/composables/firestor
 import type {
   KitchenCreateInput,
   KitchenShellCreateInput,
-} from '../models/kitchen-input.model.ts'
+} from '../server/index/onboarding/kitchen-input.ts'
 import type {
   KitchenDirectoryContributionResult,
   KitchenOnboardingCompleteInput,
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPreview,
   KitchenShellCreateResult,
-} from '../models/kitchen-onboarding.model.ts'
+} from '../server/index/onboarding/kitchen-onboarding.ts'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 type KitchenCreateDraft = KitchenCreateInput

@@ -38,7 +38,7 @@ import { useKitchenCreate } from '../../composables/useKitchenCreate'
 import type {
   KitchenDirectoryContributionResult,
   KitchenShellCreateResult,
-} from '../../models/kitchen-onboarding.model.ts'
+} from '../../server/index/onboarding/kitchen-onboarding.ts'
 
 const props = withDefaults(
   defineProps<{ ownerUserId?: string; directory?: boolean }>(),

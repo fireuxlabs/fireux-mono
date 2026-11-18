@@ -39,7 +39,7 @@ import type { PlaceOnboardingResult } from 'fireux-places/runtime/place/composab
 import type {
   KitchenDirectoryContributionResult,
   KitchenShellCreateResult,
-} from '../../models/kitchen-onboarding.model.ts'
+} from '../../server/index/onboarding/kitchen-onboarding.ts'
 defineProps<{
   ownerUserId: string
   directory: boolean

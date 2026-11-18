@@ -1,7 +1,7 @@
 import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { normalizeKitchenPromotion } from '../../utils/promotions/pricing'
-import type { PublicKitchenPromotion } from '../../models/promotion.model'
+import type { PublicKitchenPromotion } from '../../records/menus/promotions/promotion'
 
 export async function readMenuPromotions(
   kitchenId: string,

@@ -1,7 +1,6 @@
 import { createError } from 'h3'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { normalizeKitchenPrepItemTranslatedText } from '../../utils/prep-item'
 
 function invalid(): never {
   throw createError({
@@ -41,7 +40,14 @@ function translations(value: unknown) {
     Object.values(value).some((copy) => typeof copy !== 'string')
   )
     invalid()
-  return normalizeKitchenPrepItemTranslatedText(value)
+  return Object.fromEntries(
+    Object.entries(value)
+      .map(([language, copy]) => [
+        language.trim().replace(/_/g, '-'),
+        copy.trim(),
+      ])
+      .filter(([language, copy]) => language && copy)
+  )
 }
 export function readPrepItemCreateInput(input: unknown) {
   const value = fields(input, ['kitchenId', 'draft'])

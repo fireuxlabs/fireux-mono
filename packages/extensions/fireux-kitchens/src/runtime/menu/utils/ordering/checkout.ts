@@ -1,6 +1,6 @@
 import type { ServiceBasketLine } from './basket'
 import type { MenuOrderSelection } from '../../models/menu-order-selection.model.ts'
-import type { Order } from '../../../kitchen/models/order.model.ts'
+import type { Order } from '../../../kitchen/records/order.ts'
 
 export type MenuCheckoutService = 'collection' | 'eat_in' | 'takeaway'
 

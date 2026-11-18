@@ -511,7 +511,7 @@ test('the existing command stores canonical choices once and retries without ano
     [...records].filter(([path]) => path.includes('/dishes/'))
   )
   const channels = loadOfferingSource(
-    'kitchen/models/order.model',
+    'kitchen/records/order',
     'OrderChannels'
   )
   const orderModel = loadOfferingSource(
@@ -519,14 +519,10 @@ test('the existing command stores canonical choices once and retries without ano
     'readOrder,requireOrderChannel',
     channels
   )
-  const states = loadOfferingSource(
-    'kitchen/models/order-submission.model',
-    'OrderSubmissionStates'
-  )
   const submissionPolicy = loadOfferingSource(
     'kitchen/utils/order-submission',
     'orderSubmissionIssues,initialOrderSubmissionState,readOrderSubmission',
-    { ...orderModel, ...states }
+    orderModel
   )
   const { submitKitchenOrder } = loadOfferingSource(
     'kitchen/server/orders/submission',

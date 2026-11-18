@@ -34,7 +34,7 @@ import { computed, nextTick, ref } from 'vue'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import type { User } from 'fireux-core/runtime/user/models/user.model'
-import type { KitchenOnboardingCompleteResult } from '../../models/kitchen-onboarding.model.ts'
+import type { KitchenOnboardingCompleteResult } from '../../server/index/onboarding/kitchen-onboarding.ts'
 
 defineOptions({ name: 'KitchenOnboardingProvision' })
 

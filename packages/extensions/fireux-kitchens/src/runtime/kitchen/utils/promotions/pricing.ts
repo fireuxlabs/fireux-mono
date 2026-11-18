@@ -1,7 +1,7 @@
 import type {
   KitchenPromotionInput,
   PublicKitchenPromotion,
-} from '../../models/promotion.model'
+} from '../../records/menus/promotions/promotion'
 import type {
   PublicMenuItem,
   MenuManifestSection,

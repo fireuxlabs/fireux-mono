@@ -1,5 +1,5 @@
 import type { Firestore } from 'firebase-admin/firestore'
-import type { KitchenGrossSalesReport } from '../../models/finance-report.model.ts'
+import type { KitchenGrossSalesReport } from '../../utils/finance/finance-report.ts'
 import {
   KITCHEN_GROSS_SALES_REPORT_MAX_SALES,
   record,

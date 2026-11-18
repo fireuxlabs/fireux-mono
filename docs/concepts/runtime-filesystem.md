@@ -122,9 +122,12 @@ cutover must preserve the existing storage and authority unless a separate domai
 migration is authorized.
 
 An Entity may own an optional `records/` directory containing its support-record
-definitions, such as `kitchen/records/item.ts`. Reader, component,
+definitions, such as `kitchen/records/menus/items/item.ts`. Reader, component,
 workflow and command behavior stays in that Entity's existing technical roles;
 `records/` does not contain miniature component/composable/server spines.
+Kitchen groups related definitions by capability and child under
+`records/menus/` and `records/prep/`. A Workspace child gets a record folder
+only when it has real Kitchen-owned definitions.
 Embedded shapes remain beside their owning model, record or capability. This
 classifies ownership, not Firestore nesting or TypeScript `Record<...>` usage.
 
@@ -246,7 +249,7 @@ src/runtime/kitchen/
 ├── components/Workspace/Menu/
 ├── composables/workspace/menu/
 ├── models/model.ts
-├── records/item.ts
+├── records/menus/items/item.ts
 └── server/operations/menus/
 ```
 

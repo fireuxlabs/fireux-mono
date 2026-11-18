@@ -1,4 +1,4 @@
-import type { Preparation } from '../records/preparation'
+import type { Preparation } from '../records/prep/preparations/preparation'
 export type PreparationChanges = Partial<
   Pick<Preparation, 'name' | 'description'>
 >

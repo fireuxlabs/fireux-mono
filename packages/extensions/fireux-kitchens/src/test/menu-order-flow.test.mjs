@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import * as Vue from 'vue'
 import { load } from './kitchen/offering-test-helpers.mjs'
-const model = load('../../runtime/kitchen/models/order.model.ts','OrderChannels')
+const model = load('../../runtime/kitchen/records/order.ts','OrderChannels')
 const ordering = load('../../runtime/kitchen/utils/ordering.ts','readOrder',model)
 const validation = load('../../runtime/kitchen/utils/order-submission.ts','orderSubmissionIssues')
 const item={id:'pizza',name:'Pizza Margherita',price:13,priceOptions:[]}

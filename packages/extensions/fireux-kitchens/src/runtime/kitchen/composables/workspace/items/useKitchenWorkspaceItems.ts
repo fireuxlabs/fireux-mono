@@ -1,4 +1,4 @@
-import { ItemStorage } from '../../../records/item'
+import { ItemStorage } from '../../../records/menus/items/item'
 import { computed } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'

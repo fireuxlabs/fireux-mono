@@ -5,7 +5,7 @@ import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import type { KitchenGrossSalesReport } from '../../../models/finance-report.model'
+import type { KitchenGrossSalesReport } from '../../../utils/finance/finance-report'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 
 export type KitchenFinanceRangeMode = 'today' | 'last-week' | 'custom'

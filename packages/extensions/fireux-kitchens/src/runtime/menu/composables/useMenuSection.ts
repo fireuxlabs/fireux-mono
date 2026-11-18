@@ -1,4 +1,4 @@
-import type { KitchenPromotion } from '../../kitchen/models/promotion.model'
+import type { KitchenPromotion } from '../../kitchen/records/menus/promotions/promotion'
 import { useKitchenChildCollection } from '../../kitchen/composables/useKitchenChildCollection'
 import type {
   ItemPriceOption,

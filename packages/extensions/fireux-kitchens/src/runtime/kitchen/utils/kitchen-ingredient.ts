@@ -1,6 +1,6 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import type { KitchenIngredient } from '../models/ingredient.model.ts'
-export type { KitchenIngredient } from '../models/ingredient.model.ts'
+import type { KitchenIngredient } from '../records/prep/ingredients/ingredient.ts'
+export type { KitchenIngredient } from '../records/prep/ingredients/ingredient.ts'
 export const KitchenIngredientStorage = {
   shape: 'scoped',
   path: 'kitchens/{kitchenId}/ingredients/{kitchenIngredientId}',

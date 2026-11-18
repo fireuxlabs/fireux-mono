@@ -7,7 +7,7 @@ import {
   serverKitchenMenuItemsTarget,
 } from '../mutation-targets'
 import { kitchenPromotionsTarget } from '../promotions/target'
-import type { ItemUsage } from '../../models/item-usage.model'
+import type { ItemUsage } from '../../composables/items/item-usage'
 
 type UsageReader = Pick<GuardedServerTransaction, 'readAll' | 'query'>
 const text = (value: unknown) => (typeof value === 'string' ? value : '')

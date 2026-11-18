@@ -14,7 +14,7 @@ import {
   serverKitchenTeamMembersTarget,
 } from '../../mutation-targets'
 import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
-import type { KitchenOnboardingCompleteResult } from '../../../models/kitchen-onboarding.model.ts'
+import type { KitchenOnboardingCompleteResult } from './kitchen-onboarding.ts'
 import {
   assertKitchenOnboardingPlaceDefaults,
   kitchenOnboardingAccessDecision,

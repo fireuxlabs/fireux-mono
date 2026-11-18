@@ -2,7 +2,7 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useKitchenAccess } from '../useKitchenAccess'
-import type { Preparation } from '../../records/preparation'
+import type { Preparation } from '../../records/prep/preparations/preparation'
 
 export function useKitchenPreparationsRead(
   requestedKitchenId: MaybeRefOrGetter<string>

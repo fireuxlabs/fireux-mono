@@ -3,7 +3,7 @@ import {
   type OrderChannel,
   type OrderingConfiguration,
 } from '../../../types/ordering'
-import type { Order, OrderLine } from '../models/order.model'
+import type { Order, OrderLine } from '../records/order'
 
 /** Creates an in-memory draft; submission, authority and persistence are separate. */
 export function createOrderDraft(
@@ -286,7 +286,7 @@ export function readSavedOrderDraft(
   id: string,
   value: unknown,
   kitchenId: string
-): import('../models/order.model').SavedOrderDraft {
+): import('../records/order').SavedOrderDraft {
   if (!value || typeof value !== 'object')
     throw new Error('Saved draft is invalid.')
   const row = value as Record<string, unknown>

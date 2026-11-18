@@ -1,6 +1,6 @@
 import { normalizeItemChoiceGroups } from './item-choices'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
-import type { ItemOffer } from '../records/item-offer'
+import type { ItemOffer } from '../records/menus/items/item-offer'
 import { readItemChoiceGroups } from './item-choices'
 
 /** Historical storage/read shapes, not the canonical Item model. */

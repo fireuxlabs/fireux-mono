@@ -4,7 +4,7 @@ import { useKitchenWorkspaceFinance } from './useKitchenWorkspaceFinance'
 import type {
   KitchenFinanceDailySummary,
   KitchenFinanceTransactionSummary,
-} from '../../../models/finance-report.model.ts'
+} from '../../../utils/finance/finance-report.ts'
 
 export function useKitchenWorkspaceFinanceOverview(props: {
   fromDate: string

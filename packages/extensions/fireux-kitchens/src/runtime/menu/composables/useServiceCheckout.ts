@@ -12,7 +12,7 @@ import {
 } from '../utils/ordering/checkout'
 import { serviceItemSignature } from '../utils/ordering/basket'
 import type { MenuServiceOffer } from '../utils/ordering/sections'
-import type { OrderSubmission } from '../../kitchen/models/order-submission.model'
+import type { OrderSubmission } from '../../kitchen/records/order-submission'
 import type { useServiceBasket } from './useServiceBasket'
 import { useServiceRecovery } from './useServiceRecovery'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

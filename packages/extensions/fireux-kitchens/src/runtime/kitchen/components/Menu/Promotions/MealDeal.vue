@@ -92,7 +92,7 @@
 import type {
   MealDealGroupDraft,
   PromotionItemOption,
-} from '../../../models/promotion-draft.model'
+} from '../../../composables/workspace/promotions/promotion-draft'
 defineProps<{
   currency: string
   itemOptions: PromotionItemOption[]

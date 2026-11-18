@@ -37,8 +37,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { MenuQrTarget } from '../../../../models/menu-qr-presentation.model'
-import { useMenuQrRenderer } from '../../../../../menu/composables/useMenuQrRenderer'
+import type { MenuQrTarget } from '../../../../../composables/workspace/menu/menus/qr'
+import { useMenuQrRenderer } from '../../../../../../menu/composables/useMenuQrRenderer'
 const props = defineProps<{ target: MenuQrTarget }>()
 const { qrContainer, qrReady, qrError } = useMenuQrRenderer(
   computed(() => props.target.url),

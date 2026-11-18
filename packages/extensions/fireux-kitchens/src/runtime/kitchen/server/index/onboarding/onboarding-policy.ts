@@ -7,7 +7,7 @@ import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
 } from 'fireux-places/runtime/place/utils/place-spine'
-import type { KitchenOnboardingPreview } from '../../../models/kitchen-onboarding.model.ts'
+import type { KitchenOnboardingPreview } from './kitchen-onboarding.ts'
 
 export type KitchenOnboardingMemberRole = 'admin' | 'user' | 'dev'
 

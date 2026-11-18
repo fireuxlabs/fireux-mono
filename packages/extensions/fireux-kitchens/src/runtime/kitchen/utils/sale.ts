@@ -1,4 +1,4 @@
-export type { KitchenSale, KitchenSaleLine } from '../models/sale.model'
+export type { KitchenSale, KitchenSaleLine } from '../records/sale'
 
 export const KitchenSaleStorage = { shape: 'scoped', path: 'kitchens/{kitchenId}/sales/{saleId}', collection: 'sales', parent: 'kitchen', idParam: 'saleId' } as const
 export const KitchenSaleSchemaVersion = 1 as const

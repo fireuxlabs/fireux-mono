@@ -44,17 +44,11 @@ const requireKitchenRecordMutationAuthority = load(
   },
   'requireKitchenRecordMutationAuthority'
 )
-const normalizeKitchenPrepItemTranslatedText = load(
-  '../../runtime/kitchen/utils/prep-item.ts',
-  {},
-  'normalizeKitchenPrepItemTranslatedText'
-)
 const readPrepItemCreateInput = load(
   '../../runtime/kitchen/server/preparations/create-input.ts',
   {
     createError,
     requireFirestoreDocumentId,
-    normalizeKitchenPrepItemTranslatedText,
     normalizeSlug: (value) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
   },
   'readPrepItemCreateInput'
@@ -84,7 +78,6 @@ function harness() {
       requireKitchenRecordMutationAuthority,
       requireKitchenIngredientReferences: async () => {},
       requireKitchenRecipeReference: async () => {},
-      normalizeKitchenPrepItemTranslatedText,
       normalizeSlug: (value) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       defineFirestoreMutationTarget: (x) => x.collectionPath,
       readKitchenMutationActor: async () => ({ uid: 'u', runtimeAppId: 'app' }),

@@ -98,7 +98,7 @@
 <script setup lang="ts">
 import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import type { Recipe } from '../../../../recipe/models/model'
-import type { Preparation } from '../../../../records/preparation'
+import type { Preparation } from '../../../../records/prep/preparations/preparation'
 import { useKitchenWorkspacePrepRecipeEditor } from '../../../../composables/workspace/prep/recipe/editor'
 const props = defineProps<{
   record?: Recipe

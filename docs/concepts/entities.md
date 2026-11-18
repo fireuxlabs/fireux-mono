@@ -240,7 +240,7 @@ and `menu/models/menu-storage.model.ts` in `fireux-kitchens`.
 ### Parent-owned records
 
 Kitchen Item is an owned Record, not a standalone Entity. Its canonical record definition and
-storage metadata are in `kitchen/records/item.ts`; readers, context and mutation
+storage metadata are in `kitchen/records/menus/items/item.ts`; readers, context and mutation
 adapters use `kitchen/composables/items`, and normalization uses Kitchen utils.
 Its persisted `dishes` path is unchanged. Removing a Menu placement must not
 delete or replace the canonical Kitchen Item. Preparation is also a Kitchen-owned
@@ -300,7 +300,7 @@ the accepted ownership and version-use contract is not yet implemented.
 
 Preparation is a Kitchen-owned Record identifying a reusable Kitchen output,
 such as its aioli. Several Recipes may produce or consume that same local
-record. Its definition belongs in `kitchen/records/preparation.ts`; behavior uses
+record. Its definition belongs in `kitchen/records/prep/preparations/preparation.ts`; behavior uses
 Kitchen's technical roles, with no nested Preparation spine.
 
 Recipe's accepted independent target carries its own output description as an
@@ -328,7 +328,7 @@ Preparation reads currently use `kitchens/{kitchenId}/prep-items/{prepItemId}`;
 legacy storage spelling does not settle domain classification. New code must not
 restore duplicate `mise` documents or normalize Preparation as an operational
 Mise task. The current
-[Preparation model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/preparation.ts)
+[Preparation model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/prep/preparations/preparation.ts)
 and [library tests](../../packages/extensions/fireux-kitchens/src/test/kitchen/preparation-library.test.mjs)
 locate the implementation; this map does not establish live migration status.
 

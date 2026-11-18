@@ -1,7 +1,7 @@
 import type {
   KitchenFinanceCurrencySummary,
   KitchenFinanceDailySummary,
-} from '../../models/finance-report.model.ts'
+} from '../../utils/finance/finance-report.ts'
 import {
   addCount,
   invariantError,

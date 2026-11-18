@@ -84,9 +84,6 @@ const references = load(
     serverKitchenItemsTarget: (kitchen) => `kitchens/${kitchen}/dishes`,
   }
 )
-const prepTranslation = load('../runtime/kitchen/utils/prep-item.ts', [
-  'normalizeKitchenPrepItemTranslatedText',
-])
 function deferred() {
   let resolve
   const promise = new Promise((done) => (resolve = done))
@@ -124,7 +121,6 @@ function fixture({ wait, retry } = {}) {
     ...input,
     ...authority,
     ...references,
-    ...prepTranslation,
     createError,
     requireFirestoreDocumentId,
     normalizeSlug: (value) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-'),

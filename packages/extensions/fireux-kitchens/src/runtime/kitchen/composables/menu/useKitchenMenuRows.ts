@@ -7,7 +7,7 @@ import { computed, type Ref } from 'vue'
 import type { ItemCollectionRow } from '../../utils/item.ts'
 import { type MenuItem } from '../../../menu/models/menu-item.model.ts'
 import type { MenuSection } from '../../../menu/models/menu-section.model.ts'
-import type { KitchenMenuSectionRow } from '../../models/kitchen-menu-rows.model'
+import type { KitchenMenuSectionRow } from './kitchen-menu-rows'
 
 type MenuRowOptions = {
   sections: Ref<MenuSection[]>

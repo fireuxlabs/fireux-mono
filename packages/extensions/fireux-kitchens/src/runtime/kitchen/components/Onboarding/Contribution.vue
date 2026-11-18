@@ -37,7 +37,7 @@
   </UPageCard>
 </template>
 <script setup lang="ts">
-import type { KitchenDirectoryContributionResult } from '../../models/kitchen-onboarding.model.ts'
+import type { KitchenDirectoryContributionResult } from '../../server/index/onboarding/kitchen-onboarding.ts'
 defineProps<{
   result: KitchenDirectoryContributionResult
   pending?: boolean

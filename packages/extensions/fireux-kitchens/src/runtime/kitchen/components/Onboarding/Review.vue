@@ -43,7 +43,7 @@ import { computed } from 'vue'
 import type {
   KitchenOnboardingPlace,
   KitchenOnboardingPreview,
-} from '../../models/kitchen-onboarding.model.ts'
+} from '../../server/index/onboarding/kitchen-onboarding.ts'
 
 const props = defineProps<{
   place: KitchenOnboardingPlace

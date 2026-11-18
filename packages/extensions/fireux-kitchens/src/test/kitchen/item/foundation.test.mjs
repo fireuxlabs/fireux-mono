@@ -10,7 +10,7 @@ import {
 } from '../../../runtime/kitchen/composables/items/useKitchenItemContext.ts'
 import { readItemIdentity } from '../../../runtime/kitchen/utils/item-identity.ts'
 import { readItemOffer } from '../../../runtime/kitchen/utils/item-pricing.ts'
-import { ItemStorage } from '../../../runtime/kitchen/records/item.ts'
+import { ItemStorage } from '../../../runtime/kitchen/records/menus/items/item.ts'
 import { serverKitchenItemsTarget } from '../../../runtime/kitchen/server/mutation-targets.ts'
 
 const at = { seconds: 100, nanoseconds: 20 }

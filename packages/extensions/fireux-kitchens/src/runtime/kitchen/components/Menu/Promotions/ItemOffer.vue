@@ -52,7 +52,7 @@ import { computed, ref } from 'vue'
 import type {
   PromotionItemDraft,
   PromotionItemOption,
-} from '../../../models/promotion-draft.model'
+} from '../../../composables/workspace/promotions/promotion-draft'
 defineProps<{
   itemOptions: PromotionItemOption[]
   currency: string

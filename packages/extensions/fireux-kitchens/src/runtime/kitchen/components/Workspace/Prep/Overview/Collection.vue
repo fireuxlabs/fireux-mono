@@ -22,7 +22,7 @@
   />
 </template>
 <script setup lang="ts">
-import type { Preparation } from '../../../../records/preparation'
+import type { Preparation } from '../../../../records/prep/preparations/preparation'
 import type { PrepSummary } from '../../../../composables/workspace/prep/summaries'
 
 defineProps<{

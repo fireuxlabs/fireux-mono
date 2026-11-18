@@ -7,7 +7,7 @@ import {
   requireKitchenRecordMutationAuthority,
 } from '../core/mutation-authority'
 import { readItemUsage } from './usage'
-import type { ItemUsageResponse } from '../../models/item-usage.model'
+import type { ItemUsageResponse } from '../../composables/items/item-usage'
 
 export async function readKitchenItemUsage(
   event: H3Event,

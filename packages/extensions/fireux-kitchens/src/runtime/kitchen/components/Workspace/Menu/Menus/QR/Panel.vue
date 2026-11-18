@@ -42,7 +42,7 @@
     />
 
     <div v-else class="workspace-surface__grid workspace-surface__grid--2">
-      <KitchenMenuMenusQRTarget
+      <KitchenWorkspaceMenuMenusQRTarget
         v-for="target in panel.targets"
         :key="target.id"
         :target="target"
@@ -52,8 +52,8 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuStatus } from '../../../../../menu/models/menu-storage.model.ts'
-import type { MenuQrPanel } from '../../../../models/menu-qr-presentation.model'
+import type { MenuStatus } from '../../../../../../menu/models/menu-storage.model.ts'
+import type { MenuQrPanel } from '../../../../../composables/workspace/menu/menus/qr'
 
 defineProps<{
   panel: MenuQrPanel

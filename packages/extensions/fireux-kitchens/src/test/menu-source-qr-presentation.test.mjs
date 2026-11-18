@@ -79,7 +79,7 @@ async function render(Card, props) {
 }
 test('QR targets retain publication and service eligibility boundaries', () => {
   const source = readFileSync(
-    new URL('kitchen/composables/workspace/menus/useMenuQrTargets.ts', runtime),
+    new URL('kitchen/composables/workspace/menu/menus/qr.ts', runtime),
     'utf8'
   )
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -146,7 +146,7 @@ test('QR targets retain publication and service eligibility boundaries', () => {
     ],
   }
   const api = compileFunction(
-    `${stripTypeScriptTypes(source)}; return useMenuQrTargets()`,
+    `${stripTypeScriptTypes(source)}; return useKitchenWorkspaceMenuMenusQr()`,
     Object.keys(deps)
   )(...Object.values(deps))
   assert.deepEqual(

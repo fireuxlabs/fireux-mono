@@ -1,4 +1,4 @@
-import { ItemStorage } from '../../../../../../kitchen/records/item'
+import { ItemStorage } from '../../../../../../kitchen/records/menus/items/item'
 // Concurrent edit — 2026-07-22 00:38 CEST — Item image server: expose the authenticated canonical Item image mutation.
 import { useRuntimeConfig } from '#imports'
 import {

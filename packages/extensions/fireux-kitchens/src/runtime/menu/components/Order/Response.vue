@@ -35,7 +35,7 @@
   />
 </template>
 <script setup lang="ts">
-import type { OrderSubmission } from '../../../kitchen/models/order-submission.model'
+import type { OrderSubmission } from '../../../kitchen/records/order-submission'
 defineProps<{
   submission: OrderSubmission
   responseTitle: string

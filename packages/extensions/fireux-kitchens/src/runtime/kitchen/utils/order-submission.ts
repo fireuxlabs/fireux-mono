@@ -1,9 +1,9 @@
-import type { Order } from '../models/order.model'
+import type { Order } from '../records/order'
 import type {
   OrderSubmission,
   OrderSubmissionState,
-} from '../models/order-submission.model'
-const OrderSubmissionStates = [
+} from '../records/order-submission'
+export const OrderSubmissionStates = [
   'received',
   'accepted',
   'declined',

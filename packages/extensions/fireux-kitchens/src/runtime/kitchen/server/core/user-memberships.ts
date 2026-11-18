@@ -9,7 +9,7 @@ import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-plac
 import type {
   KitchenUserMembershipItem,
   KitchenUserMembershipsResponse,
-} from '../../models/user-memberships.model.ts'
+} from '../../composables/user-memberships.ts'
 import { readKitchenTeamAccountLink } from '../team/account-link'
 import { normalizeKitchen } from '../../utils/normalize-kitchen.ts'
 import {

@@ -28,7 +28,7 @@ ingredient = importlib.util.module_from_spec(_module)
 _module.loader.exec_module(ingredient)
 SOURCE_FILES = [Path(__file__), SPEC, INGREDIENT_SPEC, HERE / 'ingredient-catalogue.py',
                 HERE / 'kitchen_ordering_runner.py',
-                EXTENSIONS / 'fireux-kitchens/src/runtime/kitchen/models/supplier-ingredient.model.ts',
+                EXTENSIONS / 'fireux-kitchens/src/runtime/kitchen/records/supplier-ingredient.ts',
                 EXTENSIONS / 'fireux-suppliers/src/runtime/supplier/models/Supplier.model.ts',
                 EXTENSIONS / 'fireux-businesses/src/runtime/business/models/business.model.ts',
                 EXTENSIONS / 'fireux-places/src/runtime/place/models/place.model.ts']

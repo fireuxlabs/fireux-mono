@@ -50,7 +50,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenPromotion } from '../../../../models/promotion.model'
+import type { KitchenPromotion } from '../../../../records/menus/promotions/promotion'
 import { useKitchenPromotionsContext } from '../../../../composables/promotions/useKitchenPromotionsContext'
 defineProps<{ promotion: KitchenPromotion }>()
 const emit = defineEmits<{ edit: [] }>()

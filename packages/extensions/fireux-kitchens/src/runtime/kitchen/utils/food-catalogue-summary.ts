@@ -1,6 +1,6 @@
 import type { ItemCollectionRow } from './item'
 import type { Menu } from '../../menu/models/menu.model'
-import type { KitchenPromotion } from '../models/promotion.model'
+import type { KitchenPromotion } from '../records/menus/promotions/promotion'
 
 export type FoodSummary = { status: string; flags: string[] }
 const validPrice = (value: unknown) =>

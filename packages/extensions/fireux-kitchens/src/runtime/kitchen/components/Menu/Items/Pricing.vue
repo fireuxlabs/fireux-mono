@@ -85,7 +85,7 @@ import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-s
 import type {
   ItemChoiceGroup,
   ItemChoiceSelection,
-} from '../../../records/item-offer'
+} from '../../../records/menus/items/item-offer'
 import {
   normalizeItemChoiceGroups,
   priceItemChoices,

@@ -48,7 +48,7 @@ export const miseboxIndustry: IgnitionIndustryCase = {
       level: 'partial',
       references: [
         kitchens + 'kitchen/utils/ordering.ts',
-        kitchens + 'kitchen/models/order.model.ts',
+        kitchens + 'kitchen/records/order.ts',
       ],
       note: 'Ordering execution was removed. Only the draft Order/channel/ticket foundation exists; fulfilment and payment are unimplemented.',
     },
@@ -234,7 +234,7 @@ export const industryComparisons: readonly IgnitionIndustryComparison[] = [
         reuse: 'partial-source',
         references: [
           kitchens + 'kitchen/utils/operating-hours.ts',
-          kitchens + 'kitchen/models/station.model.ts',
+          kitchens + 'kitchen/records/prep/stations/station.ts',
           reservations + 'property/server/reservations/command.ts',
         ],
         acceptance:

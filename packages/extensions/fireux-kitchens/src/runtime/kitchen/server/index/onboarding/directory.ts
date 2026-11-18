@@ -10,7 +10,7 @@ import { readKitchenOnboardingActor } from './onboarding-actor'
 import { resolveKitchenOnboardingTransactionLocator } from './locator'
 import { assertKitchenOnboardingPlaceDefaults } from './onboarding-policy'
 import { fail, readKitchenOnboardingRequest } from './request'
-import type { KitchenDirectoryContributionResult } from '../../../models/kitchen-onboarding.model.ts'
+import type { KitchenDirectoryContributionResult } from './kitchen-onboarding.ts'
 
 /** Directory contribution never grants Team authority or an AppUser association. */
 export async function contributeKitchenDirectory(

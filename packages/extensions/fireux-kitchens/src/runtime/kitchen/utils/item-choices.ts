@@ -1,7 +1,7 @@
 import type {
   ItemChoiceGroup,
   ItemChoiceSelection,
-} from '../records/item-offer'
+} from '../records/menus/items/item-offer'
 const record = (value: unknown): value is Record<string, any> =>
   Boolean(value && typeof value === 'object' && !Array.isArray(value))
 const id = (value: unknown): value is string =>

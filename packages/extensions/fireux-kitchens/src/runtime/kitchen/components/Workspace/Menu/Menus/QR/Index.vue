@@ -34,7 +34,7 @@
     />
 
     <template v-else>
-      <KitchenMenuMenusQRMenu
+      <KitchenWorkspaceMenuMenusQRPanel
         v-for="panel in qr.menuPanels"
         :key="panel.id"
         :panel="panel"
@@ -45,8 +45,8 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
-import { useMenuQrTargets } from '../../../../composables/workspace/menus/useMenuQrTargets'
-const qr = reactive(useMenuQrTargets())
+import { useKitchenWorkspaceMenuMenusQr } from '../../../../../composables/workspace/menu/menus/qr'
+const qr = reactive(useKitchenWorkspaceMenuMenusQr())
 </script>
 
-<style src="../../../../../menu/assets/styles/menu-editor.css"></style>
+<style src="../../../../../../menu/assets/styles/menu-editor.css"></style>

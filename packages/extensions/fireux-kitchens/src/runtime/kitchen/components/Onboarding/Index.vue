@@ -153,7 +153,7 @@ import { useKitchenCreate } from '../../composables/useKitchenCreate'
 import type {
   KitchenDirectoryContributionResult,
   KitchenOnboardingCompleteResult,
-} from '../../models/kitchen-onboarding.model.ts'
+} from '../../server/index/onboarding/kitchen-onboarding.ts'
 
 const props = withDefaults(
   defineProps<{

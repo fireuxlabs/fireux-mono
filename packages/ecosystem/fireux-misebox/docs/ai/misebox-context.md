@@ -529,7 +529,7 @@ POS New order uses settled signed-in staff identity and Kitchen access before
 creating an empty local draft. Staff identity is verified on first Save and
 preserved on later edits; the library remains a separate illustrative specimen.
 
-The Ordering foundation is `kitchen/models/order.model.ts` (Order, OrderLine,
+The Ordering foundation is `kitchen/records/order.ts` (Order, OrderLine,
 channel vocabulary and separate SavedOrderDraft revision envelope),
 `utils/ordering.ts` (pure draft/line behaviour and strict detached projection),
 and `components/Orders/Ticket.vue` (one order prop plus editing intents). Misebox
@@ -583,7 +583,7 @@ Menu contract and enabled Kitchen offerings linked to that Menu. Supported servi
 require configured hours and enabled, unpaused interactions; table ordering also
 requires table QR. Buttons, direct entrances and transactional submission share
 this configuration boundary. Current opening hours are enforced; advance slot selection remains deferred. Immutable historical Sales own their
-pricing snapshot through `kitchen/models/sale.model.ts` and
+pricing snapshot through `kitchen/records/sale.ts` and
 `kitchen/server/finance/sale-pricing.ts`, independently of an Order model.
 The small Order uses UBL vocabulary but is not a conformant UBL exchange document.
 The current source and focused tests establish this boundary; browser and full
@@ -696,10 +696,10 @@ the Item name and return/actions aligned to the Workspace frame. It adds no
 centred domain width cap or repeated thumbnail heading. Details and Price & choices
 use the shared responsive two-column grid, stacking on smaller screens. Appears on retains its focused relationship view.
 The minimal Kitchen Item identity belongs to
-`fireux-kitchens/src/runtime/kitchen/records/item.ts`. It owns its stable
+`fireux-kitchens/src/runtime/kitchen/records/menus/items/item.ts`. It owns its stable
 path-derived identity, name, optional description, one photo URL and shared
 creation/update stamp values. It has no Kitchen selector, category vocabulary,
-pricing, flagship flag or preparation fields. `records/item.ts` preserves the
+pricing, flagship flag or preparation fields. `records/menus/items/item.ts` preserves the
 existing `kitchens/{kitchenId}/dishes/{dishId}` contract; filesystem ownership does
 not rename persisted collections or authorize migration.
 `composables/items/useKitchenItemRead.ts` owns the single live read, Kitchen
@@ -734,7 +734,7 @@ Menus keeps collection search and status selection in `useMenuList`, in memory f
 the mounted App session and isolated by App, account and Kitchen. Returning from
 a Menu or source editor restores those choices; a full reload starts fresh.
 The collection controller owns collection/creation state, not record write helpers
-or QR service acquisition. `useMenuQrTargets` acquires its own scoped service
+or QR service acquisition. `useKitchenWorkspaceMenuMenusQr` acquires its own scoped service
 read; record edits and publication remain with `useKitchenMenuRecordContext`.
 Verify list restoration and owner isolation with `menu-format-list.test.mjs`,
 alongside the reader, record and source/QR checks.
@@ -1154,7 +1154,7 @@ Kitchen Items and choices retain bare-number prices. The cutover must preserve
 explicitly verified denomination and refuse clearing/changing a currency when
 that would relabel retained prices. Historical Orders, Sales and other monetary
 facts retain their saved currency; defaults never convert or rewrite them. The
-retained denomination owner is the existing `kitchen/records/item-offer.ts` ItemOffer.
+retained denomination owner is the existing `kitchen/records/menus/items/item-offer.ts` ItemOffer.
 Its accepted adoption contract adds explicit `currency_code` covering base,
 choice prices and bottle deposit in their existing amount units; current runtime
 has not implemented it. New priced terms capture denomination atomically from
@@ -2327,10 +2327,10 @@ consumers against Nuxt registration, Vue compilation and App typechecking.
 
 ## Item identity and selling defaults
 
-`kitchen/records/item.ts` owns only reusable Item identity and provenance.
+`kitchen/records/menus/items/item.ts` owns only reusable Item identity and provenance.
 `utils/item-identity.ts` selects those fields for the document and collection readers;
 no invented timestamps or copied Kitchen ownership are needed to read identity.
-`records/item-offer.ts` owns the Item's separate selling-default value contract: optional
+`records/menus/items/item-offer.ts` owns the Item's separate selling-default value contract: optional
 normal price, choice groups and optional bottle deposit. Selection state is a
 request value, not a persisted Item field. This capability is stored on the
 existing `dishes` document; it is not a new Entity or collection.
@@ -2390,7 +2390,7 @@ unconfigured until the operator supplies or approves them. La Tap's original
 `menu-uploads/main` images are its retained Menu source; the former guessed
 `tools/misebox-migrations/la-tap-prep` import is retired.
 
-`fireux-kitchens/runtime/kitchen/records/preparation.ts` owns Preparation:
+`fireux-kitchens/runtime/kitchen/records/prep/preparations/preparation.ts` owns Preparation:
 the Kitchen-owned Record identity of a reusable output, including components
 and finished dishes. `kitchen/recipe/models/model.ts` owns Recipe: output reference, purchased
 Ingredient or Preparation inputs, quantities, method and expected yield. A dish
@@ -2494,7 +2494,7 @@ flag is neither accepted by Dish creation nor emitted by catalogue/public
 projections or AI import schemas. Meal deals belong to Kitchen Promotions and
 can be placed on regular interactive Menus; Order pricing remains separate.
 
-`kitchen/records/item-offer.ts` owns the Item selling-default contract. `choice_groups` is the
+`kitchen/records/menus/items/item-offer.ts` owns the Item selling-default contract. `choice_groups` is the
 authoritative embedded group contract: stable group/option IDs, names, minimum and
 maximum selections (null means any), and full-price or additional-charge pricing.
 At most one group sets full Item prices and it requires exactly one choice.
@@ -3162,6 +3162,18 @@ Kitchen Team uses Core `WorkspaceTeamEditor`'s default people list and read-stat
 presentation. Role configuration and invitation controls remain Kitchen-owned;
 its title comes from existing Team state without another identity acquisition.
 The Workspace–Entity family map owns the three-domain composition boundary.
+
+## Kitchen source contracts
+
+The Menu QR route mounts `Workspace/Menu/Menus/QR/Index.vue`. Its panel and
+target components use the QR coordinator in `composables/workspace/menu/menus/qr.ts`.
+The Menu Entity still owns the shared QR renderer.
+
+Kitchen's own model remains in `kitchen/models/model.ts`. Stored Kitchen
+support definitions (including Station, Promotion, Order and its submission,
+and table tabs and rounds) live in `kitchen/records/`. Runtime reader responses,
+form inputs and presentation contracts belong with their capabilities.
+Preparation uses the definition in `kitchen/records/prep/preparations/preparation.ts`.
 
 ## Kitchen component organisation
 

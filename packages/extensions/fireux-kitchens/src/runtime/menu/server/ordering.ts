@@ -21,7 +21,7 @@ import { constrainMenuOfferings } from '../utils/ordering/hours'
 import { serviceBasketLine } from '../utils/ordering/basket'
 import { orderItemReader } from './ordering/items'
 import { readMenuOrderSelections } from './ordering/selections'
-import type { OrderLine, Order } from '../../kitchen/models/order.model'
+import type { OrderLine, Order } from '../../kitchen/records/order'
 import type {
   MenuOrderSelection,
   MenuOrderPricing,

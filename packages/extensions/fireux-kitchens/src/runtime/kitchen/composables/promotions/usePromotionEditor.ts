@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 import type {
   PromotionItemDraft,
   MealDealGroupDraft,
-} from '../../models/promotion-draft.model'
+} from '../workspace/promotions/promotion-draft'
 import type { WeekdayTimeDay } from '../../../models/shared/weekday-time.model'
 import {
   promotionDays,

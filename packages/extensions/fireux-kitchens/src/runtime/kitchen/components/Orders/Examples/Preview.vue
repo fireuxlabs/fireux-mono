@@ -10,6 +10,6 @@
   </FireDisclosurePanel>
 </template>
 <script setup lang="ts">
-import type { Order } from '../../../models/order.model'
+import type { Order } from '../../../records/order'
 defineProps<{ order: Order; name: string; label: string }>()
 </script>

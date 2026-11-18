@@ -1,5 +1,5 @@
 import type { WatchSource } from 'vue'
-import type { ItemOffer } from '../../records/item-offer'
+import type { ItemOffer } from '../../records/menus/items/item-offer'
 import { normalizeItemPricingPatch } from '../../utils/item-pricing'
 import { useItemMutation } from './useItemMutation'
 

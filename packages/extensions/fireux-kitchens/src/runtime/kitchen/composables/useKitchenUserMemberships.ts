@@ -3,7 +3,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { KitchenUserMembershipsResponse } from '../models/user-memberships.model'
+import type { KitchenUserMembershipsResponse } from './user-memberships'
 
 type KitchenUserMembershipsRefresh = AsyncData<
   KitchenUserMembershipsResponse | null,

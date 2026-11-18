@@ -1,7 +1,7 @@
 import { computed } from 'vue'
-import { useKitchenWorkspaceMenuSources } from './useKitchenWorkspaceMenuSources'
-import { useKitchenOfferingCollection } from '../../useKitchenOfferingCollection'
-import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
+import { useKitchenWorkspaceMenuSources } from '../../menus/useKitchenWorkspaceMenuSources'
+import { useKitchenOfferingCollection } from '../../../useKitchenOfferingCollection'
+import { useKitchenWorkspaceMenus } from '../../menus/useKitchenWorkspaceMenus'
 import { useRequestURL } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {
@@ -9,18 +9,34 @@ import {
   menuRouteProjection,
   directoryMenuRouteScope,
   tenantMenuRouteScope,
-} from '../../../../menu/utils/navigation/route'
-import { menuWebsiteOrigin } from '../../../utils/menu-website-snippet'
-import type { Menu } from '../../../../menu/models/menu-storage.model.ts'
-import type { MenuRouteContext } from '../../../../menu/models/menu-context.model.ts'
-import { kitchenOrderTypeLabel } from '../../../utils/kitchen-order-label'
-import { publicMenuSurfaceProfiles } from '../../../../menu/utils/navigation/context'
-import type {
-  MenuQrPanel,
-  MenuQrTarget,
-} from '../../../models/menu-qr-presentation.model'
+} from '../../../../../menu/utils/navigation/route'
+import { menuWebsiteOrigin } from '../../../../utils/menu-website-snippet'
+import type { Menu } from '../../../../../menu/models/menu-storage.model.ts'
+import type { MenuRouteContext } from '../../../../../menu/models/menu-context.model.ts'
+import { kitchenOrderTypeLabel } from '../../../../utils/kitchen-order-label'
+import { publicMenuSurfaceProfiles } from '../../../../../menu/utils/navigation/context'
+import type { MenuStatus } from '../../../../../menu/models/menu-storage.model.ts'
 
-export function useMenuQrTargets() {
+export type MenuQrTarget = {
+  id: string
+  label: string
+  description: string
+  path: string
+  url: string
+}
+
+export type MenuQrPanel = {
+  id: string
+  label: string
+  description: string
+  status: MenuStatus
+  summary: string
+  editPath: string
+  targets: MenuQrTarget[]
+}
+
+
+export function useKitchenWorkspaceMenuMenusQr() {
   const { menuSources } = useKitchenWorkspaceMenuSources()
   const {
     selectedKitchen,

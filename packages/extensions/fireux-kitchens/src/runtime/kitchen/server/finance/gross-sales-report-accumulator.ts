@@ -2,7 +2,7 @@ import type {
   KitchenFinanceCurrencySummary,
   KitchenFinanceDailySummary,
   KitchenFinanceItemSummary,
-} from '../../models/finance-report.model.ts'
+} from '../../utils/finance/finance-report.ts'
 import {
   KITCHEN_GROSS_SALES_REPORT_MAX_ITEM_GROUPS,
   addCount,

@@ -7,7 +7,7 @@ import {
   type InjectionKey,
 } from 'vue'
 import { useKitchenWorkspacePromotions } from '../workspace/promotions/useKitchenWorkspacePromotions'
-import type { KitchenPromotion } from '../../models/promotion.model'
+import type { KitchenPromotion } from '../../records/menus/promotions/promotion'
 
 type PromotionEditorSession = { key: string; promotion?: KitchenPromotion }
 

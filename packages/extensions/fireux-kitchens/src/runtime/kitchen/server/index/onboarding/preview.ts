@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import type { KitchenOnboardingPreview } from '../../../models/kitchen-onboarding.model.ts'
+import type { KitchenOnboardingPreview } from './kitchen-onboarding.ts'
 import {
   assertKitchenOnboardingPlaceDefaults,
   kitchenOnboardingAccessDecision,

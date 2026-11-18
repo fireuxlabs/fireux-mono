@@ -1,12 +1,12 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import type { KitchenWasteEvent } from '../models/waste-event.model'
+import type { KitchenWasteEvent } from '../records/waste-event'
 
 export type {
   KitchenWasteEvent,
   KitchenWasteReason,
   KitchenWasteSource,
-} from '../models/waste-event.model'
+} from '../records/waste-event'
 
 export const KitchenWasteEventStorage = {
   shape: 'scoped',

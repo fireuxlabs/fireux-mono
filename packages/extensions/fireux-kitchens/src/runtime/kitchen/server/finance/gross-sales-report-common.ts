@@ -5,7 +5,7 @@ import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 import type {
   KitchenFinanceItemSummary,
   KitchenFinanceTransactionSummary,
-} from '../../models/finance-report.model.ts'
+} from '../../utils/finance/finance-report.ts'
 
 export const KITCHEN_GROSS_SALES_REPORT_MAX_DAYS = 93
 

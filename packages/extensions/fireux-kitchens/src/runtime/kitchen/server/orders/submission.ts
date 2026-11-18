@@ -20,7 +20,7 @@ import {
 import { resolveMenuOrderLines } from '../../../menu/server/ordering'
 import type { MenuOrderSelection } from '../../../menu/models/menu-order-selection.model'
 import type { MenuTarget } from '../../../menu/server/ownership/target-types'
-import type { OrderSubmissionState } from '../../models/order-submission.model'
+import type { OrderSubmissionState } from '../../records/order-submission'
 
 const fail = (statusCode: number, statusMessage: string): never => {
   throw createError({ statusCode, statusMessage })

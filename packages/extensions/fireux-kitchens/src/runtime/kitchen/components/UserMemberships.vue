@@ -57,7 +57,7 @@ import FireCollectionCell from 'fireux-core/runtime/components/Collection/Cell.v
 import type { CollectionCellData } from 'fireux-core/runtime/types/collection-cell'
 import type { User } from 'fireux-core/runtime/user/models/user.model'
 import { useKitchenUserMemberships } from '../composables/useKitchenUserMemberships'
-import type { KitchenUserMembershipItem } from '../models/user-memberships.model.ts'
+import type { KitchenUserMembershipItem } from '../composables/user-memberships.ts'
 
 const props = defineProps<{
   user: Pick<User, 'id' | 'display_name'>

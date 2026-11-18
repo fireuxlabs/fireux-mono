@@ -122,7 +122,7 @@ const notes: Record<
       Reader:
         'useKitchenIngredients — live Kitchen links combined with shared Ingredient records.',
       Model:
-        'kitchen/models/ingredient.model.ts — ingredient_id and audit stamps.',
+        'kitchen/records/prep/ingredients/ingredient.ts — ingredient_id and audit stamps.',
       Tools:
         'Create Ingredient and Delete Ingredient are registered. Update has no supported fields.',
     },

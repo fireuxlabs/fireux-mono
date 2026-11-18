@@ -1,5 +1,5 @@
 import { priceItemChoices } from '../../kitchen/utils/item-choices'
-import type { ItemChoiceSelection } from '../../kitchen/records/item-offer'
+import type { ItemChoiceSelection } from '../../kitchen/records/menus/items/item-offer'
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import { useMenu } from './useMenu'
@@ -12,8 +12,8 @@ import type {
   PublicMenuItem,
   MenuManifestPriceOption,
 } from '../models/menu-detail.model'
-import type { Order } from '../../kitchen/models/order.model'
-import type { OrderSubmission } from '../../kitchen/models/order-submission.model'
+import type { Order } from '../../kitchen/records/order'
+import type { OrderSubmission } from '../../kitchen/records/order-submission'
 import type { MenuOrderInput, CartLine } from '../models/menu-order-flow.model'
 export function useMenuOrderFlow(props: MenuOrderInput) {
   const menu = useMenu(

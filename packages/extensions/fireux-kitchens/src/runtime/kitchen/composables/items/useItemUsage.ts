@@ -2,7 +2,7 @@ import { useAsyncData } from 'nuxt/app'
 import { computed, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 
-import type { ItemUsageResponse } from '../../models/item-usage.model'
+import type { ItemUsageResponse } from './item-usage'
 
 export function useItemUsage(kitchenId: Ref<string>, dishId: Ref<string>) {
   const { currentUser } = useAuth()
