@@ -18,11 +18,17 @@ export function normalizeMenuMetadataPatch(input: unknown): MenuUpdateInput {
           'sort_order',
           'audience',
           'serving_hours',
+          'theme_mode',
         ].includes(key)
     )
   )
     throw new Error('Unsupported Menu field.')
   const result: MenuUpdateInput = {}
+  if ('theme_mode' in value) {
+    if (value.theme_mode !== 'kitchen' && value.theme_mode !== 'default')
+      throw new Error('Choose Kitchen colours or Misebox default.')
+    result.theme_mode = value.theme_mode
+  }
   if ('name' in value) {
     if (
       typeof value.name !== 'string' ||

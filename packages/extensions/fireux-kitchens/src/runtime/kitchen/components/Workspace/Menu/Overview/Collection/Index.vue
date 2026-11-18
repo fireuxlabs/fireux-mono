@@ -4,6 +4,8 @@
     v-else-if="visibleMenus.length"
     :menus="visibleMenus"
     :palette="palette"
+    :kitchen-id="kitchenId"
+    :timezone="timezone"
   />
   <p v-else role="status">{{ emptyMessage }}</p>
 </template>
@@ -11,6 +13,6 @@
 import * as Collection from './index'
 import { useMenuOverviewCollection } from './useCollection'
 
-const { feedback, visibleMenus, emptyMessage, palette } =
+const { feedback, visibleMenus, emptyMessage, palette, kitchenId, timezone } =
   useMenuOverviewCollection()
 </script>

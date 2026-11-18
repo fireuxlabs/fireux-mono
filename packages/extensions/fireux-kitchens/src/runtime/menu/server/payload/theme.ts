@@ -20,7 +20,10 @@ export function resolveEffectiveMenuTheme(
       return { theme: { palette: menuPalette }, themeSource: 'menu' }
   }
 
-  const kitchenPalette = readWorkspacePalette(record(kitchenTheme).palette)
+  const kitchenPalette =
+    record(menuData).theme_mode === 'default'
+      ? null
+      : readWorkspacePalette(record(kitchenTheme).palette)
   if (kitchenPalette) {
     return { theme: { palette: kitchenPalette }, themeSource: 'kitchen' }
   }

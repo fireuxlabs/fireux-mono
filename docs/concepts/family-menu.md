@@ -357,12 +357,13 @@ Menu presentation is resolved, not copied:
    aligned with the [entity-owned default and offer denomination contract](#item-offer-denomination).
    Kitchen owns its four-role `theme.palette`: canvas, text, accent and accent
    contrast. Basic colour editing is available on every plan.
-2. Kitchen-owned Menus consume those colours directly; they store no theme,
-   kiosk skin or intermediate presentation overrides.
+2. A Kitchen-owned Menu selects Kitchen colours or the host App default through
+   its `theme_mode` field. Existing records without a choice inherit Kitchen
+   colours. The Workspace card uses the selected palette for its background.
 3. Named Kitchen services select Menus, own serving schedules and allow browse or
    ordering interactions. Menu responses derive eligible interactions with their
    exact service identity; channels reuse the same policy.
-4. Document Menus inherit the same Kitchen presentation as interactive Menus.
+4. Document and interactive Menus use the same theme selection.
 
 The Menu directory uses host App chrome; Menu detail uses Kitchen colours.
 

@@ -7,6 +7,13 @@ import { parse, compileScript } from 'vue/compiler-sfc'
 import ts from 'typescript'
 import { useMenuOverviewCard } from '../runtime/kitchen/components/Workspace/Menu/Overview/Collection/useCard.ts'
 
+import {
+  menuLocalDate,
+  nextSpecialRelease,
+  publishedMenuDates,
+} from '../runtime/menu/utils/calendar/daily.ts'
+import { shiftMenuDate } from '../runtime/menu/utils/calendar/date.ts'
+
 const runtime = new URL('../runtime/', import.meta.url)
 function component(path, bindings = {}) {
   const file = new URL(path, runtime)
@@ -29,6 +36,75 @@ function component(path, bindings = {}) {
   return exports.default
 }
 const base = 'kitchen/components/Workspace/Menu/'
+const specialDishOutcome = Vue.ref('ready')
+const specialsBindings = {
+  'fireux-core/runtime/composables/fireux/firestore/vuefire': {
+    readRuntimeFirestoreDatabaseId: () => '',
+  },
+  '../../../../menu/utils/calendar/daily': {
+    menuLocalDate,
+    nextSpecialRelease,
+    publishedMenuDates,
+  },
+  '../../../../menu/utils/calendar/date': { shiftMenuDate },
+  './useMenuSectionCollection': {
+    useMenuSectionCollection: () => ({
+      outcome: Vue.ref('ready'),
+      sections: Vue.ref([{ id: 'special', date: '2026-11-23' }]),
+    }),
+  },
+  './useMenuSectionItemCollection': {
+    useMenuSectionItemCollection: () => ({
+      outcome: Vue.ref('ready'),
+      items: Vue.ref([{ dish_id: 'octopus' }]),
+    }),
+  },
+  '../../kitchen/composables/items/useKitchenItemRead': {
+    useKitchenItemRead: (_, id) => ({
+      outcome: specialDishOutcome,
+      item: Vue.computed(() => (id.value ? { name: 'Octopus Roll' } : null)),
+    }),
+  },
+  '../../useKitchenOfferingNow': {
+    useKitchenOfferingNow: () => ({
+      now: Vue.ref(new Date('2026-11-18T12:00:00Z')),
+    }),
+  },
+}
+function loadComposable(path, bindings) {
+  const source = readFileSync(new URL(path, runtime), 'utf8')
+  const exports = {}
+  compileFunction(
+    ts.transpileModule(source, {
+      compilerOptions: {
+        module: ts.ModuleKind.CommonJS,
+        target: ts.ScriptTarget.ES2022,
+      },
+    }).outputText,
+    ['require', 'exports']
+  )((name) => {
+    if (name === 'vue') return Vue
+    assert.ok(bindings[name], name)
+    return bindings[name]
+  }, exports)
+  return exports
+}
+const datedReader = loadComposable('menu/composables/useDatedMenuDishRead.ts', {
+  ...specialsBindings,
+  '../utils/calendar/daily': { publishedMenuDates },
+})
+const specialsExports = loadComposable(
+  'kitchen/composables/workspace/menu/useKitchenWorkspaceMenuSpecials.ts',
+  {
+    ...specialsBindings,
+    '../../../../menu/composables/useDatedMenuDishRead': datedReader,
+  }
+)
+const SpecialsCard = component(`${base}Overview/Collection/SpecialsCard.vue`, {
+  './useCard': { useMenuOverviewCard },
+  '../../../../../composables/workspace/menu/useKitchenWorkspaceMenuSpecials':
+    specialsExports,
+})
 const Card = component(`${base}Overview/Collection/Card.vue`, {
   './useCard': { useMenuOverviewCard },
 })
@@ -134,7 +210,11 @@ function mount() {
       return {
         requireMenuWorkspace: () => ({
           menus: capability,
-          overview: { menusOutcome: outcome },
+          overview: {
+            menusOutcome: outcome,
+            storageKitchenId: Vue.ref('k'),
+            timezone: Vue.ref('Europe/Zurich'),
+          },
         }),
       }
     if (name === '../menus/useMenuList') return { useMenuList: () => list }
@@ -166,7 +246,7 @@ function mount() {
     './useControls': local,
   })
   const Grid = component(`${base}Overview/Collection/Grid.vue`, {
-    './Card.vue': { default: Card },
+    './index': { Card, SpecialsCard },
   })
   const Collection = component(`${base}Overview/Collection/Index.vue`, {
     './index': { Grid },
@@ -275,6 +355,13 @@ function mount() {
       () =>
         Vue.h('ul', slots.default?.()),
   })
+  app.component('NuxtLink', {
+    props: ['to'],
+    setup:
+      (props, { slots }) =>
+      () =>
+        Vue.h('a', { href: props.to }, slots.default?.()),
+  })
   app.component('UPageCard', {
     props: ['to', 'description'],
     setup:
@@ -282,7 +369,9 @@ function mount() {
       () =>
         Vue.h('article', [
           slots.header?.(),
-          Vue.h('a', { href: props.to }, slots.title?.()),
+          props.to
+            ? Vue.h('a', { href: props.to }, slots.title?.())
+            : slots.title?.(),
           props.description,
           slots.footer?.(),
         ]),
@@ -331,6 +420,47 @@ test('composed menu overview retains ordering, controlled search/status choices,
     assert.deepEqual(
       view.all('time').map((node) => node.props.datetime),
       ['2026-11-23']
+    )
+    assert.ok(view.all('p').some((node) => view.text(node) === 'Octopus Roll'))
+    for (const [outcome, message] of [
+      ['pending', 'Loading special…'],
+      ['error', 'Special details unavailable.'],
+    ]) {
+      specialDishOutcome.value = outcome
+      await Vue.nextTick()
+      assert.ok(view.all('p').some((node) => view.text(node) === message))
+    }
+    specialDishOutcome.value = 'ready'
+    await Vue.nextTick()
+    const previous = () =>
+      view
+        .all('button')
+        .find((node) => node.props['aria-label'] === 'Previous day')
+    view
+      .all('button')
+      .find((node) => node.props['aria-label'] === 'Next day')
+      .props.onClick()
+    await Vue.nextTick()
+    assert.equal(view.all('time')[0].props.datetime, '2026-11-24')
+    assert.ok(
+      view
+        .all('p')
+        .some(
+          (node) => view.text(node) === 'No special published for this day.'
+        )
+    )
+    for (let day = 0; day < 6; day++) {
+      previous().props.onClick()
+      await Vue.nextTick()
+    }
+    assert.equal(view.all('time')[0].props.datetime, '2026-11-18')
+    assert.equal(previous().props.disabled, true)
+    assert.ok(
+      view
+        .all('p')
+        .some(
+          (node) => view.text(node) === 'No special published for this day.'
+        )
     )
     view.rows.value = view.rows.value.map((menu) =>
       menu.id === 'draft' ? { ...menu, schedule: 'daily' } : menu

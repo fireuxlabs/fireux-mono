@@ -48,6 +48,7 @@ export type MenuUpdateInput = Partial<
     | 'sort_order'
     | 'audience'
     | 'serving_hours'
+    | 'theme_mode'
   >
 >
 

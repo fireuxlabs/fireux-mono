@@ -43,6 +43,11 @@ export function dailyMenuToday(
   }
 }
 
+/** Prefer a release today, or the next release in the sorted calendar. */
+export function nextSpecialRelease(days: readonly string[], today: string) {
+  return days.find((day) => day >= today)
+}
+
 /** Specials show today's release first, otherwise the next explicitly published date. */
 export function dailyMenuSelection(
   menu: Record<string, unknown>,
@@ -51,8 +56,9 @@ export function dailyMenuSelection(
 ) {
   const today = dailyMenuToday(menu, timezone, now)
   if (menu.purpose !== 'specials' || today.published) return today
-  const next = publishedMenuDates(menu.published_dates).find(
-    (date) => date > today.date
+  const next = nextSpecialRelease(
+    publishedMenuDates(menu.published_dates),
+    today.date
   )
   return next ? { ...today, date: next, published: true } : today
 }

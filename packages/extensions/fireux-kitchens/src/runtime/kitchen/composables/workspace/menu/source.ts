@@ -55,6 +55,8 @@ export function createKitchenMenuOverview(
   return {
     kitchenId,
     kitchenName: workspace.kitchenName,
+    storageKitchenId,
+    timezone: source.timezone,
     catalogue,
     menus,
     menusOutcome,

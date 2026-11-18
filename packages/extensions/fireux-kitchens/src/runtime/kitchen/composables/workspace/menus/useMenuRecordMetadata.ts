@@ -75,8 +75,15 @@ export function useMenuRecordMetadata(
     if (!validateOrder(value).isValid) throw new Error('Enter a whole number.')
     await update({ sort_order: Number(value) }, isCurrent)
   }
+  function updateThemeMode(
+    mode: 'kitchen' | 'default',
+    isCurrent?: () => boolean
+  ) {
+    return update({ theme_mode: mode }, isCurrent)
+  }
   return {
     menu,
+    updateThemeMode,
     canWrite,
     canRename,
     captureIntent,

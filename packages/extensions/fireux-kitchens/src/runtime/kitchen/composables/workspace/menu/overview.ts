@@ -14,6 +14,8 @@ export function useKitchenWorkspaceMenuOverview() {
     palette: computed(() =>
       readKitchenThemePalette(menus.selectedKitchen.value)
     ),
+    kitchenId: overview.storageKitchenId,
+    timezone: overview.timezone,
     menusOutcome: overview.menusOutcome,
     canCreateMenu,
     createBlockedMessage: menus.menuCreateBlockedMessage,

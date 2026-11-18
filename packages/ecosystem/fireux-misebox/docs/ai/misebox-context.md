@@ -1709,7 +1709,8 @@ draft. An empty collection uses the sample preview. Draft colours require an exp
 restores the latest saved palette. A newer incoming palette blocks saving a stale
 draft until it is discarded. Preview presentation does not alter the Workspace theme.
 
-Kitchen-owned Menus consume that palette directly. Separate Menu layout and
+Kitchen-owned Menus choose Kitchen colours or Misebox default in Menu Settings.
+A Menu without a saved choice inherits Kitchen colours. Separate Menu layout and
 typography tools have no stored contract yet.
 
 Customer Item images use Kitchen-owned `services.item_images`, edited in Appearance

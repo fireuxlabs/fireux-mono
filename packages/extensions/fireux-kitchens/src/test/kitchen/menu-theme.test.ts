@@ -27,20 +27,54 @@ test('standalone Menu retains its own theme', () => {
 
 test('Kitchen-owned Menu uses Kitchen palette', () => {
   assert.deepEqual(
-    resolveEffectiveMenuTheme({ theme: { palette: menuPalette } }, { palette: kitchenPalette }, true),
+    resolveEffectiveMenuTheme(
+      { theme: { palette: menuPalette } },
+      { palette: kitchenPalette },
+      true
+    ),
     { theme: { palette: kitchenPalette }, themeSource: 'kitchen' }
   )
 })
 
 test('an unstyled Menu uses neutral defaults, not Place branding', () => {
   assert.deepEqual(resolveEffectiveMenuTheme({}, null), {
-    theme: { palette: { canvas: '#f8fafc', text: '#0f172a', accent: '#0f766e', accent_contrast: '#ffffff' } },
+    theme: {
+      palette: {
+        canvas: '#f8fafc',
+        text: '#0f172a',
+        accent: '#0f766e',
+        accent_contrast: '#ffffff',
+      },
+    },
     themeSource: 'default',
   })
 })
 
 test('Kitchen-owned Menu never falls back to a saved Menu palette', () => {
-  const result = resolveEffectiveMenuTheme({ theme: { palette: menuPalette } }, null, true)
+  const result = resolveEffectiveMenuTheme(
+    { theme: { palette: menuPalette } },
+    null,
+    true
+  )
   assert.equal(result.themeSource, 'default')
   assert.notDeepEqual(result.theme.palette, menuPalette)
+})
+
+test('explicit Misebox default bypasses the Kitchen palette', () => {
+  assert.equal(
+    resolveEffectiveMenuTheme(
+      { theme_mode: 'default' },
+      { palette: kitchenPalette },
+      true
+    ).themeSource,
+    'default'
+  )
+  assert.deepEqual(
+    resolveEffectiveMenuTheme(
+      { theme_mode: 'kitchen' },
+      { palette: kitchenPalette },
+      true
+    ),
+    { theme: { palette: kitchenPalette }, themeSource: 'kitchen' }
+  )
 })

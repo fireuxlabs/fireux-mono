@@ -60,10 +60,21 @@
         :update="updateOrder"
       />
       <p class="fx-type-caption">Lower numbers appear first.</p>
+      <UFormField label="Menu colours">
+        <USelect
+          :model-value="menu.theme_mode"
+          placeholder="Inherited Kitchen colours"
+          :items="themeOptions"
+          :disabled="!canWrite || changingTheme"
+          @update:model-value="saveTheme"
+        />
+      </UFormField>
+      <p v-if="themeError" role="alert">{{ themeError }}</p>
     </div>
   </section>
 </template>
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { useMenuRecordMetadata } from '../../../../composables/workspace/menus/useMenuRecordMetadata'
 const {
@@ -77,7 +88,27 @@ const {
   updateInternalName,
   updateDescription,
   updateOrder,
+  updateThemeMode,
 } = useMenuRecordMetadata(useKitchenMenuRecordContext())
+const themeOptions = [
+  { label: 'Kitchen colours', value: 'kitchen' },
+  { label: 'Misebox default', value: 'default' },
+] satisfies Array<{ label: string; value: 'kitchen' | 'default' }>
+const changingTheme = ref(false)
+const themeError = ref('')
+async function saveTheme(value: 'kitchen' | 'default') {
+  if (changingTheme.value || !canWrite.value) return
+  changingTheme.value = true
+  themeError.value = ''
+  try {
+    await updateThemeMode(value)
+  } catch (error) {
+    themeError.value =
+      error instanceof Error ? error.message : 'Could not save Menu colours.'
+  } finally {
+    changingTheme.value = false
+  }
+}
 </script>
 <style scoped>
 .menu-editor {

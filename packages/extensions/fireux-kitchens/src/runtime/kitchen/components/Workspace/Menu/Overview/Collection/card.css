@@ -1,0 +1,30 @@
+.menu-card-title {
+  margin: 0;
+  font-size: var(--text-xl);
+  line-height: 1.2;
+  font-weight: var(--font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+.menu-card-title a:hover {
+  text-decoration: underline;
+}
+
+.workspace-menu-card {
+  background-color: var(--workspace-menu-card-background, var(--ui-bg));
+}
+.menu-card-heading,
+.menu-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
+}
+.menu-card-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+  color: var(--ui-text-muted);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+}

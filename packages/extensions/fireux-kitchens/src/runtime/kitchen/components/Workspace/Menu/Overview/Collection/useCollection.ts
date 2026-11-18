@@ -2,8 +2,16 @@ import { computed } from 'vue'
 import { useKitchenWorkspaceMenuOverview } from '../../../../../composables/workspace/menu/overview'
 
 export function useMenuOverviewCollection() {
-  const { menusOutcome, visibleMenus, query, status, totalCount, palette } =
-    useKitchenWorkspaceMenuOverview()
+  const {
+    menusOutcome,
+    visibleMenus,
+    query,
+    status,
+    totalCount,
+    palette,
+    kitchenId,
+    timezone,
+  } = useKitchenWorkspaceMenuOverview()
   const feedback = computed(() => {
     if (menusOutcome.value === 'idle' || menusOutcome.value === 'pending')
       return 'pending'
@@ -18,5 +26,5 @@ export function useMenuOverviewCollection() {
       return 'No current menus. Choose Archived to view previous menus.'
     return 'No menus yet. Add your first menu to get started.'
   })
-  return { feedback, visibleMenus, emptyMessage, palette }
+  return { feedback, visibleMenus, emptyMessage, palette, kitchenId, timezone }
 }
