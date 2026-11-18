@@ -12,7 +12,7 @@ import {
   recipeDraftChanges,
   recipeDraftRecord,
 } from '../../runtime/kitchen/recipe/editor.ts'
-import { readPreparationChanges } from '../../runtime/kitchen/preparation/changes.ts'
+import { readPreparationChanges } from '../../runtime/kitchen/utils/preparation-changes.ts'
 function load(path, result, deps) {
   let source = readFileSync(
     new URL(`../../runtime/kitchen/${path}`, import.meta.url),
@@ -148,7 +148,7 @@ function fixture() {
   )
   const updateRecipe = load('server/recipes/update.ts', 'updateRecipe', deps),
     updatePreparation = load(
-      'preparation/server/update.ts',
+      'server/preparations/update.ts',
       'updatePreparation',
       deps
     )

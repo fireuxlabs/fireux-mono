@@ -27,7 +27,7 @@ function load(path, result, deps = {}) {
     `${stripTypeScriptTypes(source)};return ${result}`
   )(...Object.values(deps))
 }
-const preparationPath = 'preparation/composables/useKitchenPreparationsRead.ts'
+const preparationPath = 'composables/preparations/useKitchenPreparationsRead.ts'
 const recipePath = 'recipe/composables/useKitchenRecipesRead.ts'
 const { normalizePreparation } = load(
   preparationPath,

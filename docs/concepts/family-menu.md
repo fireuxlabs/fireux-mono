@@ -1,7 +1,7 @@
 # Menu family
 
 Updated: 2026-11-18
-Ref: c2748cea8
+Ref: 1b3480a87
 Role: map, not canon
 
 ## Purpose
@@ -70,7 +70,7 @@ does not reset a restored page, and settled results clamp an obsolete page.
 resolution. Item detail has two views: Details and Appears on. Preparation specification,
 prep requirements and Station management belong to Prep & Production; the Menu
 Item route does not acquire their readers. Preparation owns reusable output
-identity in `kitchen/preparation/models/model.ts`; Recipe owns inputs, method
+identity in `kitchen/records/preparation.ts`; Recipe owns inputs, method
 and expected yield in `kitchen/recipe/models/model.ts`. Their library lives under
 `/workspace/kitchen/prep`, with historical `prep-items` and `recipes` storage
 paths retained by their owning readers. See the Misebox context’s

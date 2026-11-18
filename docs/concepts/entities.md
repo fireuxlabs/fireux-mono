@@ -1,7 +1,7 @@
 # Entities
 
 Updated: 2026-11-18
-Ref: c2748cea8
+Ref: 1b3480a87
 Role: map, not canon
 
 ## Purpose
@@ -93,6 +93,7 @@ Examples of parent-owned Records:
 | Record            | Parent           | Why it is not an Entity                                                |
 | ----------------- | ---------------- | ---------------------------------------------------------------------- |
 | Item              | Kitchen          | Kitchen owns reusable Item truth; Menu placements reference it         |
+| Preparation       | Kitchen          | Kitchen owns its reusable output identity and local Recipe bindings    |
 | MenuSourceUpload  | Kitchen          | It is source material for a Kitchen workflow                           |
 | MenuSection       | Menu             | It groups MenuItem records inside one Menu                             |
 | MenuItem          | MenuSection      | It is one parent-owned catalogue row                                   |
@@ -242,8 +243,9 @@ Kitchen Item is an owned Record, not a standalone Entity. Its canonical record d
 storage metadata are in `kitchen/records/item.ts`; readers, context and mutation
 adapters use `kitchen/composables/items`, and normalization uses Kitchen utils.
 Its persisted `dishes` path is unchanged. Removing a Menu placement must not
-delete or replace the canonical Kitchen Item. Recipe remains an Entity;
-Preparation's Record-versus-Entity classification is to-confirm.
+delete or replace the canonical Kitchen Item. Preparation is also a Kitchen-owned
+Record: it identifies the Kitchen's reusable output and can be referenced by
+several Recipes without acquiring independent authority. Recipe remains an Entity.
 
 MenuSection, MenuItem, and KitchenStation can have stable document ids without
 independent Entity lifecycle. Kitchen Team requests, document links, financial
@@ -295,12 +297,19 @@ Its accepted target permits existence outside Kitchen. Current source remains
 creator attribution, visibility, adoption, versioning and deletion policy remain
 to be designed before a data/authority cutover; no public Recipe system is implied.
 
-Preparation defines reusable output/transformation identity; recipes may consume
-prepared inputs as well as direct Ingredients. Its current model is
-`kitchen/preparation/models/model.ts`. Whether Preparation warrants an Entity
-root or is a Kitchen-owned Record remains to-confirm; do not decide from its id,
-route or storage nesting. Operational Mise en Place planning is a separate
-responsibility and does not belong inside Recipe's model.
+Preparation is a Kitchen-owned Record identifying a reusable Kitchen output,
+such as its aioli. Several Recipes may produce or consume that same local
+record. Its definition belongs in `kitchen/records/preparation.ts`; behavior uses
+Kitchen's technical roles, with no nested Preparation spine.
+
+Recipe's accepted independent target carries its own output description as an
+embedded shape. That description is distinct from a Kitchen Preparation record.
+Kitchen owns the association between its Preparation and chosen Recipe, including
+Kitchen-specific decisions. Current Recipe `output_preparation_id` and Preparation
+input references remain Kitchen-bound contracts until the separate Recipe
+transition resolves them; moving Preparation source does not make those references
+portable or implement public Recipes. Operational Mise en Place planning and
+actual Batch execution remain separate responsibilities.
 
 Item is Kitchen-owned canonical Record truth. MenuItem is a MenuSection-owned
 placement Record and must reference an Item from the same Kitchen. Inspect the
@@ -318,7 +327,7 @@ Preparation reads currently use `kitchens/{kitchenId}/prep-items/{prepItemId}`;
 legacy storage spelling does not settle domain classification. New code must not
 restore duplicate `mise` documents or normalize Preparation as an operational
 Mise task. The current
-[Preparation model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/preparation/models/model.ts)
+[Preparation model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/preparation.ts)
 and [library tests](../../packages/extensions/fireux-kitchens/src/test/kitchen/preparation-library.test.mjs)
 locate the implementation; this map does not establish live migration status.
 
@@ -428,10 +437,10 @@ Directory and Entity Detail family maps.
 | Independent Business with optional Place links                 | `accepted`   | Business owns organisation identity and Workspace; Place owns each linked location                                                                                                                   |
 | Place read transport                                           | `accepted`   | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth           |
 | Kitchen root + Place + Team composition                        | `accepted`   | Kitchen owns nested identity, configuration and audit/private metadata; its public projection joins the same-id Place. Team roster and membership-bound Workspace access retain separate authority.  |
-| Kitchen Item ownership                                         | `accepted`   | Item is a Kitchen-owned Record; MenuItem owns placement, not copied canonical Item truth. Source placement remains migration work.                                                                   |
+| Kitchen Item ownership                                         | `accepted`   | Item is a Kitchen-owned Record; MenuItem owns placement, not copied canonical Item truth. Item source uses Kitchen record and technical roles.                                                       |
 | Recipe independent-domain target                               | `migration`  | Recipe is an Entity; current Kitchen-scoped source, readers and commands remain until a bounded transition proves the target.                                                                        |
 | Recipe authority and Kitchen association                       | `to-confirm` | Settle independent owner, read/edit policy, adoption/versioning and deletion before changing persistence or access.                                                                                  |
-| Preparation classification                                     | `to-confirm` | Decide Record versus Entity from identity, authority, lifecycle and reuse; preserve current readers meanwhile.                                                                                       |
+| Preparation ownership                                          | `accepted`   | Preparation is a Kitchen-owned Record. Recipe output descriptions are embedded Recipe shapes; Kitchen-specific associations stay with Kitchen.                                                       |
 | Kitchen Order, Sale, and Customer link ownership               | `accepted`   | KitchenOrder owns lifecycle; KitchenSale is its immutable result; User-owned Customer links point to Orders without duplicating status, while guest details remain on Order                          |
 | Product root plus ProductPrice and Supplier Item relationships | `accepted`   | Product owns commercial identity, App provenance and publication; ProductPrice children own pricing; Supplier Item is a Supplier-owned offer with required `product_id` and optional `ingredient_id` |
 | Supplier location chain                                        | `accepted`   | Use Supplier → Business → explicitly linked Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`.                       |

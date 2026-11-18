@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-11-18
-Ref: c2748cea8
+Ref: 1b3480a87
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -1728,7 +1728,8 @@ must earn their reactive or interaction responsibility.
 Kitchen Item is a Kitchen-owned Record. Recipe is a first-class Entity with an
 independent-domain target, while current source, reads and writes remain
 Kitchen-scoped. Independent Recipe authority, Kitchen association and versioning
-are separate design work; Preparation classification remains to-confirm. Follow
+are separate design work. Preparation is a Kitchen-owned Record, while Recipe
+output descriptions belong to the independent Recipe as embedded shapes. Follow
 `docs/concepts/entities.md` for these boundaries and current models/readers for
 implemented behavior; source movement grants no new data authority.
 
@@ -2351,11 +2352,18 @@ unconfigured until the operator supplies or approves them. La Tap's original
 `menu-uploads/main` images are its retained Menu source; the former guessed
 `tools/misebox-migrations/la-tap-prep` import is retired.
 
-`fireux-kitchens/runtime/kitchen/preparation/models/model.ts` owns Preparation:
-the identity of a reusable Kitchen output, including components and finished
-dishes. `kitchen/recipe/models/model.ts` owns Recipe: output reference, purchased
+`fireux-kitchens/runtime/kitchen/records/preparation.ts` owns Preparation:
+the Kitchen-owned Record identity of a reusable output, including components
+and finished dishes. `kitchen/recipe/models/model.ts` owns Recipe: output reference, purchased
 Ingredient or Preparation inputs, quantities, method and expected yield. A dish
-is currently a role of an output, not a second canonical Entity. Menu Item
+is currently a role of an output, not a second canonical Entity.
+
+The accepted independent Recipe target carries its own embedded output
+description. Kitchen Preparation records identify local reusable outputs; Kitchen
+owns their chosen Recipe associations and local decisions. Existing Recipe
+`output_preparation_id` and Preparation input references remain Kitchen-bound
+until that separate domain transition is designed and verified. This source
+migration does not create a shared Preparation Entity or a public Recipe service. Menu Item
 identity and Menu placements do not own production instructions.
 
 `useKitchenPreparationsRead` and `useKitchenRecipesRead` own guarded reads of the
@@ -2388,7 +2396,7 @@ historical production fields. Recipe owns output, expected yield, inputs, ordere
 method and optional source alongside its identity text. Native controls remain
 with their focused Inputs/Method children; they own no reads or commands.
 
-`preparation/changes.ts` and `recipe/changes.ts` validate their owned patches.
+`utils/preparation-changes.ts` and `recipe/changes.ts` validate their owned patches.
 `recipe/editor.ts` converts form values and sends sparse deltas, so untouched
 historical data is not rewritten. Recipe read fallback is per field: saving a
 method does not hide untouched historical inputs or yield. Explicit null yield
@@ -2397,7 +2405,8 @@ precedence over historical reverse `recipe_id` links without deleting them.
 
 `usePrepMutation` shares the existing bearer and exact account/App/Kitchen scope
 transport for these two update endpoints; it does not own Entity validation.
-Preparation's trusted update lives in its own spine. Recipe reuses the existing
+Preparation's trusted create/update actions use Kitchen's `server/preparations`
+role; the Record has no nested spine. Recipe reuses the existing
 trusted update transaction and route, adding canonical definition validation.
 Create and update use the same canonical Recipe contract; the unregistered
 legacy Recipe collection/detail/form, duplicate readers and translation/preparation
@@ -2601,7 +2610,7 @@ Paths below are relative to `packages/extensions/fireux-kitchens/src/`.
 | --------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Dish/Drink create, update, delete | `runtime/kitchen/server/items/{create,update,delete}.ts`                         | `test/kitchen/item-commands.test.mjs`, `test/kitchen/item-ui-scope.test.mjs`, `test/kitchen/item-image-scope.test.mjs`. Delete is document-only and refuses saved Menu/Promotion references. Media and Dish → Menu placement are separate effects with explicit partial-success recovery; dispatched media cannot be rolled back by client invalidation.                                                                                               |
 | Recipe create, update, delete     | `runtime/kitchen/server/recipes/{create,update,delete}.ts`                       | `test/kitchen/recipe-commands.test.mjs`, `test/recipe-command-internals.test.mjs`, `test/kitchen/prep-edit.test.mjs`. Direct route adapters consume each action. Delete removes an unused document after checking Dish and Prep Item references. Create/update share canonical Recipe validation and scoped transport; historical stored translation/preparation fields are read-only. See the library/editor and `recipe-command-internals.test.mjs`. |
-| Prep creation                     | `runtime/kitchen/server/prep-items/create.ts`                                    | `test/kitchen/prep-create.test.mjs` and `test/recipe-command-internals.test.mjs`. Historical create-only API; the old nested Recipe form and unused client adapter are retired. It is not a current library creation control. Preparation identity updates use `preparation/server/update.ts`; no Preparation Delete control is exposed.                                                                                                               |
+| Prep creation                     | `runtime/kitchen/server/preparations/create.ts`                                  | `test/kitchen/prep-create.test.mjs` and `test/recipe-command-internals.test.mjs`. Historical create-only API; the old nested Recipe form and unused client adapter are retired. It is not a current library creation control. Preparation identity updates use `server/preparations/update.ts`; no Preparation Delete control is exposed.                                                                                                              |
 | Waste observation                 | `runtime/kitchen/server/waste/record.ts`                                         | `test/kitchen/waste-command.test.mjs`, `test/kitchen/waste-scope.test.mjs`. Identity, time and audit are server-owned; this does not claim immutable storage under development-open Rules.                                                                                                                                                                                                                                                             |
 | Menu sections/items               | `runtime/menu/server/sections/commands.ts`, `runtime/menu/server/items/write.ts` | `test/kitchen/menu-content-commands.test.mjs`, `test/kitchen/menu-content-scope.test.mjs`. Draft edits preserve Dish-owned commercial terms and do not publish. Current section/item action menus invoke archive and adjacent movement commands; their transaction boundaries are mapped in the Menu family map.                                                                                                                                       |
 | Menu metadata/removal             | `runtime/menu/server/records/update.ts`, `runtime/menu/server/records/delete.ts` | `test/kitchen/menu-metadata.test.mjs`, `test/kitchen/menu-metadata-scope.test.mjs`. Metadata writes only the canonical Menu; naming alone needs acting-user Plus. Status remains publication-command owned.                                                                                                                                                                                                                                            |

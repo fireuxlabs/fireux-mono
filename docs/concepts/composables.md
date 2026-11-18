@@ -1,7 +1,7 @@
 # Composables spine map
 
 Updated: 2026-11-18
-Ref: c2748cea8
+Ref: 1b3480a87
 Role: map, not canon
 
 ## Purpose
@@ -441,9 +441,10 @@ adapters live directly in `kitchen/composables/firestore`; their function names
 identify reads and commands without additional `fetch`, `mutations`, or
 `utils/paths` folders. Item readers, context and mutation adapters live together under
 `kitchen/composables/items`; canonical Item and selling contracts are in
-`kitchen/records`, with stateless normalization in `kitchen/utils`. Recipe and
-Preparation retain their current nested source pending their separate domain
-classification and migration decisions. The
+`kitchen/records`, with stateless normalization in `kitchen/utils`. Preparation follows the same Record boundary: its definition is in
+`kitchen/records/preparation.ts`, reader in `composables/preparations`, validator
+in `utils/preparation-changes.ts`, and trusted actions in `server/preparations`.
+Recipe retains its current nested source pending its independent-domain transition. The
 retired Recipe and Prep Item client directories are not alternate reader owners.
 Storage paths and trusted command authority remain independent of that placement.
 
@@ -529,7 +530,7 @@ consumed presentation remain explicit, without compulsory CRUD scaffolding.
 
 ## Recipe and Prep responsibilities
 
-Kitchen's `preparation/composables/useKitchenPreparationsRead.ts` and
+Kitchen's `composables/preparations/useKitchenPreparationsRead.ts` and
 `recipe/composables/useKitchenRecipesRead.ts` each acquire one exact access-bound
 collection through Core. Their private normalization retains historical output
 links and per-field Recipe inputs/method/yield without rewriting documents or

@@ -50,7 +50,7 @@ const normalizeKitchenPrepItemTranslatedText = load(
   'normalizeKitchenPrepItemTranslatedText'
 )
 const readPrepItemCreateInput = load(
-  '../../runtime/kitchen/server/prep-items/create-input.ts',
+  '../../runtime/kitchen/server/preparations/create-input.ts',
   {
     createError,
     requireFirestoreDocumentId,
@@ -76,7 +76,7 @@ function harness() {
     ])
   let before = () => {}
   const create = load(
-    '../../runtime/kitchen/server/prep-items/create.ts',
+    '../../runtime/kitchen/server/preparations/create.ts',
     {
       createError,
       readPrepItemCreateInput,

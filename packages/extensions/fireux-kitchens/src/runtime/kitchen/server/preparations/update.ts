@@ -6,8 +6,11 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import {
   readKitchenMutationActor,
   requireKitchenRecordMutationAuthority,
-} from '../../server/core/mutation-authority'
-import { readPreparationChanges, type PreparationChanges } from '../changes'
+} from '../core/mutation-authority'
+import {
+  readPreparationChanges,
+  type PreparationChanges,
+} from '../../utils/preparation-changes'
 export async function updatePreparation(event: H3Event, input: unknown) {
   if (
     !input ||

@@ -1,4 +1,4 @@
-import type { Preparation } from './models/model'
+import type { Preparation } from '../records/preparation'
 export type PreparationChanges = Partial<
   Pick<Preparation, 'name' | 'description'>
 >

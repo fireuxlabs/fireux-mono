@@ -188,7 +188,7 @@ function fixture({ wait, retry } = {}) {
   Object.assign(
     dependencies,
     load(
-      '../runtime/kitchen/server/prep-items/create-input.ts',
+      '../runtime/kitchen/server/preparations/create-input.ts',
       ['readPrepItemCreateInput'],
       dependencies
     )
@@ -208,7 +208,7 @@ function fixture({ wait, retry } = {}) {
       )
     ),
     load(
-      '../runtime/kitchen/server/prep-items/create.ts',
+      '../runtime/kitchen/server/preparations/create.ts',
       ['createKitchenPrepItem'],
       dependencies
     )

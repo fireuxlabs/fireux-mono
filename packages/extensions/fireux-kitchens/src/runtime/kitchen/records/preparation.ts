@@ -3,7 +3,7 @@ import type {
   FireuxUpdatedStamp,
 } from 'fireux-core/runtime/models/utils/stamps.model'
 
-/** A reusable output the Kitchen makes, whether a component or a finished dish. */
+/** Kitchen-owned reusable output record, whether a component or a finished dish. */
 export type Preparation = {
   id: string
   name: string

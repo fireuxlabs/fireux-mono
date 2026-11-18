@@ -1,7 +1,7 @@
 import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue'
 import { useIdentityEditor } from 'fireux-core/runtime/composables/fireux/useIdentityEditor'
 import type { Recipe } from '../../../../recipe/models/model'
-import type { Preparation } from '../../../../preparation/models/model'
+import type { Preparation } from '../../../../records/preparation'
 import {
   recipeDraft,
   recipeDraftChanges,
