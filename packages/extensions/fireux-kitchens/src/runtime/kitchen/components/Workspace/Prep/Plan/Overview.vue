@@ -1,7 +1,7 @@
 <template>
   <UPageCard
     title="Prep plan"
-    description="Prep planning is not connected yet."
+    description="Plan what needs making before service."
     to="/workspace/kitchen/prep/plan"
     icon="i-lucide-clipboard-list"
   />

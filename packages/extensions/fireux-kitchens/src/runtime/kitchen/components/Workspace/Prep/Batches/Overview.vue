@@ -1,7 +1,7 @@
 <template>
   <UPageCard
     title="Batches"
-    description="Batch records are not connected yet."
+    description="Review actual output recorded from your prep plan."
     to="/workspace/kitchen/prep/batches"
     icon="i-lucide-layers"
   />

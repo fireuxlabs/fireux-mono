@@ -61,7 +61,7 @@ export function createPrepSummaries(
       flags,
     }
   }
-  return computed(() => ({
+  const summaries = computed(() => ({
     preparations: summary(
       [preparations.outcome.value],
       preparations.preparations.value.length,
@@ -95,4 +95,5 @@ export function createPrepSummaries(
       'stations'
     ),
   }))
+  return { summaries, preparations: preparations.preparations }
 }

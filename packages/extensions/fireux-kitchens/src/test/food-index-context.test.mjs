@@ -429,9 +429,12 @@ export default {render}`
       props: ['to', 'label'],
       setup: (props) => () => Vue.h('a', { href: props.to }, props.label),
     })
+    app.component('WorkspaceKitchenCollectionToolbar', {
+      render: () => Vue.h('div'),
+    })
     const html = await renderToString(app)
-    assert.ok(html.includes('Prep controls will go here.'))
-    assert.ok(html.includes('The preparation collection will go here.'))
+    assert.ok(html.includes('Your preparations'))
+    assert.equal(html.includes('No preparations yet.'), outcome === 'ready')
     assert.ok(html.includes('href="/workspace/kitchen/prep/recipes"'))
     const articles = [
       ...html.matchAll(/<article\b[^>]*>([\s\S]*?)<\/article>/g),

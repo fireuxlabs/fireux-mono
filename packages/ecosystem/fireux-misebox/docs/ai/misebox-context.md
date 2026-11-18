@@ -1778,12 +1778,12 @@ reader or page publisher.
 Prep lives under `components/Workspace/Prep`. Its entrance mounts
 `useKitchenWorkspacePrep`; Create and connected child summaries use strict internal
 lookup. Its `Overview/Index.vue` composes Controls and Collection through a local
-component namespace; those two surfaces remain placeholders until their workflows
-are defined. The entrance acquires existing Preparation/Recipe readers and Kitchen
+component namespace. Controls filters a short preparation preview from the
+existing entrance reader. Collection owns feedback and links to the Preparations library. The entrance acquires existing Preparation/Recipe readers and Kitchen
 Ingredient/Station associations once, gated by the selected Kitchen's readiness.
 Child capabilities expose counts and recorded Recipe input/method gaps from that graph;
-Ingredient counts mean selected catalogue entries, not stock. Prep plan and
-Batches remain explicitly unconnected. Connected Menu/Prep child overviews explicitly
+Ingredient counts mean selected catalogue entries, not stock. Prep Plan and
+Batches provide a browser-local workflow scoped by App, operator and Kitchen. Connected Menu/Prep child overviews explicitly
 import their adjacent `useOverview.ts` presentation composable, which consumes the
 corresponding `useKitchenWorkspace…` capability. Domain summary facts and acquired
 state retain their existing owners; card feedback uses the shared
@@ -2417,9 +2417,9 @@ links, and a searchable, bounded library with direct record destinations. It
 composes the existing Preparation and Recipe readers once each, using selected
 Workspace scope; it acquires no ingredient catalogue or mutation controllers.
 Search, library selection and progressive disclosure are local presentation
-state. Each library retains its own pending/error outcome. Prep plans and
-Batches remain secondary entrances explicitly marked as not connected, without
-inventing production totals or stock facts.
+state. Each library retains its own pending/error outcome. Prep Plan saves dated tasks with planned quantities. Recording an actual quantity
+creates one Batch for that task. These records are browser-local and do not update
+team data, Recipes, inventory or traceability.
 
 `Workspace/Prep/LibraryRead.vue` composes these readers once; its Ingredient
 catalogue and Kitchen associations acquire only for Recipe views, not Preparation

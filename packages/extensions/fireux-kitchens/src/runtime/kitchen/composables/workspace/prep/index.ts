@@ -9,7 +9,10 @@ function createKitchenPrepWorkspace() {
   const kitchenId = computed(() =>
     kitchen.outcome.value === 'ready' ? kitchen.id.value : ''
   )
-  const summaries = createPrepSummaries(kitchenId, kitchen.outcome)
+  const { summaries, preparations } = createPrepSummaries(
+    kitchenId,
+    kitchen.outcome
+  )
   const ready = computed(() => kitchen.outcome.value === 'ready')
   const createTo = '/workspace/kitchen/prep/recipes'
 
@@ -18,7 +21,7 @@ function createKitchenPrepWorkspace() {
       `Manage ${kitchenName.value ? `${kitchenName.value}'s` : "your Kitchen's"} preparations, recipes, ingredients and production`
   )
 
-  return { description, ready, createTo, summaries }
+  return { description, ready, createTo, summaries, preparations }
 }
 
 /** Mount the shared Prep state once for the operational children. */
