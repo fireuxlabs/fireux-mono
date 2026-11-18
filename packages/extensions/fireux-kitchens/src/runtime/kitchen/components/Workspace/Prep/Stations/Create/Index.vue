@@ -48,11 +48,11 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useKitchenWorkspaceStations } from '../../../../../composables/workspace/stations/useKitchenWorkspaceStations'
+import { useKitchenWorkspacePrepStationsRead } from '../../../../../composables/workspace/prep/stations/useKitchenWorkspacePrepStationsRead'
 import { useKitchenStationCreate } from '../../../../../composables/stations/useKitchenStationCreate'
 
 const { kitchenId, rootCollection, canWrite, stations } =
-  useKitchenWorkspaceStations()
+  useKitchenWorkspacePrepStationsRead()
 
 const name = ref('')
 const role = ref<'preparation' | 'coordination'>('preparation')

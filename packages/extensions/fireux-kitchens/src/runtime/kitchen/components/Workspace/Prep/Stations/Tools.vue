@@ -14,6 +14,6 @@
   </UModal>
 </template>
 <script setup lang="ts">
-import { useKitchenWorkspaceStations } from '../../../../composables/workspace/stations/useKitchenWorkspaceStations'
-const { createOpen, canWrite } = useKitchenWorkspaceStations()
+import { useKitchenWorkspacePrepStationsRead } from '../../../../composables/workspace/prep/stations/useKitchenWorkspacePrepStationsRead'
+const { createOpen, canWrite } = useKitchenWorkspacePrepStationsRead()
 </script>

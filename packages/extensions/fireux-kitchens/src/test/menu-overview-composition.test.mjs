@@ -6,6 +6,7 @@ import * as Vue from 'vue'
 import { parse, compileScript } from 'vue/compiler-sfc'
 import ts from 'typescript'
 import { menuWorkspaceDestination } from '../runtime/kitchen/utils/menu-workspace-destination.ts'
+import { publishedMenuDates } from '../runtime/menu/utils/calendar/daily.ts'
 
 const runtime = new URL('../runtime/', import.meta.url)
 function component(path, bindings = {}) {
@@ -23,6 +24,7 @@ function component(path, bindings = {}) {
   const exports = {}
   compileFunction(code, ['require', 'exports'])((name) => {
     if (name === 'vue') return Vue
+    if (name.endsWith('/calendar/daily')) return { publishedMenuDates }
     if (name.endsWith('/menu-workspace-destination'))
       return { menuWorkspaceDestination }
     assert.ok(bindings[name], name)
@@ -52,6 +54,7 @@ function mount() {
       status: 'published',
       schedule: 'daily',
       purpose: 'specials',
+      published_dates: ['2026-11-23'],
       sort_order: 1,
     },
     {
@@ -80,6 +83,7 @@ function mount() {
   ).outputText
   compileFunction(listCode, ['require', 'exports'])((name) => {
     if (name === 'vue') return Vue
+    if (name.endsWith('/calendar/daily')) return { publishedMenuDates }
     if (name === '#imports') return { useState: () => choices }
     if (name.endsWith('/useAppSession'))
       return { useAppSession: () => ({ uid: Vue.ref('actor') }) }
@@ -124,6 +128,7 @@ function mount() {
   }
   compileFunction(overviewCode, ['require', 'exports'])((name) => {
     if (name === 'vue') return Vue
+    if (name.endsWith('/calendar/daily')) return { publishedMenuDates }
     if (name === './state')
       return {
         requireMenuWorkspace: () => ({
@@ -152,6 +157,7 @@ function mount() {
   const local = {}
   compileFunction(localCode, ['require', 'exports'])((name) => {
     if (name === 'vue') return Vue
+    if (name.endsWith('/calendar/daily')) return { publishedMenuDates }
     if (name.endsWith('/menu/overview')) return overviewExports
     assert.fail(name)
   }, local)
@@ -316,6 +322,10 @@ test('composed menu overview retains ordering, controlled search/status choices,
       view
         .all('article')
         .some((node) => view.text(node).includes('Daily specials'))
+    )
+    assert.deepEqual(
+      view.all('time').map((node) => node.props.datetime),
+      ['2026-11-23']
     )
     view.rows.value = view.rows.value.map((menu) =>
       menu.id === 'draft' ? { ...menu, schedule: 'daily' } : menu

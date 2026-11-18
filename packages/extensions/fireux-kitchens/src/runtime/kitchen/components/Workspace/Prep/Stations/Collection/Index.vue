@@ -38,9 +38,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { KitchenStation } from '../../../../../utils/station.ts'
-import { useKitchenWorkspaceStations } from '../../../../../composables/workspace/stations/useKitchenWorkspaceStations'
+import { useKitchenWorkspacePrepStationsRead } from '../../../../../composables/workspace/prep/stations/useKitchenWorkspacePrepStationsRead'
 
-const { stations, outcome } = useKitchenWorkspaceStations()
+const { stations, outcome } = useKitchenWorkspacePrepStationsRead()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const stationName = (station: KitchenStation) => normalizeString(station.name)
 const stationDisplayName = (station: KitchenStation) =>

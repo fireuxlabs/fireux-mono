@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref, watch } from 'vue'
-import { useKitchenWorkspaceIngredients } from '../../../../../composables/workspace/ingredients/useKitchenWorkspaceIngredients'
+import { useKitchenWorkspacePrepIngredients } from '../../../../../composables/workspace/prep/ingredients/useKitchenWorkspacePrepIngredients'
 import { useKitchenIngredientUpdate } from '../../../../../composables/ingredients/useKitchenIngredientUpdate'
 import { useIngredientCollection } from '../../../../../../ingredient/composables/useIngredientCollection'
 import { ingredientCategoryLabel } from '../../../../../../ingredient/models/ingredient-taxonomy'
@@ -79,7 +79,7 @@ const {
   rootCollection,
   canWrite,
   ingredients: selectedIngredients,
-} = useKitchenWorkspaceIngredients()
+} = useKitchenWorkspacePrepIngredients()
 const {
   ingredients: library,
   pending: libraryPending,

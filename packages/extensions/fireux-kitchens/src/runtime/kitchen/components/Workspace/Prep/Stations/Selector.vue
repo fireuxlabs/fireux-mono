@@ -22,10 +22,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspaceStations } from '../../../../composables/workspace/stations/useKitchenWorkspaceStations'
+import { useKitchenWorkspacePrepStationsRead } from '../../../../composables/workspace/prep/stations/useKitchenWorkspacePrepStationsRead'
 
 const { stations, selectedStationId, canWrite, createOpen } =
-  useKitchenWorkspaceStations()
+  useKitchenWorkspacePrepStationsRead()
 const items = computed(() =>
   stations.value.map((station) => ({
     label: String(station.name || station.id || 'Untitled Station').trim(),

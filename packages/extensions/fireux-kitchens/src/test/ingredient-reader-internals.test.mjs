@@ -72,8 +72,8 @@ function workspaceFixture() {
   }
   let requestedId
   const use = load(
-    'kitchen/composables/workspace/ingredients/useKitchenWorkspaceIngredients.ts',
-    'useKitchenWorkspaceIngredients',
+    'kitchen/composables/workspace/prep/ingredients/useKitchenWorkspacePrepIngredients.ts',
+    'useKitchenWorkspacePrepIngredients',
     {
       computed,
       useKitchenWorkspace: () => workspace,

@@ -2,14 +2,14 @@ import { computed } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { IngredientStorage } from '../../../../ingredient/utils/ingredient.ts'
-import type { IngredientInterfaceItem } from '../../../../ingredient/composables/useIngredientInterface'
-import { useKitchenIngredients } from '../../ingredients/useKitchenIngredients'
-import { useKitchenAccess } from '../../useKitchenAccess'
-import { useKitchenWorkspace } from '../useKitchenWorkspace'
-import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
+import { IngredientStorage } from '../../../../../ingredient/utils/ingredient.ts'
+import type { IngredientInterfaceItem } from '../../../../../ingredient/composables/useIngredientInterface'
+import { useKitchenIngredients } from '../../../ingredients/useKitchenIngredients'
+import { useKitchenAccess } from '../../../useKitchenAccess'
+import { useKitchenWorkspace } from '../../useKitchenWorkspace'
+import { useKitchenWorkspaceReadPage } from '../../useKitchenWorkspaceReadPage'
 
-export function useKitchenWorkspaceIngredients() {
+export function useKitchenWorkspacePrepIngredients() {
   const workspace = useKitchenWorkspace()
   const session = useAppSession()
   const access = useKitchenAccess()

@@ -1,23 +1,8 @@
 <template>
-  <div>
-    <section class="workspace-surface">
-      <UPageHeader title="Stations" />
-      <WorkspaceKitchenAIFocus
-        focus="kitchen-ai.prep.stations"
-        label="Stations"
-        context-label="Prep"
-      />
-      <WorkspaceKitchenToolsToolbar capability="stations" />
-      <KitchenWorkspacePrepStations />
-    </section>
-  </div>
+  <KitchenWorkspacePrepStations />
 </template>
 
 <script setup lang="ts">
-import { provideKitchenWorkspaceStations } from '../../../../kitchen/composables/workspace/stations/useKitchenWorkspaceStations'
-
-provideKitchenWorkspaceStations()
-
 definePageMeta({
   layout: 'workspace',
 

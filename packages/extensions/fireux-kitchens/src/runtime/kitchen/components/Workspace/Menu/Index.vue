@@ -6,12 +6,12 @@
   />
   <Menu.Overview />
   <Menu.Create />
-  <Menu.Ai />
   <UPageGrid as="section" aria-label="Items, promotions and services summary">
     <Menu.ItemsOverview />
     <Menu.PromotionsOverview />
     <Menu.ServicesOverview />
   </UPageGrid>
+  <Menu.Ai />
 </template>
 
 <script setup lang="ts">

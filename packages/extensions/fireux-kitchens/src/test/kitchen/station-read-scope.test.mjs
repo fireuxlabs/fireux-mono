@@ -89,12 +89,14 @@ function harness() {
   const source = (path) => readFileSync(new URL(path, runtime), 'utf8')
   const state = scope.run(() =>
     load(
-      source('composables/workspace/stations/useKitchenWorkspaceStations.ts'),
+      source(
+        'composables/workspace/prep/stations/useKitchenWorkspacePrepStationsRead.ts'
+      ),
       deps,
-      'createKitchenWorkspaceStations()'
+      'createKitchenWorkspacePrepStationsRead()'
     )
   )
-  deps.useKitchenWorkspaceStations = () => state
+  deps.provideKitchenWorkspacePrepStationsRead = () => state
   deps.useKitchenStationCreate = load(
     source('composables/stations/useKitchenStationCreate.ts'),
     deps,
@@ -244,7 +246,7 @@ async function render(outcome, rows = []) {
     script,
     {
       computed,
-      useKitchenWorkspaceStations: () => ({
+      useKitchenWorkspacePrepStationsRead: () => ({
         stations: ref(rows),
         outcome: ref(outcome),
       }),

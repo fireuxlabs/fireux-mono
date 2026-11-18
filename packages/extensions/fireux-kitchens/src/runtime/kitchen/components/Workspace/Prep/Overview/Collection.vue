@@ -10,9 +10,21 @@
   </p>
   <ul v-else aria-label="Preparation preview">
     <li v-for="preparation in preparations.slice(0, 5)" :key="preparation.id">
-      {{ preparation.name }}
+      <NuxtLink
+        :to="`/workspace/kitchen/prep/preparations/${encodeURIComponent(preparation.id)}`"
+        class="prep-preview-link"
+      >
+        <span>{{ preparation.name }}</span>
+        <UIcon name="i-lucide-chevron-right" aria-hidden="true" />
+      </NuxtLink>
     </li>
   </ul>
+  <p
+    v-if="summary.outcome === 'ready' && preparations.length > 5"
+    class="fx-type-caption"
+  >
+    Showing 5 of {{ preparations.length }}
+  </p>
   <UButton
     v-if="summary.outcome === 'ready'"
     to="/workspace/kitchen/prep/preparations"
@@ -31,3 +43,17 @@ defineProps<{
   searching: boolean
 }>()
 </script>
+
+<style scoped>
+.prep-preview-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+  padding-block: calc(var(--spacing) * 2);
+  border-bottom: 1px solid var(--ui-border);
+}
+.prep-preview-link:hover {
+  color: var(--ui-primary);
+}
+</style>

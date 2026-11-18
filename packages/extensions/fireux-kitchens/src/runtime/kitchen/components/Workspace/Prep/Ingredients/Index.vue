@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenIngredientsContext } from '../../../../composables/workspace/ingredients/useKitchenIngredientsContext'
+import { provideKitchenWorkspacePrepIngredients } from '../../../../composables/workspace/prep/ingredients/state'
 
-const { storageKitchenId, outcome } = useKitchenIngredientsContext()
+const { storageKitchenId, outcome } = provideKitchenWorkspacePrepIngredients()
 </script>

@@ -1,14 +1,8 @@
 <template>
-  <div>
-    <KitchenWorkspacePrepIngredients />
-  </div>
+  <KitchenWorkspacePrepIngredients />
 </template>
 
 <script setup lang="ts">
-import { provideKitchenIngredientsContext } from '../../../../../kitchen/composables/workspace/ingredients/useKitchenIngredientsContext'
-
-provideKitchenIngredientsContext()
-
 definePageMeta({
   layout: 'workspace',
 

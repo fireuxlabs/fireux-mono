@@ -395,7 +395,7 @@ test('Preparation editor uses the shared lifecycle and preserves an open dirty d
     scope = effectScope()
   const api = scope.run(() =>
     load(
-      'components/Workspace/Prep/PreparationEditor.vue',
+      'components/Workspace/Prep/Preparations/Editor.vue',
       '({draft,open,start,save})',
       {
         ref,

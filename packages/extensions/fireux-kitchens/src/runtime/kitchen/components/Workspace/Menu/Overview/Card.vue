@@ -9,7 +9,15 @@
   >
     <template #header>
       <div class="menu-overview-card-heading">
-        <UIcon name="i-lucide-book-open" class="menu-overview-icon" />
+        <UIcon
+          :name="
+            menu.schedule === 'daily'
+              ? 'i-lucide-calendar-days'
+              : 'i-lucide-book-open'
+          "
+          class="menu-overview-icon"
+          aria-hidden="true"
+        />
         <UBadge
           :color="menu.status === 'published' ? 'success' : 'neutral'"
           variant="subtle"
@@ -40,6 +48,10 @@
               : 'Daily menu'
             : 'Open menu'
         }}</span>
+        <time v-if="releaseDate" :datetime="releaseDate">
+          {{ releaseLabel }}
+        </time>
+        <span v-else-if="releaseCount">{{ releaseCount }} published dates</span>
         <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
       </div>
     </template>
@@ -48,7 +60,28 @@
 <script setup lang="ts">
 import type { Menu } from '../../../../../menu/models/menu.model'
 import { menuWorkspaceDestination } from '../../../../utils/menu-workspace-destination'
-defineProps<{ menu: Menu }>()
+import { computed } from 'vue'
+import { publishedMenuDates } from '../../../../../menu/utils/calendar/daily'
+
+const { menu } = defineProps<{ menu: Menu }>()
+const releases = computed(() =>
+  menu.schedule === 'daily' && menu.status === 'published'
+    ? publishedMenuDates(menu.published_dates)
+    : []
+)
+const releaseCount = computed(() => releases.value.length)
+const releaseDate = computed(() =>
+  releaseCount.value === 1 ? releases.value[0] : undefined
+)
+const formatter = new Intl.DateTimeFormat('en-GB', {
+  dateStyle: 'medium',
+  timeZone: 'UTC',
+})
+const releaseLabel = computed(() =>
+  releaseDate.value
+    ? formatter.format(new Date(releaseDate.value + 'T12:00:00Z'))
+    : ''
+)
 </script>
 <style scoped>
 .menu-overview-card-heading,

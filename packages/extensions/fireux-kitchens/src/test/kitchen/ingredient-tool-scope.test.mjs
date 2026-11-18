@@ -692,7 +692,7 @@ test('Ingredient add resets on authority changes and an old completion cannot cl
         '({handleSelect, query, selectedId, submitting})',
         {
           ...h.deps,
-          useKitchenWorkspaceIngredients: () => ({
+          useKitchenWorkspacePrepIngredients: () => ({
             kitchenId: h.kitchenId,
             rootCollection: vue.ref('kitchens'),
             canWrite: h.canWrite,

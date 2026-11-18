@@ -6,15 +6,15 @@
   />
   <KitchenWorkspacePrepOverview />
   <KitchenWorkspacePrepCreate />
-  <KitchenWorkspacePrepAi />
   <UPageGrid as="section" aria-label="Preparation and production tools">
+    <KitchenWorkspacePrepPlanOverview />
+    <KitchenWorkspacePrepBatchesOverview />
     <KitchenWorkspacePrepPreparationsOverview />
     <KitchenWorkspacePrepRecipesOverview />
     <KitchenWorkspacePrepIngredientsOverview />
     <KitchenWorkspacePrepStationsOverview />
-    <KitchenWorkspacePrepPlanOverview />
-    <KitchenWorkspacePrepBatchesOverview />
   </UPageGrid>
+  <KitchenWorkspacePrepAi />
 </template>
 
 <script setup lang="ts">

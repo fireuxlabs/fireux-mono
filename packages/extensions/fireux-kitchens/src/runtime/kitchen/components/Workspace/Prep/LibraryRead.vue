@@ -11,7 +11,7 @@
     :recipe-to="recipeTo"
   >
     <template #actions="{ preparation, recipe }">
-      <KitchenWorkspacePrepPreparationEditor
+      <KitchenWorkspacePrepPreparationsEditor
         v-if="preparation"
         :key="`${kitchenId}:${preparation.id}`"
         :record="preparation"

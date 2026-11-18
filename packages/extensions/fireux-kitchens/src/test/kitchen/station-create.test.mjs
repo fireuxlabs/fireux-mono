@@ -192,7 +192,7 @@ test('Station form preserves its target and cancels obsolete credential-stage wr
         useRequireUser: () => auth,
         useUserSession: () => ({ appUser }),
         useFireUXConfig: () => config,
-        useKitchenWorkspaceStations: () => ({
+        useKitchenWorkspacePrepStationsRead: () => ({
           kitchenId: selectedId,
           rootCollection: ref('kitchens'),
           canWrite,

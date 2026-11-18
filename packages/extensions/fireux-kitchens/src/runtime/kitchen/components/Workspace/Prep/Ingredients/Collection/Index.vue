@@ -188,11 +188,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useIngredientInterface } from '../../../../../../ingredient/composables/useIngredientInterface'
-import { useKitchenIngredientsContext } from '../../../../../composables/workspace/ingredients/useKitchenIngredientsContext'
+import { requireKitchenWorkspacePrepIngredients } from '../../../../../composables/workspace/prep/ingredients/state'
 import { INGREDIENT_CATEGORY_OPTIONS } from '../../../../../../ingredient/models/ingredient-taxonomy'
 
 const { ingredients, kitchenId, pending, loadError, canWrite, debug } =
-  useKitchenIngredientsContext()
+  requireKitchenWorkspacePrepIngredients()
 const { pill } = useIngredientInterface()
 const query = ref('')
 const category = ref('all')

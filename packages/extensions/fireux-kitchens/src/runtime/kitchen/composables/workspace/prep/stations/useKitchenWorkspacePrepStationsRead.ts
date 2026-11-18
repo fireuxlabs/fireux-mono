@@ -12,13 +12,13 @@ import {
 import {
   KitchenStationStorage,
   type KitchenStation,
-} from '../../../utils/station.ts'
-import { useKitchenWorkspace } from '../useKitchenWorkspace'
-import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
-import { useKitchenStationCollection } from '../../useKitchenStationCollection'
+} from '../../../../utils/station.ts'
+import { useKitchenWorkspace } from '../../useKitchenWorkspace'
+import { useKitchenWorkspaceReadPage } from '../../useKitchenWorkspaceReadPage'
+import { useKitchenStationCollection } from '../../../useKitchenStationCollection'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
-function createKitchenWorkspaceStations() {
+function createKitchenWorkspacePrepStationsRead() {
   const workspace = useKitchenWorkspace()
   const selectedKitchen = workspace.data
   const kitchenId = workspace.id
@@ -118,21 +118,22 @@ function createKitchenWorkspaceStations() {
 }
 
 export type KitchenWorkspaceStations = ReturnType<
-  typeof createKitchenWorkspaceStations
+  typeof createKitchenWorkspacePrepStationsRead
 >
 
 const kitchenWorkspaceStationsKey: InjectionKey<KitchenWorkspaceStations> =
   Symbol('fireux-kitchen-workspace-stations')
 
-export function provideKitchenWorkspaceStations() {
-  const workspace = createKitchenWorkspaceStations()
+export function provideKitchenWorkspacePrepStationsRead() {
+  const workspace = createKitchenWorkspacePrepStationsRead()
   provide(kitchenWorkspaceStationsKey, workspace)
   return workspace
 }
 
-export function useKitchenWorkspaceStations() {
-  return (
-    inject(kitchenWorkspaceStationsKey, null) ??
-    createKitchenWorkspaceStations()
-  )
+export function useKitchenWorkspacePrepStationsRead() {
+  const workspace = inject(kitchenWorkspaceStationsKey, null)
+  if (!workspace) {
+    throw new Error('Stations children require their workspace owner.')
+  }
+  return workspace
 }

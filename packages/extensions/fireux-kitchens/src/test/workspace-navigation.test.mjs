@@ -584,10 +584,7 @@ test('group child surfaces retain every entrance and compose summaries inside th
   assert.match(group, /v-for="item in children"/)
   assert.ok(!group.includes('<slot'))
   assert.ok(!group.includes('excludePages'))
-  assert.ok(
-    food.indexOf('<Menu.Ai') <
-      food.indexOf('<Menu.ItemsOverview')
-  )
+  assert.ok(food.indexOf('<Menu.Ai') > food.indexOf('<Menu.ItemsOverview'))
   assert.ok(!food.includes('WorkspaceGroupPage'))
   assert.match(food, /<Menu\.ServicesOverview/)
   const keys = navigation(join(root, 'menu/index.vue')).children.map(

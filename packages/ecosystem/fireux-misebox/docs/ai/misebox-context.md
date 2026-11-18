@@ -2599,7 +2599,9 @@ for an empty collection. Its authorised create-only ensure command preserves
 an existing station, including its name, on repeated calls. Collection reads
 have no mutation side effect. The default-station command and focused station-default test
 live under Kitchen server/stations and src/test/kitchen respectively.
-The Stations surface preserves the live reader's loading, failure and empty
+The Stations screen mounts one workspace reader for its toolbar, creation form
+and collection. Child lookups require that instance. The screen preserves the
+live reader's loading, failure and empty
 outcomes and hides rows and counts until settled. Default-Pass setup invalidates
 obsolete credential waits and late errors synchronously when Kitchen, account or
 writable state changes, and when the owning surface is disposed. Ordinary
@@ -3351,7 +3353,7 @@ No extra acquisition or new mutation owner is introduced. Verify with
 `menu-hours.test.mjs`, `kitchen-operation-hours.test.mjs`,
 `menu-workspace-commands.test.mjs` and the Service hours tests.
 
-Kitchen Workspace Ingredients uses `useKitchenWorkspaceIngredients` for its
+Kitchen Workspace Ingredients uses `useKitchenWorkspacePrepIngredients` for its
 collection. A single Kitchen–Ingredient link is read by the domain-owned
 `kitchen/composables/ingredients/useKitchenIngredientDetail`, with explicit
 Kitchen and Ingredient IDs. The page supplies Workspace selection and route ID.
