@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-11-16
-Ref: e7fa1f63c
+Updated: 2026-11-17
+Ref: f798e3e99
 Role: living context
 Scope: repository-wide
 
@@ -176,8 +176,13 @@ for rules absent from their configuration.
 
 ## FireUX source spine
 
-Nuxt technical roles, declared Entity owners and the shared Workspace owner
-form the source spine. Carry only the responsibilities actually needed; do not
+Native Nuxt technical roles, sibling Entity roots at the owning package runtime,
+and the existing shared Workspace owner form the source spine. Entity roots do
+not recursively contain other Entity spines; owned Records use their Entity’s
+optional `records/` definitions and existing technical roles. Current nested
+Entity source remains migration debt until a complete consumer cutover; source
+placement changes neither stored scope nor authority. Carry only the
+responsibilities actually needed; do not
 create symmetric folders or forwarding layers. The shared Workspace runtime owns
 frame/selection mechanics, not domain records. Domain component audiences and
 library admission follow the [surface convention](../concepts/components.md#domain-component-surfaces);

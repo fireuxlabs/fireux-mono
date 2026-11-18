@@ -1,7 +1,7 @@
 # Components spine map
 
 Updated: 2026-11-17
-Ref: b5995c8db
+Ref: f798e3e99
 Role: map, not canon
 
 ## Purpose and navigation
@@ -180,6 +180,12 @@ alignment, not another accepted convention or proof of a completed migration.
 | Neutral lower domain component | A bounded responsibility with proved independent consumers and a shared/cross-Entity API. Several hosts of the same surface do not prove cross-audience reuse. | The neutral scan supplies `<Entity><Capability>*` and excludes both Public and Workspace trees. |
 
 The operator order is Entity, audience, then capability and responsible child.
+Where a matching composable owns meaningful coordination, its name uses `use`
+followed by that same order, such as `useKitchenWorkspaceMenuServices`. Native
+composable discovery uses named exports rather than deriving folder prefixes.
+A matching composable is optional; local computed values and handlers can stay
+in the SFC, and pure presentation uses typed props/events. Do not extract a
+forwarding facade or pass a large controller merely to satisfy naming symmetry.
 Kitchen's Menu target is `KitchenWorkspaceMenu`, composing
 `KitchenWorkspaceMenuOverview`, `KitchenWorkspaceMenuCreate`,
 `KitchenWorkspaceMenuAi`, `KitchenWorkspaceMenuItemsOverview`,

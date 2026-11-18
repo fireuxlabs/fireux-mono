@@ -1,7 +1,7 @@
 # Workspace
 
 Updated: 2026-11-17
-Ref: e20047a13
+Ref: f798e3e99
 Role: map, not canon
 
 Business is an additional Workspace Entity owned by `fireux-businesses`. Its first tools are business profile/contact editing, optional Place links and the organisational Team roster. Current source and authority are routed through `packages/extensions/fireux-businesses/docs/ai/businesses-context.md`.
@@ -100,13 +100,16 @@ its bounded shared extension points. See the
 
 Group-parent components directly compose their introduction and supported
 overview, actions, AI and child summaries. One domain-owned
-`use{Entity}{Capability}Workspace()` mounts their real shared coordination;
+`use{Entity}Workspace{Capability}()` mounts their real shared coordination;
 responsible children consume that owner through named child Workspace composables,
 with strict internal lookup rather than public `State` APIs. See the
 [group composition contract](family-workspace-entity.md#workspace-group-overview-composition)
 for Kitchen Menu/Prep source examples and bounded adoption. Native framing and
-record editors retain their own owners. Do not mount editing controllers merely
-to calculate overview counts; status comes from records and policy, not AI.
+record editors retain their own owners. The group owner is a logical scope, not
+an assumption that a Vue ancestor persists across route navigation. Menu/Prep
+provide document-oriented examples; Orders retains its operational application
+composition. Do not mount editing controllers merely to calculate overview
+counts; status comes from records and policy, not AI.
 
 ## Breadcrumbs
 

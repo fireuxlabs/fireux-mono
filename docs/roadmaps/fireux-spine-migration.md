@@ -1,7 +1,7 @@
 # FireUX spine migration plan
 
 Date: 2026-11-17
-Source baseline: `b5995c8db`
+Source baseline: `f798e3e99`
 Role: bounded migration plan and portable handoff; target design, not a claim of completed migration
 
 ## Read this first
@@ -20,12 +20,14 @@ repository-wide source move, a data migration, deployment or a server restart.
 Implement it through complete, bounded owner-and-consumer slices. Current source
 establishes existing behavior; the decisions below establish the intended target.
 
-The committed baseline contains the accepted native Workspace layout migration.
-The shared laptop checkout also has uncommitted Kitchen and other task work.
-Those changes are not made available remotely merely by saving this plan. A
-continuing coding agent must inspect the current checkout before editing and
-coordinate with its existing owners. A phone reader can understand the plan
-without those local changes.
+The committed baseline contains the accepted native Workspace layout migration
+and the Kitchen state-owner checkpoint saved in `08e5825ee`. The later
+[discussion handoff](../handoffs/2026-11-17-fireux-predictable-spine-rules.md)
+sharpens the first step to audit Menu and Prep & Production together as
+document-oriented groups; Orders retains its operational application pattern.
+Read that handoff alongside this plan. Always inspect the live checkout and
+existing owners before editing; do not assume the historical checkpoint means
+there is no new concurrent work.
 
 ## The agreed structure
 

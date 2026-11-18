@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-11-16
-Ref: e71fff3f0
+Updated: 2026-11-17
+Ref: f798e3e99
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -1714,6 +1714,23 @@ at the top of Workspace Services through the trusted Kitchen update command.
 Missing or cleared titles display “Food & drinks”. Public food portal cards use
 this title rather than concatenating Menu names; service configurations remain
 separate Kitchen-owned records.
+
+Kitchen Menu and Prep & Production are document-oriented Workspace groups;
+Orders is a distinct operational application. Their ownership and lifecycle
+rules are shared without forcing identical components. Group owners are logical
+capability scopes: entrance injection does not persist automatically across
+sibling Nuxt routes. Inspect each host's acquisition, publication and disposal.
+The target operator naming is Entity → Workspace → capability → child, including
+composables such as `useKitchenWorkspaceMenuServices`; current source names below
+remain migration inputs. Matching component/composable pairs are optional and
+must earn their reactive or interaction responsibility.
+
+Kitchen Item is a Kitchen-owned Record. Recipe is a first-class Entity with an
+independent-domain target, while current source, reads and writes remain
+Kitchen-scoped. Independent Recipe authority, Kitchen association and versioning
+are separate design work; Preparation classification remains to-confirm. Follow
+`docs/concepts/entities.md` for these boundaries and current models/readers for
+implemented behavior; source movement grants no new data authority.
 
 Kitchen pages select native `layout: 'workspace'`. Core FireuxApp supplies one
 NuxtPage to NuxtLayout; the native Workspace layout composes Sidebar and Page.

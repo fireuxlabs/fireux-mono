@@ -1,7 +1,7 @@
 # Nuxt UI integration map
 
-Updated: 2026-11-15
-Ref: a068b6eaa
+Updated: 2026-11-17
+Ref: f798e3e99
 Role: map, not canon
 
 ## Purpose and authority
@@ -50,7 +50,7 @@ shared component admission and current component evidence.
 ## Current shared frame
 
 Core's [WorkspacePage.vue](../../packages/core/fireux-core/src/runtime/workspace/components/Page.vue)
-composes Nuxt UI's dashboard panel and route outlet with the shared
+composes Nuxt UI's dashboard panel around the App-supplied page slot with the shared
 [Navbar.vue](../../packages/core/fireux-core/src/runtime/workspace/components/Navbar.vue)
 and [Breadcrumbs.vue](../../packages/core/fireux-core/src/runtime/workspace/components/Breadcrumbs.vue).
 Group links use Nuxt UI page cards through the ordinary

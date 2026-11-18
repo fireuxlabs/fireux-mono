@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
 Updated: 2026-11-17
-Ref: b5995c8db
+Ref: f798e3e99
 Role: map, not canon
 
 ## Purpose
@@ -114,6 +114,20 @@ inspection; removed demo trees are not a supported scaffold. Entity roots use th
 canonical entity name and do not become generic domain, feature, capability,
 content, AI, asset, or type buckets.
 
+The accepted target keeps first-class Entity roots as siblings at their owning
+package runtime. There is no architectural Sub-Entity class and no recursive
+Entity spine beneath another Entity. Current nested Entity source is migration
+input, not evidence that a data relationship requires source nesting. A complete
+cutover must preserve the existing storage and authority unless a separate domain
+migration is authorized.
+
+An Entity may own an optional `records/` directory containing its support-record
+definitions, such as the target `kitchen/records/item.ts`. Reader, component,
+workflow and command behavior stays in that Entity's existing technical roles;
+`records/` does not contain miniature component/composable/server spines.
+Embedded shapes remain beside their owning model, record or capability. This
+classifies ownership, not Firestore nesting or TypeScript `Record<...>` usage.
+
 An absent role is represented by an absent directory, not an empty placeholder.
 Filesystem migrations remove emptied source paths after their consumers move;
 otherwise cold readers and AI agents can mistake retired ownership for an
@@ -205,8 +219,10 @@ shared or Entity role. Check declarations against existing source directories
 and generated imports/components to detect phantom targets.
 
 Core App owns identity, runtime configuration, initialization and App composition
-under `runtime/app/{components,composables,models,utils,server}`. Its AppUser child
+under `runtime/app/{components,composables,models,utils,server}`. The current AppUser implementation
 owns `runtime/app/app-user/{components,composables,contracts,models,utils,server}`;
+AppUser remains a first-class Entity, and this nested source placement is pending
+its own bounded sibling-root cutover rather than a template for new Entities;
 `models` contains only `model.ts`, and bounded reader/presentation projections
 live in the child's `types.ts`. Native AppUser registration uses the `AppUser`
 component prefix and its explicit composable directory. App events remain App-owned;
@@ -229,7 +245,8 @@ role, Workspace audience, then capability:
 src/runtime/kitchen/
 ├── components/Workspace/Menu/
 ├── composables/workspace/menu/
-├── models/menu/
+├── models/model.ts
+├── records/item.ts
 └── server/operations/menus/
 ```
 

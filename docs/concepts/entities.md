@@ -1,7 +1,7 @@
 # Entities
 
-Updated: 2026-11-16
-Ref: a068b6eaa
+Updated: 2026-11-17
+Ref: f798e3e99
 Role: map, not canon
 
 ## Purpose
@@ -34,6 +34,10 @@ registry.
 
 A collection, route, model, id, or component does not prove Entity status.
 Firestore stores FireUX concepts; it does not decide what an Entity is.
+There is no architectural Sub-Entity class: first-class Entities have sibling
+source roots in the owning package runtime; parent-owned support truth remains
+Records and uses its owner's technical roles. A scoped storage relationship
+neither requires source nesting nor grants independent authority.
 
 ## Entity checkpoint
 
@@ -66,30 +70,29 @@ model does not need a second read-classification record.
 The following classification map is a reading aid. Current owning source
 establishes each record's actual shape and behavior:
 
-| Entity           | Family                      | Identity       | App support       | Workspace |
-| ---------------- | --------------------------- | -------------- | ----------------- | --------- |
-| App              | core, system                | root           | none              | no        |
-| Ecosystem        | system                      | root           | none              | no        |
-| User             | core, identity              | root           | membership record | no        |
-| Project          | system, workspace entity    | root           | none              | yes       |
-| Job              | content                     | root           | none              | no        |
-| Place            | place                       | root           | none              | no        |
-| Business         | business, workspace entity  | root           | none              | yes       |
-| MarketplaceStore | commerce                    | root           | none              | no        |
-| Kitchen          | kitchen, workspace entity   | root           | none              | yes       |
-| Menu             | menu, kitchen               | Kitchen-scoped | none              | no        |
-| Recipe           | kitchen                     | Kitchen-scoped | none              | no        |
-| KitchenPrepItem  | kitchen                     | Kitchen-scoped | none              | no        |
-| Dish             | kitchen, menu               | Kitchen-scoped | none              | no        |
-| KitchenOrder     | kitchen, ordering           | Kitchen-scoped | none              | no        |
-| Supplier         | supplier, workspace entity  | root           | none              | yes       |
-| Portfolio        | portfolio, workspace entity | root           | none              | yes       |
-| Property         | property, workspace entity  | root           | none              | yes       |
+| Entity           | Family                      | Identity                                 | App support       | Workspace |
+| ---------------- | --------------------------- | ---------------------------------------- | ----------------- | --------- |
+| App              | core, system                | root                                     | none              | no        |
+| Ecosystem        | system                      | root                                     | none              | no        |
+| User             | core, identity              | root                                     | membership record | no        |
+| Project          | system, workspace entity    | root                                     | none              | yes       |
+| Job              | content                     | root                                     | none              | no        |
+| Place            | place                       | root                                     | none              | no        |
+| Business         | business, workspace entity  | root                                     | none              | yes       |
+| MarketplaceStore | commerce                    | root                                     | none              | no        |
+| Kitchen          | kitchen, workspace entity   | root                                     | none              | yes       |
+| Menu             | menu, kitchen               | Kitchen-scoped                           | none              | no        |
+| Recipe           | culinary                    | Kitchen-scoped today; independent target | none              | no        |
+| KitchenOrder     | kitchen, ordering           | Kitchen-scoped                           | none              | no        |
+| Supplier         | supplier, workspace entity  | root                                     | none              | yes       |
+| Portfolio        | portfolio, workspace entity | root                                     | none              | yes       |
+| Property         | property, workspace entity  | root                                     | none              | yes       |
 
 Examples of parent-owned Records:
 
 | Record            | Parent           | Why it is not an Entity                                                |
 | ----------------- | ---------------- | ---------------------------------------------------------------------- |
+| Item              | Kitchen          | Kitchen owns reusable Item truth; Menu placements reference it         |
 | MenuSourceUpload  | Kitchen          | It is source material for a Kitchen workflow                           |
 | MenuSection       | Menu             | It groups MenuItem records inside one Menu                             |
 | MenuItem          | MenuSection      | It is one parent-owned catalogue row                                   |
@@ -114,8 +117,9 @@ the available surface; a metadata boolean would not create it.
 Public/detail components and Workspace components consume the same owning
 Entity's supported readers and commands, with the appropriate projections and
 authorization. An Entity without its own Workspace can still be used within
-another Entity's Workspace. Recipe, for example, retains its Kitchen-scoped
-identity while Kitchen's Recipes capability manages it.
+another Entity's Workspace. Kitchen's Recipes capability currently manages
+Kitchen-scoped Recipes; Recipe's accepted independent-domain target does not
+make its present readers or commands independent of Kitchen access.
 
 Shared Workspace code owns selection, navigation and structural presentation.
 Domain owners retain their models, records, commands and authority. Kitchen and
@@ -234,11 +238,11 @@ and `menu/models/menu-storage.model.ts` in `fireux-kitchens`.
 
 ### Parent-owned records
 
-Recipe, KitchenPrepItem, and Dish have independent lifecycles inside their
-owning Kitchen, so they are parent-scoped Entities rather than root identities.
-Recipe owns authored preparation content. KitchenPrepItem owns a reusable
-intermediate product's inputs, yield, and method. Dish owns reusable food
-identity and media.
+Kitchen Item is an owned Record, not a standalone Entity. Its current canonical
+model is `kitchen/item/models/model.ts`, and its persisted `dishes` path remains
+unchanged by the source-structure target. Removing a Menu placement must not
+delete or replace the canonical Kitchen Item. Recipe remains an Entity;
+Preparation's Record-versus-Entity classification is to-confirm.
 
 MenuSection, MenuItem, and KitchenStation can have stable document ids without
 independent Entity lifecycle. Kitchen Team requests, document links, financial
@@ -284,26 +288,38 @@ stable document id and resolve the canonical Ingredient. Its
 canonical `name` is the popular name used by the shared world; language and
 translation state are not Ingredient identity.
 
-Recipe, KitchenPrepItem, and Dish are confirmed Kitchen-scoped Entities. Recipe
-owns authored preparation content; KitchenPrepItem owns a reusable intermediate
-product's inputs, yield, and method; Dish owns reusable food identity and media.
-MenuItem is a MenuSection-owned placement Record and must reference a Dish from
-the same Kitchen. Inspect the owning models, readers and protected commands for
-that scope; local source review does not verify stored Misebox records.
+Recipe is a first-class Entity with authored inputs, method and expected yield.
+Its accepted target permits existence outside Kitchen. Current source remains
+`kitchen/recipe/`, with Kitchen-scoped reads and commands. Independent ownership,
+creator attribution, visibility, adoption, versioning and deletion policy remain
+to be designed before a data/authority cutover; no public Recipe system is implied.
+
+Preparation defines reusable output/transformation identity; recipes may consume
+prepared inputs as well as direct Ingredients. Its current model is
+`kitchen/preparation/models/model.ts`. Whether Preparation warrants an Entity
+root or is a Kitchen-owned Record remains to-confirm; do not decide from its id,
+route or storage nesting. Operational Mise en Place planning is a separate
+responsibility and does not belong inside Recipe's model.
+
+Item is Kitchen-owned canonical Record truth. MenuItem is a MenuSection-owned
+placement Record and must reference an Item from the same Kitchen. Inspect the
+owning models, readers and protected commands for actual scope; local source
+review does not verify stored Misebox records.
 
 KitchenStation is a Kitchen-owned operational Record at
 `kitchens/{kitchenId}/stations/{stationId}`. Its
-[model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/station.model.ts)
-defines its Kitchen id, presentation, active state and ordering; the
+[storage adapter](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/station.ts)
+locates its persisted scope and normalization; the
 [Station read-scope tests](../../packages/extensions/fireux-kitchens/src/test/kitchen/station-read-scope.test.mjs)
 exercise the reader's scope and lifecycle.
 
-KitchenPrepItem is stored at
-`kitchens/{kitchenId}/prep-items/{prepItemId}`. New code must not restore legacy
-duplicate `mise` documents or normalize Prep Items as Mise tasks. The
-[Prep Item model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/prep-item.model.ts)
-and [scope tests](../../packages/extensions/fireux-kitchens/src/test/kitchen/prep-scope.test.mjs)
-describe the current contract; this map does not establish live migration status.
+Preparation reads currently use `kitchens/{kitchenId}/prep-items/{prepItemId}`;
+legacy storage spelling does not settle domain classification. New code must not
+restore duplicate `mise` documents or normalize Preparation as an operational
+Mise task. The current
+[Preparation model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/preparation/models/model.ts)
+and [library tests](../../packages/extensions/fireux-kitchens/src/test/kitchen/preparation-library.test.mjs)
+locate the implementation; this map does not establish live migration status.
 
 KitchenOrder is a confirmed Kitchen-scoped Entity with a trusted lifecycle.
 Completing a ready Order atomically creates its same-id immutable KitchenSale
@@ -405,17 +421,20 @@ Directory and Entity Detail family maps.
 
 ## Delta register
 
-| Difference                                                     | State      | Required direction                                                                                                                                                                                   |
-| -------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Existing domain concepts exceed this descriptive map           | `drift`    | Review one owning package when a concrete feature needs the distinction; use source behavior to name its role                                                                                        |
-| Independent Business with optional Place links                 | `accepted` | Business owns organisation identity and Workspace; Place owns each linked location                                                                                                                   |
-| Place read transport                                           | `accepted` | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth           |
-| Kitchen root + Place + Team composition                        | `accepted` | Kitchen owns nested identity, configuration and audit/private metadata; its public projection joins the same-id Place. Team roster and membership-bound Workspace access retain separate authority.  |
-| Recipe and Dish Kitchen ownership                              | `accepted` | Keep both as Kitchen-scoped Entities; Recipe owns authored preparation content, Dish owns reusable food identity/media, and MenuItem owns placement                                                  |
-| Kitchen Order, Sale, and Customer link ownership               | `accepted` | KitchenOrder owns lifecycle; KitchenSale is its immutable result; User-owned Customer links point to Orders without duplicating status, while guest details remain on Order                          |
-| Product root plus ProductPrice and Supplier Item relationships | `accepted` | Product owns commercial identity, App provenance and publication; ProductPrice children own pricing; Supplier Item is a Supplier-owned offer with required `product_id` and optional `ingredient_id` |
-| Supplier location chain                                        | `accepted` | Use Supplier → Business → explicitly linked Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`.                       |
-| Directory publication implementation history lived in this map | `drift`    | Keep entity classification here and move current publication mechanics to source, guards, or a focused directory map if it becomes a recurring family                                                |
+| Difference                                                     | State        | Required direction                                                                                                                                                                                   |
+| -------------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Existing domain concepts exceed this descriptive map           | `drift`      | Review one owning package when a concrete feature needs the distinction; use source behavior to name its role                                                                                        |
+| Independent Business with optional Place links                 | `accepted`   | Business owns organisation identity and Workspace; Place owns each linked location                                                                                                                   |
+| Place read transport                                           | `accepted`   | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth           |
+| Kitchen root + Place + Team composition                        | `accepted`   | Kitchen owns nested identity, configuration and audit/private metadata; its public projection joins the same-id Place. Team roster and membership-bound Workspace access retain separate authority.  |
+| Kitchen Item ownership                                         | `accepted`   | Item is a Kitchen-owned Record; MenuItem owns placement, not copied canonical Item truth. Source placement remains migration work.                                                                   |
+| Recipe independent-domain target                               | `migration`  | Recipe is an Entity; current Kitchen-scoped source, readers and commands remain until a bounded transition proves the target.                                                                        |
+| Recipe authority and Kitchen association                       | `to-confirm` | Settle independent owner, read/edit policy, adoption/versioning and deletion before changing persistence or access.                                                                                  |
+| Preparation classification                                     | `to-confirm` | Decide Record versus Entity from identity, authority, lifecycle and reuse; preserve current readers meanwhile.                                                                                       |
+| Kitchen Order, Sale, and Customer link ownership               | `accepted`   | KitchenOrder owns lifecycle; KitchenSale is its immutable result; User-owned Customer links point to Orders without duplicating status, while guest details remain on Order                          |
+| Product root plus ProductPrice and Supplier Item relationships | `accepted`   | Product owns commercial identity, App provenance and publication; ProductPrice children own pricing; Supplier Item is a Supplier-owned offer with required `product_id` and optional `ingredient_id` |
+| Supplier location chain                                        | `accepted`   | Use Supplier → Business → explicitly linked Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`.                       |
+| Directory publication implementation history lived in this map | `drift`      | Keep entity classification here and move current publication mechanics to source, guards, or a focused directory map if it becomes a recurring family                                                |
 
 ## Alignment roadmap
 

@@ -1,7 +1,7 @@
 # Composables spine map
 
 Updated: 2026-11-17
-Ref: e20047a13
+Ref: f798e3e99
 Role: map, not canon
 
 ## Purpose
@@ -89,9 +89,22 @@ rename instruction.
 
 ### Provided capability lifecycle
 
-Name the consumer's job, not its delivery mechanism. A capability-group parent
-mounts `use{Entity}{Capability}Workspace()` once; a responsible child uses
-`use{Entity}{Capability}{Child}Workspace()` for its own derivations and interaction.
+Name the consumer's job, not its delivery mechanism. Public names follow the
+owner path: `use{Entity}Workspace{Capability}{Child}` for operator capabilities.
+For example, `kitchen/composables/workspace/menu/index.ts` exports
+`useKitchenWorkspaceMenu()`, and `services.ts` exports
+`useKitchenWorkspaceMenuServices()`. Named exports remain explicit: native
+composable auto-imports do not derive folder prefixes as component discovery does.
+Configure nested discovery with existing Nuxt registration and verify generated
+names; do not add alias barrels or a custom resolver.
+
+A group owner mounts once per intended scope. A responsible child consumes that
+owner or a supported lower domain capability for its own derivations and
+interaction. A matching component/composable pair is optional: local computed
+values and handlers can stay in the SFC. Do not create token composables merely
+to mirror every component. A logical group owner is not necessarily a persistent
+Vue ancestor across child-route navigation; establish acquisition and disposal
+at the actual host, and never assume injection survives route remounting.
 Use the named capability hierarchy rather than `Context`, public `State` suffixes
 or a synthetic `*-group` folder. Internal strict injection helpers may remain
 private. Required absence throws; an optional lookup returns absence. A child

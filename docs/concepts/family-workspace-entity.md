@@ -1,7 +1,7 @@
 # Workspace entity family
 
 Updated: 2026-11-17
-Ref: e20047a13
+Ref: f798e3e99
 Role: map, not canon
 
 ## Purpose
@@ -1220,6 +1220,18 @@ outside this contract.
 
 ### Workspace group overview composition
 
+Menu and Prep & Production are document-oriented Workspace groups: an entrance,
+child working pages, reads, simple references and editing. Orders is an operational
+application and does not inherit their component shape merely for symmetry.
+The shared contract is ownership and lifecycle, not identical visible children.
+
+A logical group owner is not necessarily a permanently mounted Vue page wrapper.
+Native route navigation may remount its component. The current Menu provider
+shares state within the entrance subtree; its sibling routes establish their own
+supported hosts. Specify the intended scope, acquisition, publisher and disposal
+for each host; do not assume that entrance injection spans child URLs or add a
+compulsory persistent wrapper to make it do so.
+
 A capability group's `Index.vue` composes its overview rather than absorbing
 its working children. It directly names the header, supported overview/actions,
 optional group-focused AI and summaries linking to child working pages. The
@@ -1227,11 +1239,11 @@ overview may present a collection or current state; creation, AI, a collection
 and a fixed number of summaries are not mandatory. Do not hide this composition
 in a forwarding `Content.vue` or generic slot shell.
 
-The parent mounts one domain-owned `use{Entity}{Capability}Workspace()` for the
+The parent mounts one domain-owned `use{Entity}Workspace{Capability}()` for the
 entrance description and real group state/lifecycle coordination. Its public
 parent-facing result contains only `description`; internal shared capability state
 is not a controller bag passed through the template. Named child responsibilities
-use `use{Entity}{Capability}{Child}Workspace()` to consume that mounted owner and
+use `use{Entity}Workspace{Capability}{Child}()` to consume that mounted owner and
 own their relevant derivations or interaction. Internal injection stays strict:
 absence never silently constructs another owner. Public `State`/`Context` suffixes
 and synthetic `*-group` folders are not the target. Keep ordinary presentation
@@ -1239,11 +1251,13 @@ props/events for pure presentation children. This naming applies to capability
 group entrances, not every selected-Entity Workspace, lower reader or record editor.
 
 For Kitchen's `/menu` capability the target parent is
-`useKitchenMenuWorkspace()`: singular `Menu` identifies the capability, while
-`menus` still names its record collection. Its six named children use
-`useKitchenMenuOverviewWorkspace`, `useKitchenMenuCreateWorkspace`,
-`useKitchenMenuAiWorkspace`, `useKitchenMenuItemsWorkspace`,
-`useKitchenMenuPromotionsWorkspace` and `useKitchenMenuServicesWorkspace`.
+`useKitchenWorkspaceMenu()`: singular `Menu` identifies the capability, while
+`menus` still names its record collection. Its six named responsibilities may use
+`useKitchenWorkspaceMenuOverview`, `useKitchenWorkspaceMenuCreate`,
+`useKitchenWorkspaceMenuAi`, `useKitchenWorkspaceMenuItems`,
+`useKitchenWorkspaceMenuPromotions` and `useKitchenWorkspaceMenuServices` where
+meaningful coordination warrants a composable. Small local state may stay in the
+component; this is not one mandatory composable per Vue file.
 These are target APIs, not current source exports. Child-specific derivations may
 initially reuse parent-provided data; Services owns service-specific derivations
 rather than leaving them in an oversized group index. Do not duplicate acquisition
