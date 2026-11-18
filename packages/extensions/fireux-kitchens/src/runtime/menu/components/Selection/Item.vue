@@ -73,7 +73,7 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
 import { readItemChoiceGroups } from '../../../kitchen/utils/item-choices'
-import type { ItemChoiceSelection } from '../../../kitchen/item/offer'
+import type { ItemChoiceSelection } from '../../../kitchen/records/item-offer'
 import type { MenuServiceOffer } from '../../utils/ordering/sections'
 import {
   serviceBasketLine,

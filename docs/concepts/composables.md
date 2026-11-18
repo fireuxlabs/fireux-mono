@@ -1,7 +1,7 @@
 # Composables spine map
 
 Updated: 2026-11-18
-Ref: 5e2450a2f
+Ref: c2748cea8
 Role: map, not canon
 
 ## Purpose
@@ -439,8 +439,11 @@ See `src/test/app-identity.test.mjs`, `app-media-sync.test.mjs` and
 Kitchen uses one folder per meaningful responsibility. Root Kitchen stored
 adapters live directly in `kitchen/composables/firestore`; their function names
 identify reads and commands without additional `fetch`, `mutations`, or
-`utils/paths` folders. Current Item and production readers live under `kitchen/item`,
-`kitchen/preparation` and `kitchen/recipe`, beside their owned contracts. The
+`utils/paths` folders. Item readers, context and mutation adapters live together under
+`kitchen/composables/items`; canonical Item and selling contracts are in
+`kitchen/records`, with stateless normalization in `kitchen/utils`. Recipe and
+Preparation retain their current nested source pending their separate domain
+classification and migration decisions. The
 retired Recipe and Prep Item client directories are not alternate reader owners.
 Storage paths and trusted command authority remain independent of that placement.
 
@@ -465,7 +468,7 @@ is not a required template for them.
 ## Shared prices and Orders responsibilities
 
 Kitchen selling defaults belong to
-[ItemOffer](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/item/offer.ts),
+[ItemOffer](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/item-offer.ts),
 separately from reusable Item identity and Menu placement. Shared
 [item pricing](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/item-pricing.ts)
 owns pricing normalization and validation; trusted

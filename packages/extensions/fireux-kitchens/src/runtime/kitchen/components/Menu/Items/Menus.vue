@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import ItemMenu from './Menu.vue'
-import { useKitchenItemContext } from '../../../item/composables/useKitchenItemContext'
+import { useKitchenItemContext } from '../../../composables/items/useKitchenItemContext'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
 const {
   kitchenId,

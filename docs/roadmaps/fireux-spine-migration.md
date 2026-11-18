@@ -1,7 +1,7 @@
 # FireUX spine migration plan
 
 Date: 2026-11-18
-Source baseline: `5e2450a2f`
+Source baseline: `c2748cea8`
 Role: bounded migration plan and portable handoff; target design, not a claim of completed migration
 
 ## Read this first
@@ -225,12 +225,17 @@ the current rendered source rather than assuming a naming move fixes it.
 
 ### 3. Simplify Kitchen-owned records
 
-Migrate Item out of `kitchen/item/` into Kitchen's `records/` and existing
-technical roles. Trace the model, storage declaration, identity and offer
-helpers, readers, context consumers, commands, editor and tests as one bounded
-record cutover. Its current persisted path is
-`kitchens/{kitchenId}/dishes/{dishId}`; this source migration does not rename it.
+Item is the first implemented owned-Record source cutover: its canonical
+identity and unchanged storage metadata are in `kitchen/records/item.ts`, its
+selling contract is in `records/item-offer.ts`, stateless normalization is in
+`utils/item-identity.ts`, and its reader/context/mutation adapters share
+`composables/items/`. Its existing detail and Menu consumers retain their
+supported operation names and command authority. There is no `kitchen/item/`
+mini-spine or forwarding source left behind.
 
+Use that ownership boundary when evaluating other support records. Item's
+persisted `kitchens/{kitchenId}/dishes/{dishId}` path is unchanged; a source
+cutover is not permission to rename stored records.
 Classify Preparation before giving it the same treatment or an Entity root.
 Remove empty retired directories once consumers move. Leave no proxy files or
 second model at the old location.

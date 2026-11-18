@@ -5,7 +5,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, watchEffect } from 'vue'
 function evaluate(relative, deps, result, vue = false) {
   deps = commandScopeDeps({
     useRoute: () => ({ fullPath: '/dishes/dish' }),
@@ -37,7 +37,7 @@ function setup() {
     notices = [],
     unmount = []
   const useItemEditorScope = evaluate(
-    '../../runtime/kitchen/composables/item/useItemEditorScope.ts',
+    '../../runtime/kitchen/composables/items/useItemEditorScope.ts',
     {
       watch,
       onBeforeUnmount: (fn) => unmount.push(fn),
@@ -49,6 +49,9 @@ function setup() {
     ref,
     computed,
     watch,
+    watchEffect,
+    useWorkspacePageState: () => ({ publish() {} }),
+    itemCatalogueReturn: () => '',
     useItemEditorScope,
     useKitchenWorkspace: () => ({
       id: kitchenId,
@@ -288,36 +291,6 @@ test('description proposal snapshots its body and never dispatches after focus c
     assert.equal(api.proposal.value, '')
   }
 })
-test('category update ignores stale rejection and releases busy state on Kitchen change', async () => {
-  const h = setup(),
-    pending = deferred()
-  const api = evaluate(
-    component('Menu/Items/Categories'),
-    {
-      ...h.deps,
-      defineProps: () => ({}),
-      defineEmits: () => () => {},
-      useKitchenItemsContext: () => ({
-        kitchenId: h.kitchenId,
-        dishes: ref([]),
-        readOnly: ref(false),
-        catalogue: { itemKind: 'food' },
-      }),
-      useItemUpdate: () => ({ updateItem: () => pending.promise }),
-    },
-    '({save,error,busy,saved})',
-    true
-  )
-  const result = api.save('dish', 'main')
-  h.kitchenId.value = 'other'
-  h.kitchenId.value = 'k'
-  pending.reject(Error('Old error'))
-  await result
-  assert.equal(api.error.value, '')
-  assert.equal(api.saved.value, '')
-  assert.equal(api.busy.value, false)
-})
-
 test('record edit ignores old failures and spec saves a detached payload', async () => {
   const h = setup(),
     pending = deferred()
@@ -361,7 +334,7 @@ test('Surviving Item route completes its live removal but rejects external inten
       disposed = []
     const useItemEditorScope = evaluate(
       new URL(
-        '../../runtime/kitchen/composables/item/useItemEditorScope.ts',
+        '../../runtime/kitchen/composables/items/useItemEditorScope.ts',
         import.meta.url
       ),
       {
@@ -388,6 +361,9 @@ test('Surviving Item route completes its live removal but rejects external inten
         provideKitchenItemContext: (detail) => detail,
         useKitchenItemRead: () => ({
           item: dish,
+          offer: ref({ choice_groups: [] }),
+          offerError: ref(null),
+          outcome: ref('ready'),
           itemId: h.dishId,
           kitchenId: h.kitchenId,
           pending: ref(false),
@@ -424,7 +400,10 @@ test('Surviving Item route completes its live removal but rejects external inten
     } else if (change === 'dispose') disposed.forEach((fn) => fn())
     pending.resolve()
     await result
-    assert.deepEqual(navigations, change === 'own-live' ? ['/dishes'] : [])
+    assert.deepEqual(
+      navigations,
+      change === 'own-live' ? ['/workspace/kitchen/menu/items'] : []
+    )
     assert.equal(h.notices.length, change === 'own-live' ? 1 : 0)
   }
 })

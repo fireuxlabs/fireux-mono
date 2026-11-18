@@ -1,5 +1,5 @@
-import { readItemIdentity } from '../runtime/kitchen/item/identity.ts'
-import { ItemStorage } from '../runtime/kitchen/item/storage.ts'
+import { readItemIdentity } from '../runtime/kitchen/utils/item-identity.ts'
+import { ItemStorage } from '../runtime/kitchen/records/item.ts'
 import { readItemReferenceIds } from '../runtime/kitchen/utils/item-preparation.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import {
@@ -358,7 +358,7 @@ test('Item record route stays reactive across both kinds while catalogues retain
     id = ref('soup'),
     access = { ...f.access, outcome: ref('ready') }
   const use = load(
-    'kitchen/item/composables/useKitchenItemRead.ts',
+    'kitchen/composables/items/useKitchenItemRead.ts',
     'useKitchenItemRead',
     {
       computed,
@@ -1222,7 +1222,7 @@ test('organisation fields keep historical Items readable without inventing group
 
 test('Item detail context shares its live reader and requires the owning provider', async () => {
   const context = load(
-    'kitchen/item/composables/useKitchenItemContext.ts',
+    'kitchen/composables/items/useKitchenItemContext.ts',
     '({provideKitchenItemContext,useKitchenItemContext})',
     { provide, inject }
   )

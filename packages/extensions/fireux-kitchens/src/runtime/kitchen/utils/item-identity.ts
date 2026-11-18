@@ -1,4 +1,4 @@
-import type { Item } from './models/model'
+import type { Item } from '../records/item'
 
 /** Authored identity changes; media uses the protected upload command. */
 export type ItemIdentityChanges = Partial<Pick<Item, 'name' | 'description'>>

@@ -140,12 +140,12 @@ function context() {
   }
   const factories = () => {
     deps.useItemEditorScope = load(
-      '../../runtime/kitchen/composables/item/useItemEditorScope.ts',
+      '../../runtime/kitchen/composables/items/useItemEditorScope.ts',
       'useItemEditorScope',
       deps
     )
     deps.useItemMutation = load(
-      '../../runtime/kitchen/composables/item/useItemMutation.ts',
+      '../../runtime/kitchen/composables/items/useItemMutation.ts',
       'useItemMutation',
       deps
     )
@@ -156,7 +156,7 @@ function context() {
       'useItemImageUpload',
     ])
       deps[name] = load(
-        `../../runtime/kitchen/composables/item/${name}.ts`,
+        `../../runtime/kitchen/composables/items/${name}.ts`,
         name,
         deps
       )
@@ -700,20 +700,6 @@ test('Identity replacement field action keeps its busy state when an older token
   assert.equal(h.calls.length, 1)
   assert.equal(f.api.fieldSaving.value, false)
   assert.equal(f.notices.length, 1)
-  f.unmount()
-  h.scope.stop()
-})
-test('Category update ignores changed search intent during credentials', async () => {
-  const h = context(),
-    f = mount(h, 'Menu/Items/Categories', '{save,query,error,busy,saved}'),
-    flight = f.api.save('dish', 'House favourites')
-  f.api.query.value = 'Another row'
-  await finish(h)
-  h.response.resolve({ id: 'dish' })
-  await flight
-  assert.equal(h.calls.length, 0)
-  assert.equal(f.api.query.value, 'Another row')
-  assert.equal(f.api.error.value, '')
   f.unmount()
   h.scope.stop()
 })

@@ -1,7 +1,7 @@
 import type { WatchSource } from 'vue'
-import type { ItemOffer } from '../offer'
+import type { ItemOffer } from '../../records/item-offer'
 import { normalizeItemPricingPatch } from '../../utils/item-pricing'
-import { useItemMutation } from '../../composables/item/useItemMutation'
+import { useItemMutation } from './useItemMutation'
 
 /** Validate and detach selling defaults before credentials; reuse Item authority. */
 export function useItemOfferUpdate(ownerSources: WatchSource[] = []) {

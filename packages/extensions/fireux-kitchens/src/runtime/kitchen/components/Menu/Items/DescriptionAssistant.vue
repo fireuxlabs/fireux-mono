@@ -66,14 +66,14 @@
 <script setup lang="ts">
 import { useKitchenItemsContext } from '../../../composables/workspace/items/useKitchenItemsContext'
 const { catalogue } = useKitchenItemsContext()
-import { useItemEditorScope } from '../../../composables/item/useItemEditorScope'
+import { useItemEditorScope } from '../../../composables/items/useItemEditorScope'
 import { ref } from 'vue'
 import { useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useItemUpdate } from '../../../composables/item/useItemUpdate'
-import { useKitchenItemContext } from '../../../item/composables/useKitchenItemContext'
+import { useItemUpdate } from '../../../composables/items/useItemUpdate'
+import { useKitchenItemContext } from '../../../composables/items/useKitchenItemContext'
 
 const { appId } = useFireUXConfig()
 const { currentUser } = useAuth()

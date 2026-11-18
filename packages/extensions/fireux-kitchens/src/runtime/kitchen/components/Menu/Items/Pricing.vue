@@ -78,11 +78,14 @@ import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWo
 const workspace = useKitchenWorkspace()
 const selectedKitchen = workspace.data
 import { computed, ref, watch } from 'vue'
-import { useKitchenItemContext } from '../../../item/composables/useKitchenItemContext'
-import { useItemOfferUpdate } from '../../../item/composables/useItemOfferUpdate'
-import { useItemEditorScope } from '../../../composables/item/useItemEditorScope'
+import { useKitchenItemContext } from '../../../composables/items/useKitchenItemContext'
+import { useItemOfferUpdate } from '../../../composables/items/useItemOfferUpdate'
+import { useItemEditorScope } from '../../../composables/items/useItemEditorScope'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
-import type { ItemChoiceGroup, ItemChoiceSelection } from '../../../item/offer'
+import type {
+  ItemChoiceGroup,
+  ItemChoiceSelection,
+} from '../../../records/item-offer'
 import {
   normalizeItemChoiceGroups,
   priceItemChoices,

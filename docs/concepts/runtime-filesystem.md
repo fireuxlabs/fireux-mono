@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
 Updated: 2026-11-18
-Ref: 5e2450a2f
+Ref: c2748cea8
 Role: map, not canon
 
 ## Purpose
@@ -122,7 +122,7 @@ cutover must preserve the existing storage and authority unless a separate domai
 migration is authorized.
 
 An Entity may own an optional `records/` directory containing its support-record
-definitions, such as the target `kitchen/records/item.ts`. Reader, component,
+definitions, such as `kitchen/records/item.ts`. Reader, component,
 workflow and command behavior stays in that Entity's existing technical roles;
 `records/` does not contain miniature component/composable/server spines.
 Embedded shapes remain beside their owning model, record or capability. This

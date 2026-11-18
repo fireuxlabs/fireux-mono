@@ -1,4 +1,4 @@
-import { ItemStorage } from '../../item/storage'
+import { ItemStorage } from '../../records/item'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { createError } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'

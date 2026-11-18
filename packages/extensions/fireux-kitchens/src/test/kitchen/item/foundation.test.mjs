@@ -7,10 +7,10 @@ import { renderToString } from 'vue/server-renderer'
 import {
   provideKitchenItemContext,
   useKitchenItemContext,
-} from '../../../runtime/kitchen/item/composables/useKitchenItemContext.ts'
-import { readItemIdentity } from '../../../runtime/kitchen/item/identity.ts'
+} from '../../../runtime/kitchen/composables/items/useKitchenItemContext.ts'
+import { readItemIdentity } from '../../../runtime/kitchen/utils/item-identity.ts'
 import { readItemOffer } from '../../../runtime/kitchen/utils/item-pricing.ts'
-import { ItemStorage } from '../../../runtime/kitchen/item/storage.ts'
+import { ItemStorage } from '../../../runtime/kitchen/records/item.ts'
 import { serverKitchenItemsTarget } from '../../../runtime/kitchen/server/mutation-targets.ts'
 
 const at = { seconds: 100, nanoseconds: 20 }
@@ -96,7 +96,7 @@ function readerFixture() {
     path
   const sourceText = readFileSync(
     new URL(
-      '../../../runtime/kitchen/item/composables/useKitchenItemRead.ts',
+      '../../../runtime/kitchen/composables/items/useKitchenItemRead.ts',
       import.meta.url
     ),
     'utf8'

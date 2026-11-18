@@ -64,7 +64,7 @@ test('canonical selling choices win and workspace/public price calculation uses 
 test('selling adapter rejects identity/legacy fields and snapshots canonical changes before credentials', async () => {
   const calls = []
   const use = load(
-    'item/composables/useItemOfferUpdate.ts',
+    'composables/items/useItemOfferUpdate.ts',
     'useItemOfferUpdate',
     {
       normalizeItemPricingPatch,

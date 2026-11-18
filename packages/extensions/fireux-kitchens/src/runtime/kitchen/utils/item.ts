@@ -1,14 +1,14 @@
 import { readItemReferenceIds } from './item-preparation'
 import { normalizeItemPricingPatch } from './item-pricing'
 // Concurrent edit — 2026-07-22 02:08 CEST — Item media ownership: name the food-owned field image, independent of its Storage transport.
-import type { Item } from '../item/models/model'
+import type { Item } from '../records/item'
 import type {
   ItemPricing,
   ItemPriceOption,
   ItemAddOnOption,
 } from './item-pricing'
-import type { ItemOffer } from '../item/offer'
-import { readItemIdentity } from '../item/identity'
+import type { ItemOffer } from '../records/item-offer'
+import { readItemIdentity } from './item-identity'
 
 export type ItemCollectionRow = Item &
   Partial<ItemOffer> & {

@@ -33,7 +33,7 @@ const { rememberView } = useMenuRecordNavigation()
 import { computed, reactive, watch } from 'vue'
 import type { Menu } from '../../../../menu/models/menu.model'
 import ItemMenuSection from './MenuSection.vue'
-import { useKitchenItemContext } from '../../../item/composables/useKitchenItemContext'
+import { useKitchenItemContext } from '../../../composables/items/useKitchenItemContext'
 import { useMenuSectionCollection } from '../../../../menu/composables/useMenuSectionCollection'
 const props = defineProps<{ menu: Menu }>()
 const { storageKitchenId, databaseId, rootCollection } = useKitchenItemContext()

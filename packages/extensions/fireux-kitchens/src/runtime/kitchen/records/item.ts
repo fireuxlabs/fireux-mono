@@ -3,7 +3,7 @@ import type {
   FireuxUpdatedStamp,
 } from 'fireux-core/runtime/models/utils/stamps.model'
 
-/** Reusable Kitchen-owned identity. The reader supplies id from its path. */
+/** Kitchen-owned Item record. The reader supplies id from its path. */
 export type Item = {
   id: string
   name: string
@@ -14,3 +14,12 @@ export type Item = {
   created?: FireuxCreatedStamp
   updated?: FireuxUpdatedStamp
 }
+
+/** Existing persisted path; code ownership does not rename stored records. */
+export const ItemStorage = {
+  shape: 'scoped',
+  path: 'kitchens/{kitchenId}/dishes/{dishId}',
+  collection: 'dishes',
+  parent: 'kitchen',
+  idParam: 'dishId',
+} as const

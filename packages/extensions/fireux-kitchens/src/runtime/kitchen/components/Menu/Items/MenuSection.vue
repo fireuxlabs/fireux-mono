@@ -15,7 +15,7 @@
 import { computed, watch } from 'vue'
 import type { Menu } from '../../../../menu/models/menu.model'
 import type { MenuSection } from '../../../../menu/models/menu-section.model'
-import { useKitchenItemContext } from '../../../item/composables/useKitchenItemContext'
+import { useKitchenItemContext } from '../../../composables/items/useKitchenItemContext'
 import { useMenuSectionItemCollection } from '../../../../menu/composables/useMenuSectionItemCollection'
 const props = defineProps<{ menu: Menu; section: MenuSection }>()
 const emit = defineEmits<{

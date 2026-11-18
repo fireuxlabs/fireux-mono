@@ -35,7 +35,7 @@
 import type {
   ItemChoiceGroup,
   ItemChoiceSelection,
-} from '../../kitchen/item/offer'
+} from '../../kitchen/records/item-offer'
 import {
   toggleItemChoice,
   itemChoiceRule,

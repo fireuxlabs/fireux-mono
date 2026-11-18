@@ -19,7 +19,7 @@ function load(path, dependencies, name) {
   dependencies = commandScopeDeps({ isFirestoreDocumentId, ...dependencies })
   if (name === 'useItemMutation' && !dependencies.useItemEditorScope)
     dependencies.useItemEditorScope = load(
-      '../../runtime/kitchen/composables/item/useItemEditorScope.ts',
+      '../../runtime/kitchen/composables/items/useItemEditorScope.ts',
       dependencies,
       'useItemEditorScope'
     )
@@ -421,7 +421,7 @@ test('Item transport snapshots nested input and invalidates account/Kitchen roun
         calls = [],
         disposed = []
       const useItemMutation = load(
-        '../../runtime/kitchen/composables/item/useItemMutation.ts',
+        '../../runtime/kitchen/composables/items/useItemMutation.ts',
         {
           onBeforeUnmount: (fn) => disposed.push(fn),
           watch,
@@ -487,17 +487,17 @@ test('existing three public adapters retain caller signatures and choose exact c
     },
   })
   const create = load(
-    '../../runtime/kitchen/composables/item/useItemCreate.ts',
+    '../../runtime/kitchen/composables/items/useItemCreate.ts',
     { useItemMutation },
     'useItemCreate'
   )()
   const update = load(
-    '../../runtime/kitchen/composables/item/useItemUpdate.ts',
+    '../../runtime/kitchen/composables/items/useItemUpdate.ts',
     { useItemMutation },
     'useItemUpdate'
   )()
   const remove = load(
-    '../../runtime/kitchen/composables/item/useItemDelete.ts',
+    '../../runtime/kitchen/composables/items/useItemDelete.ts',
     { useItemMutation },
     'useItemDelete'
   )()
@@ -880,7 +880,7 @@ test('Item completion refreshes Menu projections without invalidating the editor
   const currentUser = ref({ uid: 'operator', getIdToken: async () => 'token' })
   let refreshed = []
   const factory = load(
-    '../../runtime/kitchen/composables/item/useItemMutation.ts',
+    '../../runtime/kitchen/composables/items/useItemMutation.ts',
     {
       watch,
       useAuth: () => ({ currentUser }),

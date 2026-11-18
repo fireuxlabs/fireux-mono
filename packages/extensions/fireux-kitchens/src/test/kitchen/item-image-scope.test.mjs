@@ -39,12 +39,12 @@ function harness(t) {
     selectedId = ref('k')
   const useAuth = () => ({ currentUser })
   const useItemEditorScope = load(
-    '../../runtime/kitchen/composables/item/useItemEditorScope.ts',
+    '../../runtime/kitchen/composables/items/useItemEditorScope.ts',
     { watch, useAuth, onScopeDispose },
     'useItemEditorScope'
   )
   const useItemImageUpload = load(
-    '../../runtime/kitchen/composables/item/useItemImageUpload.ts',
+    '../../runtime/kitchen/composables/items/useItemImageUpload.ts',
     {
       ref,
       useAuth,

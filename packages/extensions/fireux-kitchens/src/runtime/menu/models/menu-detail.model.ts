@@ -1,4 +1,4 @@
-import type { ItemChoiceGroup } from '../../kitchen/item/offer'
+import type { ItemChoiceGroup } from '../../kitchen/records/item-offer'
 import type { PublicKitchenPromotion } from '../../kitchen/models/promotion.model'
 import type { MenuDocument, MenuStatus } from './menu.model'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'

@@ -1,7 +1,7 @@
 # Entities
 
-Updated: 2026-11-17
-Ref: f798e3e99
+Updated: 2026-11-18
+Ref: c2748cea8
 Role: map, not canon
 
 ## Purpose
@@ -238,9 +238,10 @@ and `menu/models/menu-storage.model.ts` in `fireux-kitchens`.
 
 ### Parent-owned records
 
-Kitchen Item is an owned Record, not a standalone Entity. Its current canonical
-model is `kitchen/item/models/model.ts`, and its persisted `dishes` path remains
-unchanged by the source-structure target. Removing a Menu placement must not
+Kitchen Item is an owned Record, not a standalone Entity. Its canonical record definition and
+storage metadata are in `kitchen/records/item.ts`; readers, context and mutation
+adapters use `kitchen/composables/items`, and normalization uses Kitchen utils.
+Its persisted `dishes` path is unchanged. Removing a Menu placement must not
 delete or replace the canonical Kitchen Item. Recipe remains an Entity;
 Preparation's Record-versus-Entity classification is to-confirm.
 

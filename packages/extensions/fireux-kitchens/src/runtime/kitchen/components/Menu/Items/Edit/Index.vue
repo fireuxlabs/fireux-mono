@@ -62,14 +62,14 @@
 <script setup lang="ts">
 import { photoImageUrl } from 'fireux-core/runtime/utils/photo-image-url'
 
-import { useItemEditorScope } from '../../../../composables/item/useItemEditorScope'
+import { useItemEditorScope } from '../../../../composables/items/useItemEditorScope'
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenItemContext } from '../../../../item/composables/useKitchenItemContext'
-import { useItemImageUpload } from '../../../../composables/item/useItemImageUpload'
-import { useItemUpdate } from '../../../../composables/item/useItemUpdate'
-import type { ItemIdentityChanges } from '../../../../item/identity'
+import { useKitchenItemContext } from '../../../../composables/items/useKitchenItemContext'
+import { useItemImageUpload } from '../../../../composables/items/useItemImageUpload'
+import { useItemUpdate } from '../../../../composables/items/useItemUpdate'
+import type { ItemIdentityChanges } from '../../../../utils/item-identity'
 
 const { item, itemId, kitchenId, canWrite } = useKitchenItemContext()
 

@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-11-18
-Ref: 5e2450a2f
+Ref: c2748cea8
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -687,18 +687,18 @@ the Item name and return/actions aligned to the Workspace frame. It adds no
 centred domain width cap or repeated thumbnail heading. Details and Price & choices
 use the shared responsive two-column grid, stacking on smaller screens. Appears on retains its focused relationship view.
 The minimal Kitchen Item identity belongs to
-`fireux-kitchens/src/runtime/kitchen/item/models/model.ts`. It owns its stable
+`fireux-kitchens/src/runtime/kitchen/records/item.ts`. It owns its stable
 path-derived identity, name, optional description, one photo URL and shared
 creation/update stamp values. It has no Kitchen selector, category vocabulary,
-pricing, flagship flag or preparation fields. `item/storage.ts` preserves the
+pricing, flagship flag or preparation fields. `records/item.ts` preserves the
 existing `kitchens/{kitchenId}/dishes/{dishId}` contract; filesystem ownership does
 not rename persisted collections or authorize migration.
-`item/composables/useKitchenItemRead.ts` owns the single live read, Kitchen
+`composables/items/useKitchenItemRead.ts` owns the single live read, Kitchen
 access gating and private Item field/stamp normalization. It reuses Core's
 Firestore reader; path identity wins over stored IDs. Missing or invalid stamps
 remain absent on the one `Item` type, rather than producing a second read shape
 or fabricated provenance. Trusted creation commands still write both stamps.
-`item/composables/useKitchenItemContext.ts` only provides/injects that reader
+`composables/items/useKitchenItemContext.ts` only provides/injects that reader
 for the detail page's children; it performs no read and grants no authority.
 See `src/test/kitchen/item/foundation.test.mjs` for scope, old-record and
 read-outcome checks.
@@ -1145,7 +1145,7 @@ Kitchen Items and choices retain bare-number prices. The cutover must preserve
 explicitly verified denomination and refuse clearing/changing a currency when
 that would relabel retained prices. Historical Orders, Sales and other monetary
 facts retain their saved currency; defaults never convert or rewrite them. The
-retained denomination owner is the existing `kitchen/item/offer.ts` ItemOffer.
+retained denomination owner is the existing `kitchen/records/item-offer.ts` ItemOffer.
 Its accepted adoption contract adds explicit `currency_code` covering base,
 choice prices and bottle deposit in their existing amount units; current runtime
 has not implemented it. New priced terms capture denomination atomically from
@@ -2288,10 +2288,10 @@ consumers against Nuxt registration, Vue compilation and App typechecking.
 
 ## Item identity and selling defaults
 
-`kitchen/item/models/model.ts` owns only reusable Item identity and provenance.
-`item/identity.ts` selects those fields for the document and collection readers;
+`kitchen/records/item.ts` owns only reusable Item identity and provenance.
+`utils/item-identity.ts` selects those fields for the document and collection readers;
 no invented timestamps or copied Kitchen ownership are needed to read identity.
-`item/offer.ts` owns the Item's separate selling-default value contract: optional
+`records/item-offer.ts` owns the Item's separate selling-default value contract: optional
 normal price, choice groups and optional bottle deposit. Selection state is a
 request value, not a persisted Item field. This capability is stored on the
 existing `dishes` document; it is not a new Entity or collection.
@@ -2447,7 +2447,7 @@ flag is neither accepted by Dish creation nor emitted by catalogue/public
 projections or AI import schemas. Meal deals belong to Kitchen Promotions and
 can be placed on regular interactive Menus; Order pricing remains separate.
 
-`kitchen/item/offer.ts` owns the Item selling-default contract. `choice_groups` is the
+`kitchen/records/item-offer.ts` owns the Item selling-default contract. `choice_groups` is the
 authoritative embedded group contract: stable group/option IDs, names, minimum and
 maximum selections (null means any), and full-price or additional-charge pricing.
 At most one group sets full Item prices and it requires exactly one choice.

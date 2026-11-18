@@ -64,13 +64,13 @@
 </template>
 
 <script setup lang="ts">
-import { useItemEditorScope } from '../../../../composables/item/useItemEditorScope'
+import { useItemEditorScope } from '../../../../composables/items/useItemEditorScope'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useRoute } from '#imports'
 import { useKitchenItemsContext } from '../../../../composables/workspace/items/useKitchenItemsContext'
-import { useItemCreate } from '../../../../composables/item/useItemCreate'
-import { useItemImageUpload } from '../../../../composables/item/useItemImageUpload'
+import { useItemCreate } from '../../../../composables/items/useItemCreate'
+import { useItemImageUpload } from '../../../../composables/items/useItemImageUpload'
 
 const { kitchenId, readOnly, catalogue } = useKitchenItemsContext()
 const props = defineProps<{ itemKind?: string }>()

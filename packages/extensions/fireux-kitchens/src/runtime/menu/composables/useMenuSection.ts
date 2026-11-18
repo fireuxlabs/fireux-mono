@@ -22,7 +22,7 @@ import { type MenuItem } from '../models/menu-item.model.ts'
 import type { MenuSection } from '../models/menu-section.model.ts'
 import { useKitchenItemCollection } from '../../kitchen/composables/useKitchenItemCollection'
 import type { Menu } from '../models/menu.model'
-import { useItemUpdate } from '../../kitchen/composables/item/useItemUpdate'
+import { useItemUpdate } from '../../kitchen/composables/items/useItemUpdate'
 import { useMenuSectionItemCollection } from './useMenuSectionItemCollection'
 import { useMenuItemMutations } from './firestore/mutations/useMenuItemMutations'
 

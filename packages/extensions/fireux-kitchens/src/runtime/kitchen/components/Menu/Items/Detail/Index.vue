@@ -104,12 +104,12 @@ import { computed, ref, watchEffect } from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { itemCatalogueReturn } from '../../../../utils/item-catalogue-route'
 import { useRoute, navigateTo } from '#imports'
-import { useItemDelete } from '../../../../composables/item/useItemDelete'
-import { useItemEditorScope } from '../../../../composables/item/useItemEditorScope'
+import { useItemDelete } from '../../../../composables/items/useItemDelete'
+import { useItemEditorScope } from '../../../../composables/items/useItemEditorScope'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import ItemMenus from '../Menus.vue'
-import { provideKitchenItemContext } from '../../../../item/composables/useKitchenItemContext'
-import { useKitchenItemRead } from '../../../../item/composables/useKitchenItemRead'
+import { provideKitchenItemContext } from '../../../../composables/items/useKitchenItemContext'
+import { useKitchenItemRead } from '../../../../composables/items/useKitchenItemRead'
 const {
   item,
   itemId,

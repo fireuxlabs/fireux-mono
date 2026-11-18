@@ -1,9 +1,9 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useKitchenAccess } from '../../composables/useKitchenAccess'
-import { ItemStorage } from '../storage'
-import { readItemIdentity } from '../identity'
+import { useKitchenAccess } from '../useKitchenAccess'
+import { ItemStorage } from '../../records/item'
+import { readItemIdentity } from '../../utils/item-identity'
 import { readItemOffer } from '../../utils/item-pricing'
 
 /** Acquire one live Item in an accessible Kitchen; the caller owns its lifetime. */

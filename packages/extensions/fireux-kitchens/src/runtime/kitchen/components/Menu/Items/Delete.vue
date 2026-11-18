@@ -47,12 +47,12 @@
 </template>
 
 <script setup lang="ts">
-import { useItemUsage } from '../../../composables/item/useItemUsage'
-import { useItemEditorScope } from '../../../composables/item/useItemEditorScope'
+import { useItemUsage } from '../../../composables/items/useItemUsage'
+import { useItemEditorScope } from '../../../composables/items/useItemEditorScope'
 import { ref } from 'vue'
 import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenItemContext } from '../../../item/composables/useKitchenItemContext'
+import { useKitchenItemContext } from '../../../composables/items/useKitchenItemContext'
 
 const {
   item: dish,

@@ -5,7 +5,10 @@ import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
 import * as Vue from 'vue'
 import * as choices from '../runtime/kitchen/utils/item-choices.ts'
-import { normalizeItemPricingPatch } from '../runtime/kitchen/utils/item-pricing.ts'
+import {
+  normalizeItemPricingPatch,
+  readItemOffer,
+} from '../runtime/kitchen/utils/item-pricing.ts'
 function load(path, result, deps) {
   const source = readFileSync(
     new URL(
@@ -76,14 +79,15 @@ test('Price & choices reads legacy Items without writes, saves a detached explic
       useKitchenWorkspace: () => ({ data: Vue.ref({}) }),
       readPlaceCurrencyCode: () => 'CHF',
       useKitchenItemContext: () => ({
-        item: dish,
+        offer: Vue.computed(() => readItemOffer(dish.value)),
+        offerError: Vue.ref(null),
         kitchenId: Vue.ref('k'),
         itemId: Vue.ref('i'),
         canWrite: Vue.ref(true),
       }),
       useItemEditorScope: () => () => () => true,
-      useItemUpdate: () => ({
-        updateItem: (...args) => {
+      useItemOfferUpdate: () => ({
+        updateOffer: (...args) => {
           calls.push(args)
           return saving
         },
@@ -97,8 +101,7 @@ test('Price & choices reads legacy Items without writes, saves a detached explic
   assert.equal(calls.length, 1)
   assert.equal(calls[0][0], 'i')
   assert.equal(calls[0][1].choice_groups[0].name, 'Size')
-  assert.deepEqual(calls[0][1].price_options, [])
-  assert.deepEqual(calls[0][1].add_ons, [])
+  assert.deepEqual(Object.keys(calls[0][1]).sort(), ['choice_groups', 'price'])
   assert.equal(calls[0][1].price, 12)
   state.groups.value[0].name = 'Edited while awaiting save'
   assert.equal(calls[0][1].choice_groups[0].name, 'Size')
@@ -117,7 +120,9 @@ test('Items list shows legacy and explicit groups with starting prices including
     ...choices,
     defineEmits: () => () => {},
     readPlaceCurrencyCode: () => 'CHF',
-    useKitchenItemsContext: () => ({ selectedKitchen: Vue.ref({}) }),
+    useKitchenItemsContext: () => ({
+      selectedKitchen: Vue.ref({ currency_code: 'CHF' }),
+    }),
     useItemCatalogueContext: () => ({}),
   })
   assert.equal(

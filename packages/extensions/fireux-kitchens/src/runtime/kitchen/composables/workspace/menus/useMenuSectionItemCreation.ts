@@ -1,8 +1,8 @@
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import { useItemEditorScope } from '../../item/useItemEditorScope'
+import { useItemEditorScope } from '../../items/useItemEditorScope'
 import { computed, ref, watch } from 'vue'
 import type { useMenuSection } from '../../../../menu/composables/useMenuSection'
-import { useItemCreate } from '../../item/useItemCreate'
+import { useItemCreate } from '../../items/useItemCreate'
 
 /** Create catalogue Items and place them through the existing Section owner. */
 export function useMenuSectionItemCreation(

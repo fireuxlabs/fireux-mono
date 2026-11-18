@@ -1,5 +1,5 @@
 import type { WatchSource } from 'vue'
-import type { ItemIdentityChanges } from '../../item/identity'
+import type { ItemIdentityChanges } from '../../utils/item-identity'
 import { useItemMutation } from './useItemMutation'
 
 export function useItemUpdate(ownerSources: WatchSource[] = []) {

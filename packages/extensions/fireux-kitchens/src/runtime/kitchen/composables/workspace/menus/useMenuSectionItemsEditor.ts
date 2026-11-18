@@ -1,4 +1,4 @@
-import { useItemEditorScope } from '../../item/useItemEditorScope'
+import { useItemEditorScope } from '../../items/useItemEditorScope'
 import { useMenuRecordNavigation } from './useMenuRecordNavigation'
 import { ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'

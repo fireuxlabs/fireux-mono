@@ -1,4 +1,4 @@
-import { ItemStorage } from '../../../../../kitchen/item/storage'
+import { ItemStorage } from '../../../../../kitchen/records/item'
 import { createError, defineEventHandler, readBody } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'

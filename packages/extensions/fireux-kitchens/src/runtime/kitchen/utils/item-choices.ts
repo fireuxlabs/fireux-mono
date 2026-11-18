@@ -1,4 +1,7 @@
-import type { ItemChoiceGroup, ItemChoiceSelection } from '../item/offer'
+import type {
+  ItemChoiceGroup,
+  ItemChoiceSelection,
+} from '../records/item-offer'
 const record = (value: unknown): value is Record<string, any> =>
   Boolean(value && typeof value === 'object' && !Array.isArray(value))
 const id = (value: unknown): value is string =>
