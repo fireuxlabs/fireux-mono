@@ -37,7 +37,7 @@ const sources = computed(() =>
   menuSources.value.map((source) => ({
     label: source.file_name || 'Menu source',
     icon: 'i-lucide-file-search',
-    to: `/workspace/kitchen/menu/menus/uploads/${encodeURIComponent(source.id)}`,
+    to: `/workspace/kitchen/menu/uploads/${encodeURIComponent(source.id)}`,
   }))
 )
 </script>

@@ -248,7 +248,7 @@ surface retains Product identity and the explicit free action/terms. A
 catalogue-only Product has no provider price and performs
 no payment provisioning. Basic PDF/image hosting is explicitly free.
 
-Kitchen Workspace's `/workspace/kitchen/menu/menus/prepare` is the
+Kitchen Workspace's `/workspace/kitchen/menu/prepare` is the
 internal entrance to the existing Kitchen upload/URL, saved-source processing,
 review, Menu publication and QR owners. It has no service request, purchase or
 demo-payment prerequisite. Ordinary Kitchen authority, capacity and AI usage
@@ -1686,7 +1686,7 @@ The owned intent sources are Kitchen `server/index/landing-intent.ts`,
 `landing-intent.test.mjs`; the separate KitchenAI ownership limitation above
 still applies. Test remains a disposable string pipeline, not a client feature.
 
-Menu records use `/workspace/kitchen/menu/menus/[menuSlug]` with local Items & prices
+Menu records use `/workspace/kitchen/menu/[menuSlug]` with local Items & prices
 (Dates & selections for daily Menus), Publishing, Import & source and Settings perspectives.
 Section and source-upload records remain separate destinations. Shared selected
 Menu state is scoped by App/account/Kitchen and reconciled only from settled
@@ -2252,7 +2252,7 @@ organise navigation and may have overview entrances without owning capability
 paths. Dialogs serve bounded create, quick-edit, confirm and delete actions.
 Other existing capability routes remain outside this bounded adoption.
 
-All Menu collection rows open `/workspace/kitchen/menu/menus/<slug>`. The
+All Menu collection rows open `/workspace/kitchen/menu/<slug>`. The
 `Menus/Detail` composition owns Items & prices (Dates & selections for daily),
 Publishing, Import & source and Settings as local views, reusing the existing forms and commands.
 Both Menu types open their contents first. The collection groups regular and daily

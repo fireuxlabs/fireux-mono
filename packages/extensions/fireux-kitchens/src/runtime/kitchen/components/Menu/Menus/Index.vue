@@ -1,7 +1,7 @@
 <template>
   <section v-if="storageKitchenId" class="fx-page-stack" aria-label="Menus">
     <UButton
-      to="/workspace/kitchen/menu/menus/prepare"
+      to="/workspace/kitchen/menu/prepare"
       icon="i-lucide-file-scan"
       variant="outline"
       >Prepare a Menu from a source</UButton

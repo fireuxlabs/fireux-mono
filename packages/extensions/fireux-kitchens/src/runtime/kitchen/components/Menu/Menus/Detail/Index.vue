@@ -1,11 +1,6 @@
 <template>
   <section class="workspace-surface">
     <KitchenMenuMenusDetailHeader />
-    <WorkspaceKitchenAIFocus
-      focus="kitchen-ai.menu.menus"
-      label="Menu records"
-      context-label="Menu"
-    />
     <UAlert
       v-if="outcome === 'denied'"
       color="warning"
@@ -46,15 +41,6 @@
         description="This Menu is no longer public. Restore it to draft in Settings when you need it again."
         color="neutral"
       />
-      <KitchenMenuMenusPublicationReadiness
-        v-if="
-          menu.schedule !== 'daily' &&
-          menu.format !== 'document' &&
-          !menu.doc?.url &&
-          menu.status !== 'archived'
-        "
-        :key="`${recordScope}/${menu.id}/readiness`"
-      />
       <KitchenMenuMenusDetailSettings v-if="view === 'details'" />
       <section v-else-if="view === 'content'" class="workspace-surface">
         <KitchenMenuMenusDetailDocument
@@ -64,6 +50,14 @@
       </section>
       <KitchenMenuMenusPublication v-else-if="view === 'publishing'" />
       <KitchenMenuMenusDetailSource v-else />
+      <details class="menu-record-ai">
+        <summary>Ask KitchenAI about this menu</summary>
+        <WorkspaceKitchenAIFocus
+          focus="kitchen-ai.menu.menus"
+          label="Menu records"
+          context-label="Menu"
+        />
+      </details>
     </div>
   </section>
 </template>
@@ -107,3 +101,19 @@ const viewLabel = computed(
 </script>
 
 <style src="../../../../../menu/assets/styles/menu-editor.css"></style>
+
+<style scoped>
+.menu-record-ai {
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+}
+.menu-record-ai summary {
+  cursor: pointer;
+  color: var(--ui-text);
+  font-weight: var(--font-weight-medium);
+}
+.menu-record-ai[open] summary {
+  margin-bottom: calc(var(--spacing) * 3);
+}
+</style>

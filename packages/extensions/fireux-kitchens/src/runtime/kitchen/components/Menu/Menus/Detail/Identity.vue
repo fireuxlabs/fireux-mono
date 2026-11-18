@@ -6,28 +6,34 @@
     /></template>
   </UAlert>
   <div v-else-if="menu" class="menu-heading-region">
-    <header class="menu-heading">
+    <header class="menu-heading" :style="themeStyle">
       <div class="menu-identity-bar">
+        <div class="menu-identity-bar__meta">
+          <span
+            v-if="currencyCode"
+            class="fx-type-caption"
+            :aria-label="`Prices in ${currencyCode}`"
+            >{{ currencyCode }}</span
+          >
+          <UBadge
+            :color="menu.status === 'published' ? 'success' : 'neutral'"
+            variant="subtle"
+            >{{ statusLabel }}</UBadge
+          >
+        </div>
         <h1 class="menu-identity-bar__name">
           {{ menu.internal_name || menu.name || menu.id }}
         </h1>
-        <span
-          v-if="currencyCode"
-          class="fx-type-caption"
-          :aria-label="`Prices in ${currencyCode}`"
-          >{{ currencyCode }}</span
-        >
-        <UBadge
-          :color="menu.status === 'published' ? 'success' : 'neutral'"
-          variant="subtle"
-          >{{ statusLabel }}</UBadge
-        >
+        <p v-if="menu.description" class="menu-identity-bar__description">
+          {{ menu.description }}
+        </p>
       </div>
       <UButton
         v-if="menu.status === 'published' && publicUrl"
         :to="publicUrl"
         target="_blank"
-        label="Open Menu"
+        rel="noopener"
+        label="View guest menu"
         icon="i-lucide-external-link"
         color="neutral"
         variant="outline"
@@ -46,9 +52,24 @@ import {
   directoryMenuRouteScope,
 } from '../../../../../menu/utils/navigation/route'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
+import { readKitchenThemePalette } from '../../../../utils/kitchen-readers'
 import { menuWebsiteOrigin } from '../../../../utils/menu-website-snippet'
 const { menu, menuSlug, pending, error, selectedKitchen, currencyCode } =
   useKitchenMenuRecordContext()
+const themeStyle = computed(() => {
+  if (
+    !menu.value ||
+    menu.value.theme_mode === 'default' ||
+    !selectedKitchen.value
+  )
+    return
+  const palette = readKitchenThemePalette(selectedKitchen.value)
+  if (!palette) return
+  return {
+    '--menu-heading-canvas': palette.canvas,
+    '--menu-heading-accent': palette.accent,
+  }
+})
 const fireux = useFireUXConfig()
 const origin = menuWebsiteOrigin(useRequestURL().origin, fireux.siteUrl)
 const publicPath = computed(() =>
@@ -81,9 +102,33 @@ const statusLabel = computed(() =>
   justify-content: space-between;
   flex-wrap: wrap;
   gap: calc(var(--spacing) * 5);
-  padding-block: calc(var(--spacing) * 3);
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid var(--ui-border);
+  border-inline-start: 3px solid var(--menu-heading-accent, var(--ui-primary));
+  border-radius: calc(var(--ui-radius) * 2);
+  background:
+    linear-gradient(
+      110deg,
+      color-mix(
+        in srgb,
+        var(--menu-heading-accent, transparent) 14%,
+        transparent
+      ),
+      transparent 70%
+    ),
+    color-mix(
+      in srgb,
+      var(--menu-heading-canvas, var(--ui-bg-elevated)) 65%,
+      var(--ui-bg-elevated)
+    );
 }
 .menu-identity-bar {
+  display: grid;
+  gap: calc(var(--spacing) * 2);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.menu-identity-bar__meta {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -94,9 +139,14 @@ const statusLabel = computed(() =>
 .menu-identity-bar__name {
   margin: 0;
   color: var(--ui-text-highlighted);
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
   font-weight: var(--font-weight-semibold);
   line-height: 1.15;
   letter-spacing: -0.025em;
+}
+.menu-identity-bar__description {
+  color: var(--ui-text-muted);
+  margin: 0;
+  max-width: 60ch;
 }
 </style>

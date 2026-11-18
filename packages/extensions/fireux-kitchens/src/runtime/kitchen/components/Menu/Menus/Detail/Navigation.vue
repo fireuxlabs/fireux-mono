@@ -6,7 +6,7 @@
       @click="select(item.view)"
       :label="item.label"
       :icon="item.icon"
-      color="neutral"
+      :color="view === item.view ? 'primary' : 'neutral'"
       :variant="view === item.view ? 'soft' : 'ghost'"
       :aria-pressed="view === item.view"
     />
@@ -59,6 +59,8 @@ const items = computed(() =>
 .menu-configuration-nav {
   display: flex;
   flex-wrap: wrap;
-  gap: calc(var(--spacing) * 2);
+  gap: var(--spacing);
+  padding-block-end: calc(var(--spacing) * 2);
+  border-bottom: 1px solid var(--ui-border);
 }
 </style>

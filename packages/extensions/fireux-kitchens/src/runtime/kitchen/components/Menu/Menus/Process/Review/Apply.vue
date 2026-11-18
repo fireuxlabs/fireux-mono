@@ -35,7 +35,7 @@
     </p>
     <UButton
       v-if="confirmedSlug"
-      :to="`/workspace/kitchen/menu/menus/${encodeURIComponent(confirmedSlug)}?kitchenId=${encodeURIComponent(kitchenId)}`"
+      :to="`/workspace/kitchen/menu/${encodeURIComponent(confirmedSlug)}?kitchenId=${encodeURIComponent(kitchenId)}`"
       label="Open Menu"
     />
     <UAlert

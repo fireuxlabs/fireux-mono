@@ -64,7 +64,7 @@ export async function readItemUsage(
           id: menu.id,
           name: text(menu.data.name) || menu.id,
           section: text(section.data.label) || section.id,
-          to: `/workspace/kitchen/menu/menus/${encodeURIComponent(text(menu.data.slug) || menu.id)}/${encodeURIComponent(section.id)}`,
+          to: `/workspace/kitchen/menu/${encodeURIComponent(text(menu.data.slug) || menu.id)}/${encodeURIComponent(section.id)}`,
         })
     }
   }

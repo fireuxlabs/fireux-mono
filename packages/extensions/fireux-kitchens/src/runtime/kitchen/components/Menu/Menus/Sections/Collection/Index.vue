@@ -21,12 +21,6 @@
             <h2 class="fx-type-card-heading">
               {{ editor.daily ? editor.formattedDate : 'Menu sections' }}
             </h2>
-            <p
-              v-if="editor.menu.description && !editor.daily"
-              class="fx-type-caption"
-            >
-              {{ editor.menu.description }}
-            </p>
           </div>
           <UButton
             v-if="!editor.daily"
@@ -36,9 +30,7 @@
             :icon="
               editor.showCreateSection ? 'i-lucide-minus' : 'i-lucide-plus'
             "
-            :aria-label="
-              editor.showCreateSection ? 'Hide section fields' : 'Add section'
-            "
+            :label="editor.showCreateSection ? 'Cancel' : 'Add section'"
             :disabled="
               !editor.canWrite ||
               editor.sectionsPending ||
@@ -80,32 +72,34 @@
               : `Archived sections (${editor.archivedSections.length})`
           }}
         </UButton>
-        <div
-          v-if="
-            (editor.showArchived
-              ? editor.archivedSections
-              : editor.visibleSections
-            ).length
-          "
-          class="menu-editor-list"
-        >
+        <div v-if="sections.length" class="menu-section-workbench">
+          <nav aria-label="Menu sections" class="menu-section-workbench__nav">
+            <UButton
+              v-for="section in sections"
+              :key="section.id"
+              type="button"
+              :label="editor.displaySectionLabel(section)"
+              icon="i-lucide-list"
+              :color="activeSection?.id === section.id ? 'primary' : 'neutral'"
+              :variant="activeSection?.id === section.id ? 'soft' : 'ghost'"
+              :aria-current="
+                activeSection?.id === section.id ? 'true' : undefined
+              "
+              class="menu-section-workbench__link"
+              @click="openSection = section.id"
+            />
+          </nav>
           <section
-            v-for="section in editor.showArchived
-              ? editor.archivedSections
-              : editor.visibleSections"
-            :key="section.id"
+            v-if="activeSection"
+            :key="activeSection.id"
+            :aria-label="editor.displaySectionLabel(activeSection)"
+            class="menu-section-workbench__editor"
           >
             <KitchenMenuMenusSectionsCollectionRow
-              :section="section"
+              :section="activeSection"
               :editor="editor"
-              :expanded="openSection === section.id"
-              @open="openSection = openSection === section.id ? '' : section.id"
             />
-            <KitchenMenuMenusSectionsInline
-              v-if="openSection === section.id"
-              :key="section.id"
-              :section-id="section.id"
-            />
+            <KitchenMenuMenusSectionsInline :section-id="activeSection.id" />
           </section>
         </div>
 
@@ -115,7 +109,7 @@
               ? 'No archived sections.'
               : editor.daily
                 ? 'Nothing planned for this date.'
-                : 'No sections yet.'
+                : 'No sections yet. Add a section to start placing items.'
           }}
         </p>
       </div>
@@ -160,7 +154,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useMenuSectionsEditor } from '../../../../../composables/workspace/menus/useMenuSectionsEditor'
 import { useRoute, useRouter } from '#imports'
 const route = useRoute()
@@ -169,6 +163,14 @@ const openSection = ref(
   typeof route.query.section === 'string' ? route.query.section : ''
 )
 const editor = reactive(useMenuSectionsEditor())
+const sections = computed(() =>
+  editor.showArchived ? editor.archivedSections : editor.visibleSections
+)
+const activeSection = computed(
+  () =>
+    sections.value.find((section) => section.id === openSection.value) ??
+    sections.value[0]
+)
 watch(
   () => editor.menuSlug,
   () => {
@@ -189,5 +191,39 @@ watch(openSection, (section) => {
     })
 })
 </script>
+
+<style scoped>
+.menu-section-workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: calc(var(--spacing) * 4);
+}
+.menu-section-workbench__nav {
+  display: grid;
+  align-content: start;
+  gap: var(--spacing);
+  min-width: 0;
+  padding: calc(var(--spacing) * 2);
+  background: var(--ui-bg-elevated);
+  border-radius: var(--ui-radius);
+}
+.menu-section-workbench__link {
+  justify-content: flex-start;
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.menu-section-workbench__editor {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+  gap: calc(var(--spacing) * 3);
+}
+@media (min-width: 64rem) {
+  .menu-section-workbench {
+    grid-template-columns: minmax(10rem, 15rem) minmax(0, 1fr);
+  }
+}
+</style>
 
 <style src="../../../../../../menu/assets/styles/menu-editor.css"></style>

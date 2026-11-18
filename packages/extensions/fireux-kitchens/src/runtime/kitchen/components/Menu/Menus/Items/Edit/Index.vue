@@ -4,7 +4,7 @@
     <div class="menu-editor-actions">
       <UButton
         v-if="!embedded"
-        :to="`/workspace/kitchen/menu/menus/${encodeURIComponent(editor.menuSlug)}`"
+        :to="`/workspace/kitchen/menu/${encodeURIComponent(editor.menuSlug)}`"
         @click="editor.rememberView(editor.menuSlug, 'content', $event)"
         color="neutral"
         variant="ghost"

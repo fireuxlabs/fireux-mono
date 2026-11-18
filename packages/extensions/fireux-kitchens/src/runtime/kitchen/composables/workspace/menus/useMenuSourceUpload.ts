@@ -121,7 +121,7 @@ export function useMenuSourceUpload(
       message.value = 'Uploaded.'
       if (!uploadId.value)
         await navigateTo(
-          `/workspace/kitchen/menu/menus/uploads/${encodeURIComponent(id)}`
+          `/workspace/kitchen/menu/uploads/${encodeURIComponent(id)}`
         )
       return result
     } catch (caught) {

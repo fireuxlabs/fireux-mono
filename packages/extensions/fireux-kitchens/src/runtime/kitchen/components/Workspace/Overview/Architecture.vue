@@ -54,7 +54,7 @@ const notes: Record<
     references: Record<string, string>
   }
 > = {
-  'workspace-kitchen-menus': {
+  'workspace-kitchen-menu-group': {
     explanation: {
       'What this page manages': 'The selected Kitchen’s menus.',
       'How you open an item':
@@ -63,7 +63,7 @@ const notes: Record<
         'Create or import a menu, edit its content and publish it. Publishing a menu and enabling orders are separate steps. Menu deletion has no connected supported flow.',
     },
     references: {
-      Component: 'Menu/Menus/Index.vue',
+      Component: 'Workspace/Menu/Index.vue',
       Reader: 'useKitchenMenuCollection — live menus for the selected Kitchen.',
       Ownership:
         'Kitchen composes the workspace; Menu owns menu records and publication.',

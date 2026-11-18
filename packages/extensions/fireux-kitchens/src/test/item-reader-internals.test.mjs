@@ -1281,13 +1281,13 @@ test('Item placements return to the inline Menu builder or exact daily section',
     )
     assert.equal(
       state.destination.value,
-      '/workspace/kitchen/menu/menus/lunch%20special?section=main%20course'
+      '/workspace/kitchen/menu/lunch%20special?section=main%20course'
     )
     assert.equal(emitted.at(-1), 'match')
     props.menu.schedule = 'daily'
     assert.equal(
       state.destination.value,
-      '/workspace/kitchen/menu/menus/lunch%20special/main%20course'
+      '/workspace/kitchen/menu/lunch%20special/main%20course'
     )
     owner.itemId.value = 'other'
     assert.equal(state.matches.value.length, 0)

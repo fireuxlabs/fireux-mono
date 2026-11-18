@@ -475,8 +475,8 @@ test('composed menu overview retains ordering, controlled search/status choices,
     assert.deepEqual(
       view.all('a').map((node) => node.props.href),
       [
-        '/workspace/kitchen/menu/menus/specials',
-        '/workspace/kitchen/menu/menus/drinks',
+        '/workspace/kitchen/menu/specials',
+        '/workspace/kitchen/menu/drinks',
       ]
     )
     view

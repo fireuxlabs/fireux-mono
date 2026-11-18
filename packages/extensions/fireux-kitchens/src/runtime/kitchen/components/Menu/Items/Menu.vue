@@ -3,7 +3,7 @@
     <template #header>
       <div class="card__header">
         <NuxtLink
-          :to="`/workspace/kitchen/menu/menus/${encodeURIComponent(menu.slug)}`"
+          :to="`/workspace/kitchen/menu/${encodeURIComponent(menu.slug)}`"
           @click="rememberView(menu.slug, 'content', $event)"
           >{{ menu.name }}</NuxtLink
         >

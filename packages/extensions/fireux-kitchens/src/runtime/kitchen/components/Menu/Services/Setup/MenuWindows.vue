@@ -7,7 +7,7 @@
     </p>
     <div v-for="menu in menus" :key="menu.id">
       <NuxtLink
-        :to="`/workspace/kitchen/menu/menus/${encodeURIComponent(menu.slug)}`"
+        :to="`/workspace/kitchen/menu/${encodeURIComponent(menu.slug)}`"
         >{{ menu.internal_name || menu.name }}</NuxtLink
       >
       <p v-if="!menu.serving_hours">Throughout this service</p>

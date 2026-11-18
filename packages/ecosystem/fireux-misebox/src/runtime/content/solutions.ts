@@ -64,7 +64,7 @@ export const miseboxSolutions = [
     ],
     cta: {
       label: 'Open kitchen workspace',
-      to: '/workspace/kitchen/menu/menus',
+      to: '/workspace/kitchen/menu',
     },
   },
   {
@@ -87,7 +87,7 @@ export const miseboxSolutions = [
     ],
     cta: {
       label: 'Create menu',
-      to: '/workspace/kitchen/menu/menus',
+      to: '/workspace/kitchen/menu',
     },
   },
   {

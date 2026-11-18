@@ -190,7 +190,7 @@ function createKitchenMenuRecordContext() {
       icon: 'i-lucide-check',
     })
     await router.replace(
-      `/workspace/kitchen/menu/menus/${encodeURIComponent(result.slug)}`
+      `/workspace/kitchen/menu/${encodeURIComponent(result.slug)}`
     )
     return result
   }

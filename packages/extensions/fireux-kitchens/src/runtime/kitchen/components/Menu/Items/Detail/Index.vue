@@ -158,8 +158,8 @@ const menuReturn = computed(() =>
   typeof route.query.menu === 'string' &&
   typeof route.query.section === 'string'
     ? route.query.inline === '1'
-      ? `/workspace/kitchen/menu/menus/${encodeURIComponent(route.query.menu)}?section=${encodeURIComponent(route.query.section)}`
-      : `/workspace/kitchen/menu/menus/${encodeURIComponent(route.query.menu)}/${encodeURIComponent(route.query.section)}`
+      ? `/workspace/kitchen/menu/${encodeURIComponent(route.query.menu)}?section=${encodeURIComponent(route.query.section)}`
+      : `/workspace/kitchen/menu/${encodeURIComponent(route.query.menu)}/${encodeURIComponent(route.query.section)}`
     : ''
 )
 const views = [

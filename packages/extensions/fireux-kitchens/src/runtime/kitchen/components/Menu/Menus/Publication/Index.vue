@@ -1,5 +1,14 @@
 <template>
   <section class="workspace-surface">
+    <KitchenMenuMenusPublicationReadiness
+      v-if="
+        menu &&
+        menu.schedule !== 'daily' &&
+        menu.format !== 'document' &&
+        !menu.doc?.url &&
+        menu.status !== 'archived'
+      "
+    />
     <KitchenMenuMenusPublicationDaily v-if="menu?.schedule === 'daily'" />
     <KitchenMenuMenusPublicationActions v-else />
   </section>

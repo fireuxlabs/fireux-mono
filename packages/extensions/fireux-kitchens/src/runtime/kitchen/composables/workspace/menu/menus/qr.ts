@@ -103,7 +103,7 @@ export function useKitchenWorkspaceMenuMenusQr() {
             menu.status === 'published'
               ? describeMenuPanel(targets)
               : 'Publish this menu before creating guest entries.',
-          editPath: `/workspace/kitchen/menu/menus/${encodeURIComponent(menu.slug)}`,
+          editPath: `/workspace/kitchen/menu/${encodeURIComponent(menu.slug)}`,
           targets,
         }
       })

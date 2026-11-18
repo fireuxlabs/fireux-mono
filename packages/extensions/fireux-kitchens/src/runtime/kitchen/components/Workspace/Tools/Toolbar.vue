@@ -11,7 +11,7 @@
 import { computed } from 'vue'
 const props = defineProps<{ capability: string }>()
 const actions: Record<string, { label: string; to: string }> = {
-  menus: { label: 'Create Menu', to: '/workspace/kitchen/menu/menus?create=1' },
+  menus: { label: 'Create Menu', to: '/workspace/kitchen/menu?create=1' },
   dishes: {
     label: 'Create Item',
     to: '/workspace/kitchen/menu/items?create=food',

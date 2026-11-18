@@ -5,6 +5,15 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverKitchenMenusTarget } from '../../kitchen/server/mutation-targets'
+const workspaceMenuRouteKeys = [
+  'items',
+  'promotions',
+  'services',
+  'prepare',
+  'uploads',
+  'search-demand',
+]
+
 export function menuNameAndSlug(event: H3Event, value: unknown) {
   const name = typeof value === 'string' ? value.trim() : ''
   if (!name || name.length > 160)
@@ -20,6 +29,7 @@ export function menuNameAndSlug(event: H3Event, value: unknown) {
   )?.reservedRouteKeys
   const validation = validatePublicSlug(normalizeSlug(name), {
     label: 'Menu path',
+    reserved: workspaceMenuRouteKeys,
     reservedScope: fireux.isTenant ? 'root' : 'entity',
     ...(fireux.isTenant && Array.isArray(keys)
       ? { runtimeReservedRouteKeys: keys }
@@ -40,6 +50,11 @@ export async function requireAvailableMenuSlug(
   slug: string,
   menuId?: string
 ) {
+  if (workspaceMenuRouteKeys.includes(slug))
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'This Menu path is reserved for a workspace tool.',
+    })
   const matches = await tx.query(serverKitchenMenusTarget(kitchenId), {
     field: 'slug',
     op: '==',

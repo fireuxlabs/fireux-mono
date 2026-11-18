@@ -54,7 +54,7 @@ function harness(intent, { authenticated = true, dev = true } = {}) {
         },
       }
     },
-    { menus: '/workspace/kitchen/menu/menus' },
+    { menus: '/workspace/kitchen/menu' },
     async () => ({
       kitchen: 'Saved knowledge',
       venue: '',

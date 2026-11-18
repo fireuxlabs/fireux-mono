@@ -4,21 +4,21 @@ import { kitchenWorkspaceSwitchPath } from '../../runtime/kitchen/utils/workspac
 
 const routes = [
   '/workspace/kitchen',
-  '/workspace/kitchen/menu/menus',
+  '/workspace/kitchen/menu',
   '/workspace/kitchen/menu/services',
   '/workspace/kitchen/prep/recipes',
 ]
 
 test('Menu and nested content routes return to the shared Menus capability', () => {
   for (const path of [
-    '/workspace/kitchen/menu/menus/:menuSlug()',
-    '/workspace/kitchen/menu/menus/:menuSlug()/content',
-    '/workspace/kitchen/menu/menus/:menuSlug()/:sectionId()',
-    '/workspace/kitchen/menu/menus/uploads/:uploadId()',
+    '/workspace/kitchen/menu/:menuSlug()',
+    '/workspace/kitchen/menu/:menuSlug()/content',
+    '/workspace/kitchen/menu/:menuSlug()/:sectionId()',
+    '/workspace/kitchen/menu/uploads/:uploadId()',
   ])
     assert.equal(
       kitchenWorkspaceSwitchPath([path], routes),
-      '/workspace/kitchen/menu/menus'
+      '/workspace/kitchen/menu'
     )
 })
 

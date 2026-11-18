@@ -77,7 +77,7 @@ export const kitchenReconciliation = {
     pages: [
       {
         label: 'Menus',
-        path: '/workspace/kitchen/menu/menus',
+        path: '/workspace/kitchen/menu',
         availability: 'enabled',
       },
       {

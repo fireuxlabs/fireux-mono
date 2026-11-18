@@ -63,7 +63,7 @@ const kitchenCapabilityCopy = {
       'Arrange dishes into ordering sections, choose how each menu is used, and publish QR codes for guests.',
     items: ['Ordering sections', 'Items', 'Ordering formats', 'QR codes'],
     action: 'Open Menus',
-    to: '/workspace/kitchen/menu/menus',
+    to: '/workspace/kitchen/menu',
   },
   'kitchen.orders': {
     eyebrow: 'Kitchen Workspace · Orders',

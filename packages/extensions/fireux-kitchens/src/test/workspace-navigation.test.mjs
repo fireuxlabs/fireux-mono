@@ -93,7 +93,6 @@ test('Menus has its own index and four sibling working pages', () => {
   )
   for (const file of [
     'menu/items/index.vue',
-    'menu/menus/index.vue',
     'menu/promotions/index.vue',
     'menu/services/index.vue',
   ]) {
@@ -158,7 +157,8 @@ test('Menu record and import routes live in the direct Menu subtree', () => {
     '[menuSlug]/[sectionId].vue',
   ]
   for (const file of expected)
-    assert.ok(existsSync(join(root, 'menu/menus', file)), file)
+    assert.ok(existsSync(join(root, 'menu', file)), file)
+  assert.equal(existsSync(join(root, 'menu', 'menus')), false)
   assert.equal(existsSync(join(root, 'food', 'menus')), false)
 })
 
@@ -322,7 +322,7 @@ test('Overview presents group entrances without flattening their children', () =
     },
     {
       key: 'menus',
-      to: '/workspace/kitchen/menu/menus',
+      to: '/workspace/kitchen/menu',
       desktop: true,
       position: 'top',
       order: 11,
@@ -365,7 +365,7 @@ test('Overview presents group entrances without flattening their children', () =
   )
   assert.deepEqual(
     areas.map((area) => area.to),
-    ['/workspace/kitchen/menu/menus', '/workspace/kitchen/prep']
+    ['/workspace/kitchen/menu', '/workspace/kitchen/prep']
   )
   assert.deepEqual(areas[0].children, items[2].children)
 })
@@ -560,7 +560,7 @@ test('Menus creation and service configuration have no redundant child pages', (
   ])
     assert.equal(existsSync(join(root, 'menu', file)), false, file)
   assert.ok(existsSync(join(root, 'menu/items/[dishId].vue')))
-  assert.ok(existsSync(join(root, 'menu/menus/[menuSlug]/index.vue')))
+  assert.ok(existsSync(join(root, 'menu/[menuSlug]/index.vue')))
   assert.equal(existsSync(join(root, 'food/drinks')), false)
 })
 

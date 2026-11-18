@@ -4,7 +4,7 @@
     class="menu-readiness-issue"
   >
     <NuxtLink
-      :to="`/workspace/kitchen/menu/menus/${encodeURIComponent(menuSlug)}/${encodeURIComponent(section.id)}`"
+      :to="`/workspace/kitchen/menu/${encodeURIComponent(menuSlug)}/${encodeURIComponent(section.id)}`"
       class="fx-type-card-heading"
       >{{ section.label || 'Section' }}</NuxtLink
     >

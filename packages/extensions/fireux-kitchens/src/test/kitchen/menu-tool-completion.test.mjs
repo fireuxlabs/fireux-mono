@@ -56,7 +56,7 @@ function context() {
     appUser = ref({ created: { at: 1 }, role: 'user' })
   const config = reactive({ appId: 'app' }),
     route = reactive({
-      fullPath: '/workspace/kitchen/menu/menus?create=1',
+      fullPath: '/workspace/kitchen/menu?create=1',
     }),
     kitchenId = ref('kitchen'),
     canWrite = ref(true),
@@ -107,7 +107,7 @@ function context() {
     }
     if (kind === 'route') {
       route.fullPath = '/other'
-      route.fullPath = '/workspace/kitchen/menu/menus?create=1'
+      route.fullPath = '/workspace/kitchen/menu?create=1'
     }
     if (kind === 'dispose') lifetime.stop()
   }
@@ -363,7 +363,7 @@ test('URL source captures its body and blocks stale credentials and obsolete com
       assert.deepEqual(
         h.effects,
         changed === 'stable'
-          ? ['/workspace/kitchen/menu/menus/uploads/source-test-source']
+          ? ['/workspace/kitchen/menu/uploads/source-test-source']
           : []
       )
       assert.equal(api.pending.value, changed !== 'stable')
@@ -589,7 +589,7 @@ test('standalone blank and URL creation explicitly construct their lower owner w
       assert.equal(h.calls[1].sourceUrl, 'https://example.test/menu')
       assert.equal(
         h.effects[1],
-        '/workspace/kitchen/menu/menus/uploads/source-source-id'
+        '/workspace/kitchen/menu/uploads/source-source-id'
       )
       assert.equal(
         constructions,

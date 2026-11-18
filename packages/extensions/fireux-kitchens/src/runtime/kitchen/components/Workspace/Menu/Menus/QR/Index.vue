@@ -19,7 +19,7 @@
       :actions="[
         {
           label: 'Review source',
-          to: `/workspace/kitchen/menu/menus/uploads/${encodeURIComponent(qr.draftSource.id)}`,
+          to: `/workspace/kitchen/menu/uploads/${encodeURIComponent(qr.draftSource.id)}`,
           icon: 'i-lucide-check-circle-2',
         },
       ]"

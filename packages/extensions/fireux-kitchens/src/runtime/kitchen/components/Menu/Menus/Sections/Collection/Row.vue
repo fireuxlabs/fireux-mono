@@ -21,22 +21,8 @@
       <p v-if="section.description" class="fx-type-caption">
         {{ section.description }}
       </p>
-      <KitchenMenuMenusSectionsItems
-        v-if="editor.daily"
-        :section-id="section.id"
-        :dishes="editor.previewItems.dishes"
-        :dishes-pending="editor.previewItems.pending"
-        :dishes-error="editor.previewItems.error"
-      />
     </div>
     <template #actions>
-      <UButton
-        size="sm"
-        variant="ghost"
-        :aria-expanded="expanded"
-        @click="emit('open')"
-        >{{ expanded ? 'Hide Items' : 'Items' }}</UButton
-      >
       <UDropdownMenu :items="actions">
         <UButton
           icon="i-lucide-ellipsis-vertical"
@@ -54,14 +40,12 @@ import { computed, type UnwrapNestedRefs } from 'vue'
 import type { useMenuSectionsEditor } from '../../../../../composables/workspace/menus/useMenuSectionsEditor'
 import type { MenuSection } from '../../../../../../menu/models/menu-section.model'
 const props = defineProps<{
-  expanded?: boolean
   section: MenuSection
   editor: UnwrapNestedRefs<ReturnType<typeof useMenuSectionsEditor>>
 }>()
 function saveLabel(value: string, isCurrent?: () => boolean) {
   return props.editor.saveSectionLabel(props.section.id, value, isCurrent)
 }
-const emit = defineEmits<{ open: [] }>()
 const actions = computed(() =>
   props.section.status === 'archived'
     ? [

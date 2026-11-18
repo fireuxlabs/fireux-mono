@@ -98,7 +98,7 @@ async function save() {
       throw new Error('The response did not identify the saved Menu source.')
     if (!isCurrent()) return
     await navigateTo(
-      `/workspace/kitchen/menu/menus/uploads/${encodeURIComponent(body.uploadId)}`
+      `/workspace/kitchen/menu/uploads/${encodeURIComponent(body.uploadId)}`
     )
   } catch (caught) {
     if (!isCurrent()) return

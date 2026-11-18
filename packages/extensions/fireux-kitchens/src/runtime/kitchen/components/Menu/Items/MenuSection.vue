@@ -38,8 +38,8 @@ const matches = computed(() =>
 )
 const destination = computed(() =>
   props.menu.schedule === 'daily'
-    ? `/workspace/kitchen/menu/menus/${encodeURIComponent(props.menu.slug)}/${encodeURIComponent(props.section.id)}`
-    : `/workspace/kitchen/menu/menus/${encodeURIComponent(props.menu.slug)}?section=${encodeURIComponent(props.section.id)}`
+    ? `/workspace/kitchen/menu/${encodeURIComponent(props.menu.slug)}/${encodeURIComponent(props.section.id)}`
+    : `/workspace/kitchen/menu/${encodeURIComponent(props.menu.slug)}?section=${encodeURIComponent(props.section.id)}`
 )
 watch(
   [pending, error, matches, dishId],

@@ -284,7 +284,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     ],
     rationale:
       'Menus connect dishes, prices, availability and publication. Deeper research must distinguish menu management, publishing and menu engineering rather than treating them as one generic page.',
-    research_route: '/workspace/kitchen/menu/menus/search-demand',
+    research_route: '/workspace/kitchen/menu/search-demand',
   },
   {
     id: 'ingredients',
