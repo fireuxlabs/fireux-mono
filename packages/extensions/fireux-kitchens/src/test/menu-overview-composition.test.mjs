@@ -31,8 +31,6 @@ function component(path, bindings = {}) {
   return exports.default
 }
 const base = 'kitchen/components/Workspace/Menu/'
-const Controls = component(`${base}Overview/Controls.vue`)
-const List = component(`${base}Overview/List.vue`)
 const Card = component(`${base}Overview/Card.vue`)
 const Toolbar = component('kitchen/components/Workspace/Collection/Toolbar.vue')
 const State = component(
@@ -96,7 +94,7 @@ function mount() {
     assert.fail(name)
   }, listExports)
   const list = listExports.useMenuList()
-  const { query, showArchived } = list
+  const { query, status } = list
   let creates = 0
   const overviewSource = readFileSync(
     new URL('kitchen/composables/workspace/menu/overview.ts', runtime),
@@ -136,8 +134,36 @@ function mount() {
     if (name === '../menus/useMenuList') return { useMenuList: () => list }
     assert.fail(name)
   }, overviewExports)
-  const overview = component(`${base}Overview/Index.vue`, {
+  const bindings = {
     '../../../../composables/workspace/menu/overview': overviewExports,
+  }
+  const localCode = ts.transpileModule(
+    readFileSync(
+      new URL(`${base}Overview/Controls/useControls.ts`, runtime),
+      'utf8'
+    ),
+    {
+      compilerOptions: {
+        module: ts.ModuleKind.CommonJS,
+        target: ts.ScriptTarget.ES2022,
+      },
+    }
+  ).outputText
+  const local = {}
+  compileFunction(localCode, ['require', 'exports'])((name) => {
+    if (name === 'vue') return Vue
+    if (name.endsWith('/menu/overview')) return overviewExports
+    assert.fail(name)
+  }, local)
+  const Actions = component(`${base}Overview/Controls/Actions.vue`)
+  const Filters = component(`${base}Overview/Controls/Filters.vue`)
+  const Controls = component(`${base}Overview/Controls/Index.vue`, {
+    './index': { Actions, Filters },
+    './useControls': local,
+  })
+  const Collection = component(`${base}Overview/Collection.vue`, bindings)
+  const overview = component(`${base}Overview/Index.vue`, {
+    './index': { Controls, Collection },
   })
   const node = (type, text = '') => ({
     type,
@@ -182,8 +208,6 @@ function mount() {
   })
   const app = renderer.createApp(overview)
   for (const [name, value] of Object.entries({
-    KitchenWorkspaceMenuOverviewControls: Controls,
-    KitchenWorkspaceMenuOverviewList: List,
     KitchenWorkspaceMenuOverviewCard: Card,
     WorkspaceKitchenCollectionToolbar: Toolbar,
     FireState: State,
@@ -204,6 +228,23 @@ function mount() {
             },
           },
           props.label
+        ),
+  })
+  app.component('USelect', {
+    props: ['modelValue', 'items'],
+    emits: ['update:modelValue'],
+    setup:
+      (props, { emit }) =>
+      () =>
+        Vue.h(
+          'select',
+          {
+            value: props.modelValue,
+            onChange: (event) => emit('update:modelValue', event.target.value),
+          },
+          props.items.map((item) =>
+            Vue.h('option', { value: item.value }, item.label)
+          )
         ),
   })
   app.component('UInput', {
@@ -258,7 +299,7 @@ function mount() {
     app,
     rows,
     query,
-    showArchived,
+    status,
     outcome,
     canCreateMenu,
     all,
@@ -267,7 +308,7 @@ function mount() {
   }
 }
 
-test('composed menu overview retains ordering, controlled search/archive choices, destinations and creation availability', async () => {
+test('composed menu overview retains ordering, controlled search/status choices, destinations and creation availability', async () => {
   const view = mount()
   try {
     assert.deepEqual(view.all('h3').map(view.text), ['Specials', 'Drinks'])
@@ -295,14 +336,14 @@ test('composed menu overview retains ordering, controlled search/archive choices
     )
     view
       .all('button')
-      .find((node) => view.text(node) === 'Create menu')
+      .find((node) => view.text(node) === 'Add menu')
       .props.onClick()
     assert.equal(view.creates(), 1)
     view.canCreateMenu.value = false
     await Vue.nextTick()
     const create = view
       .all('button')
-      .find((node) => view.text(node) === 'Create menu')
+      .find((node) => view.text(node) === 'Add menu')
     assert.equal(create.props.disabled, true)
     create.props.onClick()
     assert.equal(view.creates(), 1)
@@ -318,17 +359,17 @@ test('composed menu overview retains ordering, controlled search/archive choices
     )
     view.query.value = ''
     await Vue.nextTick()
-    view
-      .all('button')
-      .find((node) => view.text(node) === 'Show archived')
-      .props.onClick()
-    await Vue.nextTick()
-    assert.equal(view.showArchived.value, true)
-    assert.deepEqual(view.all('h3').map(view.text), [
-      'Specials',
-      'Drinks',
-      'Old',
-    ])
+    for (const [status, expected] of [
+      ['published', ['Specials']],
+      ['draft', ['Drinks']],
+      ['archived', ['Old']],
+      ['all', ['Specials', 'Drinks']],
+    ]) {
+      view.all('select')[0].props.onChange({ target: { value: status } })
+      await Vue.nextTick()
+      assert.equal(view.status.value, status)
+      assert.deepEqual(view.all('h3').map(view.text), expected)
+    }
   } finally {
     view.app.unmount()
   }
@@ -342,6 +383,18 @@ test('shared collection feedback hides stale cards while loading or failed and p
       await Vue.nextTick()
       assert.equal(view.all('article').length, 0)
       assert.equal(view.all('input').length, 0)
+      const create = view
+        .all('button')
+        .find((node) => view.text(node) === 'Add menu')
+      assert.equal(create.props.disabled, true)
+      assert.equal(
+        view
+          .all('p')
+          .some((node) =>
+            /No matching menus|No menus yet/.test(view.text(node))
+          ),
+        false
+      )
       assert.ok(
         view
           .all('p')
@@ -356,9 +409,18 @@ test('shared collection feedback hides stale cards while loading or failed and p
     assert.ok(
       view
         .all('p')
-        .some((node) => view.text(node).includes('Create your first menu'))
+        .some((node) => view.text(node).includes('Add your first menu'))
     )
     assert.equal(view.all('input').length, 1)
+    view.rows.value = [{ id: 'old', name: 'Previous menu', status: 'archived' }]
+    view.outcome.value = 'ready'
+    await Vue.nextTick()
+    assert.ok(
+      view.all('p').some((node) => view.text(node).includes('Choose Archived'))
+    )
+    view.status.value = 'archived'
+    await Vue.nextTick()
+    assert.deepEqual(view.all('h3').map(view.text), ['Previous menu'])
   } finally {
     view.app.unmount()
   }

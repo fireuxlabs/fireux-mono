@@ -100,6 +100,11 @@ export default defineNuxtModule<ModuleOptions>({
           ['useKitchenWorkspaceMenuPromotions', 'menu/promotions'],
           ['useKitchenWorkspaceMenuServices', 'menu/services'],
           ['useKitchenWorkspacePrep', 'prep/index'],
+          ['useKitchenWorkspacePrepPreparations', 'prep/children'],
+          ['useKitchenWorkspacePrepRecipes', 'prep/children'],
+          ['useKitchenWorkspacePrepIngredients', 'prep/children'],
+          ['useKitchenWorkspacePrepStations', 'prep/children'],
+
           ['useKitchenWorkspacePrepLibrary', 'prep/library'],
           ['useKitchenWorkspacePrepRecipeEditor', 'prep/recipe/editor'],
         ] as const) {

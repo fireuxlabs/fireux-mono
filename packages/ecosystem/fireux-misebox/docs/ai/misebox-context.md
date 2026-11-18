@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-11-18
-Ref: 1b3480a87
+Ref: 2f47a03c2
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -603,6 +603,15 @@ Current group prefixes and destinations (relative to `/workspace/kitchen`):
 | Identity & brand   | `/identity`    | Kitchen listing; venue profile, operating hours and appearance children                                                 |
 | Settings           | `/settings`    | payments, integrations, access                                                                                          |
 
+The accepted grouping target makes Services a sibling Kitchen capability of
+Menu, Orders and Prep & Production. Services owns cross-Menu ordering channels,
+serving schedules and eligibility configuration. Menu can retain service
+availability references. The table above and `/menu/services` URL describe
+current source until a coordinated navigation/route/component/AI/link cutover;
+no record, command authority or public ordering policy moves with this grouping.
+Follow the [Services Workspace boundary](../../../../../docs/concepts/family-menu.md#services-workspace-boundary)
+for source anchors, affected consumers and cutover evidence.
+
 Home is the single primary arrival entrance. Its settled selected-Kitchen view
 contains the App header, Kitchen AI and the selected Kitchen card. Operators
 with multi-Kitchen management and more than one available Kitchen get the
@@ -721,7 +730,7 @@ intent so returning opens the originating section on the Menu. Date, archived
 view and record changes release the previous section editor. No command or Item
 identity is copied into the parent.
 
-Menus keeps collection search and Show archived in `useMenuList`, in memory for
+Menus keeps collection search and status selection in `useMenuList`, in memory for
 the mounted App session and isolated by App, account and Kitchen. Returning from
 a Menu or source editor restores those choices; a full reload starts fresh.
 The collection controller owns collection/creation state, not record write helpers
@@ -1727,8 +1736,12 @@ must earn their reactive or interaction responsibility.
 
 Kitchen Item is a Kitchen-owned Record. Recipe is a first-class Entity with an
 independent-domain target, while current source, reads and writes remain
-Kitchen-scoped. Independent Recipe authority, Kitchen association and versioning
-are separate design work. Preparation is a Kitchen-owned Record, while Recipe
+Kitchen-scoped. Every Recipe's accepted target owner is a User. Kitchen owns a
+link to an explicitly approved version, retains approved internal use after owner
+departure or unpublishing, and accepts updates deliberately. Follow the
+[Recipe ownership contract](../../../../../docs/concepts/entities.md#recipe-ownership-and-kitchen-use)
+for authority boundaries and the required explicit owner mapping before a data
+cutover. This target is not yet implemented. Preparation is a Kitchen-owned Record, while Recipe
 output descriptions belong to the independent Recipe as embedded shapes. Follow
 `docs/concepts/entities.md` for these boundaries and current models/readers for
 implemented behavior; source movement grants no new data authority.
@@ -1750,11 +1763,36 @@ Only the description returns to the entrance; child-specific composables use
 strict internal lookup, and one active overview publisher supplies page JSON/AI.
 Services owns service-specific projections from that acquired graph. Overview
 uses the existing `useMenuList`, real creation availability and blocked reason,
-controlled Controls/List/Card, native `UPageGrid`/`UPageCard` and shared `FireState`.
-The entrance contains no temporary debug borders or numbered markers.
+Controls and Collection through a bounded local component namespace. Controls
+composes Actions and Filters, with a private `useControls` presentation composable
+consuming the existing overview capability. It uses the shared collection toolbar,
+native status select and the existing creation action. Search/status choices stay
+App/account/Kitchen scoped in `useMenuList`; All excludes archived records, while
+Published, Drafts and Archived select their exact stored statuses. Both Menu list
+consumers share that contract. Counts/filters wait until the read settles and
+creation retains its existing entitlement and pending availability. Collection owns initial loading/error feedback, stale-card
+masking, empty/search results and the existing Card renderer using native
+`UPageGrid`/`UPageCard` and shared `FireState`. Neither child acquires another
+reader or page publisher.
 
 Prep lives under `components/Workspace/Prep`. Its entrance mounts
-`useKitchenWorkspacePrep`; Overview/Create use strict internal lookup. Separate
+`useKitchenWorkspacePrep`; Create and connected child summaries use strict internal
+lookup. Its `Overview/Index.vue` composes Controls and Collection through a local
+component namespace; those two surfaces remain placeholders until their workflows
+are defined. The entrance acquires existing Preparation/Recipe readers and Kitchen
+Ingredient/Station associations once, gated by the selected Kitchen's readiness.
+Child capabilities expose counts and recorded Recipe input/method gaps from that graph;
+Ingredient counts mean selected catalogue entries, not stock. Prep plan and
+Batches remain explicitly unconnected. Connected Menu/Prep child overviews explicitly
+import their adjacent `useOverview.ts` presentation composable, which consumes the
+corresponding `useKitchenWorkspace…` capability. Domain summary facts and acquired
+state retain their existing owners; card feedback uses the shared
+`kitchen/utils/overview-summary.ts` projection. These private presentation hooks
+are neither auto-imported nor exported through component namespace entrypoints.
+The shared Navigation Child keeps whole-card linking by default; Services selects
+native title-only linking so its individual service links need no stacking overrides.
+Follow `docs/concepts/composables.md#component-private-presentation-composables`
+for admission; placeholder cards do not need empty hooks. Separate
 library routes mount `useKitchenWorkspacePrepLibrary` with their explicit view,
 sharing one Preparation/Recipe read graph and enabling Ingredient catalogue and
 Kitchen associations only for Recipe views. `useKitchenWorkspacePrepRecipeEditor`
@@ -2431,8 +2469,8 @@ the deleted Kitchen model directory. Verify with `src/test/kitchen/prep-edit.tes
 `preparation-library.test.mjs`, `recipe-command-internals.test.mjs`, Ingredient
 removal regressions, Core's Identity editor tests and the signed-in library routes.
 
-Sourced starting recipes are ordinary Kitchen-owned Preparation and Recipe
-records. There is no App-owned examples route, runtime fixture branch or automatic
+Current sourced starting Recipes remain Kitchen-scoped records until their
+explicit User-ownership cutover; their Preparation records are Kitchen-owned. There is no App-owned examples route, runtime fixture branch or automatic
 seed. `tools/misebox-migrations/la-tap-prep` retains the explicit venue-scoped input
 and create-only import owner. Its plan binds the exact database/Kitchen, source
 hash and complete preimages; apply checks document versions, creates atomically

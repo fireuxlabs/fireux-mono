@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-11-18
-Ref: 5e2450a2f
+Ref: 2f47a03c2
 Role: living context
 Scope: repository-wide
 
@@ -170,9 +170,16 @@ and artwork contracts in [brand assets](../concepts/brand-assets.md).
 ### Vue file convention
 
 Use the [component file convention](../concepts/components.md#vue-file-convention)
-for SFC block order and component-only runtime trees. Format changed files with
-the existing formatter and run applicable lint checks; do not claim enforcement
-for rules absent from their configuration.
+for SFC block order, component runtime trees and bounded static component
+namespace entrypoints. Explicitly imported
+[component-private presentation composables](../concepts/composables.md#component-private-presentation-composables)
+may be colocated when warranted; domain acquisition, commands and shared state
+retain their technical owners. Follow the
+[local namespace adoption rule](../concepts/components.md#local-component-namespaces)
+during substantive component development; incidental touches and bulk conversion
+do not trigger adoption. Format changed files with the existing formatter and
+run applicable lint checks; do not claim enforcement for rules absent from their
+configuration.
 
 ## FireUX source spine
 

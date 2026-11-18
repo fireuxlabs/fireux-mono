@@ -67,8 +67,9 @@ test('Menu list keeps regular menus together and Daily specials and archives sep
     ['Menus', ['food', 'pdf', 'empty-document']],
     ['Daily specials', ['daily']],
   ])
-  state.showArchived.value = true
-  assert.deepEqual(groups()[1], ['Archived', ['old']])
+  state.status.value = 'archived'
+  assert.deepEqual(groups(), [['Archived', ['old']]])
+  state.status.value = 'all'
   state.query.value = 'wine'
   assert.deepEqual(groups(), [['Menus', ['pdf']]])
   assert.deepEqual(records, before)
@@ -105,7 +106,7 @@ test('Workspace creation has one Menu path and keeps source import available', (
   )
 })
 
-test('Menu search and Show archived survive opening a record and remounting the list', () => {
+test('Menu search and status selection survive opening a record and remounting the list', () => {
   const records = [
     { id: 'food', name: 'Food', status: 'published', price: 13 },
     { id: 'old', name: 'Old drinks', status: 'archived', price: 4 },
@@ -114,10 +115,10 @@ test('Menu search and Show archived survive opening a record and remounting the 
   const fixture = listFixture(records)
   const first = fixture.mount()
   first.query.value = 'drinks'
-  first.showArchived.value = true
+  first.status.value = 'archived'
   const returned = fixture.mount()
   assert.equal(returned.query.value, 'drinks')
-  assert.equal(returned.showArchived.value, true)
+  assert.equal(returned.status.value, 'archived')
   assert.deepEqual(
     returned.filteredMenus.value.map((menu) => menu.id),
     ['old']
@@ -131,7 +132,7 @@ test('Menu list choices are isolated by account, Kitchen and App, and follow liv
   ])
   const list = fixture.mount()
   list.query.value = 'old'
-  list.showArchived.value = true
+  list.status.value = 'archived'
   for (const owner of [
     fixture.uid,
     fixture.kitchenId,
@@ -140,15 +141,15 @@ test('Menu list choices are isolated by account, Kitchen and App, and follow liv
     const original = owner.value
     owner.value = 'another'
     assert.equal(list.query.value, '')
-    assert.equal(list.showArchived.value, false)
+    assert.equal(list.status.value, 'all')
     owner.value = original
     assert.equal(list.query.value, 'old')
-    assert.equal(list.showArchived.value, true)
+    assert.equal(list.status.value, 'archived')
   }
   fixture.menus.value = []
   assert.equal(list.filteredMenus.value.length, 0)
   assert.equal(list.query.value, 'old')
-  assert.equal(list.showArchived.value, true)
+  assert.equal(list.status.value, 'archived')
   fixture.menus.value = [{ id: 'old', name: 'Old menu', status: 'archived' }]
   assert.equal(list.filteredMenus.value[0].id, 'old')
 })
@@ -167,13 +168,74 @@ test('list owner sorts published first then saved order and name without mutatin
     list.visibleMenus.value.map((menu) => menu.id),
     ['first', 'a', 'z', 'draft']
   )
-  assert.equal(list.archivedCount.value, 1)
   list.query.value = 'old'
   assert.deepEqual(list.visibleMenus.value, [])
-  list.showArchived.value = true
+  list.status.value = 'archived'
   assert.deepEqual(
     list.visibleMenus.value.map((menu) => menu.id),
     ['old']
   )
   assert.deepEqual(records, before)
+})
+
+test('status selection separates published, draft and archived records and follows live changes', () => {
+  const fixture = listFixture([
+    { id: 'p', name: 'Published', status: 'published' },
+    { id: 'd', name: 'Draft', status: 'draft' },
+    { id: 'a', name: 'Archived', status: 'archived' },
+  ])
+  const state = fixture.mount()
+  const ids = () => state.visibleMenus.value.map((menu) => menu.id)
+  assert.deepEqual(ids(), ['p', 'd'])
+  for (const [status, expected] of [
+    ['published', ['p']],
+    ['draft', ['d']],
+    ['archived', ['a']],
+  ]) {
+    state.status.value = status
+    assert.deepEqual(ids(), expected)
+  }
+  state.status.value = 'published'
+  fixture.menus.value = fixture.menus.value.map((menu) =>
+    menu.id === 'd' ? { ...menu, status: 'published' } : menu
+  )
+  assert.deepEqual(ids(), ['d', 'p'])
+  state.query.value = 'draft'
+  assert.deepEqual(ids(), ['d'])
+})
+
+test('simultaneous Controls and Collection list projections share live filter choices', () => {
+  const fixture = listFixture([
+    { id: 'p', name: 'Food', status: 'published' },
+    { id: 'd', name: 'Drinks', status: 'draft' },
+    { id: 'a', name: 'Old', status: 'archived' },
+  ])
+  const controls = fixture.mount()
+  const collection = fixture.mount()
+  assert.notEqual(controls, collection)
+  for (const [status, ids] of [
+    ['published', ['p']],
+    ['draft', ['d']],
+    ['archived', ['a']],
+    ['all', ['p', 'd']],
+  ]) {
+    controls.status.value = status
+    assert.equal(collection.status.value, status)
+    assert.deepEqual(
+      collection.visibleMenus.value.map((menu) => menu.id),
+      ids
+    )
+    assert.equal(
+      controls.visibleMenus.value.length,
+      collection.visibleMenus.value.length
+    )
+  }
+  controls.query.value = 'food'
+  assert.deepEqual(
+    collection.visibleMenus.value.map((menu) => menu.id),
+    ['p']
+  )
+  collection.status.value = 'draft'
+  assert.equal(controls.status.value, 'draft')
+  assert.equal(controls.visibleMenus.value.length, 0)
 })

@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
 Updated: 2026-11-18
-Ref: c2748cea8
+Ref: 2f47a03c2
 Role: map, not canon
 
 ## Purpose
@@ -253,6 +253,15 @@ src/runtime/kitchen/
 This is an entity-scoped Nuxt runtime, not a capability-owned miniature
 application. Do not create `client`, `server`, `components`, and `models`
 inside an arbitrary feature root outside the entity scope.
+
+Component directories may contain a bounded static `index.ts` namespace for
+an actual parent composition, alongside their Vue components. The
+[component namespace convention](components.md#local-component-namespaces) owns
+its export-only boundary and substantive-work-only adoption. A separately
+admitted [component-private presentation composable](composables.md#component-private-presentation-composables)
+may also be explicitly imported beside its component. Domain records, readers,
+commands and shared state retain their technical roles; neither local convention
+changes public Nuxt registration or creates another acquisition owner.
 
 The current Menu entrance is
 [`kitchen/components/Workspace/Menu/Index.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Index.vue),

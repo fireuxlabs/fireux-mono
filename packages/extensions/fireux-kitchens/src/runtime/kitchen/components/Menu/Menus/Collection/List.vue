@@ -9,16 +9,16 @@
         label="menus"
         singular="menu"
         :count="filteredMenus.length"
-      />
-      <UButton
-        v-if="archivedCount"
-        :label="showArchived ? 'Hide archived' : `Archived (${archivedCount})`"
-        color="neutral"
-        variant="ghost"
-        size="sm"
-        class="workspace-surface workspace-surface--compact"
-        @click="showArchived = !showArchived"
-      />
+      >
+        <template #controls>
+          <USelect
+            v-model="status"
+            :items="statusOptions"
+            icon="i-lucide-list-filter"
+            aria-label="Menu status"
+          />
+        </template>
+      </WorkspaceKitchenCollectionToolbar>
       <div
         v-if="filteredMenus.length"
         class="workspace-surface workspace-surface--compact"
@@ -79,8 +79,7 @@ import { useKitchenMenus } from '../../../../composables/workspace/menus/useKitc
 import type { Menu } from '../../../../../menu/models/menu-storage.model.ts'
 
 const { rawMenus: menus, pending } = useKitchenMenus()
-const { query, showArchived, archivedCount, filteredMenus, groups } =
-  useMenuList()
+const { query, status, statusOptions, filteredMenus, groups } = useMenuList()
 
 const text = (value: unknown) => String(value ?? '').trim()
 

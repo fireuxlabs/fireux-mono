@@ -889,7 +889,17 @@ name. Times stay on the destination, not on secondary portal links. No new
 Offering identity, price or Order command is introduced. Verify
 `menu-other-offerings.test.mjs` and the offering-browse pagination regression.
 
-Kitchen service configuration lives at
+### Services Workspace boundary
+
+Services is a Kitchen-owned capability alongside Menu, Orders and Prep &
+Production. Menu owns what customers can choose; Services owns how and when
+customers can order across those Menus; Orders owns placed-order lifecycle;
+Prep owns production. Services does not become a new Entity or a capability of
+Core. Menu may show service availability and link to its configuration without
+owning that configuration.
+
+This is the accepted grouping target. Current navigation still places Services
+under Menus, and the current service configuration route remains
 `/workspace/kitchen/menu/services`.
 `Menu/Services/Index.vue` provides one scoped reader. `Service.vue`
 groups each supplied type and `Record.vue` binds the existing setup controls
@@ -902,10 +912,24 @@ command retains its one-new-setup-per-type/channel policy.
 Verify `services-workspace.test.mjs`, `offering-configuration.test.mjs` and
 `service-section-navigation.test.mjs`.
 
-The visible Workspace capability is Services. The Menus navigation group and
-`/menu-setup` overview exclude Recipes and Ingredients, which are children of
-Prep & Production. The Food & drink index follows the same metadata; recipe
-and ingredient routes keep their domain readers and commands.
+Before the runtime grouping cutover, reconcile the Menu parent navigation and
+Services page metadata, the Services component registration/imports and AI focus,
+and links from operating hours, website ordering, Kitchen entry, Menu details and
+service summaries. Decide the canonical Services URL in that bounded change;
+this decision does not itself move routes or stored records. Preserve current
+service hash destinations, exact Kitchen selection, one Services read/context
+owner and active page publisher, existing commands, and public Menu/order
+eligibility. Reuse the existing offering policy rather than creating a second
+Menu-versus-Services authority. The current Menu service summary is a
+cross-capability consumer; its placement does not relocate Services ownership.
+
+The current consumer/route anchors are
+[Services page](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menu/services/index.vue),
+[Menu navigation](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menu/index.vue),
+[Services context](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/offerings/useKitchenServicesContext.ts)
+and [offering target](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/offerings/target.ts).
+Recipes and Kitchen Preparations remain under Prep & Production; this grouping
+decision does not change their domain contracts.
 
 ## Shared Menu preparation
 
@@ -978,14 +1002,25 @@ comparison and Menu Express delivery reject groups they cannot represent.
 The landing composes Menu discovery and creation over one Menu collection;
 the group overview reuses that collection rather than opening a second reader.
 The former collection entrance renders this same composition.
-`Workspace/Menu/Index.vue` composes the entrance and operational summaries;
-`Workspace/Menu/Overview/Index.vue` coordinates its primary collection through
-`useKitchenWorkspaceMenuOverview`. Controlled Controls reuse
-`WorkspaceKitchenCollectionToolbar`, List owns native `UPageGrid` and empty
-results, and Card owns one Menu's status, destination and presentation. Shared
-`FireState` owns loading/error feedback. `useMenuList` retains search/archive
-scope and published/order/name sorting; real creation availability and blocked
-copy come from the existing Menus capability.
+`Workspace/Menu/Index.vue` composes the entrance and operational summaries.
+Its local `Workspace/Menu/index.ts` exports the existing child components for
+one explicit namespace import, `import * as Menu from './index'`, consumed as
+`Menu.Overview`, `Menu.Create`, `Menu.Ai` and the named child summaries. This
+namespace changes no component registration, data owner or runtime authority.
+Adopt this composition style during substantive work on a parent and its children;
+do not bulk-migrate components or add namespace files for incidental touches.
+The shared component convention is maintained in `components.md`.
+`Workspace/Menu/Overview/Index.vue` composes Controls and Collection through its
+local component namespace. Controls composes Actions and Filters, with a private
+presentation composable consuming `useKitchenWorkspaceMenuOverview`; it reuses
+`WorkspaceKitchenCollectionToolbar`, native `USelect` status choices and the
+existing creation action. Collection owns loading/error feedback through shared
+`FireState`, stale-card masking, empty results and native `UPageGrid`. Card owns
+one Menu's status, destination and presentation. `useMenuList` retains scoped
+search/status choices and published/order/name sorting; All excludes archived
+records, while Published, Drafts and Archived select their stored status. Both
+Menu list consumers share this contract. Real creation availability and blocked
+copy retain their existing Menus capability owner.
 
 `useKitchenWorkspaceMenu` owns the description and coordinates the existing
 Menus workflow with `createKitchenMenuOverview`, sharing the exact collection

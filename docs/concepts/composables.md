@@ -1,7 +1,7 @@
 # Composables spine map
 
 Updated: 2026-11-18
-Ref: 1b3480a87
+Ref: 2f47a03c2
 Role: map, not canon
 
 ## Purpose
@@ -86,6 +86,31 @@ File count alone proves neither alignment nor complexity.
 
 Existing family names require review by responsibility; this is not a blanket
 rename instruction.
+
+### Component-private presentation composables
+
+A component may explicitly import a colocated composable when it owns meaningful
+presentation logic, such as `Overview.vue` using `useItemsOverview.ts`. That
+private composable consumes the existing lower domain capability or supplied
+values and derives the component's status, attention cues, view model or local
+presentation behavior. It must add a real responsibility; a matching file is
+optional, and forwarding or renaming lower fields alone does not warrant one.
+
+Keep domain records, acquisition, authority, commands, shared workflow state and
+page-context publication in their existing technical owners. A local overview
+must not construct a second reader, publisher or domain controller. Component
+presentation does not decide new domain facts or product requirements.
+
+These files are explicitly imported component implementation, not Nuxt
+composable auto-import roots or a public API. Do not export them through the
+component namespace `index.ts`. If another independent component needs their
+logic, review the real shared responsibility and move it to the existing owner's
+appropriate technical role rather than exposing component-private internals.
+
+Adopt this bounded pattern during substantive work when warranted. The Kitchen
+child-overview trial does not authorize a bulk migration, empty adapters or a
+compulsory component/composable pair. Tests remain outside runtime and exercise
+actual consumers, outcomes and preserved lower ownership.
 
 ### Provided capability lifecycle
 

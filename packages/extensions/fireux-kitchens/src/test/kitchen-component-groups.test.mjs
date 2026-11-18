@@ -85,7 +85,15 @@ test('group entrances compose their named responsibilities without preview marke
     'PromotionsOverview',
     'ServicesOverview',
   ])
-    assert.ok(menu.includes(`<KitchenWorkspaceMenu${child}`), child)
+    assert.ok(menu.includes(`<Menu.${child}`), child)
+  const namespace = readFileSync(
+    `${runtime}/kitchen/components/Workspace/Menu/index.ts`,
+    'utf8'
+  )
+  for (const [, file] of namespace.matchAll(/from ['"]([^'"]+)['"]/g))
+    assert.ok(
+      existsSync(`${runtime}/kitchen/components/Workspace/Menu/${file}`)
+    )
   assert.ok(prep.includes('<KitchenWorkspacePrepRecipesOverview'))
   assert.ok(prep.includes('<KitchenWorkspacePrepPreparationsOverview'))
 })

@@ -3,7 +3,14 @@ import { useState } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useKitchenMenus } from './useKitchenMenus'
 
-type MenuListChoices = { query: string; showArchived: boolean }
+export type MenuListStatus = 'all' | 'published' | 'draft' | 'archived'
+export const menuListStatusOptions = [
+  { label: 'All menus', value: 'all' },
+  { label: 'Published', value: 'published' },
+  { label: 'Drafts', value: 'draft' },
+  { label: 'Archived', value: 'archived' },
+] satisfies Array<{ label: string; value: MenuListStatus }>
+type MenuListChoices = { query: string; status: MenuListStatus }
 
 /** List choices survive editor navigation, isolated by App, account and Kitchen. */
 export function useMenuList() {
@@ -24,7 +31,7 @@ export function useMenuList() {
     () =>
       choices.value[scope.value] ?? {
         query: '',
-        showArchived: false,
+        status: 'all' as MenuListStatus,
       }
   )
   const query = computed({
@@ -36,21 +43,23 @@ export function useMenuList() {
       }
     },
   })
-  const showArchived = computed({
-    get: () => current.value.showArchived,
-    set: (showArchived: boolean) => {
+  const status = computed({
+    get: () => current.value.status || 'all',
+    set: (status: MenuListStatus) => {
       choices.value = {
         ...choices.value,
-        [scope.value]: { ...current.value, showArchived },
+        [scope.value]: { ...current.value, status },
       }
     },
   })
-  const archivedCount = computed(
-    () => menus.value.filter((menu) => menu.status === 'archived').length
-  )
+  const totalCount = computed(() => menus.value.length)
   const filteredMenus = computed(() =>
     menus.value
-      .filter((menu) => showArchived.value || menu.status !== 'archived')
+      .filter((menu) =>
+        status.value === 'all'
+          ? menu.status !== 'archived'
+          : (menu.status || 'draft') === status.value
+      )
       .filter((menu) =>
         `${menu.internal_name || ''} ${menu.name || ''} ${menu.description || ''}`
           .toLocaleLowerCase()
@@ -92,8 +101,9 @@ export function useMenuList() {
   )
   return {
     query,
-    showArchived,
-    archivedCount,
+    status,
+    statusOptions: menuListStatusOptions,
+    totalCount,
     filteredMenus,
     visibleMenus,
     groups,

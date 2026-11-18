@@ -1,7 +1,7 @@
 # Components spine map
 
 Updated: 2026-11-18
-Ref: 5e2450a2f
+Ref: 2f47a03c2
 Role: map, not canon
 
 ## Purpose and navigation
@@ -283,12 +283,16 @@ This order does not replace readable composition or domain ownership. The
 existing formatter and applicable lint checks are separate evidence; scoped
 lint rules do not establish repository-wide enforcement.
 
-Runtime component trees contain `.vue` files and folders of components only.
-Put styles used by one component in its SFC style block. Styles shared by
+Runtime component trees contain `.vue` files and folders of components, plus
+bounded static component namespace entrypoints and explicitly imported
+component-private presentation composables under the conventions below. Put styles
+used by one component in its SFC style block. Styles shared by
 several components belong in the existing owner's assets/styles directory,
 preserving scoped imports where required. App copy belongs in App content;
-types, pure helpers and reactive lifecycle code belong in the corresponding
-owner's models/types, utils and composables. Do not introduce a new shared
+domain/shared types, pure helpers and domain lifecycle code belong in the
+corresponding owner's models/types, utils and composables. A component-private
+presentation composable may be colocated only under the
+[bounded presentation contract](composables.md#component-private-presentation-composables). Do not introduce a new shared
 abstraction merely to relocate a file. Tests remain outside runtime and may
 mirror the component hierarchy.
 
@@ -325,8 +329,9 @@ components retain `Workspace`; Nuxt UI keeps `U`.
 - Use one canonical registration tree and preserve path-derived names. Move
   registration and consumers together, then retire old paths. Do not retain
   aliases or forwarding wrappers for a completed move.
-- Use Nuxt-generated names for registered components. Add explicit imports only
-  for a concrete registration gap or name collision.
+- Use Nuxt-generated names for registered components. A bounded local component
+  namespace may explicitly import its existing children under the convention
+  below. Other explicit imports need a concrete registration gap or name collision.
 
 A shared or public component needs a named responsibility, explicit inputs or
 slots, known runtime prerequisites and real consumer evidence. A package
@@ -348,6 +353,35 @@ for a disclosure without the card-cell surface. Both reuse native UCollapsible
 interaction. DisclosurePanel owns the labelled trigger and description with
 semantic styles; controlled open state remains with the caller. The FireUX App exposes the
 [Disclosure Card component page](../../projects/fireux/fireux-app/app/pages/components/disclosure-card.vue).
+
+### Local component namespaces
+
+During substantive work on a parent composition and its children, prefer one
+explicit local namespace import when it makes those child responsibilities
+clear: `import * as Menu from './index'`, rendered as `<Menu.Overview />` and
+other named children. The local `index.ts` contains only explicit named static
+reexports of the existing component files that composition needs. It owns no
+state, reads, commands, discovery or component wrappers.
+
+Keep this entrypoint bounded to its actual component composition. Do not turn
+it into a package-wide component registry, a general utility/type barrel, a
+chain of namespace forwarding files or old-name compatibility exports. Native
+Nuxt/Nuxt UI controls and public Nuxt component registration keep their existing
+owners; the local namespace does not change those names or duplicate scans.
+
+Adopt this convention as components are substantively developed. An incidental
+import, formatting or mechanical migration touch does not trigger conversion.
+Do not bulk-migrate existing trees merely to add the convention. Its presence
+marks an updated composition; its absence does not prove a defect.
+
+The bounded source example is
+[Menu's parent](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Index.vue)
+and its [static namespace](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/index.ts).
+Check the consuming SFC's bindings, exported component paths and unchanged
+registration/behavior when adopting it. This is an explicit component
+composition role. Component-private presentation composables follow their
+separate [admission contract](composables.md#component-private-presentation-composables);
+domain helpers and lifecycle code retain their existing technical owners.
 
 ## Workspace composition
 

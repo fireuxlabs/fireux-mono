@@ -114,14 +114,14 @@ need a root, a reader, a controller or a generic types directory of its own.
 
 The agreed decisions and remaining classification work are:
 
-| Concept     | Target                                   | Migration consequence                                                                                                                                |
-| ----------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Kitchen     | Entity with a Workspace                  | Retain the Kitchen spine and its authority.                                                                                                          |
-| Menu        | Entity with Kitchen-scoped records today | Keep its existing `runtime/menu/` ownership; Kitchen's Workspace Menu capability composes it.                                                        |
-| Recipe      | Entity that can exist outside Kitchen    | Give Recipe its own spine; design ownership and Kitchen associations before changing the current Kitchen-scoped data contract.                       |
-| Item        | Kitchen-owned Record                     | Do not create a top-level `runtime/item/` Entity. Move its definition and behavior into Kitchen's record and technical roles.                        |
-| Preparation | Kitchen-owned Record                     | Move its definition into `kitchen/records/preparation.ts` and behavior into Kitchen technical roles; retain existing scope and Recipe relationships. |
-| Ingredient  | Existing shared culinary Entity          | Retain its named owner and canonical identity.                                                                                                       |
+| Concept     | Target                                   | Migration consequence                                                                                                                                                                 |
+| ----------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kitchen     | Entity with a Workspace                  | Retain the Kitchen spine and its authority.                                                                                                                                           |
+| Menu        | Entity with Kitchen-scoped records today | Keep its existing `runtime/menu/` ownership; Kitchen's Workspace Menu capability composes it.                                                                                         |
+| Recipe      | User-owned Entity outside Kitchen        | Give Recipe its own spine; Kitchen references explicitly approved versions and retains approved internal use. Implement ownership and associations before changing current authority. |
+| Item        | Kitchen-owned Record                     | Do not create a top-level `runtime/item/` Entity. Move its definition and behavior into Kitchen's record and technical roles.                                                         |
+| Preparation | Kitchen-owned Record                     | Move its definition into `kitchen/records/preparation.ts` and behavior into Kitchen technical roles; retain existing scope and Recipe relationships.                                  |
+| Ingredient  | Existing shared culinary Entity          | Retain its named owner and canonical identity.                                                                                                                                        |
 
 A portable Recipe describes its output with an embedded shape. A Kitchen
 Preparation identifies that Kitchen's reusable output; Kitchen owns its chosen
@@ -254,24 +254,40 @@ second model at the old location.
 
 ### 4. Establish Recipe's independent domain contract
 
-Recipe currently lives at `kitchen/recipe/`; its readers and trusted commands
-use Kitchen-scoped records and Kitchen access. Moving files cannot establish
-independent ownership. First define who owns a Recipe outside Kitchen, its
-read/edit authority, and whether Kitchen selects a reference, owns a copy or
-holds another explicit association. Settle identity, provenance and deletion
-semantics without introducing duplicate recipe truth. The independent Recipe
-owns an embedded output description; Kitchen-specific Preparation associations
-and local decisions belong to Kitchen. Design the transition for current
-`output_preparation_id` and Preparation input references before claiming a
-Recipe can travel outside Kitchen; do not retain unexplained local ids in a
-portable definition.
+The agreed [ownership and Kitchen-use contract](../concepts/entities.md#recipe-ownership-and-kitchen-use)
+is: every Recipe has one User owner; Kitchen explicitly adopts an immutable
+version and accepts updates deliberately. Approved internal use survives the
+owner leaving Kitchen or unpublishing the Recipe. Kitchen owns its association
+and local Preparation bindings; it does not own or automatically edit the source
+Recipe. A separate adapted Recipe is also User-owned.
 
-Then migrate the complete Recipe spine and its Kitchen adapters. Kitchen Prep
-owns placement and Kitchen-specific association; Recipe owns its supported
-editor, readers, validation and commands. Any stored-data cutover requires its
-own reviewed plan, retained preimages and explicit mutation authority. An
-intermediate source-only move must honestly retain the current scope until the
-domain/data transition is verified.
+Current source still lives at `kitchen/recipe/`, with Kitchen-scoped reads and
+commands. Complete these bounded steps before claiming the independent target:
+
+1. Establish an explicit User-owner mapping for existing Recipes. Retain exact
+   current scope and provenance; creator/import stamps do not assign ownership.
+   An unresolved owner blocks that record's data/authority cutover.
+2. Define Recipe-owned version Records and Kitchen-owned use Records, including
+   exact read/edit/adoption authority and retained internal access. Keep one
+   canonical Recipe identity and explicit versions, rather than mutable copied
+   definitions or a second Recipe authority.
+3. Give the portable Recipe an embedded output description. Translate current
+   `output_preparation_id` and Preparation input ids into Kitchen-owned bindings;
+   resolve portable prepared-input references without inventing missing Recipe
+   facts. Kitchens can bind the same definition differently.
+4. Migrate the complete Recipe source spine and its real Kitchen consumers and
+   adapters together. Preserve routes, identity, lifecycle and current authority
+   through any intermediate source-only cutover. Then prove the intended User
+   authority and approved-version behavior, including updates, owner departure,
+   unpublishing, unlinking and exact cross-Kitchen access boundaries.
+5. Perform any stored-data copy and retirement only under its separately
+   reviewed plan, retained preimages, target verification and explicit mutation
+   authority. Publishing/collaboration/transfer features need concrete contracts;
+   this plan does not authorize exposing existing private Recipes.
+
+Recipe owns its supported model, validation, version behavior and commands at
+`runtime/recipe/`. Kitchen Prep owns its use and Preparation composition. Move
+only real responsibilities; add no empty role directories or forwarding aliases.
 
 ### 5. Apply the proved convention to other Workspace families
 
@@ -322,7 +338,8 @@ Entities or stored data have migrated.
 
 For a reading companion such as GPT Walker: explain this plan in its order,
 starting with the one-sentence spine definition. Distinguish agreed decisions
-from the Recipe authority and association transition still to settle. Preparation
+from the version storage, exact authority and legacy-data transition still to
+implement. Recipes are User-owned; Kitchens retain explicitly approved versions. Preparation
 is an agreed Kitchen-owned Record; portable Recipe output is an embedded shape.
 Use Kitchen Menu, Item and Preparation as concrete examples. Reading or discussing
 the plan does not start a runtime or data migration.

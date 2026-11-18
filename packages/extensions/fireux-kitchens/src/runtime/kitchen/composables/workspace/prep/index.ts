@@ -1,10 +1,15 @@
 import { computed, provide } from 'vue'
 import { prepWorkspaceKey } from './state'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
+import { createPrepSummaries } from './summaries'
 
 function createKitchenPrepWorkspace() {
   const kitchen = useKitchenWorkspace()
   const { kitchenName } = kitchen
+  const kitchenId = computed(() =>
+    kitchen.outcome.value === 'ready' ? kitchen.id.value : ''
+  )
+  const summaries = createPrepSummaries(kitchenId, kitchen.outcome)
   const ready = computed(() => kitchen.outcome.value === 'ready')
   const createTo = '/workspace/kitchen/prep/recipes'
 
@@ -13,7 +18,7 @@ function createKitchenPrepWorkspace() {
       `Manage ${kitchenName.value ? `${kitchenName.value}'s` : "your Kitchen's"} preparations, recipes, ingredients and production`
   )
 
-  return { description, ready, createTo }
+  return { description, ready, createTo, summaries }
 }
 
 /** Mount the shared Prep state once for the operational children. */

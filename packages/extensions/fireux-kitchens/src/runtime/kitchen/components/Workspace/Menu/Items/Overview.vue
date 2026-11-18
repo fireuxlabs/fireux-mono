@@ -5,10 +5,11 @@
     nav-key="workspace-kitchen-menu-group"
     child-key="items"
   >
-    <KitchenWorkspaceMenuSummary :summary="summary" />
+    <KitchenWorkspaceMenuSummary :overview="overview" />
   </WorkspaceKitchenNavigationChild>
 </template>
 <script setup lang="ts">
-import { useKitchenWorkspaceMenuItems } from '../../../../composables/workspace/menu/items'
-const { summary } = useKitchenWorkspaceMenuItems()
+import { useKitchenWorkspaceMenuItemsOverview } from './useOverview'
+
+const { overview } = useKitchenWorkspaceMenuItemsOverview()
 </script>

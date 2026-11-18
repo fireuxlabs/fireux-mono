@@ -4,6 +4,7 @@
     variant="soft"
     nav-key="workspace-kitchen-menu-group"
     child-key="services"
+    link-area="title"
   >
     <div aria-label="Services summary">
       <p v-if="pending" role="status">Loading services…</p>
@@ -11,25 +12,17 @@
       <dl v-else-if="rows.length">
         <div v-for="row in rows" :key="row.key">
           <dt>
-            <NuxtLink :to="row.to" class="relative z-10">{{
-              row.name
-            }}</NuxtLink>
+            <NuxtLink :to="row.to">{{ row.name }}</NuxtLink>
           </dt>
           <dd>
-            <UBadge
-              :color="
-                row.open ? 'success' : row.needsSetup ? 'warning' : 'neutral'
-              "
-              variant="soft"
-            >
+            <UBadge :color="row.badgeColor" variant="soft">
               <NuxtLink
                 v-if="row.issues.length"
                 :to="row.to"
-                :aria-label="`Configure ${row.name}: ${row.issues.join(' · ')}`"
-                class="relative z-10"
-                >{{ row.issues.join(' · ') }}</NuxtLink
+                :aria-label="row.setupLabel"
+                >{{ row.badgeLabel }}</NuxtLink
               >
-              <template v-else>{{ row.label }}</template>
+              <template v-else>{{ row.badgeLabel }}</template>
             </UBadge>
           </dd>
         </div>
@@ -39,6 +32,7 @@
   </WorkspaceKitchenNavigationChild>
 </template>
 <script setup lang="ts">
-import { useKitchenWorkspaceMenuServices } from '../../../../composables/workspace/menu/services'
-const { rows, pending, failed } = useKitchenWorkspaceMenuServices()
+import { useKitchenWorkspaceMenuServicesOverview } from './useOverview'
+
+const { rows, pending, failed } = useKitchenWorkspaceMenuServicesOverview()
 </script>

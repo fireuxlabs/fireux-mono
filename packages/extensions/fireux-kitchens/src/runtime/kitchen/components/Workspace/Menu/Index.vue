@@ -4,17 +4,18 @@
     :description="description"
     variant="primary"
   />
-  <KitchenWorkspaceMenuOverview />
-  <KitchenWorkspaceMenuCreate />
-  <KitchenWorkspaceMenuAi />
+  <Menu.Overview />
+  <Menu.Create />
+  <Menu.Ai />
   <UPageGrid as="section" aria-label="Items, promotions and services summary">
-    <KitchenWorkspaceMenuItemsOverview />
-    <KitchenWorkspaceMenuPromotionsOverview />
-    <KitchenWorkspaceMenuServicesOverview />
+    <Menu.ItemsOverview />
+    <Menu.PromotionsOverview />
+    <Menu.ServicesOverview />
   </UPageGrid>
 </template>
 
 <script setup lang="ts">
+import * as Menu from './index'
 import { useKitchenWorkspaceMenu } from '../../../composables/workspace/menu/index'
 
 const { description } = useKitchenWorkspaceMenu()

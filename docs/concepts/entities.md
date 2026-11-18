@@ -1,7 +1,7 @@
 # Entities
 
 Updated: 2026-11-18
-Ref: 1b3480a87
+Ref: 2f47a03c2
 Role: map, not canon
 
 ## Purpose
@@ -292,10 +292,11 @@ canonical `name` is the popular name used by the shared world; language and
 translation state are not Ingredient identity.
 
 Recipe is a first-class Entity with authored inputs, method and expected yield.
-Its accepted target permits existence outside Kitchen. Current source remains
-`kitchen/recipe/`, with Kitchen-scoped reads and commands. Independent ownership,
-creator attribution, visibility, adoption, versioning and deletion policy remain
-to be designed before a data/authority cutover; no public Recipe system is implied.
+Its accepted target has one User owner and permits existence outside Kitchen.
+Kitchens use approved versions through their own associations; see
+[Recipe ownership and Kitchen use](#recipe-ownership-and-kitchen-use).
+Current source remains `kitchen/recipe/`, with Kitchen-scoped reads and commands;
+the accepted ownership and version-use contract is not yet implemented.
 
 Preparation is a Kitchen-owned Record identifying a reusable Kitchen output,
 such as its aioli. Several Recipes may produce or consume that same local
@@ -407,6 +408,45 @@ read-only procedure. Any data migration separately requires an exact plan,
 protected preimages, concurrency checks and explicit authorization under the
 [Firestore mutation context](../ai/firestore-mutations-context.md).
 
+## Recipe ownership and Kitchen use
+
+The accepted target gives every Recipe one User owner. Creating a Recipe while
+working in a Kitchen does not make Kitchen its owner. Creation provenance and
+source/author attribution are separate facts; an audit stamp is not proof of
+ownership. Recipe remains a sibling Entity at its owning package's runtime root.
+
+Kitchen owns a Recipe-use association referencing the Recipe and an explicitly
+approved immutable version. Later owner edits do not change Kitchen's working
+instructions until Kitchen accepts an update. Using a Recipe does not transfer
+ownership or automatically grant editing rights to its original definition.
+Kitchen association actions retain exact Kitchen authority; Recipe edits require
+Recipe-owned authority.
+
+Kitchen retains that approved version for internal use if the owner leaves the
+Kitchen or unpublishes the Recipe. Unpublishing can stop new public discovery
+without removing already-approved internal use. This grants no public
+redistribution or editing permission. Retained use must not depend on the source
+remaining publicly discoverable. Unlinking Kitchen's use does not delete the
+original Recipe or another Kitchen's association; storage/deletion mechanisms
+must preserve approved use while it remains linked.
+
+Recipe owns its portable output description as an embedded shape. Kitchen owns
+its local Preparation/output and prepared-input bindings. A separate adapted
+Recipe must also have a User owner; Kitchen-specific operational choices do not
+silently rewrite the source definition. Version history is Recipe-owned Records,
+and Kitchen use is Kitchen-owned Records, without nested Entity spines or
+competing Recipe identities.
+
+The current [model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/recipe/models/model.ts),
+[reader](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/recipe/composables/useKitchenRecipesRead.ts)
+and [Kitchen command authority](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/mutation-authority.ts)
+remain Kitchen-bound. Before a data/authority cutover, confirm each existing
+Recipe's User owner explicitly; do not infer it from `created.by`, an import actor
+or the containing Kitchen. Resolve version storage/read policy, portable input
+references and legacy associations in the bounded migration. Publication,
+collaboration and transfer mechanisms still need their own concrete contracts;
+these decisions do not implement or expose a public Recipe service.
+
 ## Storage and route implications
 
 - A root Entity document is the canonical readable Entity.
@@ -431,20 +471,20 @@ Directory and Entity Detail family maps.
 
 ## Delta register
 
-| Difference                                                     | State        | Required direction                                                                                                                                                                                   |
-| -------------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Existing domain concepts exceed this descriptive map           | `drift`      | Review one owning package when a concrete feature needs the distinction; use source behavior to name its role                                                                                        |
-| Independent Business with optional Place links                 | `accepted`   | Business owns organisation identity and Workspace; Place owns each linked location                                                                                                                   |
-| Place read transport                                           | `accepted`   | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth           |
-| Kitchen root + Place + Team composition                        | `accepted`   | Kitchen owns nested identity, configuration and audit/private metadata; its public projection joins the same-id Place. Team roster and membership-bound Workspace access retain separate authority.  |
-| Kitchen Item ownership                                         | `accepted`   | Item is a Kitchen-owned Record; MenuItem owns placement, not copied canonical Item truth. Item source uses Kitchen record and technical roles.                                                       |
-| Recipe independent-domain target                               | `migration`  | Recipe is an Entity; current Kitchen-scoped source, readers and commands remain until a bounded transition proves the target.                                                                        |
-| Recipe authority and Kitchen association                       | `to-confirm` | Settle independent owner, read/edit policy, adoption/versioning and deletion before changing persistence or access.                                                                                  |
-| Preparation ownership                                          | `accepted`   | Preparation is a Kitchen-owned Record. Recipe output descriptions are embedded Recipe shapes; Kitchen-specific associations stay with Kitchen.                                                       |
-| Kitchen Order, Sale, and Customer link ownership               | `accepted`   | KitchenOrder owns lifecycle; KitchenSale is its immutable result; User-owned Customer links point to Orders without duplicating status, while guest details remain on Order                          |
-| Product root plus ProductPrice and Supplier Item relationships | `accepted`   | Product owns commercial identity, App provenance and publication; ProductPrice children own pricing; Supplier Item is a Supplier-owned offer with required `product_id` and optional `ingredient_id` |
-| Supplier location chain                                        | `accepted`   | Use Supplier → Business → explicitly linked Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`.                       |
-| Directory publication implementation history lived in this map | `drift`      | Keep entity classification here and move current publication mechanics to source, guards, or a focused directory map if it becomes a recurring family                                                |
+| Difference                                                     | State       | Required direction                                                                                                                                                                                       |
+| -------------------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Existing domain concepts exceed this descriptive map           | `drift`     | Review one owning package when a concrete feature needs the distinction; use source behavior to name its role                                                                                            |
+| Independent Business with optional Place links                 | `accepted`  | Business owns organisation identity and Workspace; Place owns each linked location                                                                                                                       |
+| Place read transport                                           | `accepted`  | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth               |
+| Kitchen root + Place + Team composition                        | `accepted`  | Kitchen owns nested identity, configuration and audit/private metadata; its public projection joins the same-id Place. Team roster and membership-bound Workspace access retain separate authority.      |
+| Kitchen Item ownership                                         | `accepted`  | Item is a Kitchen-owned Record; MenuItem owns placement, not copied canonical Item truth. Item source uses Kitchen record and technical roles.                                                           |
+| Recipe independent-domain target                               | `migration` | Recipe is an Entity; current Kitchen-scoped source, readers and commands remain until a bounded transition proves the target.                                                                            |
+| Recipe ownership and approved Kitchen use                      | `accepted`  | Every Recipe has one User owner; Kitchen explicitly adopts a version and retains that internal use after owner departure or unpublishing. Implementation and legacy owner mapping remain migration work. |
+| Preparation ownership                                          | `accepted`  | Preparation is a Kitchen-owned Record. Recipe output descriptions are embedded Recipe shapes; Kitchen-specific associations stay with Kitchen.                                                           |
+| Kitchen Order, Sale, and Customer link ownership               | `accepted`  | KitchenOrder owns lifecycle; KitchenSale is its immutable result; User-owned Customer links point to Orders without duplicating status, while guest details remain on Order                              |
+| Product root plus ProductPrice and Supplier Item relationships | `accepted`  | Product owns commercial identity, App provenance and publication; ProductPrice children own pricing; Supplier Item is a Supplier-owned offer with required `product_id` and optional `ingredient_id`     |
+| Supplier location chain                                        | `accepted`  | Use Supplier → Business → explicitly linked Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`.                           |
+| Directory publication implementation history lived in this map | `drift`     | Keep entity classification here and move current publication mechanics to source, guards, or a focused directory map if it becomes a recurring family                                                    |
 
 ## Alignment roadmap
 
