@@ -111,7 +111,7 @@ export const capabilityAssessments: Record<
         'Recipe definitions exist; actual batches, purchase-price inputs and authoritative cost reporting are unconnected. This is source inspection, not fresh live acceptance testing.',
       source_paths: [
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/recipe.model.ts',
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/Planning.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Prep/Planning.vue',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/costs/index.vue',
       ],
     },

@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: align Kitchen sitemap publication with canonical visibility.
-import { createResolver, defineNuxtModule } from '@nuxt/kit'
+import { addImports, createResolver, defineNuxtModule } from '@nuxt/kit'
 import {
   configureRuntime,
   configureOrdering,
@@ -84,13 +84,33 @@ export default defineNuxtModule<ModuleOptions>({
           enabled: true,
           defaultKitchenId: String(options.defaultKitchenId || '').trim(),
         }),
-      composables: (resolver) =>
+      composables: (resolver) => {
         registerComposablesDirs(resolver, [
           './runtime/ingredient/composables',
           './runtime/kitchen/composables',
           './runtime/menu/composables',
           './runtime/user/composables',
-        ]),
+        ])
+        // Public Workspace entrypoints only; internal constructors and keys stay private.
+        for (const [name, path] of [
+          ['useKitchenWorkspaceMenu', 'menu/index'],
+          ['useKitchenWorkspaceMenuOverview', 'menu/overview'],
+          ['useKitchenWorkspaceMenuAi', 'menu/ai'],
+          ['useKitchenWorkspaceMenuItems', 'menu/items'],
+          ['useKitchenWorkspaceMenuPromotions', 'menu/promotions'],
+          ['useKitchenWorkspaceMenuServices', 'menu/services'],
+          ['useKitchenWorkspacePrep', 'prep/index'],
+          ['useKitchenWorkspacePrepLibrary', 'prep/library'],
+          ['useKitchenWorkspacePrepRecipeEditor', 'prep/recipe/editor'],
+        ] as const) {
+          addImports({
+            name,
+            from: resolver.resolve(
+              `./runtime/kitchen/composables/workspace/${path}`
+            ),
+          })
+        }
+      },
       components: configureComponents,
       layouts: registerLayoutComponents,
       pages: configurePages,

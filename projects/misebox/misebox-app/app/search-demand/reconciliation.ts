@@ -260,7 +260,7 @@ export const kitchenReconciliation = {
       rationale:
         'Prep creation primitives do not establish connected planning or batch execution. Validate daily preparation work before joining them.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/Planning.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Prep/Planning.vue',
       ],
       source_capability_ids: ['mise-production'],
       source_observation_ids: ['swiss-chef-work'],

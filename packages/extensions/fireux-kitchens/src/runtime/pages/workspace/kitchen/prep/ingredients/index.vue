@@ -1,6 +1,6 @@
 <template>
   <div>
-    <KitchenPrepAndProductionIngredients />
+    <KitchenWorkspacePrepIngredients />
   </div>
 </template>
 

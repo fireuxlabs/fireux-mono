@@ -1,5 +1,5 @@
 <template>
-  <KitchenPrepAndProductionPlanning view="batches" />
+  <KitchenWorkspacePrepPlanning view="batches" />
 </template>
 <script setup lang="ts">
 definePageMeta({

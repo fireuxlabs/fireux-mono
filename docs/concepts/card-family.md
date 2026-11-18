@@ -215,7 +215,7 @@ Preview or Overview card.
 
 Kitchen's Ingredient and Supplier association Cards retain their separate Cell
 roles under
-[`PrepAndProduction/Ingredients/Cards`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/Ingredients/Cards)
+[`Workspace/Prep/Ingredients/Cards`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Prep/Ingredients/Cards)
 and [`Suppliers/Cards`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Suppliers/Cards).
 Their Kitchen collections own acquisition, scope, destinations and selection;
 the App gallery also consumes their supplied projections. Ingredient
@@ -223,25 +223,13 @@ Cell retains image-failure recovery and link/open intents. Supplier Cell retains
 the Supplier projection's identity and media options. Neither association needs
 additional card roles solely to mirror its root Entity.
 
-Recipe supplies Cell under
-[`kitchen/components/PrepAndProduction/Recipes/Cards` in Kitchens](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/Recipes/Cards).
-Cell currently has no direct component consumer; the operational Collection
-uses `WorkspaceKitchenCollectionRow`. Recipe's named
-[`Preparation.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/Recipes/Preparation.vue)
-presents supplied ingredients, Prep items, yield and method within Detail and
-the collection preview. Those parents retain acquisition, linked-read outcomes,
-creation, editing and deletion. Preparation remains domain content rather than
-becoming an identity Overview card. Current consumers need no separate Pill,
-Preview or Overview card.
-
-KitchenPrepItem currently has no standalone Cards family. Its
-[`Create.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/PrepItems/Create.vue)
-control belongs to the Recipe form; Dish specification retains its own creation
-workflow. Recipe Preparation presents supplied definitions, while
-[`Dish Preparation`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Items/Preparation.vue)
-presents Dish-specific requirements and linked batch methods. These controls
-retain their existing readers, draft state and protected commands. Current
-consumers need no separate Pill, Cell, Preview or Overview component.
+Recipe and Preparation currently use the supplied-data
+[`Workspace/Prep/Library.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Prep/Library.vue)
+for collection/detail presentation and links. The host owns acquisition; the
+[Recipe editor](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Prep/Recipes/Editor.vue)
+owns its supported authored-definition workflow through the existing command
+lifecycle. There is no current standalone Recipe or Preparation Cards family;
+do not recreate retired Cell/Preparation/PrepItems controls merely for symmetry.
 
 KitchenOrder retains the named
 [`Orders/Ticket.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Orders/Ticket.vue)

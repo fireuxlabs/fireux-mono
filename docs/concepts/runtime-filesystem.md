@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
-Updated: 2026-11-17
-Ref: f798e3e99
+Updated: 2026-11-18
+Ref: 5e2450a2f
 Role: map, not canon
 
 ## Purpose
@@ -254,17 +254,18 @@ This is an entity-scoped Nuxt runtime, not a capability-owned miniature
 application. Do not create `client`, `server`, `components`, and `models`
 inside an arbitrary feature root outside the entity scope.
 
-The Menu component and composable paths above are target ownership shapes, not
-a completed Kitchen move. Current Menu composition remains at
-[`kitchen/components/Menu/Index.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Index.vue)
-and registers as `KitchenMenu*`; its accepted target is `KitchenWorkspaceMenu*`.
-The current parent remains
-[`useKitchenMenusWorkspace`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/menus/useKitchenMenusWorkspace.ts)
-under `composables/workspace/menus/` pending its capability/child cutover.
-The component convention owns prefix adoption and scan exclusions. Composable
-capability names and the provided parent/child lifecycle follow
-[composables](composables.md#provided-capability-lifecycle); they do not require
-parallel component, reader and command directory moves.
+The current Menu entrance is
+[`kitchen/components/Workspace/Menu/Index.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Index.vue),
+with `KitchenWorkspaceMenu*` registration and
+[`useKitchenWorkspaceMenu`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/menu/index.ts).
+Prep uses `components/Workspace/Prep` and `composables/workspace/prep` with the
+same Entity/Workspace/capability order. Each group has a bounded scan excluded
+from the remaining `WorkspaceKitchen*` integration tree; dynamic navigation names
+and Public registration remain unchanged. Other working capabilities and Entity
+record/reader locations are not implied migrated by those entrance moves.
+The component convention owns scan exclusions; the
+[composable lifecycle](composables.md#provided-capability-lifecycle) owns public
+entrypoints, private lookup and explicit lower reader/command scopes.
 
 ## Workspace
 

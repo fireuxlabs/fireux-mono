@@ -177,7 +177,7 @@ test('the reusable library links output recipes and consuming recipes, and scale
     scope = effectScope()
   const state = scope.run(() =>
     load(
-      'components/PrepAndProduction/Library.vue',
+      'components/Workspace/Prep/Library.vue',
       '({recipesFor,usedBy,outputIds,targetYield,scaledQuantity})',
       {
         computed,
@@ -198,5 +198,92 @@ test('the reusable library links output recipes and consuming recipes, and scale
   await nextTick()
   assert.equal(state.targetYield.value, '')
   assert.equal(state.scaledQuantity(30), '30')
+  scope.stop()
+})
+
+test('Prep library coordinates one reader graph, gates Ingredient inputs by view and follows selected Kitchen', async () => {
+  const scope = effectScope(),
+    view = ref('preparations')
+  const workspace = { id: ref('a'), outcome: ref('ready') }
+  const preparations = ref([{ id: 'sauce', name: 'Sauce' }])
+  const recipes = ref([{ id: 'r', name: 'Sauce recipe' }])
+  const ready = ref('ready'),
+    calls = { catalogue: 0, associations: 0, preparations: 0, recipes: 0 }
+  let catalogueEnabled, associationScope, preparationScope, recipeScope
+  const state = scope.run(() =>
+    load(
+      'composables/workspace/prep/library.ts',
+      'useKitchenWorkspacePrepLibrary(view)',
+      {
+        computed,
+        toValue,
+        view,
+        useKitchenWorkspace: () => workspace,
+        useIngredientCollection: (options) => {
+          calls.catalogue++
+          catalogueEnabled = options.enabled
+          return {
+            ingredients: ref([{ id: 'oil', name: 'Oil' }]),
+            outcome: ready,
+            error: ref(),
+          }
+        },
+        useKitchenChildCollection: (collection, id) => {
+          assert.equal(collection, 'ingredients')
+          calls.associations++
+          associationScope = id
+          return {
+            items: ref([{ ingredient_id: 'oil' }]),
+            outcome: ready,
+            error: ref(),
+          }
+        },
+        useKitchenPreparationsRead: (id) => {
+          calls.preparations++
+          preparationScope = id
+          return {
+            preparations,
+            recipeLinks: ref([{ preparationId: 'sauce', recipeId: 'r' }]),
+            outcome: ready,
+            error: ref(),
+          }
+        },
+        useKitchenRecipesRead: (id) => {
+          calls.recipes++
+          recipeScope = id
+          return {
+            recipes,
+            explicitOutputRecipeIds: ref(['r']),
+            outcome: ready,
+            error: ref(),
+          }
+        },
+      }
+    )
+  )
+  assert.equal(catalogueEnabled(), false)
+  assert.equal(associationScope.value, '')
+  assert.equal(preparationScope, recipeScope)
+  assert.equal(preparationScope.value, 'a')
+  assert.deepEqual(state.recipeLinks.value, [])
+  view.value = 'recipes'
+  await nextTick()
+  assert.equal(catalogueEnabled(), true)
+  assert.equal(associationScope.value, 'a')
+  assert.deepEqual(state.ingredientOptions.value, [
+    { value: 'oil', label: 'Oil' },
+  ])
+  workspace.id.value = 'b'
+  assert.equal(preparationScope.value, 'b')
+  assert.equal(associationScope.value, 'b')
+  workspace.outcome.value = 'pending'
+  assert.equal(preparationScope.value, '')
+  assert.equal(state.outcome.value, 'pending')
+  assert.deepEqual(calls, {
+    catalogue: 1,
+    associations: 1,
+    preparations: 1,
+    recipes: 1,
+  })
   scope.stop()
 })

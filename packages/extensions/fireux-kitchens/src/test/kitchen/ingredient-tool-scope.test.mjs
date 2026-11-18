@@ -237,7 +237,7 @@ function detail(h) {
   const ingredient = vue.ref({ id: 'carrot', name: 'Carrot' })
   const api = h.lifetime.run(() =>
     load(
-      '../../runtime/kitchen/components/PrepAndProduction/Ingredients/Detail/Index.vue',
+      '../../runtime/kitchen/components/Workspace/Prep/Ingredients/Detail/Index.vue',
       '({removeIngredient, deleteOpen, deleting, deleteError})',
       {
         ...h.deps,
@@ -688,7 +688,7 @@ test('Ingredient add resets on authority changes and an old completion cannot cl
     )
     const api = h.lifetime.run(() =>
       load(
-        '../../runtime/kitchen/components/PrepAndProduction/Ingredients/Add/Index.vue',
+        '../../runtime/kitchen/components/Workspace/Prep/Ingredients/Add/Index.vue',
         '({handleSelect, query, selectedId, submitting})',
         {
           ...h.deps,

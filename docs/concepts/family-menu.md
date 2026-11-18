@@ -1,7 +1,7 @@
 # Menu family
 
-Updated: 2026-11-16
-Ref: a068b6eaa
+Updated: 2026-11-18
+Ref: 5e2450a2f
 Role: map, not canon
 
 ## Purpose
@@ -978,21 +978,25 @@ comparison and Menu Express delivery reject groups they cannot represent.
 The landing composes Menu discovery and creation over one Menu collection;
 the group overview reuses that collection rather than opening a second reader.
 The former collection entrance renders this same composition.
-`Menu/Index.vue` composes the entrance and operational children; `Menus/Overview.vue` coordinates its primary
-menu collection from the existing contexts. Its controlled `Overview/Controls`
-reuses `WorkspaceKitchenCollectionToolbar`, `Overview/List` owns native
-`UPageGrid` and empty results, and `Overview/Card` owns one Menu's status,
-destination and presentation. Shared `FireState` owns loading/error feedback.
-`useMenuList` owns search/archive scope, archive count and published/order/name
-sorting; Overview consumes those projections. The parent calls
-`useKitchenMenusWorkspace`, which owns the entrance description and coordinates
-`createKitchenMenus` and `createMenuGroupIndex` internally, sharing one Menu
-collection and providing one workspace state object. The preparation-source
-route separately mounts its standalone Menus capability. `useKitchenMenus` and
-`useMenuGroupIndex` require those instances, while optional Menus lookup never
-constructs. Standalone creation/source workflows explicitly own their lower
-construction. Reads, permissions and creation commands retain their existing
-owners. Other Kitchen provided capabilities are outside this naming slice. This follows the
+`Workspace/Menu/Index.vue` composes the entrance and operational summaries;
+`Workspace/Menu/Overview/Index.vue` coordinates its primary collection through
+`useKitchenWorkspaceMenuOverview`. Controlled Controls reuse
+`WorkspaceKitchenCollectionToolbar`, List owns native `UPageGrid` and empty
+results, and Card owns one Menu's status, destination and presentation. Shared
+`FireState` owns loading/error feedback. `useMenuList` retains search/archive
+scope and published/order/name sorting; real creation availability and blocked
+copy come from the existing Menus capability.
+
+`useKitchenWorkspaceMenu` owns the description and coordinates the existing
+Menus workflow with `createKitchenMenuOverview`, sharing the exact collection
+and one active page publisher. Child Overview, Ai, Items, Promotions and Services
+composables consume that owner; service projections live with Services rather
+than in an oversized group index. Strict lookup and keys are internal. The
+preparation-source route separately mounts its standalone Menus workflow;
+`useKitchenMenus` and its optional lookup never construct another owner.
+One existing creation flow serves its group/collection modal and standalone
+source page. Lower reads, permission checks, command targets and record editors
+retain their existing owners. This follows the
 [Workspace group overview convention](family-workspace-entity.md#workspace-group-overview-composition).
 The record builder
 mounts one inline section editor at a time through `Sections/Inline.vue`, reusing

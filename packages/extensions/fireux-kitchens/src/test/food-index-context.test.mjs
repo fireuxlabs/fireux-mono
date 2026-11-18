@@ -56,7 +56,16 @@ function mount(parentSetup, childSetup) {
 }
 
 function fixture() {
-  const key = Symbol('menus-workspace')
+  const menuState = load(
+    base + 'menu/state',
+    'kitchenMenusWorkspaceKey,requireMenuWorkspace',
+    Vue
+  )
+  const prepState = load(
+    base + 'prep/state',
+    'prepWorkspaceKey,requirePrepWorkspace',
+    Vue
+  )
   const kitchenName = Vue.ref('La Tap')
   const kitchenOutcome = Vue.ref('ready')
   const menuOutcome = Vue.ref('empty')
@@ -89,7 +98,8 @@ function fixture() {
   })
   const deps = {
     ...Vue,
-    kitchenMenusWorkspaceKey: key,
+    kitchenMenusWorkspaceKey: menuState.kitchenMenusWorkspaceKey,
+    prepWorkspaceKey: prepState.prepWorkspaceKey,
     useKitchenWorkspace,
     useWorkspacePageState: () => {
       publishers++
@@ -108,51 +118,55 @@ function fixture() {
       defineWorkspaceCapabilityContext: (v) => v,
     }
   )
-  const index = load(
-    base + 'menu-group/useMenuGroupIndex',
-    'createMenuGroupIndex,useMenuGroupIndex',
+  const services = load(
+    base + 'menu/services',
+    'createMenuServices,useKitchenWorkspaceMenuServices',
     {
       ...deps,
-      useKitchenOfferings: (id, supplied) => {
-        assert.equal(id, selectedId)
-        assert.equal(supplied, collection)
-        overviewReads++
-        return {
-          kitchenId: selectedId,
-          storageKitchenId: selectedId,
-          offerings: Vue.ref([]),
-          menus: lower.menus,
-          outcome: kitchenOutcome,
-          menusOutcome: menuOutcome,
-          placeOutcome: Vue.ref('ready'),
-          kitchenHours: Vue.ref({}),
-          canWrite: lower.canWrite,
-        }
-      },
-      useFoodCatalogueSummary: () => Vue.ref({}),
+      requireMenuWorkspace: menuState.requireMenuWorkspace,
       useKitchenOfferingNow: () => ({ now: Vue.ref(new Date()) }),
-      resolveServiceHours: (v) => v,
+      resolveServiceHours: (value) => value,
       foodServiceSummary: () => [],
       serviceOverviewSnapshot: () => ({ services: [] }),
     }
   )
-  const workspace = load(
-    base + 'menus/useKitchenMenusWorkspace',
-    'useKitchenMenusWorkspace,useKitchenMenusWorkspaceState',
-    {
-      ...deps,
-      createKitchenMenus: menus.createKitchenMenus,
-      createMenuGroupIndex: index.createMenuGroupIndex,
-    }
-  )
-  const prep = load(
-    base + 'prep/useKitchenPrepWorkspace',
-    'useKitchenPrepWorkspace,useKitchenPrepWorkspaceState',
-    deps
-  )
+  const index = load(base + 'menu/source', 'createKitchenMenuOverview', {
+    ...deps,
+    createMenuServices: services.createMenuServices,
+    useKitchenOfferings: (id, supplied) => {
+      assert.equal(id, selectedId)
+      assert.equal(supplied, collection)
+      overviewReads++
+      return {
+        kitchenId: selectedId,
+        storageKitchenId: selectedId,
+        offerings: Vue.ref([]),
+        menus: lower.menus,
+        outcome: kitchenOutcome,
+        menusOutcome: menuOutcome,
+        placeOutcome: Vue.ref('ready'),
+        kitchenHours: Vue.ref({}),
+        canWrite: lower.canWrite,
+      }
+    },
+    useFoodCatalogueSummary: () => Vue.ref({}),
+    useKitchenOfferingNow: () => ({ now: Vue.ref(new Date()) }),
+    resolveServiceHours: (v) => v,
+    foodServiceSummary: () => [],
+    serviceOverviewSnapshot: () => ({ services: [] }),
+  })
+  const workspace = load(base + 'menu/index', 'useKitchenWorkspaceMenu', {
+    ...deps,
+    createKitchenMenus: menus.createKitchenMenus,
+    createKitchenMenuOverview: index.createKitchenMenuOverview,
+  })
+  const prep = load(base + 'prep/index', 'useKitchenWorkspacePrep', deps)
   return {
     menus,
     index,
+    menuState,
+    prepState,
+    services,
     workspace,
     prep,
     kitchenName,
@@ -169,13 +183,16 @@ test('Menu mounts one state object; every child getter reuses it and the exact c
   let entrance
   const app = mount(
     () => {
-      entrance = f.workspace.useKitchenMenusWorkspace()
+      entrance = f.workspace.useKitchenWorkspaceMenu()
     },
     () => {
-      const state = f.workspace.useKitchenMenusWorkspaceState()
+      const state = f.menuState.requireMenuWorkspace()
       assert.equal(f.menus.useKitchenMenus(), state.menus)
       assert.equal(f.menus.useOptionalKitchenMenus(), state.menus)
-      assert.equal(f.index.useMenuGroupIndex(), state.overview)
+      assert.equal(
+        f.services.useKitchenWorkspaceMenuServices().rows,
+        state.overview.services.rows
+      )
       children.push(state)
     }
   )
@@ -217,9 +234,9 @@ test('Prep mounts one state object; children reuse reactive readiness and parent
   let entrance
   const app = mount(
     () => {
-      entrance = f.prep.useKitchenPrepWorkspace()
+      entrance = f.prep.useKitchenWorkspacePrep()
     },
-    () => children.push(f.prep.useKitchenPrepWorkspaceState())
+    () => children.push(f.prepState.requirePrepWorkspace())
   )
   assert.deepEqual(Object.keys(entrance), ['description'])
   assert.equal(children[0], children[1])
@@ -245,14 +262,17 @@ test('required child access without a mounted group fails without constructing s
     () => {},
     () => {
       assert.throws(
-        f.workspace.useKitchenMenusWorkspaceState,
+        f.menuState.requireMenuWorkspace,
         /require their workspace owner/
       )
       assert.throws(
-        f.prep.useKitchenPrepWorkspaceState,
+        f.prepState.requirePrepWorkspace,
         /require their workspace owner/
       )
-      assert.throws(f.index.useMenuGroupIndex, /require their workspace owner/)
+      assert.throws(
+        f.services.useKitchenWorkspaceMenuServices,
+        /require their workspace owner/
+      )
       assert.throws(f.menus.useKitchenMenus, /not available/)
       assert.equal(f.menus.useOptionalKitchenMenus(), null)
     }
@@ -292,7 +312,7 @@ test('actual Prep overview and create consumers render the mounted state without
   const f = fixture()
   const component = (name) => {
     const filename = new URL(
-      `../runtime/kitchen/components/PrepAndProduction/${name}.vue`,
+      `../runtime/kitchen/components/Workspace/Prep/${name}.vue`,
       import.meta.url
     ).pathname
     const { descriptor } = parse(readFileSync(filename, 'utf8'), { filename })
@@ -306,7 +326,7 @@ test('actual Prep overview and create consumers render the mounted state without
     const exports = {}
     compileFunction(code, ['require', 'exports'])((id) => {
       if (id === 'vue') return Vue
-      if (id.endsWith('/useKitchenPrepWorkspace')) return f.prep
+      if (id.endsWith('/prep/state')) return f.prepState
       assert.fail(`Unexpected child dependency: ${id}`)
     }, exports)
     return exports.default
@@ -317,7 +337,7 @@ test('actual Prep overview and create consumers render the mounted state without
     f.kitchenOutcome.value = outcome
     const app = Vue.createSSRApp({
       setup() {
-        const entrance = f.prep.useKitchenPrepWorkspace()
+        const entrance = f.prep.useKitchenWorkspacePrep()
         assert.deepEqual(Object.keys(entrance), ['description'])
         return () => Vue.h('div', [Vue.h(Overview), Vue.h(Create)])
       },

@@ -32,12 +32,25 @@ export function configureComponents(resolver: Resolver) {
     prefix: 'Ingredient',
   })
 
+  for (const capability of ['Menu', 'Prep']) {
+    registerComponentsDir(
+      resolver,
+      `./runtime/kitchen/components/Workspace/${capability}`,
+      {
+        global: false,
+        pathPrefix: true,
+        prefix: `KitchenWorkspace${capability}`,
+        priority: 20,
+      }
+    )
+  }
+
   registerComponentsDir(resolver, './runtime/kitchen/components/Workspace', {
     global: false,
     pathPrefix: true,
     prefix: 'WorkspaceKitchen',
     priority: 20,
-    ignore: ['Navigation/Index.vue'],
+    ignore: ['Navigation/Index.vue', 'Menu/**', 'Prep/**'],
   })
 
   addComponent({

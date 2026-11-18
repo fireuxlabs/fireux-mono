@@ -1,5 +1,5 @@
 <template>
-  <KitchenPrepAndProductionLibraryRead view="preparations" />
+  <KitchenWorkspacePrepLibraryRead view="preparations" />
 </template>
 <script setup lang="ts">
 definePageMeta({

@@ -1,4 +1,4 @@
-<template><KitchenPrepAndProductionPlanning /></template>
+<template><KitchenWorkspacePrepPlanning /></template>
 <script setup lang="ts">
 definePageMeta({
   layout: 'workspace',

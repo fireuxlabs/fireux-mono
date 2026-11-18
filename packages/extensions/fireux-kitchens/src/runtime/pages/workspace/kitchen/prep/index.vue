@@ -1,5 +1,5 @@
 <template>
-  <KitchenPrepAndProduction />
+  <KitchenWorkspacePrep />
 </template>
 <script setup lang="ts">
 definePageMeta({

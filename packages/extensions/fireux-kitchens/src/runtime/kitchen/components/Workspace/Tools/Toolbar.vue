@@ -1,5 +1,5 @@
 <template>
-  <KitchenPrepAndProductionStationsTools v-if="capability === 'stations'" />
+  <KitchenWorkspacePrepStationsTools v-if="capability === 'stations'" />
   <UButton
     v-else-if="action"
     :to="action.to"

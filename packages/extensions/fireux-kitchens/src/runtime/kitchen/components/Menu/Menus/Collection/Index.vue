@@ -33,7 +33,7 @@
       {{ menuCreateBlockedMessage }}
     </p>
   </template>
-  <KitchenMenuMenusCreateDialog />
+  <KitchenWorkspaceMenuCreate />
   <KitchenMenuMenusCollectionDialog />
 </template>
 <script setup lang="ts">

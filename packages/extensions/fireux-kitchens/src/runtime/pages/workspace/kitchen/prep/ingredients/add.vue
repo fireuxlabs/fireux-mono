@@ -5,7 +5,7 @@
     context-label="Prep"
   />
   <section class="workspace-surface workspace-surface--compact">
-    <KitchenPrepAndProductionIngredientsAdd />
+    <KitchenWorkspacePrepIngredientsAdd />
   </section>
 </template>
 

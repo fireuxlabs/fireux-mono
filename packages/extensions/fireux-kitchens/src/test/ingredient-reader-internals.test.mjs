@@ -358,12 +358,12 @@ async function render(path, state) {
   })
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of [
-    'KitchenPrepAndProductionIngredientsCollection',
+    'KitchenWorkspacePrepIngredientsCollection',
     'NuxtLink',
     'IngredientCardsOverview',
     'IngredientDetail',
     'IngredientEdit',
-    'KitchenPrepAndProductionIngredientsPreview',
+    'KitchenWorkspacePrepIngredientsPreview',
     'UButton',
     'UModal',
     'FireDiagnosticsDebugPanel',
@@ -393,7 +393,7 @@ test('actual Ingredients index distinguishes unready owner from a ready empty li
     ['idle', 'Select a kitchen'],
   ]) {
     const html = await render(
-      'kitchen/components/PrepAndProduction/Ingredients/Index.vue',
+      'kitchen/components/Workspace/Prep/Ingredients/Index.vue',
       { storageKitchenId: '', outcome }
     )
     assert.match(html, new RegExp(expected))
@@ -402,7 +402,7 @@ test('actual Ingredients index distinguishes unready owner from a ready empty li
 })
 test('actual Ingredient detail shows inactive owner before retained child failure', async () => {
   const html = await render(
-    'kitchen/components/PrepAndProduction/Ingredients/Detail/Index.vue',
+    'kitchen/components/Workspace/Prep/Ingredients/Detail/Index.vue',
     {
       outcome: 'idle',
       loadError: new Error('Old'),

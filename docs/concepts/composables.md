@@ -1,7 +1,7 @@
 # Composables spine map
 
-Updated: 2026-11-17
-Ref: f798e3e99
+Updated: 2026-11-18
+Ref: 5e2450a2f
 Role: map, not canon
 
 ## Purpose
@@ -113,10 +113,14 @@ page publisher. Pure presentation continues to use typed props/events.
 The [group composition contract](family-workspace-entity.md#workspace-group-overview-composition)
 owns the bounded parent/child lifecycle and adoption rule.
 
-This is the accepted target, not a claim that existing exports have migrated.
-Kitchen's current `useKitchenMenusWorkspaceState` and `useMenuGroupIndex` are
-migration inputs; keep source links truthful until their complete consumer
-boundary moves. Lower reader and command constructors retain their own semantics.
+Kitchen's Menu and Prep entrance owners now use `useKitchenWorkspaceMenu` and
+`useKitchenWorkspacePrep`. Their strict lookup helpers and injection keys stay
+internal; only the selected public entrypoints are explicitly registered by the
+Kitchen module. Menu Services owns its projections from the existing group
+acquisitions. Prep Library and Recipe Editor have responsibility-matched owners
+under `workspace/prep`; their explicit inputs preserve the existing reader and
+command scopes. Remaining lower reader/provider APIs retain their current
+construction semantics; this is not family-wide naming adoption.
 
 Specialist lower capabilities currently include
 [`provideMenuSection` / `useMenuSection`](../../packages/extensions/fireux-kitchens/src/runtime/menu/composables/useMenuSection.ts)
@@ -527,7 +531,7 @@ Kitchen's `preparation/composables/useKitchenPreparationsRead.ts` and
 collection through Core. Their private normalization retains historical output
 links and per-field Recipe inputs/method/yield without rewriting documents or
 fabricating provenance. The active `/prep/preparations` and `/prep/recipes` routes
-compose `PrepAndProduction/LibraryRead.vue`; `Library.vue` owns search, links and
+compose `Workspace/Prep/LibraryRead.vue`; `Library.vue` owns search, links and
 local expected-yield scaling.
 
 `Recipes/Editor.vue` supplies canonical creation and sparse updates through one

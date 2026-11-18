@@ -103,7 +103,9 @@ test('Menus has its own index and four sibling working pages', () => {
     assert.ok(!nav.children?.length)
   }
   assert.ok(
-    readFileSync(join(root, 'menu/index.vue'), 'utf8').includes('KitchenMenu')
+    readFileSync(join(root, 'menu/index.vue'), 'utf8').includes(
+      'KitchenWorkspaceMenu'
+    )
   )
   assert.equal(navigation(join(root, 'overview/index.vue')).hidden, undefined)
 })
@@ -211,7 +213,7 @@ test('every Kitchen sidebar group has one working index and operational screens 
   }
   const operational = [
     ['orders/board.vue', 'WorkspaceKitchenOrdersBoard'],
-    ['prep/plan.vue', 'KitchenPrepAndProductionPlanning'],
+    ['prep/plan.vue', 'KitchenWorkspacePrepPlanning'],
     ['food-safety/checks.vue', 'KitchenFoodSafetyPage'],
     ['team/people.vue', 'KitchenTeam'],
   ]
@@ -571,19 +573,23 @@ test('group child surfaces retain every entrance and compose summaries inside th
     ),
     'utf8'
   )
-  const food = readFileSync(new URL('Menu/Index.vue', components), 'utf8')
+  const food = readFileSync(
+    new URL('Workspace/Menu/Index.vue', components),
+    'utf8'
+  )
   const services = readFileSync(
-    new URL('Menu/Services/Overview.vue', components),
+    new URL('Workspace/Menu/Services/Overview.vue', components),
     'utf8'
   )
   assert.match(group, /v-for="item in children"/)
   assert.ok(!group.includes('<slot'))
   assert.ok(!group.includes('excludePages'))
   assert.ok(
-    food.indexOf('<KitchenMenuAI') < food.indexOf('<KitchenMenuItemsOverview')
+    food.indexOf('<KitchenWorkspaceMenuAi') <
+      food.indexOf('<KitchenWorkspaceMenuItemsOverview')
   )
   assert.ok(!food.includes('WorkspaceGroupPage'))
-  assert.match(food, /<KitchenMenuServicesOverview/)
+  assert.match(food, /<KitchenWorkspaceMenuServicesOverview/)
   const keys = navigation(join(root, 'menu/index.vue')).children.map(
     (child) => child.key
   )
@@ -591,7 +597,7 @@ test('group child surfaces retain every entrance and compose summaries inside th
   assert.ok(!food.includes('<template #'))
   for (const name of ['Items', 'Promotions', 'Services']) {
     const child = readFileSync(
-      new URL(`Menu/${name}/Overview.vue`, components),
+      new URL(`Workspace/Menu/${name}/Overview.vue`, components),
       'utf8'
     )
     assert.match(child, /WorkspaceKitchenNavigationChild/)
@@ -613,7 +619,7 @@ test('every declared Kitchen group index is content under the Workspace page own
     const composition = file.endsWith('/menu/index.vue')
       ? readFileSync(
           new URL(
-            '../runtime/kitchen/components/Menu/Index.vue',
+            '../runtime/kitchen/components/Workspace/Menu/Index.vue',
             import.meta.url
           ),
           'utf8'
@@ -621,7 +627,7 @@ test('every declared Kitchen group index is content under the Workspace page own
       : file.endsWith('/prep/index.vue')
         ? readFileSync(
             new URL(
-              '../runtime/kitchen/components/PrepAndProduction/Index.vue',
+              '../runtime/kitchen/components/Workspace/Prep/Index.vue',
               import.meta.url
             ),
             'utf8'

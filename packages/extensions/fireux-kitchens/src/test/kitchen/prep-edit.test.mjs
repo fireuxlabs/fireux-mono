@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { ref, reactive, effectScope, nextTick, computed } from 'vue'
+import { ref, reactive, effectScope, nextTick, computed, toValue } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useIdentityEditor } from 'fireux-core/runtime/composables/fireux/useIdentityEditor'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
@@ -395,7 +395,7 @@ test('Preparation editor uses the shared lifecycle and preserves an open dirty d
     scope = effectScope()
   const api = scope.run(() =>
     load(
-      'components/PrepAndProduction/PreparationEditor.vue',
+      'components/Workspace/Prep/PreparationEditor.vue',
       '({draft,open,start,save})',
       {
         ref,
@@ -442,16 +442,14 @@ function recipeEditorFixture(record) {
   let dispatch = async () => ({ id: record?.id || 'new-recipe' })
   const api = scope.run(() =>
     load(
-      'components/PrepAndProduction/Recipes/Editor.vue',
-      '({draft,open,start,save,error,saving})',
+      'composables/workspace/prep/recipe/editor.ts',
+      'useKitchenWorkspacePrepRecipeEditor({ record: () => props.record, kitchenId: () => props.kitchenId, canEdit: () => props.canEdit, preparations: () => props.preparations }, id => emitted.push(["created", id]))',
       {
         ref,
         computed,
-        defineProps: () => props,
-        defineEmits:
-          () =>
-          (...args) =>
-            emitted.push(args),
+        props,
+        emitted,
+        toValue,
         useIdentityEditor,
         recipeDraft,
         recipeDraftChanges,

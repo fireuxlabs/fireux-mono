@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-11-17
-Ref: f798e3e99
+Updated: 2026-11-18
+Ref: 5e2450a2f
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -1742,36 +1742,34 @@ retain useful registered ancestry. Navigation placement uses `nav.menus`
 independently of native layout selection. Native Nuxt UI slots
 remain component API details, not custom FireUX page-composition contracts.
 
-The Menus group overview composes `Menu/Index.vue` with one shared
-Service/Menu acquisition for its summary, page JSON and slim KitchenAI composer.
-The parent calls `useKitchenMenusWorkspace` once. It constructs the existing
-Menus capability and group overview with the exact same Menu collection, then
-provides one combined workspace state object. Its parent-facing return contains
-only `description`; `useKitchenMenusWorkspaceState` strictly consumes the mounted
-state. The existing `useMenuGroupIndex` and `useKitchenMenus` child getters select
-the overview and capability from that owner without constructing either.
-The parent directly assembles Menu status, AI and the Items, Promotions and
-Services children without forwarding operational state props or a Content wrapper.
-The separate menu-source preparation route mounts its standalone Menus capability
-with `provideKitchenMenus`; its descendants reuse that route-owned instance.
-`useOptionalKitchenMenus` only looks up an existing capability. Standalone
-Create Form, URL and source-upload workflows explicitly construct the existing
-`useKitchenWorkspaceMenus` lower owner when no suitable provided owner exists;
-source upload prefers its mounted Menu-record owner first. No getter hides reader
-or page-publisher construction. `useMenuList` owns search/archive choices and the
-sorted visible collection, including its existing archive count. These bounded
-names follow `docs/concepts/composables.md#provided-capability-lifecycle`; other
-Kitchen providers retain their current names pending their own touched scope.
-The primary `Menu/Menus/Overview.vue` composes controlled Controls, List and
-Card children under `Menus/Overview/`; these reuse the existing Workspace
-collection toolbar, shared `FireState` and native `UPageGrid`/`UPageCard`.
-The Overview retains collection coordination; controls and cards receive typed
-props/events and do not acquire data or recreate command authority. The recurring
-Workspace group composition is documented in
-`docs/concepts/family-workspace-entity.md#workspace-group-overview-composition`;
-it requires no generic wrapper or fixed set of summaries. Children own their
-presentation and local interaction state, while the shared overview avoids
-duplicate readers.
+The Menu entrance is `kitchen/components/Workspace/Menu/Index.vue`, registered as
+`KitchenWorkspaceMenu`. It mounts `useKitchenWorkspaceMenu` once, constructing
+its existing Menus workflow and combined overview with the exact same collection.
+Only the description returns to the entrance; child-specific composables use
+strict internal lookup, and one active overview publisher supplies page JSON/AI.
+Services owns service-specific projections from that acquired graph. Overview
+uses the existing `useMenuList`, real creation availability and blocked reason,
+controlled Controls/List/Card, native `UPageGrid`/`UPageCard` and shared `FireState`.
+The entrance contains no temporary debug borders or numbered markers.
+
+Prep lives under `components/Workspace/Prep`. Its entrance mounts
+`useKitchenWorkspacePrep`; Overview/Create use strict internal lookup. Separate
+library routes mount `useKitchenWorkspacePrepLibrary` with their explicit view,
+sharing one Preparation/Recipe read graph and enabling Ingredient catalogue and
+Kitchen associations only for Recipe views. `useKitchenWorkspacePrepRecipeEditor`
+owns draft/change and command lifecycle through existing `useIdentityEditor` and
+`usePrepMutation`; its Kitchen, record, edit availability and Preparation inputs
+remain explicit. Neither child workflow assumes the entrance stays mounted.
+
+These two groups have dedicated component scans and selected public composable
+registrations. Remaining `WorkspaceKitchen*` integration/navigation adapters,
+Public registration and other working capabilities keep their current owners.
+Standalone source preparation still explicitly mounts its Menus workflow with
+`provideKitchenMenus`. Optional lookup never constructs another owner, and source
+upload prefers its existing record owner. One upload/URL/blank creation flow
+serves both the modal and standalone source page; lower command authority and
+individual record editors remain separate. The shared contract is
+`docs/concepts/family-workspace-entity.md#workspace-group-overview-composition`.
 It reuses `serviceOverviewSnapshot` for setup facts; AI receives the same page
 context rather than acquiring another catalogue. Home, Menus and Food & drink
 inherit the Kitchen-owned `kitchen/server/ai/role.ts` instruction: one KitchenAI
@@ -2113,7 +2111,7 @@ dedicated add route reuse the Kitchen ingredient selection form; the catalogue
 does not create a second ingredient library or supplier offer store.
 Catalogue cards open a read-only ingredient panel, preserving the current search
 and filters. Previous/next follows the visible category order. The panel and
-dedicated detail route reuse `PrepAndProduction/Ingredients/Preview.vue`; global identity
+dedicated detail route reuse `Workspace/Prep/Ingredients/Preview.vue`; global identity
 editing remains with Ingredient curation.
 
 The Kitchen Ingredient detail route uses a bounded live Kitchen-link query
@@ -2261,7 +2259,7 @@ check. The shared components are Kitchen-local, not a cross-domain Core contract
 Kitchen component capabilities follow the responsibility groups mapped in
 Kitchen component organisation below. `Workspace/Home` owns entry controls and
 Kitchen creation; Workspace Navigation, AI, Research and Tools retain cross-page
-composition. `Menu` and `PrepAndProduction` group their actual domain
+composition. `Workspace/Menu` and `Workspace/Prep` group their actual domain
 responsibilities rather than following arbitrary sidebar labels. Menu, ordering
 and command ownership are unchanged. App-specific entry presentation stays in
 `misebox-app/app/components/Workspace/Kitchen/Home` with distinct generated names.
@@ -2367,7 +2365,7 @@ normalization keeps historical recipe `preparation` fields and Prep Item
 rewriting documents. Missing yield remains unknown. Each reader suppresses rows
 and historical relationships when the Kitchen/access scope is no longer ready.
 
-`PrepAndProduction/Index.vue` owns the operator landing composition: compact
+`Workspace/Prep/Index.vue` owns the operator landing composition: compact
 Preparation/Recipe entrances with settled read counts, Ingredients and Stations
 links, and a searchable, bounded library with direct record destinations. It
 composes the existing Preparation and Recipe readers once each, using selected
@@ -2377,7 +2375,7 @@ state. Each library retains its own pending/error outcome. Prep plans and
 Batches remain secondary entrances explicitly marked as not connected, without
 inventing production totals or stock facts.
 
-`PrepAndProduction/LibraryRead.vue` composes these readers once; its Ingredient
+`Workspace/Prep/LibraryRead.vue` composes these readers once; its Ingredient
 catalogue and Kitchen associations acquire only for Recipe views, not Preparation
 lists/details. Ingredient read failures remain visible in the Recipe form without
 hiding the saved method. `Library.vue` owns collection search, output/recipe navigation and local expected

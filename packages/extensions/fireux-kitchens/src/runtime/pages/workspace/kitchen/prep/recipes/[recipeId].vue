@@ -1,5 +1,5 @@
 <template>
-  <KitchenPrepAndProductionLibraryRead view="recipes" :selected-id="id" />
+  <KitchenWorkspacePrepLibraryRead view="recipes" :selected-id="id" />
 </template>
 <script setup lang="ts">
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'

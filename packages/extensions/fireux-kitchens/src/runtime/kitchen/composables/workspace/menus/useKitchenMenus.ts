@@ -9,7 +9,7 @@ import {
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/workspace/models/capability-context'
 import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
-import { kitchenMenusWorkspaceKey } from './kitchen-menus-workspace-state'
+import { kitchenMenusWorkspaceKey } from '../menu/state'
 
 export type KitchenMenus = ReturnType<typeof createKitchenMenus>
 

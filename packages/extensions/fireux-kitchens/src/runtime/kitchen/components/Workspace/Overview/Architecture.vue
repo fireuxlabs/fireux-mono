@@ -98,7 +98,7 @@ const notes: Record<
         'The page does not yet show which dishes use a recipe.',
     },
     references: {
-      Component: 'PrepAndProduction/LibraryRead.vue',
+      Component: 'Workspace/Prep/LibraryRead.vue',
       Reader: 'useKitchenRecipesRead — one access-bound Recipe collection.',
       Usage:
         'Recipe output and Preparation inputs are explicit references; Menu Item linkage is not connected.',
@@ -118,7 +118,7 @@ const notes: Record<
         'Removal checks current recipes, dishes, prep items and supplier links. Later reference creation does not yet enforce Kitchen ingredient-link existence.',
     },
     references: {
-      Component: 'PrepAndProduction/Ingredients/Index.vue',
+      Component: 'Workspace/Prep/Ingredients/Index.vue',
       Reader:
         'useKitchenIngredients — live Kitchen links combined with shared Ingredient records.',
       Model:

@@ -102,7 +102,7 @@ function harness() {
   )
   const surface = scope.run(() =>
     load(
-      source('components/PrepAndProduction/Stations/Index.vue'),
+      source('components/Workspace/Prep/Stations/Index.vue'),
       deps,
       '({addPass,creating,defaultStationError})'
     )
@@ -232,10 +232,7 @@ test('non-ready Station or Workspace reads hide retained rows and preserve their
 })
 async function render(outcome, rows = []) {
   const source = readFileSync(
-    new URL(
-      'components/PrepAndProduction/Stations/Collection/Index.vue',
-      runtime
-    ),
+    new URL('components/Workspace/Prep/Stations/Collection/Index.vue', runtime),
     'utf8'
   )
   const template = source.slice(

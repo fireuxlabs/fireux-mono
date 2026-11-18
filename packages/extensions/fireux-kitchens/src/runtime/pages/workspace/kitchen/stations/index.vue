@@ -8,7 +8,7 @@
         context-label="Prep"
       />
       <WorkspaceKitchenToolsToolbar capability="stations" />
-      <KitchenPrepAndProductionStations />
+      <KitchenWorkspacePrepStations />
     </section>
   </div>
 </template>

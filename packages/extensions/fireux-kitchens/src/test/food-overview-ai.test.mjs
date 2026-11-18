@@ -122,7 +122,7 @@ test('an AI reply for the previous Kitchen cannot replace the current overview',
     dispatched = deferred()
   const scope = effectScope()
   const { useFoodOverviewAI } = loadOfferingSource(
-    'kitchen/composables/workspace/menu-group/useFoodOverviewAI',
+    'kitchen/composables/workspace/menu/ai-request',
     'useFoodOverviewAI',
     {
       ref,
@@ -173,7 +173,7 @@ test('the overview publishes the same current facts used by its AI and clears th
   let acquisitions = 0
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/composables/workspace/menu-group/useMenuGroupIndex.ts',
+      '../runtime/kitchen/composables/workspace/menu/source.ts',
       import.meta.url
     ),
     'utf8'
@@ -210,10 +210,23 @@ test('the overview publishes the same current facts used by its AI and clears th
       services: [{ type: 'collection', status: 'Enabled' }],
     }),
   }
+  const serviceSource = readFileSync(
+    new URL(
+      '../runtime/kitchen/composables/workspace/menu/services.ts',
+      import.meta.url
+    ),
+    'utf8'
+  )
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    .replace(/^export /gm, '')
+  deps.createMenuServices = compileFunction(
+    `${stripTypeScriptTypes(serviceSource)}; return createMenuServices`,
+    Object.keys(deps)
+  )(...Object.values(deps))
   const scope = effectScope()
   const state = scope.run(() =>
     compileFunction(
-      `${stripTypeScriptTypes(source)}; return createMenuGroupIndex()`,
+      `${stripTypeScriptTypes(source)}; return createKitchenMenuOverview({})`,
       Object.keys(deps)
     )(...Object.values(deps))
   )

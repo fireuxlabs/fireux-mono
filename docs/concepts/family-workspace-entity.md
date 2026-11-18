@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-11-17
-Ref: f798e3e99
+Updated: 2026-11-18
+Ref: 5e2450a2f
 Role: map, not canon
 
 ## Purpose
@@ -1250,7 +1250,7 @@ and synthetic `*-group` folders are not the target. Keep ordinary presentation
 props/events for pure presentation children. This naming applies to capability
 group entrances, not every selected-Entity Workspace, lower reader or record editor.
 
-For Kitchen's `/menu` capability the target parent is
+For Kitchen's `/menu` capability the current parent is
 `useKitchenWorkspaceMenu()`: singular `Menu` identifies the capability, while
 `menus` still names its record collection. Its six named responsibilities may use
 `useKitchenWorkspaceMenuOverview`, `useKitchenWorkspaceMenuCreate`,
@@ -1258,8 +1258,8 @@ For Kitchen's `/menu` capability the target parent is
 `useKitchenWorkspaceMenuPromotions` and `useKitchenWorkspaceMenuServices` where
 meaningful coordination warrants a composable. Small local state may stay in the
 component; this is not one mandatory composable per Vue file.
-These are target APIs, not current source exports. Child-specific derivations may
-initially reuse parent-provided data; Services owns service-specific derivations
+A responsibility only gets a public child composable where coordination warrants
+it; Create reuses the existing Menus workflow directly. Services owns service-specific derivations
 rather than leaving them in an oversized group index. Do not duplicate acquisition
 or page publication to make each child independent. This six-part product
 composition does not require six children in every other capability group.
@@ -1288,19 +1288,21 @@ commands and lifecycle with their existing owners; pure presentation children
 receive typed props/events rather than opening another reader or provider.
 
 The Kitchen Menus source composition is
-[`Menu/Index.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Index.vue)
-with [`Menus/Overview.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Overview.vue),
+[`Workspace/Menu/Index.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Index.vue)
+with [`Workspace/Menu/Overview/Index.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Overview/Index.vue),
 group-focused KitchenAI and Items, Promotions and Services summaries. Its
 Overview composes Controls and List, and List composes Card; Controls reuses
 `WorkspaceKitchenCollectionToolbar`, feedback reuses `FireState`, and the list
 uses native `UPageGrid`. Its group owner is
-[`useKitchenMenusWorkspace`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/menus/useKitchenMenusWorkspace.ts).
-The distinct [Prep parent](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/Index.vue)
-mounts [`useKitchenPrepWorkspace`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/prep/useKitchenPrepWorkspace.ts),
-whose Overview/Create children consume its strict state lookup. These are current
-source references pending the target naming and responsibility cutover above;
-they illustrate different coordination needs, not identical internals or completed
-adoption by other groups. Align another family only with a bounded owner/consumer change.
+[`useKitchenWorkspaceMenu`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/menu/index.ts).
+The distinct [Prep parent](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Prep/Index.vue)
+mounts [`useKitchenWorkspacePrep`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/prep/index.ts),
+whose Overview/Create children use strict internal lookup. Child library routes
+mount [`useKitchenWorkspacePrepLibrary`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/prep/library.ts)
+at their own host, and the Recipe editor uses its
+[explicit-input workflow](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/prep/recipe/editor.ts).
+These illustrate different coordination needs, not identical internals or
+completed adoption by other groups. Align another family only with a bounded owner/consumer change.
 Verify parent mounting, child reuse, scope changes/disposal and the actual group
 route's states/interactions. Overview presentation tests alone do not establish
 group-owner lifecycle correctness.

@@ -210,7 +210,7 @@ test('Station form preserves its target and cancels obsolete credential-stage wr
       )
       const form = lifetime.run(() =>
         load(
-          '../../runtime/kitchen/components/PrepAndProduction/Stations/Create/Index.vue',
+          '../../runtime/kitchen/components/Workspace/Prep/Stations/Create/Index.vue',
           deps,
           '({addStation,name,message,saving})'
         )

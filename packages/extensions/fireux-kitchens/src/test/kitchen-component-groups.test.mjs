@@ -1,73 +1,91 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { join } from 'node:path'
+import { stripTypeScriptTypes } from 'node:module'
 
-const root = fileURLToPath(
-  new URL('../runtime/kitchen/components/', import.meta.url)
-)
-function files(dir) {
-  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
-    entry.isDirectory() ? files(join(dir, entry.name)) : [join(dir, entry.name)]
-  )
-}
-
-test('Kitchen groups stable capabilities and keeps Workspace mechanics separate', () => {
-  for (const child of ['Items', 'Menus', 'Promotions', 'Services']) {
-    assert.ok(existsSync(join(root, 'Menu', child, 'Index.vue')))
-    assert.ok(existsSync(join(root, 'Menu', child, 'Overview.vue')))
-  }
-  for (const child of ['Recipes', 'Ingredients', 'Stations'])
-    assert.ok(existsSync(join(root, 'PrepAndProduction', child)))
-  assert.ok(
-    existsSync(join(root, 'PrepAndProduction', 'PreparationEditor.vue'))
-  )
-  assert.ok(existsSync(join(root, 'PrepAndProduction', 'Planning.vue')))
-  assert.doesNotMatch(
-    readFileSync(join(root, 'PrepAndProduction', 'Index.vue'), 'utf8'),
-    /WorkspaceGroupPage/
-  )
-  for (const child of ['Finance', 'Identity', 'Team'])
-    assert.ok(existsSync(join(root, child, 'Index.vue')))
-  assert.deepEqual(
-    readdirSync(join(root, 'Workspace'))
-      .filter((name) => !name.endsWith('.vue'))
-      .sort(),
-    [
-      'AI',
-      'Collection',
-      'Home',
-      'Navigation',
-      'Overview',
-      'Research',
-      'Selector',
-      'Test',
-      'Tools',
-    ]
-  )
-})
-
-test('component registration uses current owner paths without retired-name aliases', () => {
-  const registration = readFileSync(
+const runtime = fileURLToPath(new URL('../runtime/', import.meta.url))
+function registrations() {
+  const scans = [],
+    explicit = []
+  const source = readFileSync(
     new URL('../config/module/components-config.ts', import.meta.url),
     'utf8'
   )
-  assert.match(registration, /runtime\/kitchen\/components'/)
-  assert.match(registration, /prefix: 'Kitchen'/)
-  assert.match(registration, /ignore: \['Workspace\/\*\*'\]/)
-  const sources = files(root)
-    .filter((path) => path.endsWith('.vue'))
-    .map((path) => readFileSync(path, 'utf8'))
-    .join('\n')
-  assert.doesNotMatch(
-    sources,
-    /WorkspaceKitchen(?:Items|Menus|Offerings|Recipes|Ingredients|Promotions|Finance|Identity|Team)/
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
+    .replace(/^export /gm, '')
+  const configure = new Function(
+    'registerComponentsDir',
+    'addComponent',
+    `${stripTypeScriptTypes(source)}; return configureComponents`
+  )(
+    (_resolver, path, options) => scans.push({ path, ...options }),
+    (value) => explicit.push(value)
   )
-  for (const name of [
-    'KitchenMenuServices',
-    'KitchenMenuItemsOverview',
-    'KitchenPrepAndProductionRecipes',
+  configure({
+    resolve: (value) =>
+      new URL('../' + value.replace(/^\.\//, ''), import.meta.url).pathname,
+  })
+  return { scans, explicit }
+}
+
+test('document Workspace groups register once under their Entity and retain the navigation integration ABI', () => {
+  const { scans, explicit } = registrations()
+  const workspace = scans.find(
+    (scan) => scan.path === './runtime/kitchen/components/Workspace'
+  )
+  for (const name of ['Menu', 'Prep']) {
+    const matches = scans.filter(
+      (scan) => scan.path === `./runtime/kitchen/components/Workspace/${name}`
+    )
+    assert.equal(matches.length, 1)
+    assert.equal(matches[0].prefix, `KitchenWorkspace${name}`)
+    assert.ok(
+      scans.indexOf(matches[0]) < scans.indexOf(workspace),
+      'specific scan precedes the parent scan'
+    )
+    assert.equal(matches[0].pathPrefix, true)
+    assert.ok(workspace.ignore.includes(`${name}/**`))
+    assert.ok(
+      existsSync(`${runtime}/kitchen/components/Workspace/${name}/Index.vue`)
+    )
+  }
+  const neutral = scans.find(
+    (scan) => scan.path === './runtime/kitchen/components'
+  )
+  assert.ok(neutral.ignore.includes('Workspace/**'))
+  const navigation = explicit.find(
+    (component) => component.name === 'WorkspaceKitchenNavigation'
+  )
+  assert.equal(navigation.global, true)
+  assert.ok(navigation.filePath.endsWith('/Workspace/Navigation/Index.vue'))
+})
+
+test('group entrances compose their named responsibilities without preview markers or a second frame', () => {
+  const menu = readFileSync(
+    `${runtime}/kitchen/components/Workspace/Menu/Index.vue`,
+    'utf8'
+  )
+  const prep = readFileSync(
+    `${runtime}/kitchen/components/Workspace/Prep/Index.vue`,
+    'utf8'
+  )
+  for (const source of [menu, prep]) {
+    assert.doesNotMatch(
+      source,
+      /border-(?:red|blue|orange|purple|pink|green|yellow|cyan)-500|WorkspaceGroupPage|<NuxtPage/
+    )
+    assert.doesNotMatch(source, /\/>\s*[1-6](?:\s|$)/)
+  }
+  for (const child of [
+    'Overview',
+    'Create',
+    'Ai',
+    'ItemsOverview',
+    'PromotionsOverview',
+    'ServicesOverview',
   ])
-    assert.ok(sources.includes(name), name)
+    assert.ok(menu.includes(`<KitchenWorkspaceMenu${child}`), child)
+  assert.ok(prep.includes('<KitchenWorkspacePrepRecipesOverview'))
+  assert.ok(prep.includes('<KitchenWorkspacePrepPreparationsOverview'))
 })

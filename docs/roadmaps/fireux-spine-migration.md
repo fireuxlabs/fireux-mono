@@ -1,7 +1,7 @@
 # FireUX spine migration plan
 
-Date: 2026-11-17
-Source baseline: `f798e3e99`
+Date: 2026-11-18
+Source baseline: `5e2450a2f`
 Role: bounded migration plan and portable handoff; target design, not a claim of completed migration
 
 ## Read this first
@@ -15,11 +15,10 @@ independent Entities.
 Component and composable names should tell the same ownership story as their
 paths: Entity, then audience where relevant, then capability, then child.
 
-Daniel approved planning this migration. This document does not authorize a
-repository-wide source move, a data migration, deployment or a server restart.
-Implement it through complete, bounded owner-and-consumer slices. Current source
-establishes existing behavior; the decisions below establish the intended target.
-
+Execute this migration through complete, explicitly selected owner-and-consumer
+slices. The plan does not authorize a blanket rewrite, stored-data migration or
+deployment. Current source establishes existing behavior; the decisions below
+establish the intended target.
 The committed baseline contains the accepted native Workspace layout migration
 and the Kitchen state-owner checkpoint saved in `08e5825ee`. The later
 [discussion handoff](../handoffs/2026-11-17-fireux-predictable-spine-rules.md)
@@ -30,6 +29,22 @@ existing owners before editing; do not assume the historical checkpoint means
 there is no new concurrent work.
 
 ## The agreed structure
+
+The non-recursive boundary is:
+
+1. **FireUX spine:** native Nuxt technical roles plus sibling Entity roots, and
+   the existing shared Workspace owner where justified.
+2. **Entity spine:** only its required Nuxt-style technical roles plus optional
+   owned `records/`; it contains no further Entity spines.
+3. **Placement decision:** a genuine Entity gets a sibling root on the owning
+   package's FireUX spine. Parent-owned support truth remains a Record, whose
+   behavior uses its owner's existing technical roles. Records do not get spines.
+4. **Native discovery:** pages, layouts, middleware, plugins and HTTP API
+   entrypoints remain on the outer Nuxt spine. An Entity is not a nested Nuxt App.
+
+Classify by ownership and lifecycle first; do not promote or demote a concept
+merely to obtain a tidy tree. Workspace retains its existing shared ownership;
+its precise architectural terminology remains an open decision.
 
 ```text
 packages/<lane>/<owning-package>/src/runtime/
@@ -129,9 +144,9 @@ Composable public names use `use` followed by the same path hierarchy:
 | `recipe/composables/read.ts`                              | `useRecipeRead()`                      |
 
 The latest agreed order supersedes the earlier proposed spellings
-`useKitchenMenuWorkspace()` and `useKitchenMenuServicesWorkspace()`. Current
-exports such as `useKitchenMenusWorkspace` are migration inputs, not additional
-accepted naming variants. The collection value can still be named `menus`;
+`useKitchenMenuWorkspace()` and `useKitchenMenuServicesWorkspace()`. The Menu
+and Prep group entrypoints now use the path-led order; remaining lower capability
+APIs are separate bounded migration inputs, not additional accepted naming variants. The collection value can still be named `menus`;
 singular Menu identifies the `/menu` capability.
 
 Nuxt derives component names from registered paths and prefixes. Composable
@@ -196,8 +211,9 @@ execution status in the implementation handoff, not in living context.
 
 ### 2. Prove the structure with Kitchen Menu
 
-The existing Kitchen chat owns this bounded implementation. Coordinate with it
-before touching overlapping files. Move the complete operator Menu composition
+Coordinate with the current Kitchen source owner before touching overlapping
+files. Align the Menu and Prep document-oriented groups while preserving Orders'
+operational composition. Move the bounded operator group composition
 to `kitchen/components/Workspace/Menu/`, reconcile scans and exclusions, and
 align its Workspace composables to the path-led naming rule. Update real routes,
 explicit imports, AI consumers, tests and generated declarations together.

@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-11-17
-Ref: f798e3e99
+Updated: 2026-11-18
+Ref: 5e2450a2f
 Role: living context
 Scope: repository-wide
 
@@ -176,16 +176,24 @@ for rules absent from their configuration.
 
 ## FireUX source spine
 
-Native Nuxt technical roles, sibling Entity roots at the owning package runtime,
-and the existing shared Workspace owner form the source spine. Entity roots do
-not recursively contain other Entity spines; owned Records use their Entity’s
-optional `records/` definitions and existing technical roles. Current nested
-Entity source remains migration debt until a complete consumer cutover; source
-placement changes neither stored scope nor authority. Carry only the
-responsibilities actually needed; do not
-create symmetric folders or forwarding layers. The shared Workspace runtime owns
-frame/selection mechanics, not domain records. Domain component audiences and
-library admission follow the [surface convention](../concepts/components.md#domain-component-surfaces);
+A FireUX package runtime is the native Nuxt spine plus sibling FireUX Entity
+roots and the existing shared Workspace owner where justified. Each Entity has
+only its required Nuxt-style technical roles and optional owned `records/`;
+there is no Entity spine inside another Entity spine. A first-class Entity belongs
+at the owning package runtime root. Parent-owned support truth stays a Record
+inside its owner, with behavior in that owner's technical roles and no miniature
+record spine. Classify ownership and lifecycle before choosing placement.
+
+Native pages, layouts, middleware, plugins and HTTP API entrypoints stay on the
+outer Nuxt spine; an Entity is not another complete Nuxt application. Source
+flattening changes neither stored scope nor authority. Current nested Entity
+source remains migration debt until a complete consumer cutover. Workspace's
+current shared ownership stays intact while its terminology is reviewed.
+
+Carry only the responsibilities actually needed; do not create symmetric
+folders or forwarding layers. The shared Workspace runtime owns frame/selection
+mechanics, not domain records. Domain component audiences and library admission
+follow the [surface convention](../concepts/components.md#domain-component-surfaces);
 component grouping moves no model, reader, state or command authority.
 
 The [runtime filesystem map](../concepts/runtime-filesystem.md) owns placement;

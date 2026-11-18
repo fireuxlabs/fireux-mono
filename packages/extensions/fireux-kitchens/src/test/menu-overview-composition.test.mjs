@@ -30,7 +30,7 @@ function component(path, bindings = {}) {
   }, exports)
   return exports.default
 }
-const base = 'kitchen/components/Menu/Menus/'
+const base = 'kitchen/components/Workspace/Menu/'
 const Controls = component(`${base}Overview/Controls.vue`)
 const List = component(`${base}Overview/List.vue`)
 const Card = component(`${base}Overview/Card.vue`)
@@ -98,22 +98,46 @@ function mount() {
   const list = listExports.useMenuList()
   const { query, showArchived } = list
   let creates = 0
-  const overview = component(`${base}Overview.vue`, {
-    '../../../composables/workspace/menu-group/useMenuGroupIndex': {
-      useMenuGroupIndex: () => ({ menus: rows, menusOutcome: outcome }),
+  const overviewSource = readFileSync(
+    new URL('kitchen/composables/workspace/menu/overview.ts', runtime),
+    'utf8'
+  )
+  const overviewCode = ts.transpileModule(overviewSource, {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
     },
-    '../../../composables/workspace/menus/useKitchenMenus': {
-      useKitchenMenus: () => ({
-        actions: { openCreate: () => creates++ },
-        canCreateMenu,
-        menuCreateBlockedMessage: Vue.computed(() =>
-          canCreateMenu.value ? '' : 'Upgrade to add another menu.'
-        ),
-      }),
+  }).outputText
+  const overviewExports = {}
+  const capability = {
+    derived: Vue.computed(() => ({
+      capability: {
+        primitives: { create: { available: canCreateMenu.value } },
+      },
+    })),
+    menuCreateBlockedMessage: Vue.computed(() =>
+      canCreateMenu.value ? '' : 'Upgrade to add another menu.'
+    ),
+    actions: {
+      openCreate: () => {
+        if (canCreateMenu.value) creates++
+      },
     },
-    '../../../composables/workspace/menus/useMenuList': {
-      useMenuList: () => list,
-    },
+  }
+  compileFunction(overviewCode, ['require', 'exports'])((name) => {
+    if (name === 'vue') return Vue
+    if (name === './state')
+      return {
+        requireMenuWorkspace: () => ({
+          menus: capability,
+          overview: { menusOutcome: outcome },
+        }),
+      }
+    if (name === '../menus/useMenuList') return { useMenuList: () => list }
+    assert.fail(name)
+  }, overviewExports)
+  const overview = component(`${base}Overview/Index.vue`, {
+    '../../../../composables/workspace/menu/overview': overviewExports,
   })
   const node = (type, text = '') => ({
     type,
@@ -158,9 +182,9 @@ function mount() {
   })
   const app = renderer.createApp(overview)
   for (const [name, value] of Object.entries({
-    KitchenMenuMenusOverviewControls: Controls,
-    KitchenMenuMenusOverviewList: List,
-    KitchenMenuMenusOverviewCard: Card,
+    KitchenWorkspaceMenuOverviewControls: Controls,
+    KitchenWorkspaceMenuOverviewList: List,
+    KitchenWorkspaceMenuOverviewCard: Card,
     WorkspaceKitchenCollectionToolbar: Toolbar,
     FireState: State,
   }))
@@ -279,12 +303,12 @@ test('composed menu overview retains ordering, controlled search/archive choices
     const create = view
       .all('button')
       .find((node) => view.text(node) === 'Create menu')
-    assert.equal(create.props.disabled, false)
+    assert.equal(create.props.disabled, true)
     create.props.onClick()
-    assert.equal(view.creates(), 2)
+    assert.equal(view.creates(), 1)
     assert.equal(
       view.all('p').some((node) => view.text(node).includes('Upgrade')),
-      false
+      true
     )
     view.all('input')[0].props.onInput({ target: { value: 'missing' } })
     await Vue.nextTick()
