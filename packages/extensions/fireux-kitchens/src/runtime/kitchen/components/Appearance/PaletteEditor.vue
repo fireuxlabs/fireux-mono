@@ -73,9 +73,18 @@
         </div>
       </div>
       <div class="workspace-surface__context fx-card-body-stack">
+        <USelect
+          v-if="previewOptions.length > 1"
+          v-model="previewMenuId"
+          :items="previewOptions"
+          aria-label="Menu to preview"
+        />
         <KitchenAppearancePreview
           :palette="previewPalette"
           :name="name"
+          :menu="previewMenu"
+          :kitchen-id="kitchenId"
+          :menu-outcome="previewOutcome"
           :image-url="imageUrl"
           :image-fit="imageFit"
           :image-background="imageBackground"
@@ -109,6 +118,14 @@ const props = withDefaults(
     saving: boolean
     saveState: string
     error?: string
+    kitchenId?: string
+    previewMenus?: Array<{
+      id: string
+      name: string
+      description?: string
+      draft: boolean
+    }>
+    previewOutcome?: string
     name?: string
     imageUrl?: string
     imageFit?: 'contain' | 'cover'
@@ -116,6 +133,24 @@ const props = withDefaults(
   }>(),
   { error: '', name: 'Your Kitchen', imageUrl: '' }
 )
+const selectedPreviewId = ref('')
+const previewOptions = computed(() =>
+  (props.previewMenus ?? []).map((menu) => ({
+    value: menu.id,
+    label: menu.draft ? `${menu.name} (draft)` : menu.name,
+  }))
+)
+const previewMenu = computed(
+  () =>
+    props.previewMenus?.find((menu) => menu.id === selectedPreviewId.value) ??
+    props.previewMenus?.[0]
+)
+const previewMenuId = computed({
+  get: () => previewMenu.value?.id ?? '',
+  set: (id: string) => {
+    selectedPreviewId.value = id
+  },
+})
 defineEmits<{ save: [palette: WorkspacePalette] }>()
 const groups = [
   {

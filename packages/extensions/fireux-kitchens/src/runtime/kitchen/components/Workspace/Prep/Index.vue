@@ -5,7 +5,6 @@
     variant="primary"
   />
   <KitchenWorkspacePrepOverview />
-  <KitchenWorkspacePrepCreate />
   <UPageGrid as="section" aria-label="Preparation and production tools">
     <KitchenWorkspacePrepPlanOverview />
     <KitchenWorkspacePrepBatchesOverview />

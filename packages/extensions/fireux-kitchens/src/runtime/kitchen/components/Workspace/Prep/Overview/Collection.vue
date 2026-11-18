@@ -5,11 +5,11 @@
   >
     {{ summary.status }}
   </p>
-  <p v-else-if="!preparations.length" role="status">
-    {{ searching ? 'No matching preparations.' : 'No preparations yet.' }}
+  <p v-else-if="!results.length" role="status">
+    {{ query.trim() ? 'No matching preparations.' : 'No preparations yet.' }}
   </p>
   <ul v-else aria-label="Preparation preview">
-    <li v-for="preparation in preparations.slice(0, 5)" :key="preparation.id">
+    <li v-for="preparation in results.slice(0, 5)" :key="preparation.id">
       <NuxtLink
         :to="`/workspace/kitchen/prep/preparations/${encodeURIComponent(preparation.id)}`"
         class="prep-preview-link"
@@ -20,10 +20,10 @@
     </li>
   </ul>
   <p
-    v-if="summary.outcome === 'ready' && preparations.length > 5"
+    v-if="summary.outcome === 'ready' && results.length > 5"
     class="fx-type-caption"
   >
-    Showing 5 of {{ preparations.length }}
+    Showing 5 of {{ results.length }}
   </p>
   <UButton
     v-if="summary.outcome === 'ready'"
@@ -34,14 +34,9 @@
   />
 </template>
 <script setup lang="ts">
-import type { Preparation } from '../../../../records/prep/preparations/preparation'
-import type { PrepSummary } from '../../../../composables/workspace/prep/summaries'
+import { requirePrepWorkspace } from '../../../../composables/workspace/prep/state'
 
-defineProps<{
-  summary: PrepSummary
-  preparations: Preparation[]
-  searching: boolean
-}>()
+const { query, summary, results } = requirePrepWorkspace().overview
 </script>
 
 <style scoped>

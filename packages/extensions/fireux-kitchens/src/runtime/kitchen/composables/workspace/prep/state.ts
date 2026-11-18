@@ -1,12 +1,22 @@
 import type { createPrepSummaries } from './summaries'
-import { inject, type ComputedRef, type InjectionKey } from 'vue'
+import { inject, type ComputedRef, type InjectionKey, type Ref } from 'vue'
 
 type PrepWorkspace = {
   description: ComputedRef<string>
   ready: ComputedRef<boolean>
   createTo: string
   summaries: ReturnType<typeof createPrepSummaries>['summaries']
-  preparations: ReturnType<typeof createPrepSummaries>['preparations']
+  overview: {
+    query: Ref<string>
+    summary: ComputedRef<
+      ReturnType<
+        typeof createPrepSummaries
+      >['summaries']['value']['preparations']
+    >
+    results: ComputedRef<
+      ReturnType<typeof createPrepSummaries>['preparations']['value']
+    >
+  }
 }
 export const prepWorkspaceKey: InjectionKey<PrepWorkspace> = Symbol(
   'KitchenWorkspacePrep'

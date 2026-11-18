@@ -1703,7 +1703,9 @@ available on every plan with Kitchen write authority and is not gated by
 identity completion. Menu-specific presentation tools and paid-plan boundaries
 remain separate product decisions.
 Appearance groups the four palette fields into Page and Highlights and renders
-a local menu-style preview. Draft colours require an explicit save; discarding
+a local colour preview using the selected Kitchen’s Menu name and description.
+It prefers a published regular Menu, then another published Menu, then a named
+draft. An empty collection uses the sample preview. Draft colours require an explicit save; discarding
 restores the latest saved palette. A newer incoming palette blocks saving a stale
 draft until it is discarded. Preview presentation does not alter the Workspace theme.
 

@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { useMenuList } from '../menus/useMenuList'
+import { readKitchenThemePalette } from '../../../utils/kitchen-readers'
 import { requireMenuWorkspace } from './state'
 
 export function useKitchenWorkspaceMenuOverview() {
@@ -10,6 +11,9 @@ export function useKitchenWorkspaceMenuOverview() {
   )
   return {
     ...list,
+    palette: computed(() =>
+      readKitchenThemePalette(menus.selectedKitchen.value)
+    ),
     menusOutcome: overview.menusOutcome,
     canCreateMenu,
     createBlockedMessage: menus.menuCreateBlockedMessage,

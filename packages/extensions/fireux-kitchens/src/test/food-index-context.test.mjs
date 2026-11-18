@@ -408,11 +408,7 @@ export default {render}`
         const entrance = f.prep.useKitchenWorkspacePrep()
         assert.deepEqual(Object.keys(entrance), ['description'])
         return () =>
-          Vue.h('div', [
-            Vue.h(Overview),
-            Vue.h(Create),
-            ...cards.map((card) => Vue.h(card)),
-          ])
+          Vue.h('div', [Vue.h(Overview), ...cards.map((card) => Vue.h(card))])
       },
     })
     app.component('UPageCard', {
@@ -429,6 +425,7 @@ export default {render}`
       props: ['to', 'label'],
       setup: (props) => () => Vue.h('a', { href: props.to }, props.label),
     })
+    app.component('KitchenWorkspacePrepCreate', Create)
     app.component('WorkspaceKitchenCollectionToolbar', {
       render: () => Vue.h('div'),
     })

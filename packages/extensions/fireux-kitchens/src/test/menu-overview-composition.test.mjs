@@ -5,8 +5,7 @@ import { compileFunction } from 'node:vm'
 import * as Vue from 'vue'
 import { parse, compileScript } from 'vue/compiler-sfc'
 import ts from 'typescript'
-import { menuWorkspaceDestination } from '../runtime/kitchen/utils/menu-workspace-destination.ts'
-import { publishedMenuDates } from '../runtime/menu/utils/calendar/daily.ts'
+import { useMenuOverviewCard } from '../runtime/kitchen/components/Workspace/Menu/Overview/Collection/useCard.ts'
 
 const runtime = new URL('../runtime/', import.meta.url)
 function component(path, bindings = {}) {
@@ -24,16 +23,15 @@ function component(path, bindings = {}) {
   const exports = {}
   compileFunction(code, ['require', 'exports'])((name) => {
     if (name === 'vue') return Vue
-    if (name.endsWith('/calendar/daily')) return { publishedMenuDates }
-    if (name.endsWith('/menu-workspace-destination'))
-      return { menuWorkspaceDestination }
     assert.ok(bindings[name], name)
     return bindings[name]
   }, exports)
   return exports.default
 }
 const base = 'kitchen/components/Workspace/Menu/'
-const Card = component(`${base}Overview/Card.vue`)
+const Card = component(`${base}Overview/Collection/Card.vue`, {
+  './useCard': { useMenuOverviewCard },
+})
 const Toolbar = component('kitchen/components/Workspace/Collection/Toolbar.vue')
 const State = component(
   '../../../../core/fireux-core/src/runtime/components/molecules/State.vue'
@@ -112,6 +110,7 @@ function mount() {
   }).outputText
   const overviewExports = {}
   const capability = {
+    selectedKitchen: Vue.ref(null),
     derived: Vue.computed(() => ({
       capability: {
         primitives: { create: { available: canCreateMenu.value } },
@@ -129,6 +128,8 @@ function mount() {
   compileFunction(overviewCode, ['require', 'exports'])((name) => {
     if (name === 'vue') return Vue
     if (name.endsWith('/calendar/daily')) return { publishedMenuDates }
+    if (name.endsWith('/kitchen-readers'))
+      return { readKitchenThemePalette: () => null }
     if (name === './state')
       return {
         requireMenuWorkspace: () => ({
@@ -139,35 +140,40 @@ function mount() {
     if (name === '../menus/useMenuList') return { useMenuList: () => list }
     assert.fail(name)
   }, overviewExports)
-  const bindings = {
-    '../../../../composables/workspace/menu/overview': overviewExports,
+  const loadPresenter = (path) => {
+    const code = ts.transpileModule(
+      readFileSync(new URL(path, runtime), 'utf8'),
+      {
+        compilerOptions: {
+          module: ts.ModuleKind.CommonJS,
+          target: ts.ScriptTarget.ES2022,
+        },
+      }
+    ).outputText
+    const exports = {}
+    compileFunction(code, ['require', 'exports'])((name) => {
+      if (name === 'vue') return Vue
+      if (name.endsWith('/menu/overview')) return overviewExports
+      assert.fail(name)
+    }, exports)
+    return exports
   }
-  const localCode = ts.transpileModule(
-    readFileSync(
-      new URL(`${base}Overview/Controls/useControls.ts`, runtime),
-      'utf8'
-    ),
-    {
-      compilerOptions: {
-        module: ts.ModuleKind.CommonJS,
-        target: ts.ScriptTarget.ES2022,
-      },
-    }
-  ).outputText
-  const local = {}
-  compileFunction(localCode, ['require', 'exports'])((name) => {
-    if (name === 'vue') return Vue
-    if (name.endsWith('/calendar/daily')) return { publishedMenuDates }
-    if (name.endsWith('/menu/overview')) return overviewExports
-    assert.fail(name)
-  }, local)
+  const local = loadPresenter(`${base}Overview/Controls/useControls.ts`)
   const Actions = component(`${base}Overview/Controls/Actions.vue`)
   const Filters = component(`${base}Overview/Controls/Filters.vue`)
   const Controls = component(`${base}Overview/Controls/Index.vue`, {
     './index': { Actions, Filters },
     './useControls': local,
   })
-  const Collection = component(`${base}Overview/Collection.vue`, bindings)
+  const Grid = component(`${base}Overview/Collection/Grid.vue`, {
+    './Card.vue': { default: Card },
+  })
+  const Collection = component(`${base}Overview/Collection/Index.vue`, {
+    './index': { Grid },
+    './useCollection': loadPresenter(
+      `${base}Overview/Collection/useCollection.ts`
+    ),
+  })
   const overview = component(`${base}Overview/Index.vue`, {
     './index': { Controls, Collection },
   })
@@ -214,7 +220,6 @@ function mount() {
   })
   const app = renderer.createApp(overview)
   for (const [name, value] of Object.entries({
-    KitchenWorkspaceMenuOverviewCard: Card,
     WorkspaceKitchenCollectionToolbar: Toolbar,
     FireState: State,
   }))

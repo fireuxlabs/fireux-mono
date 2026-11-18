@@ -61,8 +61,6 @@ export function useMenuThemeSurface(
       '--menu-primary-source': palette.accent,
       '--menu-primary': palette.accent,
       '--menu-secondary': palette.accent,
-      '--menu-theme-primary': palette.accent,
-      '--menu-theme-secondary': palette.accent,
       '--menu-accent-contrast': palette.accent_contrast,
       '--menu-bg-light': palette.canvas,
       '--menu-bg-dark': palette.canvas,
