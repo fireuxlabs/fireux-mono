@@ -55,17 +55,25 @@ export function useWorkspaceSwitch(
     request.value += 1
     if (id === selection.selectedId.value) return
 
-    const isCurrent = captureIntent()
-    const destination = workspaceSwitchPath(
-      route.matched.map((record) => record.path),
-      router.getRoutes().map((record) => record.path),
-      `/workspace/${family}`,
-      toValue(homePath)
-    )
-    if (destination) {
-      const failure = await navigateTo(destination, { replace: true })
-      if (failure === false || isNavigationFailure(failure)) return
+    const workspacePath = `/workspace/${family}`
+    const exit = route.meta?.workspaceSwitchTo
+    const destination =
+      typeof exit === 'string' && route.path.startsWith(`${workspacePath}/`)
+        ? exit
+        : workspaceSwitchPath(
+            route.matched.map((record) => record.path),
+            router.getRoutes().map((record) => record.path),
+            workspacePath,
+            toValue(homePath)
+          )
+    if (!destination) {
+      selection.select(id)
+      return
     }
+
+    const isCurrent = captureIntent()
+    const failure = await navigateTo(destination, { replace: true })
+    if (failure === false || isNavigationFailure(failure)) return
     if (isCurrent() && canSelect(id)) selection.select(id)
   }
 }

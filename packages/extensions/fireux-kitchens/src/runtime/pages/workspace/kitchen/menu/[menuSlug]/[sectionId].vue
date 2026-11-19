@@ -13,6 +13,7 @@ definePageMeta({
   layout: 'workspace',
 
   workspaceSurface: 'detail',
+  workspaceSwitchTo: '/workspace/kitchen/menu',
   visibility: { modules: ['fireux-kitchens'] },
   requiresAuth: true,
   requiresSelection: true,

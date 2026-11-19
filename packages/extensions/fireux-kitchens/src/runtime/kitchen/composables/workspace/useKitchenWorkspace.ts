@@ -39,8 +39,9 @@ export const useKitchenWorkspace = defineWorkspace(() => {
 
   function applyEntrySelection(ids: readonly string[]) {
     if (collectionOutcome.value !== 'ready') return false
-    if (requestedId.value && ids.includes(requestedId.value)) {
-      selection.select(requestedId.value)
+    const requested = requestedId.value
+    if (requested && ids.includes(requested)) {
+      selection.select(requested)
       const query = { ...route.query }
       delete query.kitchenId
       void navigateTo(
@@ -49,8 +50,10 @@ export const useKitchenWorkspace = defineWorkspace(() => {
       )
       return true
     }
-    if (!ids.includes(adoptedSelection.value)) return false
-    selection.select(adoptedSelection.value)
+
+    const adopted = adoptedSelection.value
+    if (!ids.includes(adopted)) return false
+    selection.select(adopted)
     adoptedSelection.value = ''
     return true
   }
@@ -61,8 +64,8 @@ export const useKitchenWorkspace = defineWorkspace(() => {
       const ids = collection.value.flatMap((kitchen) =>
         kitchen.id ? [kitchen.id] : []
       )
-      if (!applyEntrySelection(ids))
-        selection.reconcile(ids, collectionOutcome.value)
+      if (applyEntrySelection(ids)) return
+      selection.reconcile(ids, collectionOutcome.value)
     },
     { immediate: true }
   )

@@ -38,6 +38,27 @@ projection must omit protected children; hiding a field in Vue does not protect
 it. Team membership, App membership and a displayed role label grant only the
 authority defined by the owning domain.
 
+## Choose the document shape by ownership
+
+- Use a field or bounded map on the Entity root for small Entity-owned facts
+  normally needed with that record and sharing its access boundary.
+- Use a fixed-ID child document when a setting or policy has a separate read,
+  update, or access boundary. One subcollection may hold one document or several
+  independently named singleton documents.
+- Use a collection of child documents when records need individual IDs,
+  independent changes, or collection queries. Parent-owned records can be
+  data-only. They do not require an Entity or Workspace of their own.
+
+A root read returns its fields and maps. Capability readers fetch their own
+child documents or collections by selected Entity ID. Sidebar groups organize
+workflows and do not require matching stored containers. Nest storage when the
+intermediate record owns the child lifecycle. Document paths alternate
+collection and document segments. Existing paths follow their declared contract
+until an approved migration changes them.
+
+See the [Kitchen storage map](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md#kitchen-workspace-storage-shape)
+for current examples and exceptions.
+
 ## Reads, writes and security
 
 Mutable on-screen collections and records use the owning live reader. A

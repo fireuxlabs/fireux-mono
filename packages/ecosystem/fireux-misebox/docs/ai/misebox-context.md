@@ -403,9 +403,10 @@ and Footer components directly. Those shared components remain active.
   media rule, including inside Kitchen. The Brand editor and Appearance preview
   keep the saved logo backdrop separate from photo and menu-theme presentation.
   Pending and error outcomes do not become onboarding or clear the selection.
-  Explicit Kitchen switching from a record route returns to the nearest
-  registered capability above its first dynamic segment (for example a Menu's
-  content page returns to Menus). Static capability routes stay in place;
+  The Items list stays in place when switching Kitchen. The nested Menu section
+  page declares Menus as its switch exit. Other record routes still use the
+  nearest registered capability above the first dynamic segment. Static
+  capability routes stay in place;
   selecting the same Kitchen preserves the current route. Kitchen's index
   selection uses Core’s `useWorkspaceSwitch` with the App-resolved Kitchen entrance.
 - `fireux-kitchens` owns `WorkspaceKitchen`, target
@@ -3157,6 +3158,34 @@ Offering records and commands remain its backing configuration. Named food
 experiences such as Picnic are not new service types. Core's shared Workspace
 sidebar cycles compact, expanded and expand-all using its existing navigation
 projection; active-route resolution and command authority remain unchanged.
+
+## Kitchen Workspace storage shape
+
+Apply the [Firestore document shape rule](../../../../../docs/concepts/firestore-entity.md#choose-the-document-shape-by-ownership).
+The paths below are source contracts. Child paths are relative to
+`kitchens/{kitchenId}` unless stated otherwise.
+
+| Workspace area | Root fields or independently owned data | Fixed child documents | Collections of records |
+| --- | --- | --- | --- |
+| Overview and Identity | `identity`, `context`, `guidance_ids`, `theme`, creation/update stamps. Venue facts and opening hours come from `places/{kitchenId}`. | | Overview projects existing sources. |
+| Team | App membership and Kitchen access are separately owned. | | `team`, `roles`, `member-invitations` |
+| Menus and Services | `services.title` and `services.item_images` are display settings. | | `menus`, `dishes`, `promotions`, `menu-uploads`, `offerings`. Menu documents own `sections/{sectionId}/items/{entryId}` placements. |
+| Orders and Tables | `orders.operation_hours`, `orders.printing`, `tables.count` | `order-counters/sequence` | `order-drafts`, `submitted-orders`, `table_tabs` with per-tab `rounds`. Driver dispatch also has an `orders` collection contract. |
+| Prep & Production | | | `stations`, `prep-items`, `recipes`, `ingredients` links to independently owned Ingredients. |
+| Stock & Purchasing | | | `suppliers`, `supplier-ingredients`, `waste-events`. Inventory, Purchasing and Receiving currently have disconnected screens. |
+| Food Safety | Checks and records are currently disconnected. | | |
+| Reports | Finance reads operational records. Waste reporting is disconnected. | | Finance reads `sales`. |
+| Settings | The root reader excludes server fields `currency`, `management`, and `integrations` from the Workspace model. | `fulfilment/policy`, `integrations/website-ordering`, `integrations/sproochli` | |
+
+Preserve the current names. `dishes` holds reusable Items, while nested
+Menu `items` holds placements. `prep-items` holds Preparations.
+`table_tabs` is an existing spelling exception and holds order sessions,
+while `tables.count` is configuration. A table plan with stable QR identities
+is a separate product decision. The Recipe source Entity exists, and its
+current reader uses Kitchen-scoped `recipes`; User ownership and approved
+Kitchen adoption require a separate data migration. Older root copies of
+fulfilment or integration settings are retained preimages where present.
+The dedicated child documents own runtime policy.
 
 ## Kitchen Workspace selection
 

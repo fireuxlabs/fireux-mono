@@ -268,7 +268,24 @@ test('Kitchen directory hides retained rows during failure/loading and recovers 
   state.data.value = []
   assert.equal(collection.outcome.value, 'empty')
 })
-function selection() {
+const menuRouteRoot = '../runtime/pages/workspace/kitchen/menu/'
+
+function selection(page = '[menuSlug]/[sectionId].vue') {
+  const script = readFileSync(
+    new URL(menuRouteRoot + page, import.meta.url),
+    'utf8'
+  )
+    .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
+    .replace(/^import .*\n/gm, '')
+  let meta
+  compileNative(script, ['definePageMeta'])((value) => {
+    meta = value
+  })
+  const routePath =
+    page === 'items/index.vue'
+      ? '/workspace/kitchen/menu/items'
+      : '/workspace/kitchen/menu/:menuSlug()/:sectionId()'
+
   const scope = effectScope(),
     navigation = deferred(),
     selectedId = ref('first')
@@ -314,12 +331,19 @@ function selection() {
     },
     useRoute: () => ({
       query: {},
-      path: '/workspace/kitchen/menu/item',
-      meta: { workspace: 'kitchen' },
-      matched: [{ path: '/workspace/kitchen/menu/:menuSlug()' }],
+      path: routePath,
+      meta: { ...meta, workspace: 'kitchen' },
+      matched: [{ path: routePath }],
     }),
     useRouter: () => ({
-      getRoutes: () => [{ path: '/workspace/kitchen/menu' }],
+      getRoutes: () => {
+        assert.equal(
+          page,
+          'items/index.vue',
+          'the section supplies its own exit'
+        )
+        return []
+      },
     }),
     useWorkspace: () => ({
       selectedId,
@@ -334,9 +358,9 @@ function selection() {
     resolveAppUserAccess: () => ({}),
     workspaceSwitchPath,
     isNavigationFailure,
-    navigateTo: () => {
+    navigateTo: (destination, options) => {
       const wait = navigations.length ? deferred() : navigation
-      navigations.push(wait)
+      navigations.push({ ...wait, destination, options })
       return wait.promise
     },
   }
@@ -367,6 +391,7 @@ for (const changed of [
   'account',
   'membership',
   'selection',
+  'access',
   'read',
   'disposal',
 ])
@@ -382,6 +407,13 @@ for (const changed of [
       h.selectedId.value = 'other'
       h.selectedId.value = 'first'
     }
+    if (changed === 'access') {
+      const available = h.source.kitchens.value
+      h.source.kitchens.value = available.filter(
+        (kitchen) => kitchen.id !== 'second'
+      )
+      h.source.kitchens.value = available
+    }
     if (changed === 'read') {
       h.source.outcome.value = 'pending'
       h.source.outcome.value = 'ready'
@@ -392,6 +424,36 @@ for (const changed of [
     assert.deepEqual(h.calls, [])
     h.scope.stop()
   })
+test('Kitchen Items switches selection on the current list route', async () => {
+  const h = selection('items/index.vue')
+  const switching = h.flow.select('second')
+  assert.equal(h.selectedId.value, 'second')
+  await switching
+  assert.deepEqual(h.navigations, [])
+  h.scope.stop()
+})
+
+test('Menu section leaves through its declared exit before committing selection', async () => {
+  const h = selection()
+  const switching = h.flow.select('second')
+  assert.equal(h.selectedId.value, 'first')
+  assert.equal(h.navigations[0].destination, '/workspace/kitchen/menu')
+  assert.deepEqual(h.navigations[0].options, { replace: true })
+  h.navigation.resolve()
+  await switching
+  assert.equal(h.selectedId.value, 'second')
+  h.scope.stop()
+})
+
+test('a canceled Menu section exit keeps the current Kitchen', async () => {
+  const h = selection()
+  const switching = h.flow.select('second')
+  h.navigation.resolve(false)
+  await switching
+  assert.equal(h.selectedId.value, 'first')
+  h.scope.stop()
+})
+
 test('Kitchen switch accepts only a settled accessible Kitchen', async () => {
   const h = selection()
   await h.flow.select('unknown')

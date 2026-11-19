@@ -260,8 +260,10 @@ permissions remain domain-owned. A saved ID grants no read or write authority.
 - Core persists the last selection in an App/family cookie for one year on the
   current host and synchronises cookie changes between tabs. There is no separate
   Primary Kitchen preference.
-- Record-specific navigation must be considered when changing the active Entity;
-  shared selection alone does not prove every domain's return journey.
+- A capability list can change selection in place. The Kitchen Menu section
+  route declares its safe exit with `workspaceSwitchTo`. Core commits the switch
+  after that exit succeeds and the choice is still current and allowed.
+  Other record pages retain the existing registered-parent fallback.
 
 Home is available as a surface even before a domain record exists. Creation and
 attachment use existing domain commands, access checks and capacity policy;
