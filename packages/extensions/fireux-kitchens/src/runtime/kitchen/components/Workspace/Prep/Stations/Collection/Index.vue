@@ -25,10 +25,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import type { KitchenStation } from '../../../../../utils/station.ts'
-import { useKitchenWorkspacePrepStationsRead } from '../../../../../composables/workspace/prep/stations/read'
 
-const { stations, outcome } = useKitchenWorkspacePrepStationsRead()
+const props = defineProps<{
+  stations: KitchenStation[]
+  outcome: ReadOutcome
+}>()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const stationName = (station: KitchenStation) => normalizeString(station.name)
 const stationDisplayName = (station: KitchenStation) =>
@@ -38,7 +41,7 @@ const sortOrder = (station: KitchenStation) => {
   return Number.isFinite(value) ? value : Number.MAX_SAFE_INTEGER
 }
 const sortedStations = computed(() =>
-  [...stations.value].sort((left, right) => {
+  [...props.stations].sort((left, right) => {
     const byOrder = sortOrder(left) - sortOrder(right)
     if (byOrder) return byOrder
 

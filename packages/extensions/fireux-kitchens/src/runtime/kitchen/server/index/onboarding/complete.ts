@@ -1,7 +1,3 @@
-import {
-  createDefaultKitchenStation,
-  kitchenStationsTarget,
-} from '../../stations/default'
 import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
@@ -73,7 +69,6 @@ export async function completeKitchenOnboarding(
       actorMembership,
       systemMenus,
       access,
-      pass,
     ] = await Promise.all([
       mutations.read(memberships, ownerUserId),
       mutations.read(USER_MUTATION_TARGETS.runtimeUsers, ownerUserId),
@@ -89,7 +84,6 @@ export async function completeKitchenOnboarding(
         : mutations.read(memberships, current.uid),
       readKitchenManagementMenus(mutations, menus),
       mutations.read(accessTarget, ownerUserId),
-      mutations.read(kitchenStationsTarget(locator.kitchenId), 'pass'),
     ])
     const role = requireOnboardingMemberRole(
       membership.exists,
@@ -176,8 +170,6 @@ export async function completeKitchenOnboarding(
         kitchenId: locator.kitchenId,
         created: defaultsStamp,
       })
-    if (!pass.exists)
-      createDefaultKitchenStation(mutations, locator.kitchenId, defaultsStamp)
 
     if (createdTeamMember) {
       mutations.create(

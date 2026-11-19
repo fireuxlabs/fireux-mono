@@ -90,8 +90,15 @@ function harness() {
     },
     'createKitchenStation'
   )
+  const requireItemPreparationStations = load(
+    '../../runtime/kitchen/server/stations/item-references.ts',
+    { kitchenStationsTarget: (id) => `kitchens/${id}/stations`, createError },
+    'requireItemPreparationStations'
+  )
   return {
     create,
+    requireItemPreparationStations: (ids) =>
+      requireItemPreparationStations(tx, 'k', { preparation_station_ids: ids }),
     records,
     writes,
     before: (callback) => {
@@ -99,18 +106,23 @@ function harness() {
     },
   }
 }
-test('authorized Station create stamps runtime authority and never overwrites', async () => {
+test('Hot and Cold can be created by name and assigned to Items', async () => {
   const h = harness()
-  assert.deepEqual(
-    await h.create({}, { kitchenId: 'k', name: ' Grill ', sortOrder: 2 }),
-    { id: 'grill' }
-  )
+  assert.deepEqual(await h.create({}, { kitchenId: 'k', name: ' Hot ' }), {
+    id: 'hot',
+  })
+  assert.deepEqual(await h.create({}, { kitchenId: 'k', name: 'Cold' }), {
+    id: 'cold',
+  })
+  assert.equal(h.writes[0].target, 'kitchens/k/stations')
+  assert.equal(h.writes[0].data.name, 'Hot')
   assert.equal(h.writes[0].data.kitchen_id, 'k')
   assert.deepEqual(h.writes[0].data.created, { by: 'u', appId: 'app' })
-  await assert.rejects(h.create({}, { kitchenId: 'k', name: 'Grill' }), {
+  await h.requireItemPreparationStations(['hot', 'cold'])
+  await assert.rejects(h.create({}, { kitchenId: 'k', name: 'Hot' }), {
     statusCode: 409,
   })
-  assert.equal(h.writes.length, 1)
+  assert.equal(h.writes.length, 2)
 })
 test('transaction observes denied/revoked/recreated App membership and exact Kitchen access', async () => {
   for (const change of [
@@ -144,8 +156,8 @@ test('rejects unsupported fields and invalid inputs before writes', async () => 
     { kitchenId: 'a/b', name: 'Grill' },
     { kitchenId: 'k', name: '' },
     { kitchenId: 'k', name: 3 },
-    { kitchenId: 'k', name: 'Grill', sortOrder: -1 },
-    { kitchenId: 'k', name: 'Grill', sortOrder: '1' },
+    { kitchenId: 'k', name: 'Grill', sortOrder: 1 },
+    { kitchenId: 'k', name: 'Grill', role: 'preparation' },
     { kitchenId: 'k', name: 'Grill', active: false },
     { kitchenId: 'k', name: 'Grill', kitchenCollectionPath: 'elsewhere' },
   ]) {
@@ -178,8 +190,7 @@ test('Station form preserves its target and cancels obsolete credential-stage wr
       })
       const user = { uid: 'u', getIdToken: () => token }
       const currentUser = ref(user),
-        selectedId = ref('k'),
-        canWrite = ref(true)
+        selectedId = ref('k')
       const appUser = ref({ role: 'user', created: { at: 'one' } })
       const config = reactive({ appId: 'app' })
       const calls = [],
@@ -194,9 +205,6 @@ test('Station form preserves its target and cancels obsolete credential-stage wr
         useFireUXConfig: () => config,
         useKitchenWorkspacePrepStationsRead: () => ({
           kitchenId: selectedId,
-          rootCollection: ref('kitchens'),
-          canWrite,
-          stations: ref([]),
         }),
         $fetch: (...args) => {
           calls.push(args)
@@ -244,8 +252,8 @@ test('Station form preserves its target and cancels obsolete credential-stage wr
         appUser.value = original
       }
       if (change === 'grant') {
-        canWrite.value = false
-        canWrite.value = true
+        selectedId.value = ''
+        selectedId.value = 'k'
       }
       if (change === 'dispose') lifetime.stop()
       resolveUser(user)
@@ -258,12 +266,10 @@ test('Station form preserves its target and cancels obsolete credential-stage wr
         assert.deepEqual(calls[0][1].body, {
           kitchenId: 'k',
           name: 'Grill',
-          sortOrder: 1,
-          role: 'preparation',
         })
       assert.equal(
         form.message.value,
-        change === 'stable' ? 'Added grill.' : ''
+        change === 'stable' ? 'Added Grill.' : ''
       )
       lifetime.stop()
     }

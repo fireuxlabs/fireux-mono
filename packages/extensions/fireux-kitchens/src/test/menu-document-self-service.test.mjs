@@ -156,7 +156,6 @@ function fixture() {
       name,
       user_id: userId,
     }),
-    createDefaultKitchenStation() {},
     randomUUID: () => `asset-${++sequence}`,
     getRuntimeFirestore: () => ({}),
     serverAppUsersTarget: (app) => target(`apps/${app}/users`),

@@ -2,6 +2,7 @@ import { ItemStorage } from '../records/menus/items/item'
 import {
   ALL_FIRESTORE_MUTATION_VERBS,
   assertFirestoreMutationDocumentId,
+  assertFirestoreMutationSegment,
   defineFirestoreMutationTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 
@@ -44,6 +45,15 @@ export const serverKitchenMenusTarget = (kitchenId: string) =>
 
 export const serverKitchenItemsTarget = (kitchenId: string) =>
   serverKitchenChildTarget(kitchenId, 'kitchens.dishes', ItemStorage.collection)
+
+export const kitchenStationsTarget = (kitchenId: string) =>
+  defineFirestoreMutationTarget({
+    key: 'kitchens.stations',
+    lane: 'server',
+    verbs: ['create'],
+    database: { kind: 'runtime' },
+    collectionPath: `kitchens/${assertFirestoreMutationSegment(kitchenId, 'kitchenId')}/stations`,
+  })
 
 export const serverKitchenTeamMembersTarget = (kitchenId: string) =>
   serverKitchenChildTarget(kitchenId, 'kitchens.team', 'team')

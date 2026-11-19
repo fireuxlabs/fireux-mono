@@ -36,18 +36,9 @@ const defaults = load(
     })(),
   }
 )
-const station = load(
-  `${base}stations/default.ts`,
-  'createDefaultKitchenStation, kitchenStationsTarget',
-  {
-    assertFirestoreMutationSegment: (x) => x,
-    defineFirestoreMutationTarget: (x) => x.collectionPath,
-  }
-)
 function harness({
   exists = true,
   menus = [],
-  pass = false,
   grants = ['venue'],
   role = 'user',
   team = exists ? [{ id: 'actor', data: { user_id: 'actor' } }] : [],
@@ -63,8 +54,10 @@ function harness({
         return { exists: Boolean(row), data: row?.data }
       }
       if (target === 'menus') throw Error('query expected')
-      if (target.endsWith('/stations'))
-        return { exists: pass, data: { name: 'Custom Pass' } }
+      assert.ok(
+        !target.endsWith('/stations'),
+        'Onboarding does not read Stations'
+      )
       if (target === 'places') return { exists: true, data: { name: 'Venue' } }
       if (target === 'users')
         return { exists: true, data: { display_name: 'Operator' } }
@@ -96,7 +89,6 @@ function harness({
   }
   const dependencies = {
     ...defaults,
-    ...station,
     readKitchenTeamAccountLinkInTransaction,
     requireUnambiguousKitchenTeamLink,
     runGuardedServerTransaction: async (_, fn) => fn(tx),
@@ -156,7 +148,7 @@ test('existing Kitchen gains no Menu defaults, even when its Menu collection is 
     h.writes.some((x) => x.target === 'kitchens'),
     false
   )
-  assert.equal(h.writes.find((x) => x.target.endsWith('/stations')).id, 'pass')
+  assert.ok(!h.writes.some((x) => x.target.endsWith('/stations')))
 })
 test('new management root gets the same defaults', async () => {
   const h = harness({ exists: false })
@@ -173,6 +165,7 @@ test('new management root gets the same defaults', async () => {
     by: 'actor',
   })
   assert.equal(h.writes.filter((x) => x.target === 'menus').length, 1)
+  assert.ok(!h.writes.some((x) => x.target.endsWith('/stations')))
 })
 test('existing customized and archived Menus are preserved without adding missing starters', async () => {
   const menus = [
@@ -182,7 +175,7 @@ test('existing customized and archived Menus are preserved without adding missin
     },
   ]
   const before = structuredClone(menus)
-  const h = harness({ menus, pass: true })
+  const h = harness({ menus })
   await h.run()
   assert.deepEqual(menus, before)
   assert.deepEqual(
@@ -200,7 +193,6 @@ test('repeated management completion adds no duplicate defaults', async () => {
       { id: 'f', data: { slug: 'food' } },
       { id: 'd', data: { slug: 'drinks' } },
     ],
-    pass: true,
   })
   await h.run()
   assert.deepEqual(
@@ -218,7 +210,7 @@ test('explicit Add reuses a uniquely linked roster member under either ID', asyn
   for (const id of ['actor', 'existing-roster-uuid']) {
     const team = [{ id, data: { user_id: 'actor', role_ids: ['cook'] } }]
     for (const grants of [[], ['venue']]) {
-      const h = harness({ team, grants, pass: true })
+      const h = harness({ team, grants })
       const result = await h.run()
       assert.equal(result.action, grants.length ? 'open' : 'connect')
       assert.equal(result.created_team_member, false)

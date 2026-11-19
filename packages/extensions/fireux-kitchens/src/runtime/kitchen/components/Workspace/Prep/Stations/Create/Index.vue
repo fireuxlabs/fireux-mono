@@ -1,108 +1,62 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="workspace-card-header">
-        <div class="workspace-card-header__title">Add station</div>
-        <p class="workspace-card-header__description">
-          Create a preparation Station such as Kitchen or Bar, or a coordination
-          Station such as the Pass.
-        </p>
-      </div>
-    </template>
-
-    <form class="fx-card-body-stack" @submit.prevent="addStation">
-      <UFormField label="Station name">
-        <UInput
-          v-model="name"
-          placeholder="Grill"
-          :disabled="saving || !canCreateStation"
-        />
-      </UFormField>
-
-      <UFormField label="Responsibility">
-        <USelect
-          v-model="role"
-          :items="[
-            { value: 'preparation', label: 'Prepare assigned Items' },
-            { value: 'coordination', label: 'Coordinate whole Orders' },
-          ]"
-          :disabled="saving || !canCreateStation"
-        />
-      </UFormField>
-      <div class="fx-card__actions">
-        <UButton
-          type="submit"
-          :loading="saving"
-          :disabled="!canCreateStation || !name.trim()"
-        >
-          Add station
-        </UButton>
-
-        <p v-if="message">
-          {{ message }}
-        </p>
-      </div>
-    </form>
-  </UCard>
+  <form class="fx-card-body-stack" @submit.prevent="addStation">
+    <UFormField label="Station name" required>
+      <UInput v-model="name" :disabled="saving || !kitchenId" />
+    </UFormField>
+    <div class="fx-card__actions">
+      <UButton
+        type="submit"
+        :loading="saving"
+        :disabled="!kitchenId || !name.trim()"
+      >
+        Add station
+      </UButton>
+    </div>
+    <p v-if="message" role="status">{{ message }}</p>
+  </form>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useKitchenWorkspacePrepStationsRead } from '../../../../../composables/workspace/prep/stations/read'
 import { useKitchenStationCreate } from '../../../../../composables/stations/useKitchenStationCreate'
 
-const { kitchenId, rootCollection, canWrite, stations } =
-  useKitchenWorkspacePrepStationsRead()
+const { kitchenId } = useKitchenWorkspacePrepStationsRead()
 
 const name = ref('')
-const role = ref<'preparation' | 'coordination'>('preparation')
 const saving = ref(false)
 const message = ref('')
 const { createKitchenStation, captureIntent } = useKitchenStationCreate(
-  [kitchenId, rootCollection, canWrite],
+  [kitchenId],
   () => {
     name.value = ''
-    role.value = 'preparation'
     message.value = ''
     saving.value = false
   }
 )
-const canCreateStation = computed(
-  () => canWrite.value && Boolean(rootCollection.value && kitchenId.value)
-)
-const nextSortOrder = computed(() => {
-  const orders = stations.value
-    .map((station) => Number(station.sort_order))
-    .filter((value) => Number.isFinite(value))
-  return orders.length ? Math.max(...orders) + 1 : 1
-})
-
 const addStation = async () => {
-  if (!canCreateStation.value || saving.value) return
+  const stationName = name.value.trim()
+  if (!kitchenId.value || !stationName || saving.value) return
   const isCurrent = captureIntent()
 
   saving.value = true
   message.value = ''
 
   try {
-    const stationId = await createKitchenStation(
+    await createKitchenStation(
       {
         kitchenId: kitchenId.value,
-        name: name.value,
-        sortOrder: nextSortOrder.value,
-        role: role.value,
+        name: stationName,
       },
       isCurrent
     )
     if (!isCurrent()) return
     name.value = ''
-    role.value = 'preparation'
-    message.value = `Added ${stationId}.`
+    message.value = `Added ${stationName}.`
   } catch (error) {
     if (!isCurrent()) return
-    message.value = String(
-      (error as any)?.message || error || 'Add station failed.'
-    )
+    message.value =
+      error instanceof Error ? error.message : 'Add station failed.'
   } finally {
     if (isCurrent()) saving.value = false
   }

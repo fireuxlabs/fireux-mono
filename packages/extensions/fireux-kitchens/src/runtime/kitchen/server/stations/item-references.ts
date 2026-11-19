@@ -1,4 +1,4 @@
-import { kitchenStationsTarget } from './default'
+import { kitchenStationsTarget } from '../mutation-targets'
 import { createError } from 'h3'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 

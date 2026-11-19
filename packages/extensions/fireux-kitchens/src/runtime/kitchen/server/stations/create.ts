@@ -6,7 +6,7 @@ import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../core/mutation-authority'
-import { kitchenStationsTarget } from './default'
+import { kitchenStationsTarget } from '../mutation-targets'
 
 export async function createKitchenStation(event: H3Event, input: unknown) {
   const badInput = () =>
@@ -17,11 +17,7 @@ export async function createKitchenStation(event: H3Event, input: unknown) {
   if (!input || typeof input !== 'object' || Array.isArray(input))
     throw badInput()
   const value = input as Record<string, unknown>
-  if (
-    Object.keys(value).some(
-      (key) => !['kitchenId', 'name', 'sortOrder', 'role'].includes(key)
-    )
-  )
+  if (Object.keys(value).some((key) => key !== 'kitchenId' && key !== 'name'))
     throw badInput()
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
   if (typeof value.name !== 'string' || !value.name.trim()) throw badInput()
@@ -32,15 +28,6 @@ export async function createKitchenStation(event: H3Event, input: unknown) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
   requireFirestoreDocumentId(stationId, 'Station id')
-  const sortOrder = value.sortOrder === undefined ? 0 : value.sortOrder
-  if (
-    typeof sortOrder !== 'number' ||
-    !Number.isSafeInteger(sortOrder) ||
-    sortOrder < 0
-  )
-    throw badInput()
-  const role = value.role ?? 'preparation'
-  if (role !== 'preparation' && role !== 'coordination') throw badInput()
   const actor = await readKitchenMutationActor(event)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     const authority = await requireKitchenMutationAuthority(
@@ -61,11 +48,11 @@ export async function createKitchenStation(event: H3Event, input: unknown) {
     })
     tx.create(target, stationId, {
       kitchen_id: kitchenId,
-      role,
+      role: 'preparation',
       name,
       description: '',
       active: true,
-      sort_order: sortOrder,
+      sort_order: 0,
       created: stamp,
       updated: stamp,
     })

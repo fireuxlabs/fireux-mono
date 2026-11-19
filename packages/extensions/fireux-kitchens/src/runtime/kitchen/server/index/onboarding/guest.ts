@@ -1,4 +1,3 @@
-import { createDefaultKitchenStation } from '../../stations/default'
 import type { H3Event } from 'h3'
 import { guestKitchenClaimTarget, hashGuestKitchenSecret } from './guest-claim'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -92,7 +91,6 @@ export async function startGuestKitchen(event: H3Event, input: unknown) {
         menus: systemMenus,
         created,
       })
-      createDefaultKitchenStation(tx, id, created)
     }
     if (!claim.exists)
       tx.create(claimTarget, 'guest', { secret_hash: secretHash })

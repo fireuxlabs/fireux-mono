@@ -9,8 +9,6 @@ import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/
 type CreateKitchenStationInput = {
   kitchenId: string
   name: string
-  sortOrder?: number
-  role?: 'preparation' | 'coordination'
 }
 
 export function useKitchenStationCreate(
@@ -73,27 +71,5 @@ export function useKitchenStationCreate(
       throw new Error('Station response did not identify the created record.')
     return result.id
   }
-  async function ensureDefaultStation(kitchenId: string) {
-    const user = currentUser.value
-    if (!user || user.isAnonymous || !kitchenId)
-      throw new Error(
-        'Sign in and choose a Kitchen before adding the Pass station.'
-      )
-    const isCurrent = captureIntent()
-    const token = await user.getIdToken()
-    if (currentUser.value?.uid !== user.uid || !isCurrent())
-      throw new Error(
-        'The account or Kitchen changed. Reopen the Stations page.'
-      )
-    await $fetch('/api/workspace/kitchen/stations/ensure-default', {
-      onResponse: async ({ response }) => {
-        if (response.ok) await refreshNuxtData()
-      },
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-      body: { kitchenId },
-      retry: 0,
-    })
-  }
-  return { createKitchenStation, ensureDefaultStation, captureIntent }
+  return { createKitchenStation, captureIntent }
 }

@@ -2601,21 +2601,12 @@ retired prep-stations placeholder. The retired Settings → Kiosks destination i
 navigation link is removed; no device-management capability is claimed. Station printer,
 recipe and mise en place assignment UI remain separate implementation work.
 
-Kitchen onboarding creates the default Station at `stations/pass` in the root
-creation transaction. The Stations surface offers an explicit Add Pass action
-for an empty collection. Its authorised create-only ensure command preserves
-an existing station, including its name, on repeated calls. Collection reads
-have no mutation side effect. The default-station command and focused station-default test
-live under Kitchen server/stations and src/test/kitchen respectively.
-The Stations screen mounts one workspace reader for its toolbar, creation form
-and collection. Child lookups require that instance. The screen preserves the
-live reader's loading, failure and empty
-outcomes and hides rows and counts until settled. Default-Pass setup invalidates
-obsolete credential waits and late errors synchronously when Kitchen, account or
-writable state changes, and when the owning surface is disposed. Ordinary
-Station creation carries the mounted form intent through both credential waits.
-Server authority governs execution. Verify the command scope and rendered read states with
-`src/test/kitchen/station-read-scope.test.mjs`.
+The Stations screen provides one reader and a name-only Add station form.
+Operators create their own stations. Kitchen onboarding and collection reads
+create none. The protected create command owns Kitchen authority, identity and
+audit stamps. Item assignments use the resulting Station IDs and continue to
+validate production eligibility. Verify the command, form intent and read states
+with Kitchen's `station-create.test.mjs` and `station-read-scope.test.mjs`.
 
 ## Selected Menu record composition
 
@@ -2706,7 +2697,7 @@ Workspace route metadata and indexing headers remain covered by the App-owned
 
 ## Capability read-state and Overview boundaries
 
-Kitchen working collection pages distinguish target readiness, loading, failure and settled empty results. Orders draft reads mask obsolete scope results; Sales invalidates obsolete account, App membership, Kitchen and range reads and closes transaction details when the report is unavailable. An unavailable or empty parent Kitchen masks retained reports. A settled Sales query with zero results remains a readable empty report. Supplier association reads retain their binding and projection failures. Overview Activity consumes read-only owned sources, never station-default setup or write controllers solely to display counts. Ingredient and Supplier counts measure associations; completed-Sales counts do not establish payment receipts or profit. The family contract and optional-extension composition live in `docs/concepts/family-workspace-entity.md`. Verify these boundaries through `fireux-kitchens/src/test/kitchen/capability-read-state.test.mjs` and consuming App checks; signed-in browser evidence remains separate.
+Kitchen working collection pages distinguish target readiness, loading, failure and settled empty results. Orders draft reads mask obsolete scope results; Sales invalidates obsolete account, App membership, Kitchen and range reads and closes transaction details when the report is unavailable. An unavailable or empty parent Kitchen masks retained reports. A settled Sales query with zero results remains a readable empty report. Supplier association reads retain their binding and projection failures. Overview Activity consumes read-only owned sources for its counts. Ingredient and Supplier counts measure associations; completed-Sales counts do not establish payment receipts or profit. The family contract and optional-extension composition live in `docs/concepts/family-workspace-entity.md`. Verify these boundaries through `fireux-kitchens/src/test/kitchen/capability-read-state.test.mjs` and consuming App checks; signed-in browser evidence remains separate.
 
 Misebox's pricing wrapper derives its Menu allowance and supported actions from current commands: the [Menu allowance and starter contract](#menu-operator-entitlements) governs Free creation; paid custom regular Menus and existing domain tools retain their own gates. Team roster/invitation support does not claim fine-grained permissions; preparation execution, tables, costing and outgoing finance must not appear in pricing without connected source. Existing Jobs and Engagement claims have their own owners and require separate verification. No local copy or controlled test establishes an accepted commercial price, live provider readiness or shipping authorization.
 
@@ -3427,9 +3418,7 @@ Offerings and Fulfilment require explicit Kitchen IDs. Dish, Recipe, Ingredient
 and Supplier detail readers take explicit Kitchen and record IDs; Workspace
 pages supply route/selection and own navigation. Menu sources have their own
 plural Workspace collection owner; Menu Section receives explicit parent state.
-Stations reads no longer create a Pass station automatically: the empty view
-provides an explicit Add Pass station command. Table collection naming reflects
-its actual Table Tab records.
+Table collection naming reflects its actual Table Tab records.
 
 Kitchen uses one shared `useKitchenWorkspace` instance for its available
 records, selection and selected-record read. Collection presentation consumes

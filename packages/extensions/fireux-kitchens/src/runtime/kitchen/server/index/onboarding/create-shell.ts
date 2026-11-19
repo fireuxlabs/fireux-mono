@@ -1,4 +1,3 @@
-import { createDefaultKitchenStation } from '../../stations/default'
 import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -152,7 +151,6 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         menus: systemMenus,
         created,
       })
-      createDefaultKitchenStation(mutations, kitchenId, created)
       mutations.create(
         teamMembers,
         ownerUserId,

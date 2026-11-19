@@ -1849,8 +1849,8 @@ and navigation paths. Menu source uploads have the separate plural
 `useKitchenWorkspaceMenuSources` owner. Menu Section receives its parent record
 state and section ID explicitly; it has no fallback to routed selection.
 
-Stations collection reads never create records. The empty Stations page offers
-an explicit Add Pass station action backed by `useKitchenStationCreate`.
+Stations are created by name through `useKitchenStationCreate`. Collection
+reads and Kitchen onboarding leave Station creation to the operator.
 Table Tabs and Supplier Catalogues use accurate plural collection names.
 
 `usePortfolioScope(id)` and `usePropertyScope(id)` resolve explicit, authorised

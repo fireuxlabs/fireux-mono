@@ -1,139 +1,47 @@
-import { useRoute } from '#imports'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import {
-  computed,
-  inject,
-  provide,
-  ref,
-  watchEffect,
-  watch,
-  type InjectionKey,
-} from 'vue'
+import { computed, inject, provide, type InjectionKey } from 'vue'
 import {
   KitchenStationStorage,
+  normalizeKitchenStation,
   type KitchenStation,
 } from '../../../../utils/station.ts'
+import { useKitchenChildCollection } from '../../../useKitchenChildCollection'
 import { useKitchenWorkspace } from '../../useKitchenWorkspace'
-import { useKitchenWorkspaceReadPage } from '../../useKitchenWorkspaceReadPage'
-import { useKitchenStationCollection } from '../../../useKitchenStationCollection'
-import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
-function createKitchenWorkspacePrepStationsRead() {
-  const workspace = useKitchenWorkspace()
-  const selectedKitchen = workspace.data
-  const kitchenId = workspace.id
-  const rootCollection = computed(() => 'kitchens')
-  const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
-  const readOnly = computed(() => !canWrite.value)
-  const canWrite = computed(
-    () =>
-      workspace.outcome.value === 'ready' &&
-      workspace.data.value?.id === kitchenId.value
+function readStations() {
+  const { data: kitchen, outcome: kitchenOutcome } = useKitchenWorkspace()
+  const kitchenId = computed(() => kitchen.value?.id ?? '')
+  const collection = useKitchenChildCollection<KitchenStation>(
+    KitchenStationStorage.collection,
+    kitchenId
   )
-  const fetchKitchenId = computed(() =>
-    workspace.outcome.value === 'ready' &&
-    workspace.data.value?.id === kitchenId.value
-      ? kitchenId.value
-      : ''
+  const outcome = computed(() =>
+    kitchenOutcome.value === 'ready'
+      ? collection.outcome.value
+      : kitchenOutcome.value
   )
-  const {
-    kitchenStations: fetchedStations,
-    pending: stationsPending,
-    outcome: stationsOutcome,
-    error: stationsError,
-    collectionPath: fetchedCollectionPath,
-  } = useKitchenStationCollection(fetchKitchenId, {
-    kitchenCollectionPath: rootCollection,
-    databaseId,
-  })
-  const workspaceStations = computed(() =>
-    workspace.outcome.value === 'ready' && stationsOutcome.value === 'ready'
-      ? fetchedStations.value
+  const stations = computed(() =>
+    outcome.value === 'ready'
+      ? collection.items.value.map(normalizeKitchenStation)
       : []
   )
-  const createOpen = ref(false)
-  const route = useRoute()
-  const { currentUser } = useAuth()
-  watch(
-    [kitchenId, canWrite, () => currentUser.value?.uid, () => route.fullPath],
-    () => {
-      createOpen.value = false
-    },
-    { flush: 'sync' }
-  )
-  const selectedStationId = ref('')
-  const selectedStation = computed(
-    () =>
-      workspaceStations.value.find(
-        (station) => station.id === selectedStationId.value
-      ) ?? null
-  )
-  watchEffect(() => {
-    if (selectedStation.value) return
-    selectedStationId.value = workspaceStations.value[0]?.id || ''
-  })
-  const pending = stationsPending
-  const collectionPath = fetchedCollectionPath
-  const page = useKitchenWorkspaceReadPage<KitchenStation>({
-    collectionName: KitchenStationStorage.collection,
-    selectedKitchen,
-    kitchenId,
-    items: workspaceStations,
-    pending,
-    collectionPath,
-  })
-  const debug = computed(() => ({
-    kitchenId: kitchenId.value,
-    rootCollection: rootCollection.value,
-    databaseId: databaseId.value,
-    collectionPath: collectionPath.value,
-    count: workspaceStations.value.length,
-    pending: pending.value,
-    readOnly: readOnly.value,
-    canWrite: canWrite.value,
-  }))
 
-  return {
-    ...page,
-    selectedKitchen,
-    kitchenId,
-    collectionPath,
-    rootCollection,
-    databaseId,
-    readOnly,
-    canWrite,
-    stations: workspaceStations,
-    selectedStation,
-    selectedStationId,
-    createOpen,
-    pending,
-    outcome: computed(() =>
-      workspace.outcome.value === 'ready'
-        ? stationsOutcome.value
-        : workspace.outcome.value
-    ),
-    error: stationsError,
-    debug,
-  }
+  return { kitchenId, stations, outcome }
 }
 
-export type KitchenWorkspaceStations = ReturnType<
-  typeof createKitchenWorkspacePrepStationsRead
->
-
-const kitchenWorkspaceStationsKey: InjectionKey<KitchenWorkspaceStations> =
-  Symbol('fireux-kitchen-workspace-stations')
+const stationsKey: InjectionKey<ReturnType<typeof readStations>> = Symbol(
+  'fireux-kitchen-workspace-stations'
+)
 
 export function provideKitchenWorkspacePrepStationsRead() {
-  const workspace = createKitchenWorkspacePrepStationsRead()
-  provide(kitchenWorkspaceStationsKey, workspace)
-  return workspace
+  const stations = readStations()
+  provide(stationsKey, stations)
+  return stations
 }
 
 export function useKitchenWorkspacePrepStationsRead() {
-  const workspace = inject(kitchenWorkspaceStationsKey, null)
-  if (!workspace) {
+  const stations = inject(stationsKey)
+  if (!stations) {
     throw new Error('Stations children require their workspace owner.')
   }
-  return workspace
+  return stations
 }

@@ -30,7 +30,6 @@ import {
 } from 'fireux-core/runtime/app/app-user/utils/membership-access'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
-import { createDefaultKitchenStation } from '../../runtime/kitchen/server/stations/default.ts'
 import {
   resolvePostAuthDestination,
   userOnboardingPath,
@@ -362,7 +361,6 @@ function shellHarness({
       readKitchenTeamAccountLinkInTransaction,
       requireUnambiguousKitchenTeamLink,
       createKitchenSystemMenus,
-      createDefaultKitchenStation,
       runGuardedServerTransaction: async (_scope, run) => {
         const queued = []
         const tx = {
@@ -917,7 +915,6 @@ test('guest start creates one unpublished Kitchen with default menus, resumes it
       KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
       PLACE_MUTATION_TARGETS: { places: target('places') },
       createKitchenSystemMenus,
-      createDefaultKitchenStation,
       buildKitchenTeamMemberRecord,
       serverAuditStamp: ({ by, appId }) => ({ by, app_id: appId, at: created }),
       runGuardedServerTransaction: async (_scope, run) => {
@@ -955,8 +952,12 @@ test('guest start creates one unpublished Kitchen with default menus, resumes it
   )
   assert.equal(records.get('kitchens/guest123').identity.visibility, false)
   assert.equal(records.get('places/guest123').name, 'kitchen-guest1')
-  assert.equal(records.get('kitchens/guest123/stations/pass').name, 'Pass')
-  assert.equal(records.size, 6)
+  assert.ok(
+    ![...records.keys()].some((path) =>
+      path.startsWith('kitchens/guest123/stations/')
+    )
+  )
+  assert.equal(records.size, 5)
   const menus = [...records].filter(([path]) =>
     path.startsWith('kitchens/guest123/menus/')
   )

@@ -1,14 +1,12 @@
 <template>
-  <KitchenWorkspacePrepStationsTools v-if="capability === 'stations'" />
   <UButton
-    v-else-if="action"
+    v-if="action"
     :to="action.to"
     :label="action.label"
     icon="i-lucide-plus"
   />
 </template>
 <script setup lang="ts">
-import KitchenWorkspacePrepStationsTools from '../Prep/Stations/Tools.vue'
 import { computed } from 'vue'
 const props = defineProps<{ capability: string }>()
 const actions: Record<string, { label: string; to: string }> = {
