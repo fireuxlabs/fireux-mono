@@ -168,7 +168,7 @@ test('Menu hours debounce cannot write after target change or disposal', async (
     updateMenu: async (...args) => writes.push(args),
   }
   const { useMenuRecordHours } = loadOfferingSource(
-    'kitchen/composables/workspace/menus/useMenuRecordHours',
+    'kitchen/composables/workspace/menu/menus/useMenuRecordHours',
     'useMenuRecordHours',
     {
       computed,

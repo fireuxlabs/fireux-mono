@@ -7,9 +7,9 @@ import { compile, computed, createSSRApp, h, ref } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 
 const components = {
-  kitchen: '../runtime/kitchen/components/Team/Index.vue',
+  kitchen: '../runtime/kitchen/components/Workspace/Team/Index.vue',
   property:
-    '../../../fireux-properties/src/runtime/property/components/Team/Index.vue',
+    '../../../fireux-properties/src/runtime/property/components/Workspace/Team.vue',
   project:
     '../../../../extensions/fireux-projects/src/runtime/project/components/Workspace/Team/Index.vue',
 }
@@ -89,7 +89,7 @@ for (const [domain, path] of Object.entries(components))
       },
     })
     app.component('WorkspaceTeamAssignment', { setup: () => () => h('div') })
-    app.component('KitchenTeamInvitation', {
+    app.component('WorkspaceKitchenTeamInvitation', {
       props: ['memberId', 'createInvitation'],
       setup: (p) => {
         invitation = p

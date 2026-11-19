@@ -1,5 +1,5 @@
 <template>
-  <KitchenDetailServiceMenu :kitchen-slug="kitchenSlug" service="collection" />
+  <PublicKitchenDetailServiceMenu :kitchen-slug="kitchenSlug" service="collection" />
 </template>
 <script setup lang="ts">
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'

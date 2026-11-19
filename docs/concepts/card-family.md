@@ -82,7 +82,7 @@ compositions. They are not alternate User Overview cards. There is no old
 is the App-owned membership of a User; person identity remains with User.
 AppUser presentation reuses User Cards: [App user administration](../../packages/core/fireux-core/src/runtime/app/app-user/components/Administration/Members.vue)
 composes `UserCardsPill` with separate membership controls, and
-[`UserDetail`](../../packages/core/fireux-core/src/runtime/user/components/Detail/Index.vue)
+[`UserDetail`](../../packages/core/fireux-core/src/runtime/user/components/Public/Detail/Index.vue)
 composes `UserCardsOverview` beside `AppUserMembership`. Role and subscription
 commands remain App-owned; consuming surfaces retain their reads, states and
 management controls. This relationship does not need a parallel AppUser Cards family.
@@ -152,9 +152,9 @@ and Business commands; it is not an Overview card.
 
 Kitchen supplies Pill, Cell and Preview under
 [`kitchen/components/Cards` in Kitchens](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Cards).
-Driver delivery beacons and the App gallery consume Pill; the gallery also
-consumes `KitchenCardsPreview`. Cell retains its supplied-data presentation with
-no current direct component consumer.
+Driver delivery beacons and the Misebox docs gallery consume Pill. Cell and
+Preview retain supplied-data presentation and have no identified current source
+consumers.
 The public Collection projects discovery facts into Core's `FireCollectionCell`. Public Detail
 composes Place-owned identity with Kitchen menu and operator controls;
 `Identity/Profile` retains its Workspace editors and explicit mutation authority.
@@ -203,7 +203,7 @@ not need a separate Menu Overview card. Core's `useCollectionSearch` supports
 the `preview` mode while retaining its default Pill/Cell cycle.
 
 Dish supplies Cell under
-[`kitchen/components/Menu/Items/Cards` in Kitchens](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Items/Cards).
+[`kitchen/components/Workspace/Menu/Items/Cards` in Kitchens](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Items/Cards).
 The Kitchen catalogue and Misebox Workspace preview reuse the card with
 supplied props. It retains grid/list presentation and Core's
 `FireActionSurface` for link, action or static behavior. Collection parents retain
@@ -216,7 +216,7 @@ Preview or Overview card.
 Kitchen's Ingredient and Supplier association Cards retain their separate Cell
 roles under
 [`Workspace/Prep/Ingredients/Cards`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Prep/Ingredients/Cards)
-and [`Suppliers/Cards`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Suppliers/Cards).
+and [`Suppliers/Cards`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Stock/Suppliers/Cards).
 Their Kitchen collections own acquisition, scope, destinations and selection;
 the App gallery also consumes their supplied projections. Ingredient
 Cell retains image-failure recovery and link/open intents. Supplier Cell retains
@@ -226,7 +226,7 @@ additional card roles solely to mirror its root Entity.
 Recipe and Preparation currently use the supplied-data
 [`Workspace/Prep/Library.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Prep/Library.vue)
 for collection/detail presentation and links. The host owns acquisition; the
-[Recipe editor](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/workspace/prep/recipes/Editor.vue)
+[Recipe editor](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Prep/Recipes/Editor.vue)
 owns its supported authored-definition workflow through the existing command
 lifecycle. There is no current standalone Recipe or Preparation Cards family;
 do not recreate retired Cell/Preparation/PrepItems controls merely for symmetry.

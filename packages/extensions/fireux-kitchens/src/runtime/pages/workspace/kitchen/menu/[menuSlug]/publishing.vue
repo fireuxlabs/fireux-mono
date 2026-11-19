@@ -6,7 +6,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useMenuRecordNavigation } from '../../../../../kitchen/composables/workspace/menus/useMenuRecordNavigation'
+import { useMenuRecordNavigation } from '../../../../../kitchen/composables/workspace/menu/menus/useMenuRecordNavigation'
 const slug = useRouteParam('menuSlug')
 const { openView } = useMenuRecordNavigation()
 onMounted(() => openView(slug.value, 'publishing', true))

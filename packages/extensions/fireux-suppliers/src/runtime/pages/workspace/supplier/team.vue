@@ -11,7 +11,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import WorkspaceSupplierTeam from '../../../supplier/components/Workspace/Team/Index.vue'
+import WorkspaceSupplierTeam from '../../../supplier/components/Workspace/Team.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 import { useSupplierWorkspaceTeam } from '../../../supplier/composables/workspace/useSupplierWorkspaceTeam'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'

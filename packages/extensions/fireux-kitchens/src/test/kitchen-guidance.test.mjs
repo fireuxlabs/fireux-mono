@@ -287,7 +287,7 @@ test('a successful save replaces only its local baseline and validates the exact
 test('guidance choices retain the operator draft on failure and reset to a reloaded selection', async () => {
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/components/Context/Guidance/Choices.vue',
+      '../runtime/kitchen/components/Workspace/Identity/Context/Guidance/Choices.vue',
       import.meta.url
     ),
     'utf8'

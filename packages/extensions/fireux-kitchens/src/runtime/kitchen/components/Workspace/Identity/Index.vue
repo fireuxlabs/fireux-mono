@@ -15,6 +15,6 @@
 </template>
 <script setup lang="ts">
 import WorkspaceKitchenIdentityProfile from './Profile.vue'
-import type { KitchenWorkspaceIdentityState } from '../../../composables/workspace/useKitchenWorkspaceIdentity'
+import type { KitchenWorkspaceIdentityState } from '../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
 defineProps<{ identity: KitchenWorkspaceIdentityState }>()
 </script>

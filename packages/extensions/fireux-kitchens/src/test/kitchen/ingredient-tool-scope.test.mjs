@@ -360,7 +360,7 @@ function mountEdit(h) {
   )
   const content = readFileSync(
     new URL(
-      '../../runtime/ingredient/components/Edit/Index.vue',
+      '../../runtime/ingredient/components/Workspace/Identity/Edit/Index.vue',
       import.meta.url
     ),
     'utf8'

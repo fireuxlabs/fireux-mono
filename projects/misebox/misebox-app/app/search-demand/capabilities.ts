@@ -432,7 +432,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     source_tool_ids: ['mise-from-recipes'],
     rationale:
       'Stations route preparation, live orders and Kitchen responsibility without becoming a generic workforce structure.',
-    research_route: '/workspace/kitchen/stations/search-demand',
+    research_route: '/workspace/kitchen/prep/stations/search-demand',
   },
   {
     id: 'suppliers',

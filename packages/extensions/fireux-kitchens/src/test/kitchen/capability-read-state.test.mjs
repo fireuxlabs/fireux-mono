@@ -83,7 +83,7 @@ function finance() {
   let handler, key
   const state = scope.run(() =>
     load(
-      'composables/workspace/finance/useKitchenWorkspaceFinance.ts',
+      'composables/workspace/reports/finance/useKitchenWorkspaceFinance.ts',
       {
         computed,
         ref,
@@ -297,7 +297,7 @@ test('Sales closes inspected details synchronously when its source becomes unava
     outcome = ref('ready')
   const state = scope.run(() =>
     load(
-      'composables/workspace/finance/useKitchenWorkspaceFinanceOverview.ts',
+      'composables/workspace/reports/finance/useKitchenWorkspaceFinanceOverview.ts',
       {
         computed,
         ref,
@@ -358,7 +358,7 @@ async function render(path, state) {
 }
 test('Both Sales surfaces hide metrics, charts, transactions and empty claims until settled', async () => {
   for (const path of [
-    'components/Finance/Overview.vue',
+    'components/Workspace/Reports/Finance/Overview.vue',
     'components/Workspace/Overview/Finance.vue',
   ]) {
     for (const [outcome, expected] of [

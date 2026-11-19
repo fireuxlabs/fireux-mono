@@ -107,9 +107,9 @@ filters, counts, and interface projection; List owns responsive layout and
 passes one resolved object to its presentation cell. Core's
 `CollectionCellData` and `<FireCollectionCell :cell="cell" />` are the ordinary shared
 boundary. Kitchen browsing uses that shared cell with cover media, service badges
-and its public Menu destination. Its [Collection](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Collection/Index.vue)
+and its public Menu destination. Its [Collection](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Collection/Index.vue)
 projects supplied records once, owns filter state and composes controlled
-[Controls](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Collection/Controls.vue)
+[Controls](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Collection/Controls.vue)
 with its List. The controls own native search/category presentation; acquisition
 and retry stay with the page's existing reader. Standalone
 Menu records use compact Nuxt UI cards. Its stable semantic fields are title, description, image, meta,

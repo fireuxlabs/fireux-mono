@@ -129,7 +129,7 @@ for (const outcome of ['pending', 'error', 'empty', 'ready']) {
       'PublicKitchenIntro',
       component(
         new URL(
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Intro.vue',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Intro.vue',
           repo
         ),
         bindings

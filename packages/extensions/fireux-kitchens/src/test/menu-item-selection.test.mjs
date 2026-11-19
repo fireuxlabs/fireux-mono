@@ -6,7 +6,7 @@ import { compileFunction } from 'node:vm'
 import { computed, ref, watch, effectScope } from 'vue'
 
 const path = new URL(
-  '../runtime/kitchen/composables/workspace/menus/useMenuSectionItemSelection.ts',
+  '../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionItemSelection.ts',
   import.meta.url
 )
 const source = readFileSync(path, 'utf8')

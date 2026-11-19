@@ -11,7 +11,7 @@ import {
   recipeDraft,
   recipeDraftChanges,
   recipeDraftRecord,
-} from '../../runtime/kitchen/workspace/prep/recipes/form.ts'
+} from '../../runtime/kitchen/composables/workspace/prep/recipes/form.ts'
 import { readPreparationChanges } from '../../runtime/kitchen/utils/preparation-changes.ts'
 function load(path, result, deps) {
   let source = readFileSync(
@@ -442,7 +442,7 @@ function recipeEditorFixture(record) {
   let dispatch = async () => ({ id: record?.id || 'new-recipe' })
   const api = scope.run(() =>
     load(
-      'workspace/prep/recipes/editor.ts',
+      'composables/workspace/prep/recipes/editor.ts',
       'useKitchenWorkspacePrepRecipeEditor({ record: () => props.record, kitchenId: () => props.kitchenId, canEdit: () => props.canEdit, preparations: () => props.preparations }, id => emitted.push(["created", id]))',
       {
         ref,

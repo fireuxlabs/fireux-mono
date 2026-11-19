@@ -167,17 +167,18 @@ in `page-layouts.scss`; field groups reuse `pagebody` spacing.
 
 Human-approved rule review: **replace** the direct-Entity capability-screen and
 Workspace-only-mechanics convention with audience-owned Public and Workspace
-composition; **replace** operator `Workspace<Entity>*` ordering with
-`<Entity>Workspace*`; **narrow** neutral sharing to proved lower responsibilities.
+composition and **replace** operator `Workspace<Entity>*` ordering with
+`<Entity>Workspace*`. Entity components use `components/` as the default home for public and reusable
+presentation. `components/Workspace/` identifies operator components. Existing
+`Public/` folders remain where their consumers have yet to migrate.
 This records the accepted placement, naming and library-admission convention.
 Existing source that retains the former grouping or operator naming is pending
 alignment, not another accepted convention or proof of a completed migration.
 
 | Surface                        | Owns                                                                                                                                                           | Registered naming                                                                               |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Public                         | Customer-facing composition, including protected customer experiences. Authentication alone does not make a screen operator management.                        | A separate Public scan supplies `Public<Entity>*`.                                              |
+| Public                         | Customer-facing composition, including protected customer experiences. Authentication alone does not make a screen operator management.                        | Public registration names may retain `Public<Entity>*` when the source folder moves.                                              |
 | Workspace                      | Complete operator capability screens and their children, including operational workflows, not only selection or coordination.                                  | A separate Workspace scan supplies `<Entity>Workspace<Capability>*`.                            |
-| Neutral lower domain component | A bounded responsibility with proved independent consumers and a shared/cross-Entity API. Several hosts of the same surface do not prove cross-audience reuse. | The neutral scan supplies `<Entity><Capability>*` and excludes both Public and Workspace trees. |
 
 The operator order is Entity, audience, then capability and responsible child.
 Where a matching composable owns meaningful coordination, its name uses `use`
@@ -189,17 +190,26 @@ forwarding facade or pass a large controller merely to satisfy naming symmetry.
 Kitchen's Menu target is `KitchenWorkspaceMenu`, composing
 `KitchenWorkspaceMenuOverview`, `KitchenWorkspaceMenuCreate`,
 `KitchenWorkspaceMenuAi`, `KitchenWorkspaceMenuItemsOverview`,
-`KitchenWorkspaceMenuPromotionsOverview` and `KitchenWorkspaceMenuServicesOverview`.
+`KitchenWorkspaceMenuPromotionsOverview` and `WorkspaceKitchenServicesOverview`.
 The operational naming decision does not change `Public<Entity>*`. The
 [group composition contract](family-workspace-entity.md#workspace-group-overview-composition)
 owns the corresponding parent/child composable lifecycle and shared creation flow.
 
-Keep a single-surface leaf with that surface/capability. Do not create mandatory
-`Cards`, `Other` or `Shared` roots, or move useful children into neutral folders
-merely to shorten names. Public contribution and operator Setup are distinct
-onboarding compositions; shared Find/Review stages need their own proved
-consumers and contract. Marketing and standalone tools retain their actual
-App/tool owners and are not automatically operator Entity management.
+Under `components/Workspace/`, use the Entity's actual Workspace navigation
+groups to organize components. Place a simple child in its group as a Vue
+file. Give it a directory and an `Index.vue` when it owns multiple pieces of
+composition, such as its own form, results or dialogs. A simple standalone
+destination can be a file at the Workspace root. Shared frame and selection
+components keep their own responsibility. Public follows the domain's guest
+journey, commonly a directory or collection and a detail surface. The source
+grouping does not move Nuxt routes or Firestore paths.
+
+Keep a leaf with its audience and capability. A Workspace wrapper may compose a
+Public component and own the operator state and controls. Use an existing slot
+when it expresses a supported extension point. Public components stay
+independent of Workspace. Existing neutral Entity scans remain migration debt
+while their real consumers are reviewed. Shared platform components and
+standalone tools retain their platform or tool owner.
 
 Workspace describes audience here, not a URL, chrome choice, selected-Entity
 injection or authority grant. Explicit-subject User administration retains its
@@ -245,7 +255,7 @@ Entity contribution paths do not make them shared Core components.
 
 Complete a bounded move with its scans/exclusions, real route and component
 consumers, explicit imports, source-owned checks and rendered/interaction review.
-Keep Public and Workspace excluded from the neutral scan and check generated
+Keep Workspace excluded from the default scan and check generated
 names for duplicate registrations, including explicit navigation and override
 names. A directory move and a prefix change are separate parts of that contract.
 Preserve subject, state lifecycle and command authority. Retire old names and

@@ -1,4 +1,4 @@
-<template><KitchenMenuMenusDetail /></template>
+<template><KitchenWorkspaceMenuMenusDetail /></template>
 
 <script setup lang="ts">
 definePageMeta({

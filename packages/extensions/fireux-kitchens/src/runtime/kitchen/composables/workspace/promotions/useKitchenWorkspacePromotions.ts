@@ -1,6 +1,6 @@
 import { refreshNuxtData } from 'nuxt/app'
 import { computed } from 'vue'
-import { useKitchenWorkspaceIdentity } from '../useKitchenWorkspaceIdentity'
+import { useKitchenWorkspaceIdentity } from '../identity/useKitchenWorkspaceIdentity'
 import { useKitchenChildCollection } from '../../useKitchenChildCollection'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

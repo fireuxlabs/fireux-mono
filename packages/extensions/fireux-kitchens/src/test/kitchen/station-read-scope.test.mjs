@@ -54,7 +54,7 @@ function harness() {
     error = ref(null)
   const rows = ref([{ id: 'pass', name: 'Pass' }])
   let readTarget
-  const route = Vue.reactive({ fullPath: '/workspace/kitchen/stations' })
+  const route = Vue.reactive({ fullPath: '/workspace/kitchen/prep/stations' })
   const deps = {
     useRoute: () => route,
     computed,
@@ -89,9 +89,7 @@ function harness() {
   const source = (path) => readFileSync(new URL(path, runtime), 'utf8')
   const state = scope.run(() =>
     load(
-      source(
-        'composables/workspace/prep/stations/useKitchenWorkspacePrepStationsRead.ts'
-      ),
+      source('composables/workspace/prep/stations/read.ts'),
       deps,
       'createKitchenWorkspacePrepStationsRead()'
     )
@@ -282,7 +280,7 @@ test('Stations renders loading, failure and empty distinctly, with settled-only 
   ]) {
     const html = await render(state)
     assert.match(html, new RegExp(text))
-    assert.doesNotMatch(html, /No stations found|data-count/)
+    assert.doesNotMatch(html, /No stations found|\d+ stations?/)
   }
   assert.match(await render('empty'), /No stations found/)
   const ready = await render('ready', [
@@ -290,7 +288,7 @@ test('Stations renders loading, failure and empty distinctly, with settled-only 
     { id: 'a', name: 'Pass', sort_order: 0 },
   ])
   assert.ok(ready.indexOf('Pass') < ready.indexOf('Grill'))
-  assert.match(ready, /data-count/)
+  assert.match(ready, /2 stations/)
 })
 
 test('Station creation disclosure belongs to the current account, Kitchen and route', () => {

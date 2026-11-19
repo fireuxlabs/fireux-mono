@@ -93,7 +93,7 @@ App/Ecosystem theme (Misebox in its Main App). A saved Kitchen palette is the
 local Menu override. A payload marked `themeSource: 'default'` inherits the host
 tokens rather than imposing its transport fallback colours. Domain geometry
 and media styling must continue to consume those semantic tokens.
-`kitchen/components/Public/Intro.vue` composes native `UPageHeader` for the two
+`kitchen/components/Intro.vue` composes native `UPageHeader` for the two
 discovery introductions. Existing collection-page readers, filtering and route
 scopes remain authoritative. Kitchen cards use already-projected venue media;
 failed or absent photos retain a named placeholder. Root Menu venue cards keep
@@ -399,7 +399,7 @@ map.
   current root Directory entry.
 - `runtime/menu/components/Detail` owns context-free Menu reading.
 - `runtime/menu/components/Order` owns the canonical ordering shell.
-- `runtime/kitchen/components/Menu/Menus` owns upload,
+- `runtime/kitchen/components/Workspace/Menu/Menus` owns upload,
   processing, editing, publishing, sections, items, QR management, and
   links to Kitchen service configuration.
 - `runtime/menu/components/Json` is temporary diagnostic rendering for
@@ -505,7 +505,7 @@ Start with:
 - Menu Directory: `runtime/menu/composables/useMenuDirectory.ts`.
 - Menu detail: `runtime/menu/composables/useMenu.ts`.
 - Workspace operation:
-  `runtime/kitchen/composables/workspace/menus`.
+  `runtime/kitchen/composables/workspace/menu/menus`.
 - Ordering details: `menu-ordering.md` and the Menu Order source it references.
 
 ## Component responsibility sections
@@ -569,7 +569,7 @@ this organisation.
 
 ## Daily Menu publication
 
-The blank [Menu Form](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Create/Form.vue)
+The blank [Menu Form](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Menus/Create/Form.vue)
 defaults to Regular and offers Regular/Daily to Pro and Business actors. Daily
 uses the existing [interactive creation command](../../packages/extensions/fireux-kitchens/src/runtime/menu/server/records/create.ts)
 without a service date or automatic publication; choosing a schedule creates
@@ -577,7 +577,7 @@ nothing before submission. Lost entitlement resets the form to Regular and guard
 Daily dispatch; schedule and paid availability join the existing command scope.
 Free retains its one combined regular Menu policy.
 
-[Menu Settings](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Detail/Settings.vue)
+[Menu Settings](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Menus/Detail/Settings.vue)
 also exposes the existing `WorkspaceKitchenContext` for Daily Menus, with editing
 controlled by the record's `canWrite`. It reuses the scoped
 [authorized context endpoint](../../packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/context.get.ts)
@@ -902,7 +902,7 @@ owning that configuration.
 This is the accepted grouping target. Current navigation still places Services
 under Menus, and the current service configuration route remains
 `/workspace/kitchen/menu/services`.
-`Menu/Services/Index.vue` provides one scoped reader. `Service.vue`
+`Workspace/Services/Index.vue` provides one scoped reader. `Service.vue`
 groups each supplied type and `Record.vue` binds the existing setup controls
 to each saved Offering ID. Type hashes remain valid. Summary links use
 `#service-<type>/<encodedOfferingId>` for named saved records.
@@ -1045,6 +1045,20 @@ Station readers or exposes preparation editing. Prep & Production owns the
 preparation surfaces. Trusted Station reference validation remains at
 `kitchen/server/stations/item-references.ts`; removing UI does not migrate data
 or remove server validation.
+
+### Kitchen workspace page patterns
+
+Group overviews such as Menu and Prep put common actions and child summaries
+within reach. A catalogue entry composes the child page header, controls above
+the collection, and optional AI below. Create starts from the header when that
+screen supports it. The collection owns record loading, error, and empty
+feedback. Preparations and Recipes have separate workspace screens and reuse
+the Prep library collection. Each screen owns its record links and row
+summaries. Record details use a clear identity header and put related
+views or editing actions beside their content. Operational workbenches such as
+Prep Plan and Batches prioritise the current task and its outcome. Shared
+presentation follows the operator's task. Readers and commands stay with the
+domain that owns them.
 
 The Menu record editor at `/workspace/kitchen/menu/{menuSlug}` presents entries
 in their Menu context. Its dish rows share Menu display and choice controls

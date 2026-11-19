@@ -1,5 +1,5 @@
 <template>
-  <KitchenContext />
+  <WorkspaceKitchenIdentityContext />
 </template>
 <script setup lang="ts">
 definePageMeta({

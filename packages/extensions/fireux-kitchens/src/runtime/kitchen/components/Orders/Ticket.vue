@@ -39,43 +39,7 @@
           </UBadge>
           <span>{{ line.item.name }}</span>
         </div>
-        <div v-if="editable" class="fx-card__actions">
-          <UButton
-            label="Edit quantity"
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            :aria-label="`Edit quantity for ${line.item.name}`"
-            @click="editLine(line.id, line.quantity)"
-          />
-          <UButton
-            icon="i-lucide-trash-2"
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            :aria-label="`Remove ${line.item.name}`"
-            @click="$emit('remove-line', line.id)"
-          />
-        </div>
-        <form
-          v-if="editable && editingLineId === line.id"
-          @submit.prevent="
-            emit('update-quantity', line.id, Number(editQuantity))
-          "
-        >
-          <UFormField :label="`Quantity for ${line.item.name}`">
-            <!-- @vue-generic {string | number, {}} -->
-            <UInput v-model="editQuantity" type="number" step="any" required />
-          </UFormField>
-          <UButton type="submit" label="Save quantity" size="sm" />
-          <UButton
-            label="Cancel"
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            @click="editingLineId = ''"
-          />
-        </form>
+        <slot name="line-actions" :line="line" />
         <ul
           v-if="line.notes?.length"
           class="fx-card-body-stack"
@@ -110,40 +74,21 @@
   </UCard>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import type { Order } from '../../records/order'
 const props = withDefaults(
   defineProps<{
     order: Order
-    editable?: boolean
     showContactDetails?: boolean
   }>(),
   {
-    editable: true,
     showContactDetails: true,
   }
 )
-const emit = defineEmits<{
-  'update-quantity': [lineId: string, quantity: number]
-  'remove-line': [lineId: string]
-  'editing-change': [editing: boolean]
+defineSlots<{
+  'line-actions'?: (props: { line: Order['lines'][number] }) => unknown
 }>()
-const editingLineId = ref('')
-const editQuantity = ref<string | number>(1)
 const unitLabels: Record<string, string> = { KGM: 'kg', LTR: 'l', HUR: 'h' }
-function editLine(id: string, quantity: number) {
-  editingLineId.value = id
-  editQuantity.value = quantity
-}
-watch(editingLineId, (id) => emit('editing-change', Boolean(id)), {
-  flush: 'sync',
-})
-watch(
-  () => props.order,
-  () => {
-    editingLineId.value = ''
-  }
-)
 const channelLabels = {
   pos: 'POS',
   kiosk: 'Kiosk',

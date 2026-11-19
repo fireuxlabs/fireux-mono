@@ -13,7 +13,7 @@ function listFixture(records) {
   const state = ref({})
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/composables/workspace/menus/useMenuList.ts',
+      '../runtime/kitchen/composables/workspace/menu/menus/useMenuList.ts',
       import.meta.url
     ),
     'utf8'
@@ -78,25 +78,25 @@ test('Menu list keeps regular menus together and Daily specials and archives sep
 test('Workspace creation has one Menu path and keeps source import available', () => {
   const create = readFileSync(
     new URL(
-      '../runtime/kitchen/components/Menu/Menus/Create/Index.vue',
+      '../runtime/kitchen/components/Workspace/Menu/Menus/Create/Index.vue',
       import.meta.url
     ),
     'utf8'
   )
-  assert.match(create, /<KitchenMenuMenusCreateForm v-else \/>/)
+  assert.match(create, /<KitchenWorkspaceMenuMenusCreateForm v-else \/>/)
   assert.match(
     create,
-    /<KitchenMenuMenusCreateUrl v-else-if="method === 'url'" \/>/
+    /<KitchenWorkspaceMenuMenusCreateUrl v-else-if="method === 'url'" \/>/
   )
   const url = readFileSync(
     new URL(
-      '../runtime/kitchen/components/Menu/Menus/Create/Url.vue',
+      '../runtime/kitchen/components/Workspace/Menu/Menus/Create/Url.vue',
       import.meta.url
     ),
     'utf8'
   )
   assert.doesNotMatch(url, /label="Menu name"/)
-  assert.match(create, /<KitchenMenuMenusCreateUpload/)
+  assert.match(create, /<KitchenWorkspaceMenuMenusCreateUpload/)
   assert.match(create, /v-if="method === 'upload'"/)
   for (const label of ['PDF or photos', 'Menu URL', 'Start blank'])
     assert.ok(create.includes(label))

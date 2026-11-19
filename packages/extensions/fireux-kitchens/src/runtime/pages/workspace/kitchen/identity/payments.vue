@@ -3,7 +3,7 @@
     focus="kitchen-ai.settings.payments"
     label="Payments"
     context-label="Settings"
-  /><WorkspaceKitchenIdentityPayments />
+  /><WorkspaceKitchenSettingsPayments />
 </template>
 
 <script setup lang="ts">

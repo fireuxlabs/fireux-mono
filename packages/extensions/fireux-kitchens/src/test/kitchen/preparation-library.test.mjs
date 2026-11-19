@@ -28,7 +28,7 @@ function load(path, result, deps = {}) {
   )(...Object.values(deps))
 }
 const preparationPath = 'composables/preparations/useKitchenPreparationsRead.ts'
-const recipePath = 'workspace/prep/recipes/read.ts'
+const recipePath = 'composables/workspace/prep/recipes/read.ts'
 const { normalizePreparation } = load(
   preparationPath,
   '({normalizePreparation})'
@@ -304,35 +304,39 @@ test('Preparations filters by name or description and keeps each result tied to 
     ],
     view: 'preparations',
     selectedId: '',
+    preparationTo: (id) => `/workspace/kitchen/prep/preparations/${id}`,
+    recipeTo: (id) => `/workspace/kitchen/prep/recipes/${id}`,
   }
   const scope = effectScope()
   const { query, visible } = scope.run(() => {
-    const recipeCount = load(
-      'components/Workspace/Prep/Library.vue',
-      'recipeCount',
-      {
-        computed,
-        ref,
-        watch,
-        defineProps: () => props,
-        withDefaults: (value) => value,
-      }
+    const useLibraryCatalogue = load(
+      'components/Workspace/Prep/useLibraryCatalogue.ts',
+      'useLibraryCatalogue',
+      { computed, ref }
     )
     return load(
-      'components/Workspace/Prep/Preparations/Collection.vue',
-      '({query,visible})',
+      'components/Workspace/Prep/Preparations/Index.vue',
+      '({ query, visible })',
       {
         computed,
-        ref,
-        defineProps: () => ({ ...props, recipeCount }),
+        useLibraryCatalogue,
+        useKitchenWorkspacePrepLibrary: () => ({
+          kitchenId: ref('kitchen'),
+          preparations: ref(props.preparations),
+          recipes: ref(props.recipes),
+          recipeLinks: ref(props.recipeLinks),
+          preparationTo: props.preparationTo,
+          outcome: ref('ready'),
+          error: ref(null),
+        }),
       }
     )
   })
   assert.deepEqual(
-    visible.value.map(({ id, recipeCount }) => [id, recipeCount]),
+    visible.value.map(({ id, summary }) => [id, summary]),
     [
-      ['aioli', 2],
-      ['roll-sauce', 0],
+      ['aioli', '2 recipes'],
+      ['roll-sauce', '0 recipes'],
     ]
   )
   query.value = '  OCTOPUS '
@@ -344,6 +348,10 @@ test('Preparations filters by name or description and keeps each result tied to 
   assert.deepEqual(
     visible.value.map(({ id }) => id),
     ['aioli']
+  )
+  assert.equal(
+    visible.value[0].to,
+    '/workspace/kitchen/prep/preparations/aioli'
   )
   query.value = 'missing'
   assert.equal(visible.value.length, 0)

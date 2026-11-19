@@ -1,0 +1,87 @@
+<template>
+  <section
+    class="workspace-surface workspace-surface--compact"
+    aria-label="Kitchen Team"
+  >
+    <WorkspaceTeamEditor
+      :role-labels="roleLabels"
+      :title="collectionTitle"
+      ref="crud"
+      :team="team"
+      :member-id="memberId"
+      :member-path="memberPath"
+    >
+      <template #single>
+        <WorkspaceTeamAssignment
+          :editor="rolesEditor"
+          :member-id="selectedId"
+        />
+        <WorkspaceKitchenTeamInvitation
+          v-if="selected && !selected.userId"
+          :key="selected.id"
+          :member-id="selected.id"
+          :create-invitation="natives.invite"
+        />
+      </template>
+    </WorkspaceTeamEditor>
+
+    <WorkspaceTeamRoles
+      id="responsibilities"
+      ref="rolesEditor"
+      compact
+      :workspace-name="state.kitchen.name"
+      @labels="roleLabels = $event"
+      v-if="derived.status === 'ready'"
+      :workspace-id="state.kitchen.id"
+      :member-id="selectedId"
+      :member-name="
+        state.team.members.find((member) => member.id === selectedId)?.name
+      "
+      endpoint="/api/workspace/kitchen/team/roles"
+      :suggestions="[
+        'Owner',
+        'Head Chef',
+        'Sous Chef',
+        'Commis',
+        'Kitchen Porter',
+      ]"
+    />
+  </section>
+</template>
+
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import WorkspaceTeamEditor from 'fireux-core/runtime/workspace/components/Team/Editor.vue'
+import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
+import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
+
+type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
+
+import WorkspaceTeamRoles from 'fireux-core/runtime/workspace/components/Team/Roles.vue'
+import WorkspaceTeamAssignment from 'fireux-core/runtime/workspace/components/Team/Assignment.vue'
+
+const props = defineProps<{
+  memberId?: string
+  team: Workspace
+}>()
+const { state, derived, natives } = props.team
+const collectionTitle = computed(() =>
+  state.value.kitchen.name ? `${state.value.kitchen.name}’s Team` : 'Team'
+)
+const selectedId = computed(
+  () => props.memberId || state.value.team.selectedTeamMemberId
+)
+const memberPath = (id: string) =>
+  `/workspace/kitchen/team/${encodeURIComponent(id)}`
+
+const rolesEditor = ref<InstanceType<typeof WorkspaceTeamRoles>>()
+const roleLabels = ref<Record<string, string[]>>({})
+
+const crud = ref<InstanceType<typeof WorkspaceTeamEditor>>()
+const selected = computed(() =>
+  state.value.team.members.find((member) => member.id === selectedId.value)
+)
+defineExpose({
+  openAction: (intent: TeamAIIntent) => crud.value?.openAction(intent),
+})
+</script>

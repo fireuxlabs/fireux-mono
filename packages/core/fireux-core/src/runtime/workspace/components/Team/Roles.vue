@@ -275,12 +275,8 @@ async function request(
     roleIds?: string[]
     labels?: Record<string, string[]>
   }>(endpoint, {
-    onResponse: async ({ options, response }) => {
-      if (
-        response.ok &&
-        !['GET', 'HEAD'].includes(String(options.method || 'GET').toUpperCase())
-      )
-        await refreshNuxtData()
+    onResponse: async ({ response }) => {
+      if (response.ok && input.action !== 'read') await refreshNuxtData()
     },
     method: 'POST',
     timeout: 15000,

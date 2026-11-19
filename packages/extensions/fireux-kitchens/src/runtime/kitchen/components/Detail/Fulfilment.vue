@@ -8,7 +8,7 @@
   >
     <UCard>
       <ClientOnly>
-        <KitchenDetailDeliveryZonesMap
+        <PublicKitchenDetailDeliveryZonesMap
           :zones="deliveryZones"
           :currency-code="currencyCode"
           :center="deliveryCenter"

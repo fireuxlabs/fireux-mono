@@ -1,5 +1,5 @@
 <template>
-  <KitchenDetailServiceMenu
+  <PublicKitchenDetailServiceMenu
     :kitchen-slug="kitchenSlug"
     service="table"
     :table-number="tableNumber"

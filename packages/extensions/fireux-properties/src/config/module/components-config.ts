@@ -12,7 +12,9 @@ export function configureComponents(resolver: Resolver) {
 
   addComponent({
     name: 'WorkspacePortfolioNavigation',
-    filePath: resolver.resolve('./runtime/portfolio/components/Workspace/Navigation.vue'),
+    filePath: resolver.resolve(
+      './runtime/portfolio/components/Workspace/Navigation.vue'
+    ),
     global: true,
   })
 
@@ -24,7 +26,6 @@ export function configureComponents(resolver: Resolver) {
     ignore: ['Workspace/**'],
   })
 
-
   registerComponentsDir(resolver, './runtime/property/components/Workspace', {
     global: false,
     pathPrefix: true,
@@ -35,7 +36,9 @@ export function configureComponents(resolver: Resolver) {
 
   addComponent({
     name: 'WorkspacePropertyNavigation',
-    filePath: resolver.resolve('./runtime/property/components/Workspace/Navigation.vue'),
+    filePath: resolver.resolve(
+      './runtime/property/components/Workspace/Navigation.vue'
+    ),
     global: true,
   })
 

@@ -30,8 +30,10 @@ source and executable checks establish implementation.
   in-memory drafts and adds valid distinct lines without mutation. Line IDs come
   from the caller and must be unique within the Order; quantities may be fractional
   but must be finite and positive. These pure functions do not authorize actors, submit or persist records.
-- `kitchen/components/Orders/Ticket.vue`: presents one Order without commands.
-- `kitchen/components/Orders/Examples/Index.vue`, exposed at `/packages/fireux-kitchens/ordering/ticket`,
+- `kitchen/components/Orders/Ticket.vue` presents one Order read-only.
+  `kitchen/components/Workspace/Orders/Ticket.vue` supplies line-edit controls
+  through the ticket slot and sends edit intents to the draft editor.
+- Misebox `components/Docs/OrderingTicket/Index.vue`, exposed at `/packages/fireux-kitchens/ordering/ticket`,
   provides an initially empty local ticket specimen using the actual Ticket
   component. The library exposes POS, Kiosk and Website. All begin empty; the shared
   Items stage adds the same fixed food lines for comparison across channels.
@@ -150,7 +152,7 @@ settings remain composed here and payment methods remain at
 `/workspace/kitchen/identity/payments`. This navigation change does not alter
 Order processing, prices or the stored channel vocabulary.
 
-Payments presentation is composed directly by `Workspace/Identity/Payments/Index.vue`;
+Payments presentation is composed directly by `Workspace/Settings/Payments/Index.vue`;
 Delivery settings by `Workspace/Orders/Delivery/Index.vue`. Both reuse the existing
 Kitchen Fulfilment reader and protected commands, without a section-switching wrapper.
 Services configures the existing service choices and their menus and serving times.

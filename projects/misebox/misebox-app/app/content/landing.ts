@@ -95,7 +95,7 @@ const kitchenCapabilityCopy = {
       'See the selected Kitchen’s stations and the station assigned to each dish.',
     items: ['Kitchen stations', 'Item assignments'],
     action: 'Open Stations',
-    to: '/workspace/kitchen/stations',
+    to: '/workspace/kitchen/prep/stations',
   },
   'kitchen.suppliers': {
     eyebrow: 'Kitchen Workspace · Suppliers',

@@ -41,7 +41,7 @@ import { computed } from 'vue'
 import { useIdentityEditor } from 'fireux-core/runtime/composables/fireux/useIdentityEditor'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
-import type { KitchenWorkspaceIdentityState } from '../../../composables/workspace/useKitchenWorkspaceIdentity'
+import type { KitchenWorkspaceIdentityState } from '../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
 import type { KitchenStatus } from '../../../models/model'
 
 const props = defineProps<{

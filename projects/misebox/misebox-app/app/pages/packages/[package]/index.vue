@@ -24,7 +24,7 @@ const examples = computed(() =>
     : []
 )
 const componentLinks = {
-  KitchenOrdersTicket: '/packages/fireux-kitchens/ordering/ticket',
+  PublicKitchenOrdersTicket: '/packages/fireux-kitchens/ordering/ticket',
 }
 definePageMeta({
   layout: 'default',

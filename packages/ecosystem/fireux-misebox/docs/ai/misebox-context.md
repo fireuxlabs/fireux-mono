@@ -71,7 +71,7 @@ on an operation catalogue. Workspace registration retains its own owner.
 Tenant-specific branches, ids, defaults, and copied domain models do not belong
 in the ecosystem package.
 
-Kitchens owns the standard Kitchen Workspace home and `KitchenPlaceDetail`
+Kitchens owns the standard Kitchen Workspace home and `PublicKitchenPlaceDetail`
 presentation. Misebox keeps the Place/Kitchen route composition, shared tenant
 chrome and hospitality templates; it does not override the generic Workspace home.
 
@@ -127,8 +127,9 @@ their own entrance policies.
 
 The Main App's `/products` composes Pro and Business from App-owned
 `useMiseboxPricing`, which selects the App layer's shared commercial tiers, alongside the existing
-Products reader without a type filter. App-owned `Products/Services.vue` selects the two offers, order, actions and
-Kitchen-owned `KitchenOffersPreview` variants. Products' shared `ProductSurface`
+Products reader without a type filter. App-owned `Products/Services.vue` selects
+the two offers, order, actions and illustrations from its local
+`ServiceOfferPreview.vue`. Products' shared `ProductSurface`
 renders saved copy, available benefits, optional image/preview, terms and action
 on catalogue and detail routes. No Product IDs or Kitchen language live in that
 shared surface. `Products/Plans.vue` composes
@@ -255,13 +256,13 @@ demo-payment prerequisite. Ordinary Kitchen authority, capacity and AI usage
 policy still apply. The App service adapter `server/menu-express/preparation.ts` transfers the supplied
 source through Kitchen’s `menu/server/source/save.ts` and binds the request to
 its deterministic source/Menu identity. Operators use the same
-`KitchenMenuMenusPreparation` component as native source review; no
+`KitchenWorkspaceMenuMenusPreparation` component as native source review; no
 download, re-upload or manual Menu linking is required. The service
 request owns customer contact/approval/delivery tracking; it does not replace
 Kitchen's preparation or publication commands.
 For a single saved PDF/image, `menu/server/source/document.ts` creates an ordinary
 draft document Menu through `stageCreateKitchenMenu`. Workspace and Menu Express
-compose this same choice in `KitchenMenuMenusPreparation`; structured
+compose this same choice in `KitchenWorkspaceMenuMenusPreparation`; structured
 extraction remains a separate choice there. The source and Menu link are committed
 together. The published attachment gets an immutable copy through the existing
 Storage upload helper, so replacing an import source cannot remove it. Source
@@ -482,7 +483,7 @@ inject hidden Kitchens for administrators. Kitchen/Place presentation and
 Firebase-hosted media retain their domain owners.
 
 Public Kitchen detail and its `/menus` customer chooser share the same complete
-`KitchenDetail` composition, built from Place's header, About, gallery and visit
+`PublicKitchenDetail` composition, built from Place's header, About, gallery and visit
 information slots with Kitchen-owned menus and service timing. Menus, About and
 Opening hours navigation stays on the current page. Operator controls appear last
 and require current access to the exact Kitchen; admin status alone does not grant
@@ -522,7 +523,7 @@ Group indexes compose short summaries, supported lightweight Tools/configuration
 
 Orders' group index composes `WorkspacePageLinks` from its route metadata.
 The operational board stays at `orders/board.vue`. Services configuration lives
-in `Menu/Services/Index.vue` and its shared scoped context. The current
+in `Workspace/Services/Index.vue` and its shared scoped context. The current
 Services composition and named-record controls are described below.
 
 POS New order uses settled signed-in staff identity and Kitchen access before
@@ -532,7 +533,7 @@ preserved on later edits; the library remains a separate illustrative specimen.
 The Ordering foundation is `kitchen/records/order.ts` (Order, OrderLine,
 channel vocabulary and separate SavedOrderDraft revision envelope),
 `utils/ordering.ts` (pure draft/line behaviour and strict detached projection),
-and `components/Orders/Ticket.vue` (one order prop plus editing intents). Misebox
+and `components/Public/Orders/Ticket.vue` (one order prop plus editing intents). Misebox
 configures pos, kiosk and website; the Workspace draft entry creates POS drafts.
 The App declaration validates support, not a working customer checkout.
 
@@ -651,7 +652,7 @@ a non-interactive ellipsis for choices and the same starting price. Choice detai
 remain in its accessible label and tooltip; clicking the indicator follows the
 same whole-tile link. Its whole-tile
 `FireActionSurface` link retains shared hover/focus behavior, with a full-width
-square `KitchenMenuItemsPhoto`, wrapping name and bottom-aligned price. Tiles
+square `KitchenWorkspaceMenuItemsPhoto`, wrapping name and bottom-aligned price. Tiles
 have no arrow or empty-category label. A visible icon-only pressed toggle selects the image grid or list; the toolbar has no More menu.
 Items AI is inline between its heading and collection controls, reusing the compact
 Capability/Assistant/Composer chain and the existing collection context.
@@ -678,10 +679,11 @@ Overview is a direct sidebar entrance for the selected Kitchen;
 the Menu setup tool directory remains a contextual route hidden from the sidebar.
 The combined catalogue reads the existing live `dishes` collection once, filters
 All/Food/Drinks locally, and opens the unified `/menu/items/[dishId]`
-editor. `Menu/Items/Collection/Index.vue` composes Controls, Results and
-Dialogs. `useItemCatalogue` owns shared filters, pagination and return-query state;
-its strict provided context never acquires another collection. Dialogs owns local
-the creation disclosure, clearing it on Kitchen changes. Controls
+editor. `Workspace/Menu/Items/Index.vue` composes Controls, Results and
+Dialogs. The controller under `composables/workspace/menu/items/` owns shared
+filters, pagination and return-query state;
+its strict provided context never acquires another collection. Dialogs owns
+the local creation disclosure, clearing it on Kitchen changes. Controls
 and Results emit actions without owning commands or dialog state.
 Kind-specific detail contexts retain their filtering and authority. Catalogue
 URLs and editor return links retain kind, search, completeness filter, layout
@@ -691,7 +693,9 @@ unknown historical kinds remain visible under All. Both editors return
 to the combined catalogue; initial loading preserves the requested page, while
 settled shorter results clamp it. See `item-reader-internals.test.mjs`.
 
-The Item detail route declares a content-owned shared child page header, with
+The Item detail screen mounts its Appears on view from
+`Workspace/Menu/Items/Detail/Menus/`. That view reads Menu-owned placements
+for the selected Item. The Item detail route declares a content-owned shared child page header, with
 the Item name and return/actions aligned to the Workspace frame. It adds no
 centred domain width cap or repeated thumbnail heading. Details and Price & choices
 use the shared responsive two-column grid, stacking on smaller screens. Appears on retains its focused relationship view.
@@ -970,7 +974,7 @@ requested identity grants no access.
 - Kitchen Team owns the roster, role labels and invitations. Its shared person
   editor manages name and linked account. Linked names
   come from User accounts. Kitchen Identity and the public Place edit route compose
-  the same Place-owned inline controls under `place/components/Edit/Index.vue`.
+  the same Place-owned inline controls under `place/components/Workspace/Identity/Edit/Index.vue`.
   Kitchen keeps those controls inside its Workspace and passes its explicit
   mutation authority; the public route retains Place owner/admin access and
   returns to Place detail. The trusted boundary checks current App membership,
@@ -998,7 +1002,7 @@ requested identity grants no access.
 - Menus proves Collection / Focus: its collection header and direct record links
   lead to the canonical Menu destination, whose perspectives use local state.
   Creation stays with the collection; editing and publication stay with the record.
-  Contextual AI follows the collection in `Menu/Menus/Index.vue`.
+  Contextual AI follows the collection in `Menu/Index.vue`.
 - Kitchen owns the shared numbered-table count at `tables.count`. Its trusted
   Kitchen update command validates 0–500. Seating, tabs and billing
   remain separate Front-of-House responsibilities.
@@ -1386,7 +1390,7 @@ agent-callable write tools. Verify `fireux-kitchens/src/test/record-context.test
 Common kitchen patterns are authored once in Kitchen-owned
 [`kitchen/content/guidance.ts`](../../../../extensions/fireux-kitchens/src/runtime/kitchen/content/guidance.ts).
 The dedicated `/workspace/kitchen/identity/context` route composes Kitchen-owned
-`components/Context/Index.vue`, with `Context/Guidance` above the Kitchen and
+`components/Workspace/Identity/Context/Index.vue`, with `Context/Guidance` above the Kitchen and
 Venue text editors. Identity & brand retains its profile and listing and links
 to that page; editors are not duplicated across the routes.
 Operators explicitly select guides and keep their differences in Kitchen context;
@@ -1843,7 +1847,7 @@ names one Food & Drinks Menu with initial slug `main`.
 creates it as an ordinary draft interactive Menu with a generated record ID.
 Onboarding creation/resume uses this default; management initialization of an
 existing root preserves its Menus and never recreates missing starters.
-The [Free creation form](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Create/Form.vue)
+The [Free creation form](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Menus/Create/Form.vue)
 presents Food & Drinks. The [creation command](../../../../../packages/extensions/fireux-kitchens/src/runtime/menu/server/records/create.ts)
 admits only normalized `food-drinks` for Free and stores the exact Food & Drinks
 name; other names require a paid acting account. Existing saved names are not rewritten. Guest document
@@ -1950,7 +1954,7 @@ enabled offering and interaction, published Menu membership and configured hours
 paused interactions and missing offering identities fail closed on the server.
 
 The Operating hours page composes the venue editor, Kitchen operating schedule
-and service schedules. `Menu/Services` configures services inline at
+and service schedules. `Workspace/Services` configures services inline at
 `/workspace/kitchen/menu/services`; there is no individual Service page.
 New offerings start disabled with browse configured and no selected Menus or hours.
 Selecting an interaction in the editor performs no write and enables nothing.
@@ -2011,7 +2015,7 @@ Workspace selection. Payment summaries consume that same explicit Kitchen throug
 `useKitchenFulfilment`; the existing Workspace reader remains the default for
 Workspace-only consumers. Payment-edit actions in standalone setup use its
 explicit authorized handoff rather than another saved Workspace selection.
-Services composes inline `Menu/Services/Service.vue` and its Setup
+Services composes inline `Workspace/Services/Service.vue` and its Setup
 children; there is no exact-record Service route. Each local editor owns
 availability, menu selection, hours and its scoped automatic configure command.
 Credential waits reject obsolete account, Kitchen, App, membership, access,
@@ -2086,7 +2090,7 @@ framed navigation and authorized/denied mutations.
 configuration and selection boundary.
 
 The Kitchen-owned `/kitchens/<slug>/menu.kiosk` entrance composes `MenuKiosk`
-with the existing `KitchenDetailServiceMenu` and Menu Selection owners. Eat in
+with the existing `PublicKitchenDetailServiceMenu` and Menu Selection owners. Eat in
 and Takeaway are explicit choices over their own configured Menu sets. Public
 Menu projections and `menu/server/ordering.ts` apply the same mode eligibility,
 pause and effective serving-hour checks. The existing Menu-submit adapter accepts
@@ -2305,19 +2309,19 @@ composition. `Workspace/Menu` and `Workspace/Prep` group their actual domain
 responsibilities rather than following arbitrary sidebar labels. Menu, ordering
 and command ownership are unchanged. App-specific entry presentation stays in
 `misebox-app/app/components/Workspace/Kitchen/Home` with distinct generated names.
-[Items/Index.vue](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Items/Index.vue)
+[Items/Index.vue](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Items/Index.vue)
 consumes the route-provided all-Item context and gates collection rendering. Its
-[Collection/Index.vue](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Items/Collection/Index.vue)
+[Collection/Index.vue](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Items/Collection/Index.vue)
 provides `useItemCatalogue` and composes Controls, Results and dialogs.
 The catalogue defaults to a compact list with visible search,
 All/Food/Drinks and list/grid controls; cards open the Item detail. Completion
 filtering remains URL/controller state without a visible completeness control.
 Items AI is an inline coming-soon Focus. Food/Drink is Item type; there is no Item category feature or
-paid category count. The [catalogue controller](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/items/useItemCatalogue.ts)
+paid category count. The [catalogue controller](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/menu/items/useItemCatalogue.ts)
 and [row projection](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/item.ts) do not expose legacy
 category values, and the [Item update command](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/items/update.ts)
 rejects category changes while preserving stored values during unrelated updates.
-The [Menu Item picker](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Items/Add/Repertoire.vue)
+The [Menu Item picker](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Menus/Items/Add/Repertoire.vue)
 searches reusable Items and excludes Items already placed in that Section; it
 does not offer category filtering. Menu-owned Sections and placements reference
 Items through `dish_id`, with the persisted child collection still named `items`.
@@ -2438,7 +2442,7 @@ method and optional source alongside its identity text. Native controls remain
 with their focused Inputs/Method children; they own no reads or commands.
 
 `utils/preparation-changes.ts` and `recipe/utils/changes.ts` validate their owned patches.
-`kitchen/workspace/prep/recipes/form.ts` converts form values and sends sparse deltas, so untouched
+`kitchen/composables/workspace/prep/recipes/form.ts` converts form values and sends sparse deltas, so untouched
 historical data is not rewritten. Recipe read fallback is per field: saving a
 method does not hide untouched historical inputs or yield. Explicit null yield
 means cleared, not a fallback to the old value. An explicit output also takes
@@ -2590,7 +2594,7 @@ They retain the existing state and authority branches.
 These two local compositions do not yet prove a shared renderer or Core contract.
 See `docs/concepts/family-workspace-capability-tool.md`.
 
-Stations has one capability entrance at `/workspace/kitchen/stations`, linked
+Stations has one capability entrance at `/workspace/kitchen/prep/stations`, linked
 from Prep & Production. Its existing Kitchen-owned station editor replaces the
 retired prep-stations placeholder. The retired Settings → Kiosks destination is not registered and its dead
 navigation link is removed; no device-management capability is claimed. Station printer,
@@ -2708,14 +2712,14 @@ Misebox's pricing wrapper derives its Menu allowance and supported actions from 
 Kitchen Orders has its index and `/orders/board` under `/workspace/kitchen`.
 Services is a separate visible capability at `/workspace/kitchen/menu/services`,
 alongside Items, Menus and Promotions in Food & drink. Its configuration overview
-and inline setup are composed by `Menu/Services/Index.vue`.
+and inline setup are composed by `Workspace/Services/Index.vue`.
 It reuses the existing scoped Offering reader and setup commands, including
 Delivery settings. Payment settings remain a Kitchen Identity child at
 `/workspace/kitchen/identity/payments`. The old Orders/Channels route and sidebar
 child are removed without aliases. No Offering/Fulfilment storage, price or
 Order-processing command changes accompany this move.
 
-Payments presentation is composed directly by `Identity/Payments/Index.vue`;
+Payments presentation is composed directly by `Settings/Payments/Index.vue`;
 Delivery settings by `Orders/Delivery/Index.vue`. Both reuse the existing
 Kitchen Fulfilment reader and protected commands, without a section-switching wrapper.
 Services configures the existing service choices and their menus and serving times.
@@ -2743,12 +2747,12 @@ Verify `daily-menu.test.mjs`, `daily-menu-publication.test.mjs` and
 
 ## Ordinary Menu creation formats
 
-The blank [creation Form](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Create/Form.vue)
+The blank [creation Form](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Menus/Create/Form.vue)
 offers Pro/Business Regular or Daily, defaulting to Regular, through the existing
 interactive create command. A Daily draft needs no service date and is not
 automatically published. Entitlement loss resets/guards Daily creation within the
 existing command scope; Free remains one combined regular Menu.
-[Menu Settings](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Detail/Settings.vue)
+[Menu Settings](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Menus/Detail/Settings.vue)
 reuses `WorkspaceKitchenContext` for Daily as well as regular Menus, with existing
 record `canWrite` authority. This private operator context changes no customer
 copy, prices, schedule or publication. See the
@@ -2789,7 +2793,7 @@ Verify `menu-public-slug.test.mjs`, discovery and public QR checks.
 
 The public Menu entrance reuses the existing Kitchen presentation for its logo,
 venue name and address through `kitchen/components/Detail/MenuHeader.vue`. Menu cards consume
-published offering hours through `KitchenOfferingsTimes`; no availability is
+published offering hours through `PublicKitchenOfferingsTimes`; no availability is
 inferred from missing schedules. The entrance uses the same content for QR, direct
 and website arrivals and retains a Venue information link. No referrer-based flow,
 additional record reader or ordering action is introduced.
@@ -3170,7 +3174,7 @@ The Workspace–Entity family map owns the three-domain composition boundary.
 
 ## Kitchen source contracts
 
-The Menu QR route mounts `Workspace/Menu/Menus/QR/Index.vue`. Its panel and
+The Menu QR route mounts `Workspace/Menu/QR/Index.vue`. Its panel and
 target components use the QR coordinator in `composables/workspace/menu/menus/qr.ts`.
 The Menu Entity still owns the shared QR renderer.
 
@@ -3195,9 +3199,9 @@ scans and exclusions, including Core's stable `WorkspaceKitchenNavigation` ABI.
 Preserve current models, contracts, readers, commands, domain state and routes.
 Verify each completed move against registration, real consumers and relevant
 source-owned checks and rendered behavior; no alias or placeholder tree remains
-after a completed slice. Current customer compositions include [Public Intro](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Intro.vue),
-[Hero](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Hero.vue)
-and [Collection](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Collection/Index.vue),
+after a completed slice. Current customer compositions include [Public Intro](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Intro.vue),
+[Hero](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Hero.vue)
+and [Collection](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Collection/Index.vue),
 registered as `PublicKitchenIntro`, `PublicKitchenHero` and `PublicKitchenCollection`.
 The operator [Identity composition](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Index.vue)
 and its children use `WorkspaceKitchenIdentity*`. These paths do not establish
@@ -3262,7 +3266,7 @@ Effective Kitchen hours reuse the acquired Kitchen and Place through
 inherited times into service records. `serviceHoursSummary` groups equal ranges
 without implying service on unselected days.
 
-Services configuration is inline. `Menu/Services/Index.vue` provides one
+Services configuration is inline. `Workspace/Services/Index.vue` provides one
 `useKitchenServicesContext`, then composes Status, Title and a Service per fixed
 option. The shared context acquires the existing service/menu sources once and
 publishes the safe page JSON. It retains the last settled configuration only for

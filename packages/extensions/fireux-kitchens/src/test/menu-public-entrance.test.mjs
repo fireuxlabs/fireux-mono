@@ -144,7 +144,7 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
       categoryLabels: ['Spanish'],
     })
   )
-  const source = read('Public/Collection/List.vue')
+  const source = read('Collection/List.vue')
   const cells = compileFunction(script(source) + ';return cells.value', [
     'computed',
     'ref',
@@ -168,7 +168,7 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
     props: ['to', 'label'],
     setup: (props) => () => h('a', { href: props.to }, props.label),
   })
-  const cardSource = read('Public/Collection/Card/Index.vue')
+  const cardSource = read('Collection/Card/Index.vue')
   app.component('PublicKitchenCollectionCard', {
     props: ['card'],
     setup: (props) =>
@@ -183,13 +183,13 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
     ['Identity', ['cell']],
     ['Labels', ['label', 'labels']],
   ]) {
-    const source = read(`Public/Collection/Card/${name}.vue`)
+    const source = read(`Collection/Card/${name}.vue`)
     app.component(`PublicKitchenCollectionCard${name}`, {
       props,
       render: compile(template(source)),
     })
   }
-  const specialSource = read('Public/Collection/Card/Special.vue')
+  const specialSource = read('Collection/Card/Special.vue')
   app.component('PublicKitchenCollectionCardSpecial', {
     props: ['special', 'kitchenPath'],
     setup: (props) =>

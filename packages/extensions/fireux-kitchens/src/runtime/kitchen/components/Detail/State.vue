@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import type { KitchenDetailOutcome } from '../../composables/useKitchenDetail'
-defineOptions({ name: 'KitchenDetailState' })
+defineOptions({ name: 'PublicKitchenDetailState' })
 defineProps<{
   outcome: KitchenDetailOutcome
   hasKitchen: boolean

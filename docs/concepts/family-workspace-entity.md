@@ -1300,7 +1300,7 @@ mounts [`useKitchenWorkspacePrep`](../../packages/extensions/fireux-kitchens/src
 whose Overview/Create children use strict internal lookup. Child library routes
 mount [`useKitchenWorkspacePrepLibrary`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/prep/library.ts)
 at their own host, and the Recipe editor uses its
-[explicit-input workflow](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/workspace/prep/recipes/editor.ts).
+[explicit-input workflow](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/prep/recipes/editor.ts).
 These illustrate different coordination needs, not identical internals or
 completed adoption by other groups. Align another family only with a bounded owner/consumer change.
 Verify parent mounting, child reuse, scope changes/disposal and the actual group
@@ -1671,7 +1671,7 @@ Portfolio contributions remain owned by Compliance, Documents and Tasks;
 Property Reservations remain owned by Reservations. MarketplaceStore has no
 proved Workspace interface and is outside this family. Component-local
 presentation helpers may remain beside their component; the shared Kitchen
-Finance Overview controller belongs in `kitchen/composables/workspace/finance`.
+Finance Overview controller belongs in `kitchen/composables/workspace/reports/finance`.
 Supplier capability labels consume its live detail projection’s Place identity;
 root Supplier records do not carry hydrated `company_place` fields.
 

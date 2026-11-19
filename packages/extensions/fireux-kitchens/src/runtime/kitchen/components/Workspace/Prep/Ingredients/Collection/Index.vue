@@ -1,21 +1,36 @@
 <template>
-  <div>
-    <WorkspaceKitchenCollectionHeader title="Ingredients">
+  <template v-if="!storageKitchenId">
+    <UAlert
+      v-if="outcome === 'error'"
+      title="Kitchen unavailable"
+      description="Your Kitchen could not be loaded. Please try again."
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
       <template #actions>
-        <UButton
-          v-if="canWrite"
-          label="Create Ingredient"
-          icon="i-lucide-plus"
-          @click="addOpen = true"
+        <FireCopyError
+          message="Kitchen unavailable&#10;Your Kitchen could not be loaded. Please try again."
         />
       </template>
-    </WorkspaceKitchenCollectionHeader>
-    <WorkspaceKitchenAIFocus
-      focus="kitchen-ai.prep.ingredients"
-      label="Ingredients"
-      context-label="Prep"
+    </UAlert>
+    <p v-else-if="outcome === 'pending'" role="status">Loading Kitchen…</p>
+    <UAlert
+      v-else-if="outcome === 'empty'"
+      color="neutral"
+      title="Kitchen not found"
+      description="Choose an available Kitchen to manage its Ingredients."
     />
-
+    <UAlert
+      v-else
+      color="neutral"
+      variant="soft"
+      title="Select a kitchen"
+      description="Choose a kitchen before managing ingredients."
+    />
+  </template>
+  <template v-else>
     <UAlert
       v-if="loadError"
       title="Ingredients unavailable"
@@ -36,126 +51,50 @@
     </UAlert>
     <FireState v-else-if="pending" outcome="pending" entity="ingredients" />
     <template v-else>
-      <WorkspaceKitchenCollectionToolbar
-        v-if="cards.length"
-        v-model="query"
-        label="ingredients"
-        singular="ingredient"
-        :count="visibleCount"
+      <section
+        v-for="group in groups"
+        :key="group.value"
+        :aria-labelledby="`ingredients-${group.value}`"
+        class="ingredient-group"
       >
-        <template #controls>
-          <div role="group" aria-label="Ingredient layout">
-            <UButton
-              v-for="view in views"
-              :key="view.value"
-              :icon="view.icon"
-              :aria-label="view.label"
-              :aria-pressed="layout === view.value"
-              color="neutral"
-              :variant="layout === view.value ? 'soft' : 'ghost'"
-              @click="layout = view.value"
-            />
-          </div>
-        </template>
-        <template #filters>
-          <USelect
-            v-model="category"
-            :items="categoryNavigation"
-            value-key="value"
-            label-key="label"
-            aria-label="Ingredient category"
-          />
-          <USelect
-            v-model="imageFilter"
-            :items="imageOptions"
-            aria-label="Filter ingredient images"
-          />
-        </template>
-      </WorkspaceKitchenCollectionToolbar>
-      <div class="ingredient-catalogue-layout">
-        <div>
-          <div
-            v-if="hasFilters && cards.length"
-            role="status"
-            aria-live="polite"
-          >
-            <span>{{ visibleCount }} of {{ cards.length }} ingredients</span>
-            <UButton
-              label="Clear filters"
-              color="neutral"
-              variant="link"
-              size="sm"
-              @click="clearFilters"
-            />
-          </div>
-
-          <div v-if="groups.length">
-            <section
-              v-for="group in groups"
-              :key="group.value"
-              :aria-labelledby="`ingredients-${group.value}`"
-            >
-              <div>
-                <h2 :id="`ingredients-${group.value}`">
-                  {{ group.label }}
-                </h2>
-                <span>{{ group.cards.length }}</span>
-              </div>
-              <div
-                :class="
-                  layout === 'grid' ? 'ingredient-grid' : 'collection-stack'
-                "
-              >
-                <KitchenWorkspacePrepIngredientsCardsCell
-                  v-for="card in group.cards"
-                  :key="card.id"
-                  :id="card.id"
-                  :to="card.to"
-                  :title="card.title"
-                  :image-url="card.hasImage ? card.imageUrl : ''"
-                  :icon="group.icon"
-                  :category-label="group.label"
-                  :variant="layout"
-                  @image-error="failedImages[card.id] = card.imageUrl"
-                />
-              </div>
-            </section>
-          </div>
-          <div v-else>
-            <div>
-              <UIcon
-                :name="cards.length ? 'i-lucide-search' : 'i-lucide-carrot'"
-              />
-            </div>
-            <h2>
-              {{
-                cards.length
-                  ? 'No matching ingredients'
-                  : 'Start your ingredient library'
-              }}
-            </h2>
-            <p>
-              {{
-                cards.length
-                  ? 'Try another name, category or image filter.'
-                  : 'Choose the ingredients your kitchen uses from the shared catalogue.'
-              }}
-            </p>
-            <UButton
-              v-if="cards.length"
-              label="Clear filters"
-              color="neutral"
-              variant="soft"
-              @click="clearFilters"
-            />
-            <UButton
-              v-else-if="canWrite"
-              label="Create Ingredient"
-              icon="i-lucide-plus"
-              @click="addOpen = true"
-            />
-          </div>
+        <div class="ingredient-group__heading">
+          <h2 :id="`ingredients-${group.value}`" class="fx-type-card-heading">
+            {{ group.label }}
+          </h2>
+          <span class="fx-type-caption">{{ group.cards.length }}</span>
         </div>
+        <div
+          :class="layout === 'grid' ? 'ingredient-grid' : 'collection-stack'"
+        >
+          <KitchenWorkspacePrepIngredientsCardsCell
+            v-for="card in group.cards"
+            :key="card.id"
+            :id="card.id"
+            :to="card.to"
+            :title="card.title"
+            :image-url="card.hasImage ? card.imageUrl : ''"
+            :icon="group.icon"
+            :category-label="group.label"
+            :variant="layout"
+            @image-error="failedImages[card.id] = card.imageUrl"
+          />
+        </div>
+      </section>
+      <div v-if="!groups.length" role="status" class="ingredient-empty">
+        <UIcon
+          :name="cards.length ? 'i-lucide-search' : 'i-lucide-carrot'"
+          aria-hidden="true"
+        />
+        <h2 class="fx-type-card-heading">
+          {{ cards.length ? 'No matching ingredients' : 'No ingredients yet' }}
+        </h2>
+        <p class="fx-type-caption">
+          {{
+            cards.length
+              ? 'Try another name, category or image filter.'
+              : 'Add the ingredients your kitchen uses from the shared catalogue.'
+          }}
+        </p>
       </div>
       <UPagination
         v-if="visibleCount > pageSize"
@@ -165,163 +104,44 @@
         :sibling-count="1"
       />
     </template>
-
-    <USlideover
-      v-model:open="addOpen"
-      title="Create Ingredient"
-      description="Choose from the shared ingredient catalogue."
-    >
-      <template #body
-        ><KitchenWorkspacePrepIngredientsAdd v-if="addOpen && canWrite" />
-      </template>
-    </USlideover>
-    <FireDiagnosticsDebugPanel
-      title="Kitchen ingredients"
-      scope="workspace"
-      object-origin="fetched"
-      :objects="{ ingredients }"
-      :derived="debug"
-    />
-  </div>
+  </template>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useIngredientInterface } from '../../../../../../ingredient/composables/useIngredientInterface'
 import { requireKitchenWorkspacePrepIngredients } from '../../../../../composables/workspace/prep/ingredients/state'
-import { INGREDIENT_CATEGORY_OPTIONS } from '../../../../../../ingredient/models/ingredient-taxonomy'
+import { requireIngredientCatalogue } from '../useCatalogue'
 
-const { ingredients, kitchenId, pending, loadError, canWrite, debug } =
+const { storageKitchenId, outcome, pending, loadError } =
   requireKitchenWorkspacePrepIngredients()
-const { pill } = useIngredientInterface()
-const query = ref('')
-const category = ref('all')
-const imageFilter = ref('all')
-const layout = ref<'grid' | 'list'>('list')
-const addOpen = ref(false)
-const failedImages = ref<Record<string, string>>({})
+const { layout, failedImages, cards, groups, visibleCount, page, pageSize } =
+  requireIngredientCatalogue()
 const errorMessage = 'Your ingredients could not be loaded. Please try again.'
-const views = [
-  { value: 'grid' as const, label: 'Grid view', icon: 'i-lucide-layout-grid' },
-  { value: 'list' as const, label: 'List view', icon: 'i-lucide-list' },
-]
-const imageOptions = [
-  { label: 'All images', value: 'all' },
-  { label: 'Images missing', value: 'missing' },
-]
-const normalize = (value: string) =>
-  value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLocaleLowerCase()
-    .trim()
-const cards = computed(() =>
-  ingredients.value
-    .flatMap((ingredient) => {
-      const card = pill(ingredient)
-      if (!card) return []
-      const id = ingredient.ingredient_id || ingredient.id
-      return [
-        {
-          ...card,
-          id,
-          category: ingredient.category || 'uncategorised',
-          hasImage: Boolean(
-            card.imageUrl && failedImages.value[id] !== card.imageUrl
-          ),
-          to: `/workspace/kitchen/prep/ingredients/${encodeURIComponent(id)}`,
-        },
-      ]
-    })
-    .sort((a, b) =>
-      a.title.localeCompare(b.title, undefined, { sensitivity: 'base' })
-    )
-)
-const categories = computed(() =>
-  [
-    ...INGREDIENT_CATEGORY_OPTIONS,
-    {
-      value: 'uncategorised',
-      label: 'Uncategorised',
-      icon: 'i-lucide-circle-help',
-    },
-  ]
-    .map((option) => ({
-      ...option,
-      count: cards.value.filter((card) => card.category === option.value)
-        .length,
-    }))
-    .filter((option) => option.count)
-)
-const categoryNavigation = computed(() => [
-  {
-    value: 'all',
-    label: 'All ingredients',
-    icon: 'i-lucide-grid-2x2',
-    count: cards.value.length,
-  },
-  ...categories.value,
-])
-const filtered = computed(() =>
-  cards.value.filter(
-    (card) =>
-      (category.value === 'all' || card.category === category.value) &&
-      (imageFilter.value !== 'missing' || !card.hasImage) &&
-      (!normalize(query.value) ||
-        normalize([card.title, ...card.aliases].join(' ')).includes(
-          normalize(query.value)
-        ))
-  )
-)
-const page = ref(1)
-const pageSize = 40
-const pageCards = computed(() =>
-  filtered.value.slice((page.value - 1) * pageSize, page.value * pageSize)
-)
-watch([query, category, imageFilter, kitchenId], () => {
-  page.value = 1
-})
-watch(
-  () => filtered.value.length,
-  (count) => {
-    page.value = Math.min(page.value, Math.max(1, Math.ceil(count / pageSize)))
-  }
-)
-const groups = computed(() =>
-  categories.value
-    .map((option) => ({
-      ...option,
-      cards: pageCards.value.filter((card) => card.category === option.value),
-    }))
-    .filter((group) => group.cards.length)
-)
-const visibleCount = computed(() => filtered.value.length)
-const hasFilters = computed(() =>
-  Boolean(
-    query.value || category.value !== 'all' || imageFilter.value !== 'all'
-  )
-)
-function clearFilters() {
-  query.value = ''
-  category.value = 'all'
-  imageFilter.value = 'all'
-}
-watch(kitchenId, () => {
-  clearFilters()
-  addOpen.value = false
-  failedImages.value = {}
-})
-watch(canWrite, (allowed) => {
-  if (!allowed) addOpen.value = false
-})
 </script>
 
 <style scoped>
-.ingredient-catalogue-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.ingredient-group {
+  display: grid;
   min-width: 0;
+  gap: calc(var(--spacing) * 4);
+}
+.ingredient-group__heading {
+  display: flex;
+  align-items: baseline;
+  gap: calc(var(--spacing) * 2);
+}
+.ingredient-group__heading h2,
+.ingredient-empty h2,
+.ingredient-empty p {
+  margin: 0;
+}
+.ingredient-empty {
+  display: grid;
+  justify-items: center;
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 8);
+  border: 1px dashed var(--ui-border);
+  border-radius: var(--ui-radius);
+  text-align: center;
 }
 .ingredient-grid {
   display: grid;

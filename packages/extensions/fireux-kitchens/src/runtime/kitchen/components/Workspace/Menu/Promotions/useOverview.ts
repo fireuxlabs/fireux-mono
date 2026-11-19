@@ -1,9 +1,9 @@
 import { computed } from 'vue'
-import { useKitchenWorkspaceMenuPromotions } from '../../../../composables/workspace/menu/promotions'
+import { requireMenuWorkspace } from '../../../../composables/workspace/menu/state'
 import { overviewSummary } from '../../../../utils/overview-summary'
 
 export function useKitchenWorkspaceMenuPromotionsOverview() {
-  const { summary } = useKitchenWorkspaceMenuPromotions()
-  const overview = computed(() => overviewSummary(summary.value))
+  const { catalogue } = requireMenuWorkspace().overview
+  const overview = computed(() => overviewSummary(catalogue.value.promotions))
   return { overview }
 }

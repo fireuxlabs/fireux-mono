@@ -161,7 +161,7 @@ function context() {
         deps
       )
     deps.useMenuSectionItemCreation = load(
-      '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemCreation.ts',
+      '../../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionItemCreation.ts',
       'useMenuSectionItemCreation',
       deps
     )
@@ -218,7 +218,7 @@ function mount(h, component, exposed, extra = {}) {
     }),
     useRouteParam: () => identity.itemId,
     useKitchenItemContext: () => identity,
-    useKitchenItemsContext: () => ({
+    useItemCatalogueContext: () => ({
       ...identity,
       dishes: vue.ref([identity.item.value]),
       readOnly,
@@ -249,7 +249,7 @@ function mount(h, component, exposed, extra = {}) {
   }
   const content = readFileSync(
     new URL(
-      `../../runtime/kitchen/components/${component}.vue`,
+      `../../runtime/kitchen/components/Workspace/${component}.vue`,
       import.meta.url
     ),
     'utf8'
@@ -323,7 +323,6 @@ function mount(h, component, exposed, extra = {}) {
     'UAlert',
     'UCard',
     'FireCopyError',
-    'KitchenMenuItemsDescriptionAssistant',
   ])
     app.component(name, {
       render() {
@@ -628,45 +627,21 @@ test('Identity fields pass real local completion predicates through credentials 
   f.unmount()
   h.scope.stop()
 })
-test('Drink description assistance and Menu add-by-name retain changed local drafts and stop obsolete follow-on effects', async () => {
-  for (const component of [
-    'Menu/Items/DescriptionAssistant',
-    'Menu/Menus/Items/Add/ByName',
-  ]) {
-    const h = context(),
-      f = mount(
-        h,
-        component,
-        component.startsWith('Menu/Items')
-          ? '{notes,proposal,proposeDescription,approveDescription}'
-          : '{names,prices,addNames,error}'
-      )
-    if (component.startsWith('Menu/Items')) {
-      f.identity.catalogue.itemKind = 'drink'
-      f.api.notes.value = 'Original'
-      const flight = f.api.proposeDescription()
-      f.api.notes.value = 'Replacement'
-      h.token.resolve('token')
-      h.response.resolve({ proposal: 'Old' })
-      await flight
-      assert.equal(h.calls.length, 0)
-      assert.equal(f.api.notes.value, 'Replacement')
-      assert.equal(f.api.proposal.value, '')
-    } else {
-      f.api.prices.value = { Original: 13 }
-      f.api.names.value = 'Original'
-      const flight = f.api.addNames()
-      await finish(h)
-      f.api.names.value = 'Replacement'
-      h.response.resolve({ id: 'dish' })
-      await flight
-      assert.equal(h.calls.length, 1)
-      assert.equal(f.api.names.value, 'Replacement')
-      assert.equal(f.api.error.value, '')
-    }
-    f.unmount()
-    h.scope.stop()
-  }
+test('Menu add-by-name retains changed local drafts and stops obsolete follow-on effects', async () => {
+  const h = context(),
+    f = mount(h, 'Menu/Menus/Items/Add/ByName', '{names,prices,addNames,error}')
+  f.api.prices.value = { Original: 13 }
+  f.api.names.value = 'Original'
+  const flight = f.api.addNames()
+  await finish(h)
+  f.api.names.value = 'Replacement'
+  h.response.resolve({ id: 'dish' })
+  await flight
+  assert.equal(h.calls.length, 1)
+  assert.equal(f.api.names.value, 'Replacement')
+  assert.equal(f.api.error.value, '')
+  f.unmount()
+  h.scope.stop()
 })
 
 test('Identity replacement field action keeps its busy state when an older token finishes', async () => {
@@ -700,31 +675,6 @@ test('Identity replacement field action keeps its busy state when an older token
   assert.equal(h.calls.length, 1)
   assert.equal(f.api.fieldSaving.value, false)
   assert.equal(f.notices.length, 1)
-  f.unmount()
-  h.scope.stop()
-})
-test('Drink approval keeps replacement proposal and blocks its obsolete token dispatch', async () => {
-  const h = context(),
-    f = mount(
-      h,
-      'Menu/Items/DescriptionAssistant',
-      '{notes,proposal,approveDescription,saving}'
-    )
-  f.identity.catalogue.itemKind = 'drink'
-  f.api.notes.value = 'Notes'
-  f.api.proposal.value = 'Original'
-  const flight = f.api.approveDescription()
-  h.auth.resolve(h.user)
-  await drain()
-  f.api.proposal.value = 'Replacement'
-  h.token.resolve('token')
-  h.response.resolve({ id: 'dish' })
-  await flight
-  assert.equal(h.calls.length, 0)
-  assert.equal(f.api.proposal.value, 'Replacement')
-  assert.equal(f.api.notes.value, 'Notes')
-  assert.equal(f.api.saving.value, false)
-  assert.deepEqual(f.notices, [])
   f.unmount()
   h.scope.stop()
 })

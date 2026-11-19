@@ -9,7 +9,7 @@
   /></UContainer>
 </template>
 <script setup lang="ts">
-import OrderExamples from 'fireux-kitchens/runtime/kitchen/components/Orders/Examples/Index.vue'
+import OrderExamples from '../../../../components/Docs/OrderingTicket/Index.vue'
 definePageMeta({ layout: 'default', nav: { hidden: true } })
 useSeoMeta({
   title: 'Ordering Ticket · fireux-kitchens',

@@ -26,7 +26,7 @@
       </p>
     </div>
   </UCard>
-  <KitchenOrdersTicket :order="submission.order" :editable="false" />
+  <PublicKitchenOrdersTicket :order="submission.order" />
   <UButton
     label="New order"
     :disabled="pending"

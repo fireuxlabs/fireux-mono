@@ -39,7 +39,7 @@ function payments() {
   }
   const model = scope.run(() =>
     load(
-      '../runtime/kitchen/components/Workspace/Identity/Payments/Methods.vue',
+      '../runtime/kitchen/components/Workspace/Settings/Payments/Methods.vue',
       '({ updateFunctions })',
       commandScopeDeps({
         computed,

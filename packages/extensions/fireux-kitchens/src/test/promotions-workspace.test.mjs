@@ -34,7 +34,9 @@ function fixture() {
   }
   const state = {
     identity: { outcome: Vue.ref('ready') },
+    kitchenId: Vue.ref('kitchen-a'),
     collection: {
+      pending: Vue.ref(false),
       outcome: Vue.ref('ready'),
       items: Vue.ref([promotion]),
       error: Vue.ref(null),
@@ -74,16 +76,22 @@ function renderer() {
       setText() {},
       setElementText() {},
       patchProp() {},
-      insert(node, parent) {
+      insert(node, parent, anchor) {
+        if (node.parent)
+          node.parent.children.splice(node.parent.children.indexOf(node), 1)
         node.parent = parent
-        parent.children.push(node)
+        const index = anchor
+          ? parent.children.indexOf(anchor)
+          : parent.children.length
+        parent.children.splice(index, 0, node)
       },
       remove(node) {
         if (node.parent)
           node.parent.children.splice(node.parent.children.indexOf(node), 1)
       },
       parentNode: (node) => node.parent,
-      nextSibling: () => null,
+      nextSibling: (node) =>
+        node.parent?.children[node.parent.children.indexOf(node) + 1] ?? null,
     }),
   }
 }
@@ -94,7 +102,7 @@ test('mounted Promotions editor survives refresh/error and closes only when its 
   let mounted = 0,
     unmounted = 0
   const source = readFileSync(
-    new URL('components/Menu/Promotions/Index.vue', runtime),
+    new URL('components/Workspace/Menu/Promotions/Index.vue', runtime),
     'utf8'
   )
   const template = source
@@ -104,27 +112,29 @@ test('mounted Promotions editor survives refresh/error and closes only when its 
   const app = host.createApp({
     setup: () =>
       load(
-        'components/Menu/Promotions/Index.vue',
-        '({ editor, canCreate, createPromotion })',
+        'components/Workspace/Menu/Promotions/Index.vue',
+        '({ editor, canCreate, createPromotion, canSearch, query, visible })',
         {
           provideKitchenPromotionsContext: () => f.context,
+          computed: Vue.computed,
+          ref: Vue.ref,
         }
       ),
     render: Vue.compile(template),
   })
   const warnings = []
   app.config.warnHandler = (warning) => warnings.push(warning)
-  app.component('WorkspaceKitchenCollectionHeader', {
+  app.component('WorkspacePageHeader', {
     setup:
       (_, { slots }) =>
       () =>
         Vue.h('header', slots.actions?.()),
   })
   app.component('UButton', { render: () => Vue.h('button') })
-  app.component('KitchenMenuPromotionsCollection', {
-    render: () => Vue.h('div'),
-  })
-  app.component('KitchenMenuPromotionsEditor', {
+  app.component('WorkspaceKitchenAIFocus', { render: () => null })
+  for (const name of ['Controls', 'Collection', 'Ai'])
+    app.component(`Promotions.${name}`, { render: () => null })
+  app.component('Promotions.Create', {
     setup() {
       mounted++
       Vue.onUnmounted(() => unmounted++)
@@ -305,4 +315,26 @@ test('Promotion save uses the linked Place currency supplied by Kitchen Identity
   place.value = { id: 'k', default_currency_code: 'EUR' }
   await editor.save()
   assert.equal(saves[1][0].currency, 'EUR')
+})
+
+test('Promotions search filters the displayed count by name', () => {
+  const f = fixture()
+  const { query, visible } = load(
+    'components/Workspace/Menu/Promotions/Index.vue',
+    '({ query, visible })',
+    {
+      computed: Vue.computed,
+      ref: Vue.ref,
+      provideKitchenPromotionsContext: () => f.context,
+    }
+  )
+  assert.equal(visible.value.length, 1)
+  query.value = '  PIZZA '
+  assert.deepEqual(
+    visible.value.map((promotion) => promotion.id),
+    ['sunday']
+  )
+  query.value = 'missing'
+  assert.equal(visible.value.length, 0)
+  f.scope.stop()
 })

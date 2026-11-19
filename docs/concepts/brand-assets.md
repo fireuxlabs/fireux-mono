@@ -32,7 +32,7 @@ Map App artwork ownership, local delivery, stored media, and User avatars.
   `packages/core/fireux-core/src/runtime/app/components/Brand/Logo.vue` and
   `packages/core/fireux-core/src/runtime/app/components/Brand/Wordmark.vue`
 - App profile and collection media consumers:
-  `packages/core/fireux-core/src/runtime/app/components/Detail/Index.vue` and
+  `packages/core/fireux-core/src/runtime/app/components/Public/Detail/Index.vue` and
   `packages/extensions/fireux-ecosystem/src/runtime/components/landing/AppCollection.vue`
 - App role paths, dimensions and stored field names:
   `packages/core/fireux-core/src/runtime/app/media/requirements.ts`

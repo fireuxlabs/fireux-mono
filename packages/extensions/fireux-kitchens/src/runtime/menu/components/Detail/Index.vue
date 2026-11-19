@@ -73,7 +73,7 @@
         </template>
       </MenuDetailHeader>
 
-      <KitchenOfferingsTimes
+      <PublicKitchenOfferingsTimes
         v-if="
           !detailMenu?.content.daily &&
           (detailMenu?.source?.kitchenId || documentMenu?.offerings)

@@ -8,7 +8,7 @@
     />
 
     <UPageBody class="pagebody">
-      <KitchenOnboarding mode="root" intent="directory" />
+      <PublicKitchenOnboarding mode="root" intent="directory" />
     </UPageBody>
   </UPage>
 </template>

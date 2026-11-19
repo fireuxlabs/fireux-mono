@@ -8,7 +8,7 @@ import type { WorkspacePalette } from 'fireux-core/types/theme'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { readKitchenThemePalette } from '../../../utils/kitchen-readers'
-import { useKitchenWorkspaceIdentity } from '../useKitchenWorkspaceIdentity'
+import { useKitchenWorkspaceIdentity } from './useKitchenWorkspaceIdentity'
 
 const fallbackWorkspacePalette: WorkspacePalette = {
   canvas: '#f8fafc',

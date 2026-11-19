@@ -172,7 +172,7 @@ test('Section Create/label editor suppress obsolete success/error and keep new p
           return pending.promise
         }
         const api = load(
-          '../../runtime/kitchen/composables/workspace/menus/useMenuSectionsEditor.ts',
+          '../../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionsEditor.ts',
           {
             ref,
             computed,
@@ -243,7 +243,7 @@ test('Item selection snapshots targets and drops stale account or section comple
         sectionId = ref('s')
       let editorCurrent
       const useSelection = load(
-        '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemSelection.ts',
+        '../../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionItemSelection.ts',
         { ref, computed, watch, useMenuEditorScope: scope(currentUser) },
         'useMenuSectionItemSelection'
       )
@@ -300,7 +300,7 @@ test('section movement is bounded to the visible date and rejects obsolete date 
     notices = []
   let intent
   const api = load(
-    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionsEditor.ts',
+    '../../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionsEditor.ts',
     {
       ref,
       computed,
@@ -368,7 +368,7 @@ test('Section archive/restore preserves content, filters dates and discards obso
       { id: 'c', label: 'Other date', status: 'archived', date: '2026-10-17' },
     ])
     const api = load(
-      '../../runtime/kitchen/composables/workspace/menus/useMenuSectionsEditor.ts',
+      '../../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionsEditor.ts',
       {
         ref,
         computed,
@@ -459,7 +459,7 @@ test('new Item placement reuses catalogue owners and never attaches an obsolete 
       createItem: async (input) => placements.push(input),
     }
     const state = load(
-      '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemCreation.ts',
+      '../../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionItemCreation.ts',
       {
         computed,
         ref,
@@ -559,18 +559,18 @@ test('all Add workflows can restore retained placements and exclude already acti
     useItemCreate: () => ({ createItem: assert.fail }),
   }
   const dish = load(
-    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemSelection.ts',
+    '../../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionItemSelection.ts',
     deps,
     'useMenuSectionItemSelection'
   )(context)
   const deal = load(
-    '../../runtime/kitchen/components/Menu/Menus/Items/Add/MealDeal.vue',
+    '../../runtime/kitchen/components/Workspace/Menu/Menus/Items/Add/MealDeal.vue',
     deps,
     '({available,promotionId,add})',
     true
   )
   const names = load(
-    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemCreation.ts',
+    '../../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionItemCreation.ts',
     deps,
     'useMenuSectionItemCreation'
   )(context, () => '/menus/m/s')
@@ -607,7 +607,7 @@ test('a Menu placement retry reuses its saved Item before the catalogue listener
   const placed = []
   let failPlacement = true
   const api = load(
-    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemCreation.ts',
+    '../../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionItemCreation.ts',
     {
       ref,
       computed,

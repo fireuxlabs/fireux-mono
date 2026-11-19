@@ -509,7 +509,7 @@ terms, not a separate Sellable or offer Entity.
 
 The routed [Orders Board](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Orders/Board.vue)
 owns submitted-order polling and combines those results with saved drafts from
-[useKitchenOrderDraftCollection](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenOrderDraftCollection.ts).
+[useKitchenOrderDraftCollection](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/orders/useKitchenOrderDraftCollection.ts).
 Its selected Kitchen is gated by App session and Kitchen access. Draft acquisition
 masks rows outside its ready owner and read outcome. Board owns filters, editor
 selection and local response inputs; scope changes synchronously clear those
@@ -556,14 +556,14 @@ consumed presentation remain explicit, without compulsory CRUD scaffolding.
 ## Recipe and Prep responsibilities
 
 Kitchen's `composables/preparations/useKitchenPreparationsRead.ts` and
-`workspace/prep/recipes/read.ts` each acquire one exact access-bound
+`composables/workspace/prep/recipes/read.ts` each acquire one exact access-bound
 collection through Core. Their private normalization retains historical output
 links and per-field Recipe inputs/method/yield without rewriting documents or
 fabricating provenance. The active `/prep/preparations` and `/prep/recipes` routes
 compose `Workspace/Prep/LibraryRead.vue`; `Library.vue` owns search, links and
 local expected-yield scaling.
 
-`kitchen/workspace/prep/recipes/Editor.vue` supplies canonical creation and sparse updates through one
+`kitchen/components/Workspace/Prep/Recipes/Editor.vue` supplies canonical creation and sparse updates through one
 `usePrepMutation` transport and Core `useIdentityEditor`. The trusted create/update
 commands share `recipe/utils/changes.ts` and validate exact current Ingredient and
 Preparation references in the transaction. Preparation identity editing remains

@@ -4,13 +4,13 @@
       <MenuCollectionScoped :index="menuIndex" browse-only>
         <template #header>
           <div class="venue-menu-intro">
-            <KitchenDetailMenuHeader
+            <PublicKitchenDetailMenuHeader
               :venue="presentation"
               :venue-path="venuePath"
               :title="offeringName || 'Food & drinks'"
               prominent
             />
-            <KitchenDetailMenuServices
+            <PublicKitchenDetailMenuServices
               v-if="!offeringId"
               :kitchen-slug="kitchenSlug"
             />
@@ -29,7 +29,7 @@
         </template>
       </MenuCollectionScoped>
     </template>
-    <KitchenDetailState
+    <PublicKitchenDetailState
       v-else
       :outcome="outcome"
       :has-kitchen="Boolean(kitchen)"

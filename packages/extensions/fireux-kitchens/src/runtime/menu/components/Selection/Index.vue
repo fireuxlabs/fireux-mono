@@ -8,7 +8,7 @@
       @click="checkout.reset"
     />
     <template v-if="catalogueReady">
-      <KitchenOfferingsTimes
+      <PublicKitchenOfferingsTimes
         :offerings="offerings"
         compact
         :show-names="false"

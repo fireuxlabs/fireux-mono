@@ -1,43 +1,43 @@
 <template>
-  <section>
-    <div v-if="storageKitchenId">
-      <KitchenWorkspacePrepIngredientsCollection />
-    </div>
-
-    <UAlert
-      v-else-if="outcome === 'error'"
-      title="Kitchen unavailable"
-      description="Your Kitchen could not be loaded. Please try again."
-      color="error"
-      variant="soft"
-      role="alert"
-      aria-live="assertive"
-    >
-      <template #actions>
-        <FireCopyError
-          message="Kitchen unavailable&#10;Your Kitchen could not be loaded. Please try again."
-        />
-      </template>
-    </UAlert>
-    <p v-else-if="outcome === 'pending'" role="status">Loading Kitchen…</p>
-    <UAlert
-      v-else-if="outcome === 'empty'"
-      color="neutral"
-      title="Kitchen not found"
-      description="Choose an available Kitchen to manage its Ingredients."
-    />
-    <UAlert
-      v-else
-      color="neutral"
-      variant="soft"
-      title="Select a kitchen"
-      description="Choose a kitchen before managing ingredients."
-    />
-  </section>
+  <WorkspacePageHeader
+    title="Ingredients"
+    description="Manage the ingredients your kitchen uses in prep."
+    variant="child"
+  >
+    <template #actions>
+      <UButton
+        v-if="canWrite"
+        label="Add ingredient"
+        icon="i-lucide-plus"
+        @click="addOpen = true"
+      />
+    </template>
+  </WorkspacePageHeader>
+  <Ingredients.Controls v-if="storageKitchenId && !pending && !loadError" />
+  <Ingredients.Collection />
+  <Ingredients.Create
+    v-if="storageKitchenId"
+    v-model:open="addOpen"
+    :can-write="canWrite"
+  />
+  <Ingredients.Ai v-if="storageKitchenId" />
+  <FireDiagnosticsDebugPanel
+    v-if="storageKitchenId"
+    title="Kitchen ingredients"
+    scope="workspace"
+    object-origin="fetched"
+    :objects="{ ingredients }"
+    :derived="debug"
+  />
 </template>
 
 <script setup lang="ts">
+import * as Ingredients from './index'
 import { provideKitchenWorkspacePrepIngredients } from '../../../../composables/workspace/prep/ingredients/state'
+import { provideIngredientCatalogue } from './useCatalogue'
 
-const { storageKitchenId, outcome } = provideKitchenWorkspacePrepIngredients()
+const workspace = provideKitchenWorkspacePrepIngredients()
+const { storageKitchenId, pending, loadError, canWrite, ingredients, debug } =
+  workspace
+const { addOpen } = provideIngredientCatalogue(workspace)
 </script>

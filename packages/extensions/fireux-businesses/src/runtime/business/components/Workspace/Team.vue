@@ -1,8 +1,15 @@
 <template>
   <UCard>
     <template #header>Team roster</template>
-    <p>Organise people who work with your business. Roster entries do not grant account access.</p>
-    <WorkspaceTeamEditor :team="team" :role-labels="{}" :error="team.error.value?.message" />
+    <p>
+      Organise people who work with your business. Roster entries do not grant
+      account access.
+    </p>
+    <WorkspaceTeamEditor
+      :team="team"
+      :role-labels="{}"
+      :error="team.error.value?.message"
+    />
   </UCard>
 </template>
 <script setup lang="ts">

@@ -31,7 +31,7 @@
         </div>
       </template>
       <Suspense v-else :key="service">
-        <KitchenDetailServiceMenu
+        <PublicKitchenDetailServiceMenu
           :kitchen-slug="kitchenSlug"
           :service="service"
           @reset="service = null"

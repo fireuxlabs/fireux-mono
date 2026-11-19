@@ -80,31 +80,30 @@ async function render(path, state) {
   })
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of [
-    'KitchenMenuMenusItemsEditRow',
-    'KitchenMenuMenusItemsAdd',
-    'KitchenMenuMenusSectionsCreate',
-    'KitchenMenuMenusSectionsCollectionRow',
-    'KitchenMenuMenusProcess',
-    'KitchenMenuMenusPreparationDocument',
-    'KitchenMenuMenusUploadsDetailFile',
+    'KitchenWorkspaceMenuMenusItemsEditRow',
+    'KitchenWorkspaceMenuMenusItemsAdd',
+    'KitchenWorkspaceMenuMenusSectionsCreate',
+    'KitchenWorkspaceMenuMenusSectionsCollectionRow',
+    'KitchenWorkspaceMenuMenusProcess',
+    'KitchenWorkspaceMenuMenusPreparationDocument',
+    'KitchenWorkspaceMenuMenusUploadsDetailFile',
     'UInput',
     'UBreadcrumb',
     'FireDiagnosticsDebugPanel',
     'UFormField',
-    'KitchenMenuMenusSectionsItems',
-    'KitchenMenuMenusSectionsCollectionSchedule',
+    'KitchenWorkspaceMenuMenusSectionsCollectionSchedule',
     'UButton',
     'UModal',
     'NuxtLink',
     'USwitch',
-    'KitchenMenuMenusItemsSharedTerms',
-    'KitchenMenuMenusItemsAdoptSharedTerms',
+    'KitchenWorkspaceMenuMenusItemsSharedTerms',
+    'KitchenWorkspaceMenuMenusItemsAdoptSharedTerms',
     'FireFormsEditableSimpleField',
     'FireDisclosurePanel',
-    'KitchenMenuMenusItemsOptions',
-    'KitchenMenuMenusCollection',
-    'KitchenMenuMenusAi',
-    'KitchenMenuMenusSectionsInline',
+    'KitchenWorkspaceMenuMenusItemsOptions',
+    'KitchenWorkspaceMenuMenusCollection',
+    'KitchenWorkspaceMenuMenusAi',
+    'KitchenWorkspaceMenuMenusSectionsInline',
   ])
     app.component(name, { render: () => null })
   app.component('UButton', {
@@ -158,7 +157,7 @@ async function render(path, state) {
   return html
 }
 const sectionsPath =
-  'kitchen/components/Menu/Menus/Sections/Collection/Index.vue'
+  'kitchen/components/Workspace/Menu/Menus/Sections/Collection/Index.vue'
 function sectionView(overrides = {}) {
   return {
     menu: { description: 'Current menu' },
@@ -201,7 +200,7 @@ test('Menu sections show empty copy only after the child read settles', async ()
     (await render(sectionsPath, sectionView())).includes('No sections yet.')
   )
 })
-const itemsPath = 'kitchen/components/Menu/Menus/Items/Edit/Index.vue'
+const itemsPath = 'kitchen/components/Workspace/Menu/Menus/Items/Edit/Index.vue'
 function itemView(overrides = {}) {
   return {
     menuSlug: 'food',
@@ -379,7 +378,7 @@ function collectionFixture() {
     kitchenMenuCapacity,
   }
   const create = load(
-    'kitchen/composables/workspace/menus/useKitchenWorkspaceMenus.ts',
+    'kitchen/composables/workspace/menu/menus/useKitchenWorkspaceMenus.ts',
     'useKitchenWorkspaceMenus',
     deps
   )
@@ -395,7 +394,7 @@ function collectionFixture() {
     api: owner.run(() => {
       const menus = create()
       const sources = load(
-        'kitchen/composables/workspace/menus/useKitchenWorkspaceMenuSources.ts',
+        'kitchen/composables/workspace/menu/menus/useKitchenWorkspaceMenuSources.ts',
         'useKitchenWorkspaceMenuSources',
         deps
       )()
@@ -551,27 +550,8 @@ test('an independent source-upload failure does not hide a loaded Menu', () => {
   f.owner.stop()
 })
 for (const outcome of ['pending', 'error', 'empty'])
-  test(`Menus entry shows the owning Kitchen ${outcome} before collection tools`, async () => {
-    const html = await render('kitchen/components/Menu/Menus/Index.vue', {
-      storageKitchenId: '',
-      outcome,
-      error: outcome === 'error' ? new Error('Kitchen failed') : null,
-      workspaceEntryPath: '/workspace/kitchen',
-    })
-    assert.ok(
-      outcome === 'pending'
-        ? /loading|pending/i.test(html)
-        : html.includes(
-            outcome === 'error' ? 'Kitchen failed' : 'Kitchen not found'
-          ),
-      html
-    )
-    assert.ok(!html.includes('Choose a kitchen</p>'), html)
-  })
-
-for (const outcome of ['pending', 'error', 'empty'])
   test(`uploaded Menu source ${outcome} has truthful shared preparation feedback`, async () => {
-    const html = await render('kitchen/components/Menu/Menus/Preparation.vue', {
+    const html = await render('kitchen/components/Workspace/Menu/Menus/Preparation.vue', {
       outcome,
       error: outcome === 'error' ? new Error('Sources failed') : null,
     })

@@ -3,7 +3,6 @@
 </template>
 
 <script setup lang="ts">
-import KitchenWorkspaceMenu from '../../../../kitchen/components/Workspace/Menu/Index.vue'
 definePageMeta({
   layout: 'workspace',
 

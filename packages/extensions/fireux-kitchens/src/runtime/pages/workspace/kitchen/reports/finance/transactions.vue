@@ -4,7 +4,7 @@
     label="Transactions"
     context-label="Reports"
   />
-  <KitchenFinanceNav />
+  <WorkspaceKitchenReportsFinanceNav />
   <WorkspaceKitchenOverviewFinance :from-date="fromDate" :to-date="toDate" />
 </template>
 

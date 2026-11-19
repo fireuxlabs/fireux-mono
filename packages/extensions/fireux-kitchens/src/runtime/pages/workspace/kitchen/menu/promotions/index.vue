@@ -1,4 +1,4 @@
-<template><KitchenMenuPromotions /></template>
+<template><KitchenWorkspaceMenuPromotions /></template>
 <script setup lang="ts">
 definePageMeta({
   layout: 'workspace',

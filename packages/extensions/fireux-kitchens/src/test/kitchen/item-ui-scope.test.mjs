@@ -14,7 +14,7 @@ function evaluate(relative, deps, result, vue = false) {
   if (vue) deps = { ...specification, ...deps }
   if (relative === component('Menu/Menus/Items/Add/ByName')) {
     deps.useMenuSectionItemCreation = evaluate(
-      '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemCreation.ts',
+      '../../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionItemCreation.ts',
       deps,
       'useMenuSectionItemCreation'
     )
@@ -59,7 +59,7 @@ function setup() {
       data: ref({ id: 'k' }),
     }),
     useRouteParam: () => dishId,
-    useKitchenItemsContext: () => ({
+    useItemCatalogueContext: () => ({
       catalogue: { singular: 'dish', path: '/dishes' },
     }),
     onBeforeUnmount: (fn) => unmount.push(fn),
@@ -76,7 +76,7 @@ function deferred() {
   })
   return { promise, resolve, reject }
 }
-const component = (name) => `../../runtime/kitchen/components/${name}.vue`
+const component = (name) => `../../runtime/kitchen/components/Workspace/${name}.vue`
 const specification = evaluate(
   '../../runtime/kitchen/utils/item-specification.ts',
   { isFirestoreDocumentId },
@@ -94,7 +94,7 @@ test('create does not upload or show stale outcomes after Kitchen/account round 
           ...h.deps,
           defineProps: () => ({}),
           defineEmits: () => () => {},
-          useKitchenItemsContext: () => ({
+          useItemCatalogueContext: () => ({
             kitchenId: h.kitchenId,
             readOnly: ref(false),
             catalogue: { itemKind: 'food' },
@@ -138,7 +138,7 @@ test('create captures original upload and reports saved Item with failed image h
       ...h.deps,
       defineProps: () => ({}),
       defineEmits: () => () => {},
-      useKitchenItemsContext: () => ({
+      useItemCatalogueContext: () => ({
         kitchenId: h.kitchenId,
         readOnly: ref(false),
         catalogue: { itemKind: 'food' },
@@ -249,48 +249,6 @@ test('delete does not navigate or toast after record changes, including same-tic
   assert.equal(api.deleting.value, false)
 })
 
-test('description proposal snapshots its body and never dispatches after focus changes during credentials', async () => {
-  for (const changed of [false, true]) {
-    const h = setup(),
-      pending = deferred(),
-      calls = []
-    h.currentUser.value = { uid: 'u', getIdToken: () => pending.promise }
-    const api = evaluate(
-      component('Menu/Items/DescriptionAssistant'),
-      {
-        ...h.deps,
-        useAuth: () => ({ currentUser: h.currentUser }),
-        useFireUXConfig: () => ({ appId: 'app' }),
-        useKitchenItemContext: () => ({
-          kitchenId: h.kitchenId,
-          itemId: h.dishId,
-          canWrite: ref(true),
-          item: ref({}),
-          catalogue: {},
-        }),
-        useItemUpdate: () => ({ updateItem: async () => {} }),
-        $fetch: async (...args) => {
-          calls.push(args)
-          return { proposal: 'Proposed' }
-        },
-      },
-      '({proposeDescription,notes,proposal})',
-      true
-    )
-    api.notes.value = 'Original'
-    const result = api.proposeDescription()
-    api.notes.value = 'Changed'
-    if (changed) {
-      h.dishId.value = 'other'
-      h.dishId.value = 'dish'
-    }
-    pending.resolve('token')
-    await result
-    assert.equal(calls.length, 0)
-    assert.equal(api.notes.value, changed ? '' : 'Changed')
-    assert.equal(api.proposal.value, '')
-  }
-})
 test('record edit ignores old failures and spec saves a detached payload', async () => {
   const h = setup(),
     pending = deferred()
@@ -461,7 +419,7 @@ test('Menu entry removal captures scope and suppresses obsolete completion', asy
     sectionId = ref('section')
   let intent
   const api = evaluate(
-    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemsEditor.ts',
+    '../../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionItemsEditor.ts',
     {
       ...h.deps,
       window: { confirm: () => true },
@@ -503,7 +461,7 @@ test('item moves disable list boundaries and discard obsolete completion', async
     itemRows = ref([{ id: 'a' }, { id: 'b' }])
   let intent
   const api = evaluate(
-    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemsEditor.ts',
+    '../../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionItemsEditor.ts',
     {
       ...h.deps,
       useMenuRecordNavigation: () => ({ rememberView() {} }),
@@ -552,7 +510,7 @@ test('item creation requires a price and submits explicit zero without a fixed t
         ...h.deps,
         defineProps: () => ({ itemKind }),
         defineEmits: () => () => {},
-        useKitchenItemsContext: () => ({
+        useItemCatalogueContext: () => ({
           kitchenId: h.kitchenId,
           readOnly: ref(false),
           catalogue: { itemKind },

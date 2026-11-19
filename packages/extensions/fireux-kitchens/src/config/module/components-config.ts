@@ -53,6 +53,21 @@ export function configureComponents(resolver: Resolver) {
     ignore: ['Navigation/Index.vue', 'Menu/**', 'Prep/**'],
   })
 
+  for (const [name, path] of [
+    ['KitchenWorkspaceStockSuppliers', 'Stock/Suppliers/Index.vue'],
+    ['KitchenWorkspaceTeamPeople', 'Team/People/Index.vue'],
+    ['KitchenWorkspaceFoodSafetyProcedures', 'FoodSafety/Procedures.vue'],
+    ['KitchenWorkspaceFoodSafetyRecords', 'FoodSafety/Records.vue'],
+  ]) {
+    addComponent({
+      name,
+      filePath: resolver.resolve(
+        './runtime/kitchen/components/Workspace',
+        path
+      ),
+    })
+  }
+
   addComponent({
     name: 'WorkspaceKitchenNavigation',
     filePath: resolver.resolve(
@@ -61,17 +76,11 @@ export function configureComponents(resolver: Resolver) {
     global: true,
   })
 
-  registerComponentsDir(resolver, './runtime/kitchen/components/Public', {
-    global: false,
-    pathPrefix: true,
-    prefix: 'PublicKitchen',
-  })
-
   registerComponentsDir(resolver, './runtime/kitchen/components', {
     global: false,
     pathPrefix: true,
-    prefix: 'Kitchen',
-    ignore: ['Workspace/**', 'Public/**'],
+    prefix: 'PublicKitchen',
+    ignore: ['Workspace/**'],
   })
 
   registerComponentsDir(resolver, './runtime/menu/components', {

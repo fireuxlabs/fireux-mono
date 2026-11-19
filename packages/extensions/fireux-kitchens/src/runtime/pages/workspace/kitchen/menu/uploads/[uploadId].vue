@@ -6,7 +6,7 @@
     context-label="Menu"
   />
   <section class="fx-page-stack">
-    <KitchenMenuMenusUploadsDetail />
+    <KitchenWorkspaceMenuMenusUploadsDetail />
   </section>
 </template>
 

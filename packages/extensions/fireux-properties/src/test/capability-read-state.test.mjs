@@ -128,7 +128,7 @@ test('Supplier Catalogue waits for both collections and distinguishes either fai
   const api = scope.run(() =>
     load(
       runtime('fireux-suppliers') +
-        'supplier/composables/workspace/catalogue/useSupplierWorkspaceCatalogue.ts',
+        'supplier/composables/workspace/catalogue/useSupplierWorkspaceCatalogues.ts',
       {
         computed,
         resolveReadOutcome,
@@ -153,7 +153,7 @@ test('Supplier Catalogue waits for both collections and distinguishes either fai
           error: itemError,
         }),
       },
-      'useSupplierWorkspaceCatalogue()'
+      'useSupplierWorkspaceCatalogues()'
     )
   )
   assert.equal(api.catalogues.value.length, 1)
@@ -442,15 +442,14 @@ async function render(path, state) {
   return renderToString(app)
 }
 test('Supplier pages show loading/error/unavailable without counts, stale cards or empty claims', async () => {
-  for (const [cap, noun] of [
-    ['Catalogue', 'supplier catalogue'],
-    ['Items', 'supplier items'],
-    ['Ingredients', 'Ingredient details'],
+  for (const [screen, noun] of [
+    ['Catalogue.vue', 'supplier catalogue'],
+    ['Items.vue', 'supplier items'],
+    ['Ingredients/Read.vue', 'Ingredient details'],
   ]) {
     for (const outcome of ['pending', 'error', 'idle']) {
       const html = await render(
-        runtime('fireux-suppliers') +
-          `supplier/components/Workspace/${cap}/Read.vue`,
+        runtime('fireux-suppliers') + `supplier/components/Workspace/${screen}`,
         {
           outcome,
           cards: [],

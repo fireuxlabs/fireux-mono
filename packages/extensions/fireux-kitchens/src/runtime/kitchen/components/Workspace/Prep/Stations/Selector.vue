@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspacePrepStationsRead } from '../../../../composables/workspace/prep/stations/useKitchenWorkspacePrepStationsRead'
+import { useKitchenWorkspacePrepStationsRead } from '../../../../composables/workspace/prep/stations/read'
 
 const { stations, selectedStationId, canWrite, createOpen } =
   useKitchenWorkspacePrepStationsRead()

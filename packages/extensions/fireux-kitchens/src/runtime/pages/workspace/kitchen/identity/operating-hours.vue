@@ -2,7 +2,7 @@
   <WorkspaceKitchenAIFocus
     focus="kitchen-ai.identity.operating-hours"
     label="Operating hours"
-  /><KitchenOperatingHours />
+  /><WorkspaceKitchenIdentityOperatingHours />
 </template>
 
 <script setup lang="ts">

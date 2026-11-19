@@ -1,21 +1,21 @@
 <template>
   <UPage>
     <UPageBody>
-      <KitchenPlaceDetail
+      <PublicKitchenPlaceDetail
         v-if="place && kitchen"
         :key="kitchen.id"
         :kitchen="kitchen"
         :place="place"
       >
         <template #management>
-          <KitchenDetailOperatorPanel
+          <WorkspaceKitchenOperatorPanel
             v-if="canOperateKitchen"
             :kitchen="kitchen"
           />
           <PlaceDetailAdmin v-else :place="place" />
           <!-- Supplier actions remain disconnected until its Place relationship is ready. -->
         </template>
-      </KitchenPlaceDetail>
+      </PublicKitchenPlaceDetail>
       <PlaceDetail v-else-if="place" :place="place">
         <template #services>
           <UAlert
@@ -47,7 +47,7 @@ import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { usePlaceDetail } from 'fireux-places/runtime/place/composables/usePlaceDetail'
 import PlaceDetailAdmin from 'fireux-places/runtime/place/components/Detail/Admin.vue'
-import KitchenDetailOperatorPanel from 'fireux-kitchens/runtime/kitchen/components/Detail/OperatorPanel.vue'
+import WorkspaceKitchenOperatorPanel from 'fireux-kitchens/runtime/kitchen/components/Workspace/OperatorPanel.vue'
 import { useKitchens } from 'fireux-kitchens/runtime/kitchen/composables/useKitchens'
 import { useKitchenAccess } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenAccess'
 

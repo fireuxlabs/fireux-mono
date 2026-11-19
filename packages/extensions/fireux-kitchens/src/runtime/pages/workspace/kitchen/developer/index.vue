@@ -14,8 +14,7 @@ definePageMeta({
     hidden: true,
     key: 'workspace-kitchen-developer',
     label: 'Developer',
-    description:
-      'Open Kitchen development tools. Test records are separate from operational Kitchen data.',
+    description: 'Open Kitchen development tools.',
     group: '',
     groupIndex: true,
     icon: 'i-lucide-code-2',
@@ -24,13 +23,6 @@ definePageMeta({
     desktop: true,
     mobile: true,
     menus: ['workspace'],
-    children: [
-      {
-        label: 'Test',
-        to: '/workspace/kitchen/developer/test',
-        icon: 'i-lucide-flask-conical',
-      },
-    ],
   },
 })
 </script>

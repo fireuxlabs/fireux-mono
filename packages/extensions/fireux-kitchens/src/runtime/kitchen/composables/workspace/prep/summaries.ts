@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
 import { useKitchenPreparationsRead } from '../../preparations/useKitchenPreparationsRead'
-import { useKitchenRecipesRead } from '../../../workspace/prep/recipes/read'
+import { useKitchenRecipesRead } from './recipes/read'
 import { useKitchenChildCollection } from '../../useKitchenChildCollection'
 
 export type PrepSummary = {

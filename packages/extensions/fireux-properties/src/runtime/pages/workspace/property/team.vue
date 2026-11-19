@@ -7,7 +7,7 @@
       title="Team AI is not connected yet"
       color="neutral"
     /> </WorkspaceAI
-  ><PropertyTeam :key="team.state.value.property.id" :team="team" />
+  ><WorkspacePropertyTeam :key="team.state.value.property.id" :team="team" />
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'

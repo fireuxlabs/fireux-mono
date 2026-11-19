@@ -1,9 +1,11 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <KitchenMenuItemsDetail />
+  <KitchenWorkspaceMenuItemsDetail />
 </template>
 
 <script setup lang="ts">
+import KitchenWorkspaceMenuItemsDetail from '../../../../../kitchen/components/Workspace/Menu/Items/Detail/Index.vue'
+
 definePageMeta({
   layout: 'workspace',
 

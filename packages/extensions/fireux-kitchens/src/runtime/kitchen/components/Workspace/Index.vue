@@ -64,7 +64,7 @@ import {
 import { useKitchenCreate } from '../../composables/useKitchenCreate'
 import { useKitchenAnonymousAdoption } from '../../composables/workspace/useKitchenAnonymousAdoption'
 import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
-import { useKitchenWorkspaceIdentity } from '../../composables/workspace/useKitchenWorkspaceIdentity'
+import { useKitchenWorkspaceIdentity } from '../../composables/workspace/identity/useKitchenWorkspaceIdentity'
 
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { kitchenWorkspaceIntro } from '../../utils/kitchen-workspace-intro'

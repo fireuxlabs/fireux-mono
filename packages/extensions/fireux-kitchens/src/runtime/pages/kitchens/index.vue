@@ -2,7 +2,7 @@
   <UPage>
     <PublicKitchenHero />
     <UPageBody>
-      <KitchenCreate />
+      <PublicKitchenDirectoryCreate />
       <FireState v-bind="page.state" retryable @retry="page.refresh()" />
       <PublicKitchenCollection
         v-show="page.state.outcome === 'ready'"

@@ -37,7 +37,7 @@ function fixture() {
   const source = stripTypeScriptTypes(
     readFileSync(
       new URL(
-        '../runtime/kitchen/composables/workspace/menus/useMenuRecordNavigation.ts',
+        '../runtime/kitchen/composables/workspace/menu/menus/useMenuRecordNavigation.ts',
         import.meta.url
       ),
       'utf8'

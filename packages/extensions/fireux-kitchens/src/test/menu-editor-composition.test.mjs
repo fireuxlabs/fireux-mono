@@ -7,7 +7,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { renderToString } from 'vue/server-renderer'
 
 const base = new URL(
-  '../runtime/kitchen/components/Menu/Menus/',
+  '../runtime/kitchen/components/Workspace/Menu/Menus/',
   import.meta.url
 )
 async function render(relative, props) {
@@ -48,10 +48,9 @@ async function render(relative, props) {
     'UDropdownMenu',
     'FireFormsEditableSimpleField',
     'FireDisclosurePanel',
-    'KitchenMenuMenusItemsSharedTerms',
-    'KitchenMenuMenusItemsAdoptSharedTerms',
-    'KitchenMenuMenusItemsOptions',
-    'KitchenMenuMenusSectionsItems',
+    'KitchenWorkspaceMenuMenusItemsSharedTerms',
+    'KitchenWorkspaceMenuMenusItemsAdoptSharedTerms',
+    'KitchenWorkspaceMenuMenusItemsOptions',
   ]) {
     app.component(name, {
       inheritAttrs: false,
@@ -210,8 +209,8 @@ test('Menu item row shows prices and confirmed removal inside its vertical actio
   assert.equal(seen.USwitch, undefined)
   assert.doesNotMatch(html, /rounded-lg|On menu/)
   assert.equal(seen.FireFormsEditableSimpleField, undefined)
-  assert.equal(seen.KitchenMenuMenusItemsSharedTerms, undefined)
-  assert.equal(seen.KitchenMenuMenusItemsOptions, undefined)
+  assert.equal(seen.KitchenWorkspaceMenuMenusItemsSharedTerms, undefined)
+  assert.equal(seen.KitchenWorkspaceMenuMenusItemsOptions, undefined)
   editor.embedded = true
   const inline = rowSetup(
     'Items/Edit/Row.vue',

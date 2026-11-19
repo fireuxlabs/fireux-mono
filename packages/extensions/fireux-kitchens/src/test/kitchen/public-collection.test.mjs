@@ -41,7 +41,7 @@ test('Kitchen collection projects once and filters only useful discovery facts',
     ],
   })
   const collection = evaluate(
-    script(read('kitchen/components/Public/Collection/Index.vue')),
+    script(read('kitchen/components/Collection/Index.vue')),
     {
       computed,
       ref,
@@ -125,7 +125,7 @@ test('Kitchen index retry reaches its one reader without creating another acquis
     })
   for (const name of [
     'PublicKitchenHero',
-    'KitchenCreate',
+    'PublicKitchenDirectoryCreate',
     'PublicKitchenCollection',
     'FireDiagnosticsDebugPanel',
   ])

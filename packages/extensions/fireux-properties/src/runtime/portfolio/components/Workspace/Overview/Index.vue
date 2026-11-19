@@ -1,6 +1,6 @@
 <template>
   <section class="workspace-surface">
-    <WorkspacePortfolioOverviewCapabilities />
+    <OverviewCapabilities />
     <slot name="capabilities" />
     <div class="workspace-surface__grid workspace-surface__grid--2">
       <WorkspaceOverviewFocus
@@ -23,6 +23,7 @@
 </template>
 
 <script setup lang="ts">
+import OverviewCapabilities from './Capabilities.vue'
 import { computed } from 'vue'
 import type { WorkspaceTargetCard } from 'fireux-core/runtime/workspace/models/target-card'
 import { usePortfolioWorkspaceHome } from '../../../composables/workspace/usePortfolioWorkspaceHome'

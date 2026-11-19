@@ -4,7 +4,7 @@
     label="Sales"
     context-label="Reports"
   />
-  <KitchenFinance />
+  <WorkspaceKitchenReportsFinance />
 </template>
 
 <script setup lang="ts">

@@ -18,11 +18,11 @@ members are Menu entities or inherit Menu data authority.
 - Parent: `workspace.md`
 - Horizontal: `components.md`, `pages.md`, `collection-manager.md`
 - Reference member:
-  `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Menus`
 - Source checks: `fireux-kitchens/src/test/menu-record-controller.test.mjs`,
   `menu-record-view.test.mjs` and `menu-record-navigation.test.mjs`.
-- Current composition: Kitchen-owned `Workspace/Menus/Index.vue` and
-  `Collection.vue`; retired script guards are not verification evidence.
+- Current composition: Kitchen-owned `Workspace/Menu/Index.vue` and
+  `Workspace/Menu/Overview/Collection/Index.vue`; retired script guards are not verification evidence.
 
 Current source and its focused tests outrank this map.
 

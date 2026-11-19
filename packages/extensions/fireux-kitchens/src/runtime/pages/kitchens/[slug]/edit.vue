@@ -1,5 +1,5 @@
 <template>
-  <KitchenEdit :locator="routeLocator" />
+  <WorkspaceKitchenIdentityEdit :locator="routeLocator" />
 </template>
 
 <script setup lang="ts">

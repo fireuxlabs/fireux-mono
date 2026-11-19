@@ -1,5 +1,9 @@
 <template>
   <section class="workspace-surface">
-    <WorkspaceSupplierIngredientsRead />
+    <IngredientsRead />
   </section>
 </template>
+
+<script setup lang="ts">
+import IngredientsRead from './Read.vue'
+</script>

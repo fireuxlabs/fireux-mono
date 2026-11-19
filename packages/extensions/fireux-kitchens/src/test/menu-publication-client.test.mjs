@@ -193,7 +193,7 @@ test('publication UI suppresses obsolete completion, errors and busy resets', as
       for (const failed of [false, true]) {
         const source = readFileSync(
           new URL(
-            '../runtime/kitchen/components/Menu/Menus/Publication/Actions.vue',
+            '../runtime/kitchen/components/Workspace/Menu/Menus/Publication/Actions.vue',
             import.meta.url
           ),
           'utf8'

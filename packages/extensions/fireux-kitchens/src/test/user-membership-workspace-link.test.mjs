@@ -7,7 +7,7 @@ import { compile, computed, createSSRApp, h, ref } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 
 const source = readFileSync(
-  new URL('../runtime/kitchen/components/UserMemberships.vue', import.meta.url),
+  new URL('../runtime/kitchen/components/Workspace/Team/UserMemberships.vue', import.meta.url),
   'utf8'
 )
 const script = source

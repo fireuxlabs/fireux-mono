@@ -1,45 +1,36 @@
 <template>
-  <section class="workspace-surface">
-    <UPageHeader title="Stations" />
-    <WorkspaceKitchenAIFocus
-      focus="kitchen-ai.prep.stations"
-      label="Stations"
-      context-label="Prep"
-    />
-    <WorkspaceKitchenToolsToolbar capability="stations" />
-    <section class="workspace-surface">
-      <UAlert
-        v-if="defaultStationError"
-        color="error"
-        :title="defaultStationError"
-      />
-      <FireCopyError
-        v-if="defaultStationError"
-        :message="defaultStationError"
-      />
+  <WorkspacePageHeader title="Stations" variant="child">
+    <template #actions>
       <UButton
         v-if="outcome === 'empty' && canWrite"
         label="Add Pass station"
         :loading="creating"
         @click="addPass"
       />
-      <KitchenWorkspacePrepStationsCollection />
-
-      <UAlert
-        v-if="readOnly"
-        color="neutral"
-        variant="soft"
-        title="Read only"
-        description="This kitchen can be inspected, but changes are disabled."
-      />
-    </section>
-  </section>
+    </template>
+  </WorkspacePageHeader>
+  <WorkspaceKitchenToolsToolbar capability="stations" />
+  <Stations.Collection />
+  <UAlert v-if="defaultStationError" color="error" :title="defaultStationError">
+    <template #actions>
+      <FireCopyError :message="defaultStationError" />
+    </template>
+  </UAlert>
+  <UAlert
+    v-if="readOnly"
+    color="neutral"
+    variant="soft"
+    title="Read only"
+    description="This kitchen can be inspected, but changes are disabled."
+  />
+  <Stations.Ai />
 </template>
 
 <script setup lang="ts">
+import * as Stations from './index'
 import { ref } from 'vue'
 import { useKitchenStationCreate } from '../../../../composables/stations/useKitchenStationCreate'
-import { provideKitchenWorkspacePrepStationsRead } from '../../../../composables/workspace/prep/stations/useKitchenWorkspacePrepStationsRead'
+import { provideKitchenWorkspacePrepStationsRead } from '../../../../composables/workspace/prep/stations/read'
 
 const { readOnly, canWrite, outcome, kitchenId } =
   provideKitchenWorkspacePrepStationsRead()

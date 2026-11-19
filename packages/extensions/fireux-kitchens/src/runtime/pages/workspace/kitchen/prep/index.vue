@@ -44,7 +44,7 @@ definePageMeta({
         to: '/workspace/kitchen/prep/ingredients',
         icon: 'i-lucide-carrot',
       },
-      { label: 'Stations', to: '/workspace/kitchen/stations' },
+      { label: 'Stations', to: '/workspace/kitchen/prep/stations' },
       { label: 'Batches', to: '/workspace/kitchen/prep/batches' },
     ],
   },

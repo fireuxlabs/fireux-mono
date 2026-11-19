@@ -6,9 +6,9 @@
   />
   <div>
     <section class="workspace-surface">
-      <KitchenWasteTools />
+      <WorkspaceKitchenStockWasteTools />
 
-      <KitchenWaste />
+      <WorkspaceKitchenStockWaste />
     </section>
   </div>
 </template>

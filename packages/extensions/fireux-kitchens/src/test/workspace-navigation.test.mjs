@@ -214,8 +214,8 @@ test('every Kitchen sidebar group has one working index and operational screens 
   const operational = [
     ['orders/board.vue', 'WorkspaceKitchenOrdersBoard'],
     ['prep/plan.vue', 'KitchenWorkspacePrepPlanning'],
-    ['food-safety/checks.vue', 'KitchenFoodSafetyPage'],
-    ['team/people.vue', 'KitchenTeam'],
+    ['food-safety/checks.vue', 'WorkspaceKitchenFoodSafetyPage'],
+    ['team/people.vue', 'KitchenWorkspaceTeamPeople'],
   ]
   for (const [file, component] of operational) {
     assert.equal(navigation(join(root, file)).hidden, true, file)
@@ -578,7 +578,7 @@ test('group child surfaces retain every entrance and compose summaries inside th
     'utf8'
   )
   const services = readFileSync(
-    new URL('Workspace/Menu/Services/Overview.vue', components),
+    new URL('Workspace/Services/Overview.vue', components),
     'utf8'
   )
   assert.match(group, /v-for="item in children"/)
@@ -594,7 +594,7 @@ test('group child surfaces retain every entrance and compose summaries inside th
   assert.ok(!food.includes('<template #'))
   for (const name of ['Items', 'Promotions', 'Services']) {
     const child = readFileSync(
-      new URL(`Workspace/Menu/${name}/Overview.vue`, components),
+      new URL(`Workspace/${name === 'Services' ? 'Services' : `Menu/${name}`}/Overview.vue`, components),
       'utf8'
     )
     assert.match(child, /WorkspaceKitchenNavigationChild/)

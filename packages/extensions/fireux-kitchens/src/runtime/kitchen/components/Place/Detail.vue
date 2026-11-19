@@ -1,14 +1,14 @@
 <template>
-  <KitchenDetail
+  <PublicKitchenDetail
     v-if="presentation"
     :presentation="presentation"
     :place="place"
   >
     <template #management><slot name="management" /></template>
-  </KitchenDetail>
+  </PublicKitchenDetail>
   <PlaceDetail v-else :place="place">
     <template #services>
-      <KitchenDetailState
+      <PublicKitchenDetailState
         :outcome="outcome === 'idle' ? 'pending' : outcome"
         :has-kitchen="true"
         @refresh="refresh()"
@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import KitchenDetailState from '../Detail/State.vue'
+import PublicKitchenDetailState from '../Detail/State.vue'
 import { useKitchenDetail } from '../../composables/useKitchenDetail'
 const props = defineProps<{
   kitchen: { id: string; identity: { slug: string } }

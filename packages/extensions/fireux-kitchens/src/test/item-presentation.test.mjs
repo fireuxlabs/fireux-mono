@@ -187,8 +187,8 @@ function mount(Component, props) {
   app.component('MenuChoiceBubbles', ChoiceBubbles)
   app.component('MenuItemChoices', ItemChoices)
   app.component(
-    'KitchenMenuItemsPhoto',
-    component('kitchen/components/Menu/Items/Photo.vue')
+    'KitchenWorkspaceMenuItemsPhoto',
+    component('kitchen/components/Workspace/Menu/Items/Photo.vue')
   )
   app.component('UAvatar', {
     props: ['src', 'alt', 'icon'],
@@ -249,7 +249,7 @@ test('failed customer images collapse safely and a changed URL can recover', asy
 })
 
 test('operator Item photos use shared delivery for existing uploads without rewriting records', async () => {
-  const Cell = component('kitchen/components/Menu/Items/Cards/Cell.vue')
+  const Cell = component('kitchen/components/Workspace/Menu/Items/Cards/Cell.vue')
   const props = Vue.reactive({
     id: 'dish',
     title: 'Item',
@@ -375,8 +375,8 @@ test('the Appearance control saves only its boolean preference and forwards capt
   const calls = []
   let field
   const guard = () => true
-  const Editor = component('kitchen/components/Appearance/ItemImages.vue', {
-    '../../composables/useKitchenUpdate': {
+  const Editor = component('kitchen/components/Workspace/Identity/Appearance/ItemImages.vue', {
+    '../../../../composables/useKitchenUpdate': {
       useKitchenUpdate: () => ({
         captureIntent: () => guard,
         updateKitchen: (...args) => {
@@ -549,7 +549,7 @@ test('browse preview selects a variant, toggles extras and resets without mutati
 test('operator photo layout remounts keep one stable shared delivery URL', () => {
   const src =
     'https://storage.example/o/kitchens%2Fk%2Fdishes%2Fd%2Fimage%2Fr.webp'
-  const Photo = component('kitchen/components/Menu/Items/Photo.vue')
+  const Photo = component('kitchen/components/Workspace/Menu/Items/Photo.vue')
   for (const layout of ['list', 'grid', 'list', 'grid']) {
     const surface = mount(Photo, { src, alt: layout })
     assert.equal(surface.find('img').props.src, photoImageUrl(src))
@@ -561,7 +561,7 @@ test('operator photo layout remounts keep one stable shared delivery URL', () =>
 
 test('the specials card mounts the complete Menu Item surface and retains choice pricing without a Menu provider', async () => {
   const CardSpecial = component(
-    'kitchen/components/Public/Collection/Card/Special.vue'
+    'kitchen/components/Collection/Card/Special.vue'
   )
   const props = Vue.reactive({
     kitchenPath: '/kitchens/la-tapberne',

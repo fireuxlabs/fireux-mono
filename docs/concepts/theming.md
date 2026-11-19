@@ -389,7 +389,7 @@ sources exist.
   `packages/ecosystem/fireux-misebox/src/runtime/models/template-one.ts`
 - Kitchen theme mutation/editor:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/theme.ts`
-  and `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Appearance/Index.vue`
+  and `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Appearance/Index.vue`
   with `Appearance/PaletteEditor.vue`
 - Canonical catalogue: `projects/misebox/misebox-app/app/pages/templates/*`
 - Injection/anatomy: `packages/ecosystem/fireux-misebox/src/runtime/models/template-one.ts`
@@ -399,7 +399,7 @@ sources exist.
 - FireUX referral: `projects/fireux/fireux-app/app/pages/templates/*`
 - Kitchen capability projection and collection grouping:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/read.ts`
-  and `runtime/kitchen/components/Public/Collection/Index.vue`
+  and `runtime/kitchen/components/Collection/Index.vue`
 - Focused current theme test:
   `packages/extensions/fireux-kitchens/src/test/kitchen/menu-theme.test.ts`
 

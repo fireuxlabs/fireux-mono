@@ -390,7 +390,7 @@ owns supplied presentation surfaces and cards consumed by
 [useKitchenInterface](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenInterface.ts).
 The narrow `KitchenCollectionCard` contract remains beside
 `toKitchenCollectionCell` in [kitchen-interface-projection.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-interface-projection.ts).
-[Collection List](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Collection/List.vue)
+[Collection List](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Collection/List.vue)
 maps supplied cards to Core `CollectionCellData` without acquiring records or
 invoking mutations. Team roster and Workspace access retain separate records
 and authority; Kitchen root IDs remain stable operational identity and authored
@@ -438,7 +438,7 @@ and Kitchen use is Kitchen-owned Records, without nested Entity spines or
 competing Recipe identities.
 
 The current [model](../../packages/extensions/fireux-kitchens/src/runtime/recipe/models/model.ts),
-[reader](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/workspace/prep/recipes/read.ts)
+[reader](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/prep/recipes/read.ts)
 and [Kitchen command authority](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/mutation-authority.ts)
 remain Kitchen-bound. Before a data/authority cutover, confirm each existing
 Recipe's User owner explicitly; do not infer it from `created.by`, an import actor

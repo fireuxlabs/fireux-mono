@@ -143,7 +143,7 @@ function fixture() {
     )
   const record = lifetime.run(
     load(
-      '../../runtime/kitchen/composables/workspace/menus/useKitchenMenuRecordContext.ts',
+      '../../runtime/kitchen/composables/workspace/menu/menus/useKitchenMenuRecordContext.ts',
       deps,
       'createKitchenMenuRecordContext'
     )
@@ -151,7 +151,7 @@ function fixture() {
   const field = (method) =>
     lifetime.run(() => {
       const metadata = load(
-        '../../runtime/kitchen/composables/workspace/menus/useMenuRecordMetadata.ts',
+        '../../runtime/kitchen/composables/workspace/menu/menus/useMenuRecordMetadata.ts',
         deps,
         'useMenuRecordMetadata'
       )(record)

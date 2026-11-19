@@ -181,7 +181,7 @@ test('Kitchen weekly editor saves only explicit custom hours and restores inheri
   try {
     const ui = scope.run(() =>
       load(
-        'kitchen/components/OperatingHours/Kitchen.vue',
+        'kitchen/components/Workspace/Identity/OperatingHours/Kitchen.vue',
         'customRequested, usesVenueHours, updateHours, useVenueHours',
         {
           computed,

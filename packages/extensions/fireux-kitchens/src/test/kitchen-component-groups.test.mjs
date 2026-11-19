@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
@@ -92,7 +93,7 @@ test('group entrances compose their named responsibilities without preview marke
   )
   for (const [, file] of namespace.matchAll(/from ['"]([^'"]+)['"]/g))
     assert.ok(
-      existsSync(`${runtime}/kitchen/components/Workspace/Menu/${file}`)
+      existsSync(resolve(runtime, `kitchen/components/Workspace/Menu/${file}`))
     )
   assert.ok(prep.includes('<KitchenWorkspacePrepRecipesOverview'))
   assert.ok(prep.includes('<KitchenWorkspacePrepPreparationsOverview'))

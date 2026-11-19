@@ -147,7 +147,7 @@ test('Free Menu creation starts with the combined Menu and respects unavailable 
   const h = context()
   const canCreateMenu = ref(false)
   const api = h.run(
-    'kitchen/components/Menu/Menus/Create/Form.vue',
+    'kitchen/components/Workspace/Menu/Menus/Create/Form.vue',
     '({ save, name })',
     {
       defineModel: () => ref(''),
@@ -169,7 +169,7 @@ test('Free Menu creation starts with the combined Menu and respects unavailable 
 function scheduledForm(h, subscription) {
   let intentCurrent
   const api = h.run(
-    'kitchen/components/Menu/Menus/Create/Form.vue',
+    'kitchen/components/Workspace/Menu/Menus/Create/Form.vue',
     '({ save, name, description, schedule, canPlanDaily, busy, error })',
     {
       defineModel: () => ref(''),
@@ -271,7 +271,7 @@ test('Menu creation suppresses obsolete navigation, errors and busy-state comple
       let intentCurrent
       const h = context(),
         api = h.run(
-          'kitchen/components/Menu/Menus/Create/Form.vue',
+          'kitchen/components/Workspace/Menu/Menus/Create/Form.vue',
           '({save,name,description,busy,error})',
           {
             defineModel: () => ref(''),
@@ -323,7 +323,7 @@ test('URL source captures its body and blocks stale credentials and obsolete com
     for (const changed of changes) {
       const h = context(),
         api = h.run(
-          'kitchen/components/Menu/Menus/Create/Url.vue',
+          'kitchen/components/Workspace/Menu/Menus/Create/Url.vue',
           '({save,sourceUrl,pending,error})',
           {
             crypto: { randomUUID: () => 'test-source' },
@@ -374,7 +374,7 @@ test('Menu removal submits its exact target to the record owner before live data
   const h = context()
   const menu = ref({ id: 'menu', name: 'Main', status: 'draft' })
   const api = h.run(
-    'kitchen/components/Menu/Menus/Detail/Remove.vue',
+    'kitchen/components/Workspace/Menu/Menus/Detail/Remove.vue',
     '({apply,confirm,busy})',
     {
       useKitchenMenuRecordContext: () => ({
@@ -410,41 +410,6 @@ test('Menu removal submits its exact target to the record owner before live data
   assert.equal(isCurrent(), false)
 })
 
-test('Menu suggestions stay locked for Free and create ordinary interactive drafts for Pro', async () => {
-  for (const tier of ['free', 'pro', 'business']) {
-    const h = context()
-    const api = h.run(
-      'kitchen/components/Menu/Menus/Collection/Suggestions.vue',
-      '({create,hasPro,suggestions})',
-      {
-        useKitchenMenus: () => ({
-          menus: ref([]),
-          subscription: ref(tier),
-          canCreateMenu: ref(true),
-          kitchenId: h.kitchenId,
-          createMenu: async (input) => {
-            h.calls.push(input)
-            return { slug: 'breakfast' }
-          },
-        }),
-        useMenuRecordNavigation: () => ({
-          openView: (...args) => h.effects.push(args),
-        }),
-      }
-    )
-    assert.deepEqual(api.suggestions.value, ['Breakfast', 'Lunch', 'Specials'])
-    await api.create('Breakfast')
-    assert.deepEqual(
-      h.calls,
-      tier === 'free' ? [] : [{ name: 'Breakfast', format: 'interactive' }]
-    )
-    assert.deepEqual(
-      h.effects,
-      tier === 'free' ? [] : [['breakfast', 'content']]
-    )
-  }
-})
-
 test('Menu archive UI shows affected services and restores only to draft', async () => {
   for (const archived of [false, true]) {
     const h = context(),
@@ -455,7 +420,7 @@ test('Menu archive UI shows affected services and restores only to draft', async
       status: archived ? 'archived' : 'published',
     })
     const api = h.run(
-      'kitchen/components/Menu/Menus/Detail/Remove.vue',
+      'kitchen/components/Workspace/Menu/Menus/Detail/Remove.vue',
       '({apply,confirm,canDelete,affectedServices,busy})',
       {
         useKitchenMenuRecordContext: () => ({
@@ -571,7 +536,7 @@ test('standalone blank and URL creation explicitly construct their lower owner w
     }
     try {
       const form = h.run(
-        'kitchen/components/Menu/Menus/Create/Form.vue',
+        'kitchen/components/Workspace/Menu/Menus/Create/Form.vue',
         '({ save })',
         dependencies
       )
@@ -579,7 +544,7 @@ test('standalone blank and URL creation explicitly construct their lower owner w
       assert.equal(h.calls[0].name, 'Standalone menu')
       assert.deepEqual(h.effects[0], ['created', 'content'])
       const url = h.run(
-        'kitchen/components/Menu/Menus/Create/Url.vue',
+        'kitchen/components/Workspace/Menu/Menus/Create/Url.vue',
         '({ save, sourceUrl })',
         dependencies
       )

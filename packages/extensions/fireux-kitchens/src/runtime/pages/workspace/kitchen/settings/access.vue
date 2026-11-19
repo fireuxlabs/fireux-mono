@@ -7,7 +7,7 @@
   <KitchenSettingsAccess />
 </template>
 <script setup lang="ts">
-import KitchenSettingsAccess from '../../../../kitchen/components/Settings/Access.vue'
+import KitchenSettingsAccess from '../../../../kitchen/components/Workspace/Settings/Access.vue'
 definePageMeta({
   layout: 'workspace',
 

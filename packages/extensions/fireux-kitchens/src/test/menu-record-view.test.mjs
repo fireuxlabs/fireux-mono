@@ -17,7 +17,7 @@ function load(file, dependencies) {
   )(...Object.values(dependencies))
 }
 const { provideMenuRecordView } = load(
-  '../runtime/kitchen/composables/workspace/menus/useMenuRecordView.ts',
+  '../runtime/kitchen/composables/workspace/menu/menus/useMenuRecordView.ts',
   { ref, watch, onMounted: (fn) => fn(), provide: () => {}, inject: () => null }
 )
 
@@ -80,7 +80,7 @@ test('legacy intent overrides default once; a fresh mount returns to default', (
 test('a discarded Nuxt page cannot consume the mounted record handoff', () => {
   const mounts = []
   const { provideMenuRecordView: prepare } = load(
-    '../runtime/kitchen/composables/workspace/menus/useMenuRecordView.ts',
+    '../runtime/kitchen/composables/workspace/menu/menus/useMenuRecordView.ts',
     {
       ref,
       watch,

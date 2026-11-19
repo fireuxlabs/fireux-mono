@@ -5,7 +5,7 @@
     </h2>
     <UCard variant="subtle">
       <template #header>
-        <h3 class="fx-type-card-heading">KitchenCardsPill</h3>
+        <h3 class="fx-type-card-heading">PublicKitchenCardsPill</h3>
         <p>Neutral presentation · supplied text and action</p>
       </template>
       <div class="pagebody">
@@ -16,7 +16,7 @@
             >Driver delivery beacon consumer</ULink
           >. It owns neither that reader nor its dispatch commands.
         </p>
-        <KitchenCardsPill
+        <PublicKitchenCardsPill
           title="Kitchen label"
           subtitle="Supplied preview text"
           :badges="['Preview']"

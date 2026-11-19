@@ -25,7 +25,7 @@
           {{ kitchenPath || 'No Kitchen URL set' }}
         </p>
       </div>
-      <KitchenEditPublication
+      <WorkspaceKitchenIdentityEditPublication
         :key="identity.kitchenId.value"
         :kitchen="identity.listing.value"
         :kitchen-id="identity.kitchenId.value"
@@ -40,7 +40,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import type { useKitchenWorkspaceIdentity } from '../../../composables/workspace/useKitchenWorkspaceIdentity'
+import type { useKitchenWorkspaceIdentity } from '../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
 const props = defineProps<{
   identity: ReturnType<typeof useKitchenWorkspaceIdentity>
 }>()

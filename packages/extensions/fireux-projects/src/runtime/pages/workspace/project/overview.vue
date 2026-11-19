@@ -7,6 +7,7 @@
 </template>
 
 <script setup lang="ts">
+import WorkspaceProjectOverview from '../../../project/components/Workspace/Overview/Index.vue'
 import { watchEffect } from 'vue'
 import { useProjectWorkspace } from '../../../project/composables/workspace/useProjectWorkspace'
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'

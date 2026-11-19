@@ -28,7 +28,8 @@
 </template>
 
 <script setup lang="ts">
-import KitchenWorkspacePrepRecipesOverview from '../../../workspace/prep/recipes/Overview.vue'
+import KitchenWorkspacePrepStationsOverview from './Stations/Overview.vue'
+import KitchenWorkspacePrepRecipesOverview from './Recipes/Overview.vue'
 import { useKitchenWorkspacePrep } from '../../../composables/workspace/prep/index'
 
 const { description } = useKitchenWorkspacePrep()

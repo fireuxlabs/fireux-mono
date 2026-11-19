@@ -24,7 +24,7 @@
           <p v-if="menuDescription && menuDescription !== kitchenName">
             {{ menuDescription }}
           </p>
-          <KitchenOfferingsTimes
+          <PublicKitchenOfferingsTimes
             :offerings="menu.offerings || []"
             :empty-message="
               menu.source?.kitchen_id

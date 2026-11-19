@@ -1,12 +1,16 @@
 <template>
   <UPage>
     <UPageBody>
-      <KitchenDetail
+      <PublicKitchenDetail
         v-if="presentation && place"
         :presentation="presentation"
         :place="place"
-      />
-      <KitchenDetailState
+      >
+        <template #management>
+          <WorkspaceKitchenOperatorPanel :kitchen="presentation" />
+        </template>
+      </PublicKitchenDetail>
+      <PublicKitchenDetailState
         v-else
         :outcome="outcome"
         :has-kitchen="Boolean(kitchen)"

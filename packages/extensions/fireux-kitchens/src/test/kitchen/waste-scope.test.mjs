@@ -53,7 +53,7 @@ test('Waste snapshots its observation and guards scope across auth/token/respons
         kitchenId = ref('k'),
         routePath = ref('/waste')
       const api = load(
-        '../../runtime/kitchen/composables/workspace/waste/useKitchenWorkspaceWaste.ts',
+        '../../runtime/kitchen/composables/workspace/stock/waste/useKitchenWorkspaceWaste.ts',
         {
           computed,
           watch,
@@ -124,7 +124,7 @@ test('Waste Create captures result label and drops obsolete success/error', asyn
         kitchenId = ref('k'),
         emits = []
       const api = load(
-        '../../runtime/kitchen/components/Waste/Create.vue',
+        '../../runtime/kitchen/components/Workspace/Stock/Waste/Create.vue',
         {
           computed,
           ref,
@@ -178,7 +178,7 @@ test('Record Waste opens locally and closes when its account, Kitchen or route c
     const route = reactive({ fullPath: '/workspace/kitchen/stock/waste' })
     const state = scope.run(() =>
       load(
-        '../../runtime/kitchen/components/Waste/Tools.vue',
+        '../../runtime/kitchen/components/Workspace/Stock/Waste/Tools.vue',
         {
           ref,
           watch,

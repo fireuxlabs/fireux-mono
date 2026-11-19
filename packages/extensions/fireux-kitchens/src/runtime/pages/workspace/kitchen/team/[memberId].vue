@@ -22,7 +22,7 @@
     <template #description
       ><FireCopyError message="Team could not be loaded" />
     </template> </UAlert
-  ><KitchenTeam
+  ><WorkspaceKitchenTeam
     v-else-if="member"
     :key="memberId"
     :team="team"
@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from '#imports'
-import { useKitchenWorkspaceTeam } from '../../../../kitchen/composables/workspace/useKitchenWorkspaceTeam'
+import { useKitchenWorkspaceTeam } from '../../../../kitchen/composables/workspace/team/useKitchenWorkspaceTeam'
 const route = useRoute()
 const team = useKitchenWorkspaceTeam()
 const memberId = computed(() => String(route.params.memberId || ''))

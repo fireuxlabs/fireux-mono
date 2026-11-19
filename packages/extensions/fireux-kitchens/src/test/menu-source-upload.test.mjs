@@ -69,7 +69,7 @@ function harness(options = {}) {
     )
   )
   const { useMenuSourceUpload } = loadOfferingSource(
-    'kitchen/composables/workspace/menus/useMenuSourceUpload',
+    'kitchen/composables/workspace/menu/menus/useMenuSourceUpload',
     'useMenuSourceUpload',
     deps
   )
@@ -234,7 +234,7 @@ test('URL intake retries its same source after a lost response', async () => {
   const { stripTypeScriptTypes } = await import('node:module')
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/components/Menu/Menus/Create/Url.vue',
+      '../runtime/kitchen/components/Workspace/Menu/Menus/Create/Url.vue',
       import.meta.url
     ),
     'utf8'

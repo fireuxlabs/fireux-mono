@@ -145,7 +145,7 @@ Composable public names use `use` followed by the same path hierarchy:
 | Path relative to runtime                                  | Public name                            |
 | --------------------------------------------------------- | -------------------------------------- |
 | `kitchen/components/Workspace/Menu/Index.vue`             | `KitchenWorkspaceMenu`                 |
-| `kitchen/components/Workspace/Menu/Services/Overview.vue` | `KitchenWorkspaceMenuServicesOverview` |
+| `kitchen/components/Workspace/Services/Overview.vue` | `KitchenWorkspaceMenuServicesOverview` |
 | `kitchen/composables/workspace/menu/index.ts`             | `useKitchenWorkspaceMenu()`            |
 | `kitchen/composables/workspace/menu/services.ts`          | `useKitchenWorkspaceMenuServices()`    |
 | `recipe/composables/read.ts`                              | `useRecipeRead()`                      |
@@ -262,7 +262,7 @@ and local Preparation bindings; it does not own or automatically edit the source
 Recipe. A separate adapted Recipe is also User-owned.
 
 Recipe models and validation now live at `runtime/recipe/`. The operator slice
-uses `kitchen/workspace/prep/recipes/`; reads and commands remain Kitchen-scoped. Complete these bounded steps before claiming the independent target:
+uses `kitchen/components/Workspace/Prep/Recipes/` and `kitchen/composables/workspace/prep/recipes/`; reads and commands remain Kitchen-scoped. Complete these bounded steps before claiming the independent target:
 
 1. Establish an explicit User-owner mapping for existing Recipes. Retain exact
    current scope and provenance; creator/import stamps do not assign ownership.

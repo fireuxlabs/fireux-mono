@@ -31,7 +31,7 @@
         >
       </UCard>
 
-      <KitchenOnboardingProvision
+      <WorkspaceKitchenOnboardingProvision
         v-if="selectedOwner"
         :key="ownerUserId"
         :user="selectedOwner"

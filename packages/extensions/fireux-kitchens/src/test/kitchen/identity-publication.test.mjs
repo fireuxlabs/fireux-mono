@@ -128,7 +128,7 @@ async function listingHarness({
   )
   const identity = scope.run(() =>
     load(
-      'kitchen/composables/workspace/useKitchenWorkspaceIdentity.ts',
+      'kitchen/composables/workspace/identity/useKitchenWorkspaceIdentity.ts',
       'useKitchenWorkspaceIdentity()',
       {
         computed,
@@ -605,7 +605,7 @@ for (const change of [
     const ui = scope.run(() => {
       const captureIntent = useCommandScope([() => props.kitchenId, account])
       return load(
-        'kitchen/components/Edit/Publication.vue',
+        'kitchen/components/Workspace/Identity/Edit/Publication.vue',
         '({togglePublication,saving})',
         {
           computed,
@@ -836,10 +836,10 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
         () =>
           h('section', [slots.header?.(), slots.default?.(), slots.footer?.()]),
     })
-    app.component('KitchenEditPublication', {
+    app.component('WorkspaceKitchenIdentityEditPublication', {
       render: () => h('span', 'Show in directory'),
     })
-    app.component('KitchenEditCurrency', {
+    app.component('WorkspaceKitchenIdentityEditCurrency', {
       render: () => h('span', 'Currency'),
     })
     app.component('UAlert', {

@@ -5,11 +5,11 @@
     description="Upload a PDF or photos, paste a menu URL, or start blank."
     class="menu-editor-dialog menu-editor-dialog--create"
   >
-    <template #body><KitchenMenuMenusCreate /></template>
+    <template #body><KitchenWorkspaceMenuMenusCreate /></template>
   </UModal>
 </template>
 <script setup lang="ts">
-import { useKitchenMenus } from '../../../composables/workspace/menus/useKitchenMenus'
+import { useKitchenMenus } from '../../../composables/workspace/menu/menus/useKitchenMenus'
 const { dialogs } = useKitchenMenus()
 const { createOpen } = dialogs
 </script>

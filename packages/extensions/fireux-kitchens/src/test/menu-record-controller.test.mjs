@@ -195,7 +195,7 @@ function fixture(realInjection = false) {
     }),
   }
   const api = load(
-    'kitchen/composables/workspace/menus/useKitchenMenuRecordContext.ts',
+    'kitchen/composables/workspace/menu/menus/useKitchenMenuRecordContext.ts',
     'provideKitchenMenuRecordContext,useKitchenMenuRecordContext,useOptionalKitchenMenuRecordContext',
     deps
   )
@@ -359,7 +359,7 @@ test('source-only failure does not hide a loaded Menu, and upload-only entry nee
     const owner = effectScope()
     owner.run(() => {
       const upload = load(
-        'kitchen/composables/workspace/menus/useMenuSourceUpload.ts',
+        'kitchen/composables/workspace/menu/menus/useMenuSourceUpload.ts',
         'useMenuSourceUpload',
         {
           computed,

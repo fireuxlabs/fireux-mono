@@ -2,7 +2,7 @@
   <WorkspaceKitchenAIFocus
     focus="kitchen-ai.identity.appearance"
     label="Appearance"
-  /><KitchenAppearance />
+  /><WorkspaceKitchenIdentityAppearance />
 </template>
 
 <script setup lang="ts">

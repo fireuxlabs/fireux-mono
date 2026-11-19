@@ -5,7 +5,7 @@
     description="A clear view of the days ahead."
   />
   <WorkspaceKitchenSelector />
-  <KitchenCalendar />
+  <WorkspaceKitchenCalendar />
 </template>
 
 <script setup lang="ts">
@@ -17,7 +17,7 @@ const intro = {
   boundaries: 'Selecting a date does not create or change events.',
   ai: 'No AI actions are connected to this surface.',
 }
-import KitchenCalendar from '../../../../kitchen/components/Calendar/Index.vue'
+import WorkspaceKitchenCalendar from '../../../../kitchen/components/Workspace/Calendar/Index.vue'
 definePageMeta({
   layout: 'workspace',
 

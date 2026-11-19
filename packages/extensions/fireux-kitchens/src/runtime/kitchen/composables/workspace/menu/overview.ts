@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useMenuList } from '../menus/useMenuList'
+import { useMenuList } from './menus/useMenuList'
 import { readKitchenThemePalette } from '../../../utils/kitchen-readers'
 import { requireMenuWorkspace } from './state'
 

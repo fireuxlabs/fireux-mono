@@ -183,10 +183,10 @@ reports into one generic Finance workspace.
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/reports/gross-sales.get.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/overview/useKitchenWorkspaceFinance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Finance/Summary.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Reports/Finance/Summary.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/finance/restaurant-labour-cost.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Tools/RestaurantLabourCostCalculator.vue`
+- `projects/misebox/misebox-app/app/components/Tools/RestaurantLabourCostCalculator.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/finance/calculate-restaurant-labour-cost.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/orders/transition.post.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/payments/stripe-webhook.post.ts`
@@ -209,7 +209,7 @@ reports into one generic Finance workspace.
 
 ## Kitchen report presentation placement
 
-`kitchen/components/Finance/Summary.vue` is the consumed Kitchen-specific
+`kitchen/components/Workspace/Reports/Finance/Summary.vue` is the consumed Kitchen-specific
 adapter over shared Finance metric presentation. Its existing
 `KitchenFinanceSummary` registration is preserved and Misebox’s Workspace
 preview remains its consumer. It has no reader, transaction or Workspace

@@ -104,7 +104,7 @@ test('pricing draft survives same-record refresh, resets on navigation, and igno
   const calls = []
   const api = scope.run(() =>
     load(
-      'components/Menu/Items/Pricing.vue',
+      'components/Workspace/Menu/Items/Pricing.vue',
       '({price,groups,dirty,save,resetDraft,message,error,busy,previewPrice})',
       {
         computed,

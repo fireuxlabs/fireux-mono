@@ -3,7 +3,7 @@
     focus="kitchen-ai.food-safety.actions"
     label="Corrective actions"
     context-label="Food Safety"
-  /><KitchenFoodSafetyPage view="actions" />
+  /><WorkspaceKitchenFoodSafetyPage view="actions" />
 </template>
 <script setup lang="ts">
 definePageMeta({

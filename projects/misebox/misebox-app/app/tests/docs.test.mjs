@@ -132,10 +132,13 @@ function register(app) {
     load(new URL('molecules/ActionSurface.vue', core))
   )
   app.component('FireState', load(new URL('molecules/State.vue', core)))
-  app.component('KitchenCardsPill', load(new URL('Cards/Pill.vue', kitchen)))
+  app.component(
+    'PublicKitchenCardsPill',
+    load(new URL('Cards/Pill.vue', kitchen))
+  )
   app.component(
     'PublicKitchenCollectionControls',
-    load(new URL('Public/Collection/Controls.vue', kitchen))
+    load(new URL('Collection/Controls.vue', kitchen))
   )
   for (const name of [
     'Setup',

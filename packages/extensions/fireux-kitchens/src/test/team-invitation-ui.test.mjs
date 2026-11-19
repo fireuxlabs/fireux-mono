@@ -26,7 +26,7 @@ function setup(path, bindings, result) {
 }
 
 const pagePath = '../runtime/pages/kitchen/member-invitation/[token].vue'
-const buttonPath = '../runtime/kitchen/components/Team/Invitation.vue'
+const buttonPath = '../runtime/kitchen/components/Workspace/Team/Invitation.vue'
 
 test('sign-in returns to the invitation and acceptance opens the explicit onboarding flow for the issuing Kitchen', async () => {
   const token = ref('invitation-token')

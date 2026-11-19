@@ -97,7 +97,7 @@ function fixture() {
 test('regular and Daily Menu Settings reuse the scoped private context editor with existing write authority', async () => {
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/components/Menu/Menus/Detail/Settings.vue',
+      '../runtime/kitchen/components/Workspace/Menu/Menus/Detail/Settings.vue',
       import.meta.url
     ),
     'utf8'
@@ -121,12 +121,12 @@ test('regular and Daily Menu Settings reuse the scoped private context editor wi
         throw new Error(message)
       }
       for (const name of [
-        'KitchenMenuMenusEditDetails',
-        'KitchenMenuMenusDetailSummary',
-        'KitchenMenuMenusDetailAudience',
-        'KitchenMenuMenusDetailHours',
-        'KitchenMenuMenusDetailOfferings',
-        'KitchenMenuMenusDetailRemove',
+        'KitchenWorkspaceMenuMenusEditDetails',
+        'KitchenWorkspaceMenuMenusDetailSummary',
+        'KitchenWorkspaceMenuMenusDetailAudience',
+        'KitchenWorkspaceMenuMenusDetailHours',
+        'KitchenWorkspaceMenuMenusDetailOfferings',
+        'KitchenWorkspaceMenuMenusDetailRemove',
         'UButton',
       ])
         app.component(name, { render: () => null })

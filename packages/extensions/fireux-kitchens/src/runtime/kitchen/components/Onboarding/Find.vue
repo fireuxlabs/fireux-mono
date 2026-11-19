@@ -1,6 +1,6 @@
 <template>
   <template v-if="creatingWithoutLocation">
-    <KitchenOnboardingShellCreate
+    <PublicKitchenOnboardingShellCreate
       :owner-user-id="ownerUserId"
       :directory="directory"
       @created="emit('shell-created', $event)"

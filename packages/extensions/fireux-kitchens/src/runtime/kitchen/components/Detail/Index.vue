@@ -1,7 +1,7 @@
 <template>
   <PlaceDetail :place="place">
     <template #header>
-      <KitchenDetailHeader :kitchen="presentation" :place="place" />
+      <PublicKitchenDetailHeader :kitchen="presentation" :place="place" />
     </template>
     <template #services>
       <div class="kitchen-venue-actions">
@@ -13,14 +13,10 @@
           variant="solid"
           size="lg"
         />
-        <KitchenDetailMenuServices :kitchen-slug="presentation.slug" />
+        <PublicKitchenDetailMenuServices :kitchen-slug="presentation.slug" />
       </div>
     </template>
-    <template #management>
-      <slot name="management"
-        ><KitchenDetailOperatorPanel :kitchen="presentation"
-      /></slot>
-    </template>
+    <template #management><slot name="management" /></template>
   </PlaceDetail>
 </template>
 

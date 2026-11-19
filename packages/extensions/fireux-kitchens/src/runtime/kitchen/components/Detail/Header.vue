@@ -9,7 +9,7 @@
         variant="ghost"
       />
       <div>
-        <KitchenDetailSproochli
+        <PublicKitchenDetailSproochli
           v-if="kitchen.sproochli?.enabled"
           :sproochli="kitchen.sproochli"
         />

@@ -3,10 +3,10 @@
     focus="kitchen-ai.menu.menus"
     label="Menu preparation"
     context-label="Menu"
-  /><KitchenMenuMenusPrepare />
+  /><KitchenWorkspaceMenuMenusPrepare />
 </template>
 <script setup lang="ts">
-import { provideKitchenMenus } from '../../../../kitchen/composables/workspace/menus/useKitchenMenus'
+import { provideKitchenMenus } from '../../../../kitchen/composables/workspace/menu/menus/useKitchenMenus'
 provideKitchenMenus()
 definePageMeta({
   layout: 'workspace',

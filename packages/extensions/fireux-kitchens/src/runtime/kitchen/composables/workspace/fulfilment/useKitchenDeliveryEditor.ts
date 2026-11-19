@@ -1,5 +1,5 @@
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import { useKitchenWorkspaceIdentity } from '../useKitchenWorkspaceIdentity'
+import { useKitchenWorkspaceIdentity } from '../identity/useKitchenWorkspaceIdentity'
 import type {
   KitchenFulfilment,
   KitchenDeliveryZone,

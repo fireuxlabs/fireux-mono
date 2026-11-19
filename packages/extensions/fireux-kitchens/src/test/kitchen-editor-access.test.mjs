@@ -45,7 +45,7 @@ test('dedicated App theme cannot bypass Kitchen association with an admin role',
 
 test('Kitchen editor loses access on removal, failed reads and unrelated Kitchen selection', () => {
   const file = readFileSync(
-    new URL('../runtime/kitchen/components/Edit/Index.vue', import.meta.url),
+    new URL('../runtime/kitchen/components/Workspace/Identity/Edit/Index.vue', import.meta.url),
     'utf8'
   )
   const source = file
@@ -97,7 +97,7 @@ test('Kitchen editor loses access on removal, failed reads and unrelated Kitchen
 test('public operator panel follows exact live Kitchen access', () => {
   const file = readFileSync(
     new URL(
-      '../runtime/kitchen/components/Detail/OperatorPanel.vue',
+      '../runtime/kitchen/components/Workspace/OperatorPanel.vue',
       import.meta.url
     ),
     'utf8'

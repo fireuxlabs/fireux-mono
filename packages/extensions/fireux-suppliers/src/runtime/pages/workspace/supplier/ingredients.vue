@@ -7,6 +7,8 @@
 </template>
 
 <script setup lang="ts">
+import WorkspaceSupplierIngredients from '../../../supplier/components/Workspace/Ingredients/Index.vue'
+
 definePageMeta({
   layout: 'workspace',
 

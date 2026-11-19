@@ -22,7 +22,7 @@
 import { ref } from 'vue'
 import { kitchenWorkspaceAvatar } from '../../../utils/kitchen-workspace-avatar'
 import type { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
-import type { KitchenWorkspaceIdentityState } from '../../../composables/workspace/useKitchenWorkspaceIdentity'
+import type { KitchenWorkspaceIdentityState } from '../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
 
 const props = defineProps<{
   selected:

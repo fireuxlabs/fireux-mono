@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenWorkspaceIdentity } from '../../../../kitchen/composables/workspace/useKitchenWorkspaceIdentity'
+import { useKitchenWorkspaceIdentity } from '../../../../kitchen/composables/workspace/identity/useKitchenWorkspaceIdentity'
 import { watchEffect } from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 const identity = useKitchenWorkspaceIdentity()

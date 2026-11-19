@@ -63,7 +63,7 @@ async function render(Card, props) {
       () =>
         Vue.h('a', { href: p.to }, slots.default?.()),
   })
-  app.component('KitchenMenuMenusCreate', {
+  app.component('KitchenWorkspaceMenuMenusCreate', {
     render: () => Vue.h('div', 'Existing Kitchen creation controls'),
   })
   app.component('UPageLinks', {
@@ -164,7 +164,7 @@ test('QR targets retain publication and service eligibility boundaries', () => {
 
 test('an applied source retains its Menu destination after reload', async () => {
   const Apply = component(
-    'kitchen/components/Menu/Menus/Process/Review/Apply.vue'
+    'kitchen/components/Workspace/Menu/Menus/Process/Review/Apply.vue'
   )
   const html = await render(Apply, {
     appId: 'misebox-app',
@@ -182,20 +182,20 @@ test('an applied source retains its Menu destination after reload', async () => 
   })
   assert.match(
     html,
-    /href="\/workspace\/kitchen\/menu\/menus\/reviewed-menu\?kitchenId=kitchen-a"/
+    /href="\/workspace\/kitchen\/menu\/reviewed-menu\?kitchenId=kitchen-a"/
   )
   assert.match(html, /This menu draft has already been applied/)
 })
 
 test('Kitchen Menu preparation is usable without a Product, purchase or service request', async () => {
-  const Express = component('kitchen/components/Menu/Menus/Prepare.vue', {
-    '../../../composables/workspace/menus/useKitchenMenus': {
+  const Express = component('kitchen/components/Workspace/Menu/Menus/Prepare.vue', {
+    '../../../../composables/workspace/menu/menus/useKitchenMenus': {
       useKitchenMenus: () => ({
         outcome: Vue.ref('ready'),
         error: Vue.ref(null),
       }),
     },
-    '../../../composables/workspace/menus/useKitchenWorkspaceMenuSources': {
+    '../../../../composables/workspace/menu/menus/useKitchenWorkspaceMenuSources': {
       useKitchenWorkspaceMenuSources: () => ({
         menuSources: Vue.ref([
           { id: 'saved-source', file_name: 'TEST-menu.pdf' },
@@ -207,7 +207,7 @@ test('Kitchen Menu preparation is usable without a Product, purchase or service 
   })
   const html = await render(Express, {})
   assert.match(html, /Existing Kitchen creation controls/)
-  assert.match(html, /menus\/uploads\/saved-source/)
+  assert.match(html, /menu\/uploads\/saved-source/)
   assert.match(html, /Review and publish prepared Menus/)
   assert.match(html, /Download Menu QR/)
   assert.doesNotMatch(html, /checkout|Record demo payment/)

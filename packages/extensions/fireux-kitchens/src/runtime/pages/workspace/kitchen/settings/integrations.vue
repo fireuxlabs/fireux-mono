@@ -3,7 +3,7 @@
     focus="kitchen-ai.settings.integrations"
     label="Integrations"
     context-label="Settings"
-  /><KitchenIntegrations />
+  /><WorkspaceKitchenSettingsIntegrations />
 </template>
 <script setup lang="ts">
 definePageMeta({

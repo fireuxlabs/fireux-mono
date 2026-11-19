@@ -10,12 +10,13 @@
         </p>
       </header>
 
-      <KitchenToolsRestaurantLabourCostCalculator />
+      <RestaurantLabourCostCalculator />
     </div>
   </UContainer>
 </template>
 
 <script setup lang="ts">
+import RestaurantLabourCostCalculator from '../../components/Tools/RestaurantLabourCostCalculator.vue'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 useSeo({

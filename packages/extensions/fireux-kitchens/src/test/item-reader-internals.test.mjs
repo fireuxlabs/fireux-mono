@@ -177,7 +177,7 @@ function workspaceFixture() {
   const access = { ids: ref(['mine']), error: ref(null) },
     session = { error: ref(null) }
   const use = load(
-    'kitchen/composables/workspace/items/useKitchenWorkspaceItems.ts',
+    'kitchen/composables/workspace/menu/items/useKitchenWorkspaceItems.ts',
     'useKitchenWorkspaceItems',
     {
       computed,
@@ -205,7 +205,7 @@ function workspaceFixture() {
 function kindContext(f, kind) {
   const published = []
   const create = load(
-    'kitchen/composables/workspace/items/useKitchenItemsContext.ts',
+    'kitchen/composables/workspace/menu/items/useKitchenItemsContext.ts',
     'createKitchenItemsWorkspace',
     {
       computed,
@@ -286,11 +286,15 @@ test('No selected Kitchen preserves pending or failed account/access outcomes be
     assert.equal(f.state.pending.value, parentOutcome === 'pending')
     assert.equal(f.path, '')
     assert.deepEqual(f.state.dishes.value, [])
-    const html = await render('kitchen/components/Menu/Items/Index.vue', {
-      storageKitchenId: f.state.storageKitchenId,
-      outcome: f.state.outcome,
-      catalogue,
-    })
+    const html = await render(
+      'kitchen/components/Workspace/Menu/Items/Collection/Results.vue',
+      {
+        storageKitchenId: f.state.storageKitchenId,
+        outcome: f.state.outcome,
+        pending: f.state.pending,
+        catalogue,
+      }
+    )
     assert.match(
       html,
       parentOutcome === 'error' ? /Kitchen unavailable/ : /Loading Kitchen/
@@ -425,8 +429,8 @@ function components(app) {
     'UIcon',
     'UAvatar',
     'UBadge',
-    'KitchenMenuItemsCollection',
-    'KitchenMenuItemsCardsCell',
+    'KitchenWorkspaceMenuItemsCollection',
+    'KitchenWorkspaceMenuItemsCardsCell',
     'MenuItemDisplay',
     'UPagination',
     'USelect',
@@ -434,18 +438,18 @@ function components(app) {
     'WorkspaceKitchenAICapability',
     'WorkspaceKitchenAICapabilityInfo',
     'WorkspaceKitchenAIFocus',
-    'KitchenMenuItemsEdit',
-    'KitchenMenuItemsPhoto',
-    'KitchenMenuItemsGroups',
-    'KitchenMenuItemsCollectionAssignGroup',
-    'KitchenMenuItemsPricing',
-    'KitchenMenuItemsDelete',
+    'KitchenWorkspaceMenuItemsEdit',
+    'KitchenWorkspaceMenuItemsPhoto',
+    'KitchenWorkspaceMenuItemsGroups',
+    'KitchenWorkspaceMenuItemsCollectionAssignGroup',
+    'KitchenWorkspaceMenuItemsPricing',
+    'KitchenWorkspaceMenuItemsDelete',
     'ItemMenus',
     'ItemMenu',
     'ItemMenuSection',
     'FireCopyError',
     'FireContextRecord',
-    'KitchenMenuItemsCreate',
+    'KitchenWorkspaceMenuItemsCreate',
   ]
   for (const name of empty)
     app.component(name, {
@@ -523,6 +527,7 @@ const catalogue = {
 function readView(overrides = {}) {
   return {
     catalogue,
+    storageKitchenId: 'mine',
     outcome: 'ready',
     error: null,
     pending: false,
@@ -581,13 +586,12 @@ function recordView(overrides = {}) {
 test('Items prices use the supplied Kitchen currency projection and keep missing currency explicit', () => {
   const selectedKitchen = ref({ id: 'mine', currency_code: 'CHF' })
   const priceLabel = load(
-    'kitchen/components/Menu/Items/Collection/Results.vue',
+    'kitchen/components/Workspace/Menu/Items/Collection/Results.vue',
     'priceLabel',
     {
       computed,
       defineEmits: () => () => {},
-      useKitchenItemsContext: () => ({ selectedKitchen }),
-      useItemCatalogueContext: () => ({}),
+      useItemCatalogueContext: () => ({ selectedKitchen }),
       readPlaceCurrencyCode,
       readItemChoiceGroups,
       itemChoiceRule,
@@ -601,7 +605,7 @@ test('Items prices use the supplied Kitchen currency projection and keep missing
   assert.equal(priceLabel({}), 'Not set')
   assert.equal(priceLabel({ pricing_error: true }), 'Review price & choices')
 })
-test('actual Item index distinguishes Kitchen loading, failure, missing and inactive selection', async () => {
+test('actual Item collection distinguishes Kitchen loading, failure, missing and inactive selection', async () => {
   for (const [outcome, expected] of [
     ['pending', 'Loading Kitchen'],
     ['error', 'Kitchen unavailable'],
@@ -609,11 +613,15 @@ test('actual Item index distinguishes Kitchen loading, failure, missing and inac
     ['idle', 'Select a kitchen'],
   ])
     assert.match(
-      await render('kitchen/components/Menu/Items/Index.vue', {
-        storageKitchenId: '',
-        outcome,
-        catalogue,
-      }),
+      await render(
+        'kitchen/components/Workspace/Menu/Items/Collection/Results.vue',
+        {
+          storageKitchenId: '',
+          outcome,
+          pending: outcome === 'pending',
+          catalogue,
+        }
+      ),
       new RegExp(expected)
     )
 })
@@ -621,7 +629,15 @@ async function renderCatalogue(state) {
   return (
     await Promise.all(
       ['Controls', 'Results'].map((child) =>
-        render(`kitchen/components/Menu/Items/Collection/${child}.vue`, state)
+        render(
+          `kitchen/components/Workspace/Menu/Items/Collection/${child}.vue`,
+          {
+            ...state,
+            ready:
+              ['ready', 'empty'].includes(state.outcome) &&
+              Boolean(state.storageKitchenId),
+          }
+        )
       )
     )
   ).join('')
@@ -644,17 +660,16 @@ test('actual Item collection hides premature counts, categories, filters and Cre
   const html = await renderCatalogue(readView({ outcome: 'empty' }))
   assert.match(html, /Count: 0/)
   assert.match(html, /No dishes yet/)
-  assert.match(html, /Add item/)
 })
 test('actual Item record error does not render not-found, old read header or editable management', async () => {
   const html = await render(
-    'kitchen/components/Menu/Items/Detail/Index.vue',
+    'kitchen/components/Workspace/Menu/Items/Detail/Index.vue',
     recordView({ item: null, outcome: 'error', error: new Error('Failed') })
   )
   assert.match(html, /Item unavailable/)
   assert.doesNotMatch(html, /not found|Item actions|Soup/)
   const empty = await render(
-    'kitchen/components/Menu/Items/Detail/Index.vue',
+    'kitchen/components/Workspace/Menu/Items/Detail/Index.vue',
     recordView({ item: null, outcome: 'empty' })
   )
   assert.match(empty, /Item not found/)
@@ -670,7 +685,7 @@ test('Item linked read perspectives bind exact ready storage owner instead of re
     rootCollection: ref('kitchens'),
     selectedKitchen: ref(null),
   }
-  const paths = ['Menus', 'Menu', 'MenuSection']
+  const paths = ['Index', 'Menu', 'Section']
   for (const view of paths) {
     let target
     const source = {
@@ -687,29 +702,33 @@ test('Item linked read perspectives bind exact ready storage owner instead of re
     }
     const scope = effectScope()
     scope.run(() =>
-      load(`kitchen/components/Menu/Items/${view}.vue`, '({})', {
-        ref,
-        computed,
-        reactive,
-        watch,
-        defineProps: () => ({
-          menu: { id: 'menu', slug: 'menu' },
-          section: { id: 'section', label: 'Section' },
-        }),
-        defineEmits: () => () => {},
-        useKitchenWorkspace: () => ({
-          id: owner.kitchenId,
-          outcome: ref('ready'),
-        }),
-        useRouteParam: () => owner.dishId,
-        useKitchenItemRead: () => owner,
-        useKitchenItemContext: () => owner,
-        useKitchenPrepItems: reader,
-        useKitchenMenuCollection: reader,
-        useMenuSectionCollection: reader,
-        useMenuEntryCollection: reader,
-        useMenuRecordNavigation: () => ({ rememberView: () => {} }),
-      })
+      load(
+        `kitchen/components/Workspace/Menu/Items/Detail/Menus/${view}.vue`,
+        '({})',
+        {
+          ref,
+          computed,
+          reactive,
+          watch,
+          defineProps: () => ({
+            menu: { id: 'menu', slug: 'menu' },
+            section: { id: 'section', label: 'Section' },
+          }),
+          defineEmits: () => () => {},
+          useKitchenWorkspace: () => ({
+            id: owner.kitchenId,
+            outcome: ref('ready'),
+          }),
+          useRouteParam: () => owner.dishId,
+          useKitchenItemRead: () => owner,
+          useKitchenItemContext: () => owner,
+          useKitchenPrepItems: reader,
+          useKitchenMenuCollection: reader,
+          useMenuSectionCollection: reader,
+          useMenuEntryCollection: reader,
+          useMenuRecordNavigation: () => ({ rememberView: () => {} }),
+        }
+      )
     )
     assert.equal(toValue(target), 'ready', view)
     owner.storageKitchenId.value = ''
@@ -719,12 +738,15 @@ test('Item linked read perspectives bind exact ready storage owner instead of re
   }
 })
 test('actual Item Menu perspectives render failed linked reads without false empty states', async () => {
-  const menus = await render('kitchen/components/Menu/Items/Menus.vue', {
-    error: new Error('Denied'),
-    pending: true,
-    activeMenus: [],
-    kitchenId: 'mine',
-  })
+  const menus = await render(
+    'kitchen/components/Workspace/Menu/Items/Detail/Menus/Index.vue',
+    {
+      error: new Error('Denied'),
+      pending: true,
+      activeMenus: [],
+      kitchenId: 'mine',
+    }
+  )
   assert.match(menus, /Menus unavailable/)
   assert.doesNotMatch(menus, /No menus in this kitchen|Loading menus/)
 })
@@ -776,15 +798,15 @@ test('combined catalogue filters food and drinks and opens each in its correct e
   const { context } = kindContext(f, 'all')
   const view = f.scope.run(() =>
     load(
-      'kitchen/composables/workspace/items/useItemCatalogue.ts',
-      'useItemCatalogue()',
+      'kitchen/composables/workspace/menu/items/useItemCatalogue.ts',
+      'useItemCatalogue(context)',
       {
         useRoute: () => ({ query: {} }),
         useRouter: () => ({ replace: async () => {} }),
         itemCataloguePath,
         readItemCatalogueQuery,
         itemCatalogueQuery,
-        useKitchenItemsContext: () => context,
+        context,
         computed,
         ref,
         watch,
@@ -839,8 +861,8 @@ function catalogueView(f, query = {}) {
   const destinations = []
   const view = f.scope.run(() =>
     load(
-      'kitchen/composables/workspace/items/useItemCatalogue.ts',
-      'useItemCatalogue()',
+      'kitchen/composables/workspace/menu/items/useItemCatalogue.ts',
+      'useItemCatalogue(context)',
       {
         useRoute: () => route,
         useRouter: () => ({
@@ -849,7 +871,7 @@ function catalogueView(f, query = {}) {
             route.query = destination.query
           },
         }),
-        useKitchenItemsContext: () => context,
+        context,
         computed,
         ref,
         watch,
@@ -992,17 +1014,16 @@ test('first Kitchen resolution does not reset a restored catalogue page', async 
 
 test('Items dialogs honour create authority, consume create links and close when the Kitchen changes', async () => {
   const f = workspaceFixture()
-  const { context } = kindContext(f, 'all')
-  const route = reactive({ query: { create: 'drink', search: 'cola' } })
+  const { view, route } = catalogueView(f, { create: 'drink', search: 'cola' })
   const state = f.scope.run(() =>
     load(
-      'kitchen/components/Menu/Items/Collection/Dialogs.vue',
-      '({ createKind, openCreate, closeCreate })',
+      'kitchen/components/Workspace/Menu/Items/Collection/Dialogs.vue',
+      '({ createKind, openCreate, onOpenChange })',
       {
         computed,
         ref,
         watch,
-        useKitchenItemsContext: () => context,
+        useItemCatalogueContext: () => view,
         useRoute: () => route,
         useRouter: () => ({
           replace: async ({ query }) => {
@@ -1018,7 +1039,7 @@ test('Items dialogs honour create authority, consume create links and close when
   assert.equal(state.createKind.value, 'drink')
   assert.equal(route.query.create, undefined)
   assert.equal(route.query.search, 'cola')
-  state.closeCreate(false)
+  state.onOpenChange(false)
   assert.equal(state.createKind.value, null)
   state.openCreate('food')
   assert.equal(state.createKind.value, 'food')
@@ -1291,7 +1312,7 @@ test('Item placements return to the inline Menu builder or exact daily section',
       error = ref(null),
       emitted = []
     const state = load(
-      'kitchen/components/Menu/Items/MenuSection.vue',
+      'kitchen/components/Workspace/Menu/Items/Detail/Menus/Section.vue',
       '({destination,matches})',
       {
         computed,

@@ -12,7 +12,7 @@ import {
 function load(path, result, deps) {
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/components/Menu/Items/' + path,
+      '../runtime/kitchen/components/Workspace/Menu/Items/' + path,
       import.meta.url
     ),
     'utf8'
@@ -120,7 +120,7 @@ test('Items list shows legacy and explicit groups with starting prices including
     ...choices,
     defineEmits: () => () => {},
     readPlaceCurrencyCode: () => 'CHF',
-    useKitchenItemsContext: () => ({
+    useItemCatalogueContext: () => ({
       selectedKitchen: Vue.ref({ currency_code: 'CHF' }),
     }),
     useItemCatalogueContext: () => ({}),

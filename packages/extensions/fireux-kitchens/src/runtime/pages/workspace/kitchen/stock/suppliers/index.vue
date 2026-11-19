@@ -6,16 +6,16 @@
   />
   <div>
     <section class="workspace-surface">
-      <KitchenSuppliersSelector />
+      <WorkspaceKitchenStockSuppliersSelector />
       <WorkspaceKitchenToolsToolbar capability="suppliers" />
 
-      <KitchenSuppliers />
+      <KitchenWorkspaceStockSuppliers />
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { provideKitchenWorkspaceSuppliers } from '../../../../../kitchen/composables/workspace/suppliers/useKitchenWorkspaceSuppliers'
+import { provideKitchenWorkspaceSuppliers } from '../../../../../kitchen/composables/workspace/stock/suppliers/useKitchenWorkspaceSuppliers'
 
 provideKitchenWorkspaceSuppliers()
 

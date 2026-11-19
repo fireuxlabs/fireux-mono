@@ -57,9 +57,8 @@
         <div>
           <span>{{ labels[entry.state as keyof typeof labels] }}</span>
         </div>
-        <KitchenOrdersTicket
+        <PublicKitchenOrdersTicket
           :order="entry.order"
-          :editable="false"
           :show-contact-details="false"
         />
         <div>
@@ -157,7 +156,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
-import { useKitchenOrderDraftCollection } from '../../../composables/useKitchenOrderDraftCollection'
+import { useKitchenOrderDraftCollection } from '../../../composables/workspace/orders/useKitchenOrderDraftCollection'
 import { useKitchenAccess } from '../../../composables/useKitchenAccess'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useOrderExchange } from '../../../composables/useOrderExchange'

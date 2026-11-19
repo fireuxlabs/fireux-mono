@@ -4,7 +4,7 @@
 <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: route Workspace Kitchen creation through its named funnel. -->
 <template>
   <section class="workspace-surface workspace-surface--compact">
-    <KitchenOnboarding
+    <PublicKitchenOnboarding
       v-if="canEnterCreate"
       mode="workspace"
       :existing-root-id="existingRootId"

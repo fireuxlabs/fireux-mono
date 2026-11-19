@@ -95,13 +95,13 @@ function fixture(t) {
   }
   const team = scope.run(() =>
     load(
-      'composables/workspace/useKitchenWorkspaceTeam.ts',
+      'composables/workspace/team/useKitchenWorkspaceTeam.ts',
       'useKitchenWorkspaceTeam()',
       deps
     )
   )
   const ai = scope.run(() =>
-    load('components/Team/AI.vue', '{submit,prompt,submitting}', {
+    load('components/Workspace/Team/AI.vue', '{submit,prompt,submitting}', {
       ...deps,
       teamIntentRecords,
       useRoute: () => ({ fullPath: '/workspace/kitchen/team/people' }),

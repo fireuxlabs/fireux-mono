@@ -96,8 +96,6 @@ export default defineNuxtModule<ModuleOptions>({
           ['useKitchenWorkspaceMenu', 'menu/index'],
           ['useKitchenWorkspaceMenuOverview', 'menu/overview'],
           ['useKitchenWorkspaceMenuAi', 'menu/ai'],
-          ['useKitchenWorkspaceMenuItems', 'menu/items'],
-          ['useKitchenWorkspaceMenuPromotions', 'menu/promotions'],
           ['useKitchenWorkspaceMenuServices', 'menu/services'],
           ['useKitchenWorkspacePrep', 'prep/index'],
           ['useKitchenWorkspacePrepPreparations', 'prep/children'],

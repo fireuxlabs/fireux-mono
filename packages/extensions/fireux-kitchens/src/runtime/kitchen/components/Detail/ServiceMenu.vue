@@ -1,6 +1,6 @@
 <template>
   <section class="service-menu">
-    <KitchenDetailMenuHeader
+    <PublicKitchenDetailMenuHeader
       v-if="presentation"
       :venue="presentation"
       :venue-path="venuePath"
@@ -13,7 +13,7 @@
       "
       class="service-menu__navigation"
     >
-      <KitchenDetailMenuServices
+      <PublicKitchenDetailMenuServices
         :kitchen-slug="kitchenSlug"
         :active="service"
       />
@@ -26,7 +26,7 @@
         size="sm"
       />
     </div>
-    <KitchenDetailState
+    <PublicKitchenDetailState
       v-if="!presentation"
       :outcome="outcome"
       :has-kitchen="Boolean(kitchen)"

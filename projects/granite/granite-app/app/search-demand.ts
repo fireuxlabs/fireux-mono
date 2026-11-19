@@ -668,7 +668,7 @@ export const searchDemand = defineAppSearchDemand({
             scope:
               'Team exists, but a roster is not a resident/owner messaging or disclosure workflow. Source inspection only, not fresh live acceptance testing.',
             source_paths: [
-              'packages/extensions/fireux-properties/src/runtime/portfolio/components/Workspace/Team/Index.vue',
+              'packages/extensions/fireux-properties/src/runtime/portfolio/components/Workspace/Team.vue',
             ],
           },
         },

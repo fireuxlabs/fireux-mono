@@ -21,7 +21,7 @@
       class="service-browse__section"
     >
       <h2>{{ section.label }}</h2>
-      <KitchenOfferingsTimes
+      <PublicKitchenOfferingsTimes
         v-if="section.offerings.length"
         :offerings="section.offerings"
         compact
@@ -76,10 +76,10 @@
                   })
                 }}
               </p>
-              <KitchenOfferingsTimes :offerings="offer.offerings" compact />
+              <PublicKitchenOfferingsTimes :offerings="offer.offerings" compact />
             </div>
           </details>
-          <KitchenOfferingsTimes
+          <PublicKitchenOfferingsTimes
             v-if="!section.offerings.length"
             :offerings="row.offerings"
             compact

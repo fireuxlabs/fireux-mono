@@ -6,7 +6,7 @@
     context-label="Stock"
   />
   <section class="workspace-surface workspace-surface--compact">
-    <KitchenSuppliersSupplyOptions />
+    <WorkspaceKitchenStockSuppliersSupplyOptions />
   </section>
 </template>
 

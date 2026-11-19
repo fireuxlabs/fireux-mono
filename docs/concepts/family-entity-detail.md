@@ -33,7 +33,7 @@ Do not treat this map as proof that every listed route is currently verified.
 
 ## Shared spine
 
-Entity detail presentation enters through `components/Detail/Index.vue` (or
+Entity detail presentation enters through `components/Public/Detail/Index.vue` (or
 the corresponding App-owned `components/<Entity>/Detail/Index.vue`). Named
 sections live beside that entry. This preserves Nuxt’s `EntityDetail` name.
 Real App overrides retain their ownership; explicit lower-layer imports are
@@ -97,7 +97,7 @@ Every Entity Detail route should:
   trusted AppUser mutation authority. Specialist profile pages remain with
   their owning domains and are not inferred or registered through the User page.
   Misebox's App-owned `UserDetail` composition appends the Kitchen-owned
-  `KitchenUserMemberships` capability. That child resolves the authorized
+  `Workspace/Team/UserMemberships.vue` capability. That child resolves the authorized
   AppUser-to-Kitchen relationship, canonical same-id Places, and matching
   Kitchen Team access from the passed User; Core User remains unaware of
   Kitchen and public visitors receive no operational membership projection.
@@ -159,7 +159,7 @@ display leaves do not invent empty debug panels.
 ## Product and Blog presentation ownership
 
 Product and Blog routes retain their existing record reads and SEO and render
-`ProductDetail` / `BlogDetail` through `components/Detail/Index.vue`.
+`ProductDetail` / `BlogDetail` through `components/Public/Detail/Index.vue`.
 Their named Header sections own identity presentation. Product's
 `Checkout/Action.vue` owns its existing checkout action and blocks creation
 previews; `Onboarding/Index.vue` owns the separate fulfillment sequence.

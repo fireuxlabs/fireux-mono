@@ -222,7 +222,7 @@ test('save captures original data and cannot dispatch or complete into an obsole
     )
     const state = scope.run(() =>
       load(
-        '../../runtime/kitchen/composables/useKitchenOrderDraftSave.ts',
+        '../../runtime/kitchen/composables/workspace/orders/useKitchenOrderDraftSave.ts',
         'useKitchenOrderDraftSave',
         {
           ...Vue,
@@ -326,7 +326,7 @@ test('paged reader uses authorized Kitchen scope and masks retained or invalid r
   let path, options
   const state = scope.run(() =>
     load(
-      '../../runtime/kitchen/composables/useKitchenOrderDraftCollection.ts',
+      '../../runtime/kitchen/composables/workspace/orders/useKitchenOrderDraftCollection.ts',
       'useKitchenOrderDraftCollection',
       {
         ...Vue,
@@ -541,7 +541,7 @@ test('actual library channel switches show correct empty entry context without r
   const scope = Vue.effectScope()
   const source = readFileSync(
     new URL(
-      '../../runtime/kitchen/components/Orders/Examples/Index.vue',
+      '../../../../../../projects/misebox/misebox-app/app/components/Docs/OrderingTicket/Index.vue',
       import.meta.url
     ),
     'utf8'
@@ -657,7 +657,7 @@ test('library review blocks incomplete orders and captures valid local examples 
   const scope = Vue.effectScope()
   const source = readFileSync(
     new URL(
-      '../../runtime/kitchen/components/Orders/Examples/Index.vue',
+      '../../../../../../projects/misebox/misebox-app/app/components/Docs/OrderingTicket/Index.vue',
       import.meta.url
     ),
     'utf8'

@@ -79,7 +79,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['menu'],
       uses: ['kitchen'],
-      sourcePaths: [source + 'kitchen/components/Menu/Menus/Index.vue'],
+      sourcePaths: [source + 'kitchen/components/Workspace/Menu/Index.vue'],
     },
     {
       id: 'offerings',
@@ -88,8 +88,8 @@ export const miseboxReference: IgnitionAssembly = {
       requirements: ['configuration'],
       uses: ['kitchen', 'menus'],
       sourcePaths: [
-        source + 'kitchen/components/Menu/Services/Index.vue',
-        source + 'kitchen/components/Workspace/Identity/Payments/Index.vue',
+        source + 'kitchen/components/Workspace/Services/Index.vue',
+        source + 'kitchen/components/Workspace/Settings/Payments/Index.vue',
       ],
     },
     {
@@ -164,7 +164,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'Domain presentation',
       references: [
         source + 'pages/workspace/kitchen/orders/index.vue',
-        source + 'kitchen/components/Menu/Services/Index.vue',
+        source + 'kitchen/components/Workspace/Services/Index.vue',
       ],
     },
     {

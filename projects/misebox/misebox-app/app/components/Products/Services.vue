@@ -6,7 +6,7 @@
       :product="offer.product"
       :action="offer.action"
       :terms="offer.terms"
-      :preview-component="KitchenOffersPreview"
+      :preview-component="ServiceOfferPreview"
       :preview-props="{ kind: offer.kind }"
       :reverse="index % 2 === 1"
     />
@@ -14,7 +14,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import KitchenOffersPreview from 'fireux-kitchens/runtime/kitchen/components/Offers/Preview.vue'
+import ServiceOfferPreview from './ServiceOfferPreview.vue'
 import type { Product } from 'fireux-products/runtime/product/models/product.model'
 const props = defineProps<{ products: readonly Product[] }>()
 const selections = [

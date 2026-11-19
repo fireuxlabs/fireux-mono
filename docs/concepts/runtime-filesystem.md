@@ -253,11 +253,18 @@ src/runtime/kitchen/
 └── server/operations/menus/
 ```
 
-Kitchen Prep Recipes is a bounded trial of feature-first Workspace placement at
-`kitchen/workspace/prep/recipes/`. The screen components and their local reader,
-form and editor are colocated. Recipe's canonical model and validation live at
-the sibling `runtime/recipe/` root. Nuxt routes and HTTP adapters stay in their
-existing roles, and Kitchen-scoped storage and commands are unchanged.
+Entities use `components/` for public and reusable presentation. Workspace
+Entities put operator Vue components under `components/Workspace/`. Put Workspace-only readers and models under
+`composables/workspace/` and `models/workspace/` when needed. Presentation
+helpers private to one component may stay beside it. Create these directories
+when there is owned source to place. Follow the [component grouping rule](components.md#domain-component-surfaces) for navigation groups, single-file children and composed child folders.
+
+Workspace may compose a Public component through a Workspace wrapper that owns
+the operator controls and state. An existing, meaningful slot can carry that
+operator content. Public components stay independent of Workspace. Shared
+records, commands and sibling Entities retain their owners. Native Nuxt route
+and HTTP entrypoints stay on the outer runtime spine, and storage paths follow
+data ownership. Review existing audience folders and their registrations before relocation.
 
 This is an entity-scoped Nuxt runtime, not a capability-owned miniature
 application. Do not create `client`, `server`, `components`, and `models`
@@ -447,8 +454,9 @@ filesystem migration changes ownership and discovery paths, not product behaviou
 
 ## Inspected Kitchen route delegation
 
-Kitchen Finance and Tools routes delegate to the registered domain compositions
-`KitchenFinance` and `KitchenTools`. Ingredient, Chef and Driver detail
+Kitchen Finance delegates to its Workspace Reports composition. The Kitchen
+tools catalogue is composed by its standalone `/tools/kitchen` page. Ingredient,
+Chef and Driver detail
 routes own their record reads, read states, SEO and canonical-response behaviour.
 Named Detail compositions receive the resolved records and own presentation and
 local actions; they do not reacquire those records.

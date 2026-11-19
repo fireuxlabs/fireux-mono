@@ -145,7 +145,7 @@ function mount() {
   const listExports = {}
   const listCode = ts.transpileModule(
     readFileSync(
-      new URL('kitchen/composables/workspace/menus/useMenuList.ts', runtime),
+      new URL('kitchen/composables/workspace/menu/menus/useMenuList.ts', runtime),
       'utf8'
     ),
     {
@@ -217,7 +217,7 @@ function mount() {
           },
         }),
       }
-    if (name === '../menus/useMenuList') return { useMenuList: () => list }
+    if (name === './menus/useMenuList') return { useMenuList: () => list }
     assert.fail(name)
   }, overviewExports)
   const loadPresenter = (path) => {

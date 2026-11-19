@@ -32,7 +32,7 @@ export const miseboxDocsSources = {
     'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/index.vue'
   ),
   controls: source(
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Public/Collection/Controls.vue'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Collection/Controls.vue'
   ),
   state: source(
     'packages/core/fireux-core/src/runtime/components/molecules/State.vue'

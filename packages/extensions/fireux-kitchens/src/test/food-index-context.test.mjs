@@ -107,7 +107,7 @@ function fixture() {
     },
   }
   const menus = load(
-    base + 'menus/useKitchenMenus',
+    base + 'menu/menus/useKitchenMenus',
     'createKitchenMenus,provideKitchenMenus,useKitchenMenus,useOptionalKitchenMenus',
     {
       ...deps,
@@ -347,9 +347,7 @@ test('actual Prep overview and create consumers render the mounted state without
   const f = fixture()
   const component = (name) => {
     const filename = new URL(
-      name.startsWith('Recipes/')
-        ? `../runtime/kitchen/workspace/prep/recipes/${name.slice('Recipes/'.length)}.vue`
-        : `../runtime/kitchen/components/Workspace/Prep/${name}.vue`,
+      `../runtime/kitchen/components/Workspace/Prep/${name}.vue`,
       import.meta.url
     ).pathname
     const { descriptor } = parse(readFileSync(filename, 'utf8'), { filename })
@@ -376,9 +374,7 @@ export default {render}`
       if (id === './useOverview') {
         const child = name.split('/')[0]
         return load(
-          child === 'Recipes'
-            ? 'kitchen/workspace/prep/recipes/useOverview'
-            : `kitchen/components/Workspace/Prep/${child}/useOverview`,
+          `kitchen/components/Workspace/Prep/${child}/useOverview`,
           `useKitchenWorkspacePrep${child}Overview`,
           {
             ...Vue,
@@ -475,7 +471,7 @@ export default {render}`
             : 'Loading…'
       assert.ok(articles.every((article) => article.includes(message)))
     }
-    assert.ok(html.includes('href="/workspace/kitchen/stations"'))
+    assert.ok(html.includes('href="/workspace/kitchen/prep/stations"'))
   }
   assert.deepEqual(f.counts(), {
     menuReads: 0,
@@ -552,9 +548,15 @@ test('local Menu overview presenters consume one domain source and preserve reac
       {
         ...Vue,
         overviewSummary,
-        [name]: () => {
+        requireMenuWorkspace: () => {
           acquisitions++
-          return { summary }
+          return {
+            overview: {
+              catalogue: Vue.computed(() => ({
+                [child.toLowerCase()]: summary.value,
+              })),
+            },
+          }
         },
       }
     )
@@ -607,7 +609,7 @@ test('local Services overview derives badge and accessible setup copy without ch
     failed = Vue.ref(false)
   let acquisitions = 0
   const { useKitchenWorkspaceMenuServicesOverview } = load(
-    'kitchen/components/Workspace/Menu/Services/useOverview',
+    'kitchen/components/Workspace/Services/useOverview',
     'useKitchenWorkspaceMenuServicesOverview',
     {
       ...Vue,
@@ -645,7 +647,7 @@ test('actual Services overview renders feedback and title-only navigation throug
     pending = Vue.ref(false),
     failed = Vue.ref(false)
   const local = load(
-    'kitchen/components/Workspace/Menu/Services/useOverview',
+    'kitchen/components/Workspace/Services/useOverview',
     'useKitchenWorkspaceMenuServicesOverview',
     {
       ...Vue,
@@ -691,7 +693,7 @@ test('actual Services overview renders feedback and title-only navigation throug
       }),
     },
   })
-  const Overview = component('Menu/Services/Overview', {
+  const Overview = component('Services/Overview', {
     './useOverview': local,
   })
   for (const scenario of ['pending', 'error', 'empty', 'rows']) {

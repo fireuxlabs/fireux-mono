@@ -7,6 +7,8 @@
 </template>
 
 <script setup lang="ts">
+import WorkspaceSupplierItems from '../../../supplier/components/Workspace/Items.vue'
+
 definePageMeta({
   layout: 'workspace',
 

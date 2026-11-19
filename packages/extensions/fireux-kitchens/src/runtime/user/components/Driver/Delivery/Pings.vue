@@ -32,7 +32,7 @@
           <span>{{ statusLabel(dispatch.status) }}</span>
         </template>
 
-        <KitchenCardsPill
+        <PublicKitchenCardsPill
           :title="
             dispatch.kitchen.name ||
             prettySlug(dispatch.kitchen.slug) ||

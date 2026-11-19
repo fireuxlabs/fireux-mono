@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import { compile, createSSRApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 const base = new URL(
-  '../runtime/kitchen/components/Menu/Menus/Process/',
+  '../runtime/kitchen/components/Workspace/Menu/Menus/Process/',
   import.meta.url
 )
 function template(name) {
@@ -49,7 +49,7 @@ test('Process composition forwards model selection, draft comparison and review 
   })
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of ['Run', 'Report', 'Comparison'])
-    app.component('KitchenMenuMenusProcess' + name, {
+    app.component('KitchenWorkspaceMenuMenusProcess' + name, {
       props: ['process'],
       computed: {
         attentionFlags() {
@@ -67,9 +67,9 @@ test('Process composition forwards model selection, draft comparison and review 
         h('div', slots.default?.()),
   })
   for (const name of [
-    'KitchenMenuMenusProcessCost',
-    'KitchenMenuMenusProcessSections',
-    'KitchenMenuMenusProcessReview',
+    'KitchenWorkspaceMenuMenusProcessCost',
+    'KitchenWorkspaceMenuMenusProcessSections',
+    'KitchenWorkspaceMenuMenusProcessReview',
     'FireDiagnosticsDebugPanel',
     'UPageCard',
     'UBadge',
@@ -88,18 +88,18 @@ test('Process composition forwards model selection, draft comparison and review 
   assert.match(html, /Draft saved/)
   assert.match(html, /Check price/)
   assert.match(html, /menu.pdf/)
-  seen.KitchenMenuMenusProcessCost[0].onSelect('strong')
+  seen.KitchenWorkspaceMenuMenusProcessCost[0].onSelect('strong')
   assert.deepEqual(selected, ['strong'])
-  assert.equal(seen.KitchenMenuMenusProcessCost[0]['can-process'], true)
+  assert.equal(seen.KitchenWorkspaceMenuMenusProcessCost[0]['can-process'], true)
   assert.equal(
-    seen.KitchenMenuMenusProcessSections[0].sections,
+    seen.KitchenWorkspaceMenuMenusProcessSections[0].sections,
     process.currentSections
   )
   assert.equal(
-    seen.KitchenMenuMenusProcessSections[1].sections,
+    seen.KitchenWorkspaceMenuMenusProcessSections[1].sections,
     process.draftSections
   )
-  assert.equal(seen.KitchenMenuMenusProcessReview[0].blocked, true)
-  assert.equal(seen.KitchenMenuMenusProcessReview[0]['menu-id'], 'm')
-  assert.equal(seen.KitchenMenuMenusProcessReview[0].flags, process.flags)
+  assert.equal(seen.KitchenWorkspaceMenuMenusProcessReview[0].blocked, true)
+  assert.equal(seen.KitchenWorkspaceMenuMenusProcessReview[0]['menu-id'], 'm')
+  assert.equal(seen.KitchenWorkspaceMenuMenusProcessReview[0].flags, process.flags)
 })

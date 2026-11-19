@@ -4,7 +4,7 @@
     data-onboarding-family="kitchen"
     :data-onboarding-step="activeStepId || undefined"
   >
-    <KitchenOnboardingContribution
+    <PublicKitchenOnboardingContribution
       v-if="directoryResult"
       :result="directoryResult"
       :pending="selectionPending"
@@ -43,7 +43,7 @@
     </div>
 
     <div v-else-if="!place" class="form-stack">
-      <KitchenOnboardingFind
+      <PublicKitchenOnboardingFind
         :owner-user-id="ownerUserId"
         :directory="isDirectory"
         :resolve-existing="resolveExistingKitchen"
@@ -109,7 +109,7 @@
 
       <slot name="selected" :preview="preview" :place="place" />
 
-      <KitchenOnboardingReview
+      <PublicKitchenOnboardingReview
         v-if="activeStepId === 'review'"
         :place="place"
         :preview="preview"

@@ -4,7 +4,7 @@
     label="Sales reports"
     context-label="Reports"
   />
-  <KitchenFinanceNav />
+  <WorkspaceKitchenReportsFinanceNav />
   <section class="workspace-surface__grid workspace-surface__grid--2">
     <UCard>
       <template #header>

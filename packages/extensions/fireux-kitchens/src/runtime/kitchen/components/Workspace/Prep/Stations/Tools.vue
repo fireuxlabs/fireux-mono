@@ -14,6 +14,7 @@
   </UModal>
 </template>
 <script setup lang="ts">
-import { useKitchenWorkspacePrepStationsRead } from '../../../../composables/workspace/prep/stations/useKitchenWorkspacePrepStationsRead'
+import KitchenWorkspacePrepStationsCreate from './Create/Index.vue'
+import { useKitchenWorkspacePrepStationsRead } from '../../../../composables/workspace/prep/stations/read'
 const { createOpen, canWrite } = useKitchenWorkspacePrepStationsRead()
 </script>

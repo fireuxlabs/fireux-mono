@@ -28,7 +28,7 @@ ensure/upsert flows.
 ## Component entrypoints and sections
 
 An existing Entity Create or Edit entry lives at
-`components/Create/Index.vue` or `components/Edit/Index.vue`, retaining Nuxt's
+`components/Public/Directory/Create.vue` or `components/Workspace/Identity/Edit/Index.vue`, retaining Nuxt's
 `EntityCreate` / `EntityEdit` name. Named form sections stay beside that entry.
 This is placement, not a mandatory scaffold: do not add an Index where no
 entry responsibility exists, or manufacture empty editors.

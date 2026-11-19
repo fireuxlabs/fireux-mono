@@ -6,7 +6,7 @@
     @update:open="emit('update:open', $event)"
   >
     <template #body>
-      <KitchenOnboarding
+      <PublicKitchenOnboarding
         v-if="open"
         mode="workspace"
         :return-to="returnTo || workspaceEntryPath"

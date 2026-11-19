@@ -157,7 +157,7 @@ test('the mounted Services section addresses every named record, an ordinary sin
     deps
   )
   const component = (file, props, exposed) => {
-    const path = 'components/Menu/Services/' + file + '.vue'
+    const path = 'components/Workspace/Services/' + file + '.vue'
     const template = parse(readFileSync(new URL(path, runtime), 'utf8'))
       .descriptor.template.content
     return {
@@ -188,8 +188,8 @@ test('the mounted Services section addresses every named record, an ordinary sin
         )
       ),
   })
-  app.component('KitchenMenuServicesRecord', record)
-  for (const name of ['UIcon', 'KitchenMenuServicesSetup', 'FireCopyError'])
+  app.component('WorkspaceKitchenServicesRecord', record)
+  for (const name of ['UIcon', 'WorkspaceKitchenServicesSetup', 'FireCopyError'])
     app.component(name, { render: () => null })
   app.component('USwitch', {
     props: ['modelValue', 'label', 'disabled'],
@@ -235,7 +235,7 @@ test('mounted service editors and local drafts survive refresh/error; actual own
   const f = fixture(),
     { renderer, make } = host()
   const source = readFileSync(
-    new URL('components/Menu/Services/Index.vue', runtime),
+    new URL('components/Workspace/Services/Index.vue', runtime),
     'utf8'
   )
   let mounted = 0,
@@ -244,7 +244,7 @@ test('mounted service editors and local drafts survive refresh/error; actual own
   const app = renderer.createApp({
     setup: () =>
       load(
-        'components/Menu/Services/Index.vue',
+        'components/Workspace/Services/Index.vue',
         '({ source, retained, snapshot, options })',
         {
           provideKitchenServicesContext: () => f.context,
@@ -252,9 +252,9 @@ test('mounted service editors and local drafts survive refresh/error; actual own
       ),
     render: Vue.compile(parse(source).descriptor.template.content),
   })
-  for (const name of ['KitchenMenuServicesStatus', 'FireDiagnosticsDebugPanel'])
+  for (const name of ['WorkspaceKitchenServicesStatus', 'FireDiagnosticsDebugPanel'])
     app.component(name, { render: () => null })
-  app.component('KitchenMenuServicesService', {
+  app.component('WorkspaceKitchenServicesService', {
     setup() {
       mounted++
       draft = Vue.ref('18:')

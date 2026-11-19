@@ -8,7 +8,7 @@ import { useCommandScope } from '../../../../core/fireux-core/src/runtime/compos
 
 const source = readFileSync(
   new URL(
-    '../runtime/kitchen/composables/workspace/useKitchenWorkspaceTeam.ts',
+    '../runtime/kitchen/composables/workspace/team/useKitchenWorkspaceTeam.ts',
     import.meta.url
   ),
   'utf8'

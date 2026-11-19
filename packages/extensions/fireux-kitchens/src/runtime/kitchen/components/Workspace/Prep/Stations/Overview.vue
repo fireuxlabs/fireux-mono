@@ -1,7 +1,7 @@
 <template>
   <UPageCard
     title="Stations"
-    to="/workspace/kitchen/stations"
+    to="/workspace/kitchen/prep/stations"
     icon="i-lucide-panels-top-left"
   >
     <p :role="overview.role">

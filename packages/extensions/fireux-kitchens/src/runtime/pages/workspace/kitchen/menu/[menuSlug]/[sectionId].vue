@@ -5,7 +5,7 @@
     label="Menu sections"
     context-label="Menu"
   />
-  <KitchenMenuMenusSectionsDetail />
+  <KitchenWorkspaceMenuMenusSectionsDetail />
 </template>
 
 <script setup lang="ts">

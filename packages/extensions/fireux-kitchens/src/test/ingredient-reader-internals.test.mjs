@@ -358,7 +358,9 @@ async function render(path, state) {
   })
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of [
-    'KitchenWorkspacePrepIngredientsCollection',
+    'KitchenWorkspacePrepIngredientsCardsCell',
+    'UIcon',
+    'UPagination',
     'NuxtLink',
     'IngredientCardsOverview',
     'IngredientDetail',
@@ -385,7 +387,7 @@ async function render(path, state) {
   assert.deepEqual(warnings, [])
   return html
 }
-test('actual Ingredients index distinguishes unready owner from a ready empty library', async () => {
+test('actual Ingredients collection distinguishes unready owner from a ready empty library', async () => {
   for (const [outcome, expected] of [
     ['pending', 'Loading Kitchen'],
     ['error', 'Kitchen unavailable'],
@@ -393,7 +395,7 @@ test('actual Ingredients index distinguishes unready owner from a ready empty li
     ['idle', 'Select a kitchen'],
   ]) {
     const html = await render(
-      'kitchen/components/Workspace/Prep/Ingredients/Index.vue',
+      'kitchen/components/Workspace/Prep/Ingredients/Collection/Index.vue',
       { storageKitchenId: '', outcome }
     )
     assert.match(html, new RegExp(expected))

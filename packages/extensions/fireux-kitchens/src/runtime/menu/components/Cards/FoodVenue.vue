@@ -38,7 +38,7 @@
           <p class="food-venue__service-label">
             {{ action.label }}<span> from {{ venue.name }}</span>
           </p>
-          <KitchenOfferingsTimes
+          <PublicKitchenOfferingsTimes
             :offerings="action.offerings"
             :show-names="false"
             compact

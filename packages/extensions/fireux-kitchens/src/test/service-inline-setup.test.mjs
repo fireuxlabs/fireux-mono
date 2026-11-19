@@ -12,7 +12,7 @@ import {
 } from './offering-test-helpers.mjs'
 const source = readFileSync(
   new URL(
-    '../runtime/kitchen/components/Menu/Services/Record.vue',
+    '../runtime/kitchen/components/Workspace/Services/Record.vue',
     import.meta.url
   ),
   'utf8'
@@ -65,14 +65,14 @@ async function render(option, enabled) {
     render: vue.compile(template),
   })
   for (const [name, file] of [
-    ['KitchenMenuServicesSetup', 'Setup.vue'],
-    ['KitchenMenuServicesSetupKiosk', 'Setup/Kiosk.vue'],
-    ['KitchenMenuServicesSetupPreOrder', 'Setup/PreOrder.vue'],
+    ['WorkspaceKitchenServicesSetup', 'Setup.vue'],
+    ['WorkspaceKitchenServicesSetupKiosk', 'Setup/Kiosk.vue'],
+    ['WorkspaceKitchenServicesSetupPreOrder', 'Setup/PreOrder.vue'],
   ]) {
     const child = parse(
       readFileSync(
         new URL(
-          `../runtime/kitchen/components/Menu/Services/${file}`,
+          `../runtime/kitchen/components/Workspace/Services/${file}`,
           import.meta.url
         ),
         'utf8'
@@ -88,20 +88,20 @@ async function render(option, enabled) {
       vue.h('button', { role: 'switch', 'aria-checked': props.modelValue }),
   })
   for (const [name, label] of [
-    ['KitchenMenuServicesSetupMenus', 'Selected menus'],
-    ['KitchenMenuServicesSetupServiceHours', 'Serving hours'],
+    ['WorkspaceKitchenServicesSetupMenus', 'Selected menus'],
+    ['WorkspaceKitchenServicesSetupServiceHours', 'Serving hours'],
   ])
     app.component(name, { setup: () => () => vue.h('div', label) })
   const interaction = parse(
     readFileSync(
       new URL(
-        '../runtime/kitchen/components/Menu/Services/Setup/Interaction.vue',
+        '../runtime/kitchen/components/Workspace/Services/Setup/Interaction.vue',
         import.meta.url
       ),
       'utf8'
     )
   ).descriptor.template.content
-  app.component('KitchenMenuServicesSetupInteraction', {
+  app.component('WorkspaceKitchenServicesSetupInteraction', {
     props: [
       'config',
       'label',
@@ -113,7 +113,7 @@ async function render(option, enabled) {
     setup: () => ({ update() {}, updateMenus() {} }),
     render: vue.compile(interaction),
   })
-  app.component('KitchenMenuServicesTiming', {
+  app.component('WorkspaceKitchenServicesTiming', {
     props: ['config'],
     setup: (props) => () =>
       vue.h(
@@ -148,7 +148,7 @@ test('all services show a switch, hide configuration while off and reveal it whi
 test('saved incompatible menus show visible replacement warnings and remain selectable for removal', async () => {
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/components/Menu/Services/Setup/Menus.vue',
+      '../runtime/kitchen/components/Workspace/Services/Setup/Menus.vue',
       import.meta.url
     ),
     'utf8'

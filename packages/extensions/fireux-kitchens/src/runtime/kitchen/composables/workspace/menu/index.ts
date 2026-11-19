@@ -1,6 +1,6 @@
 import { computed, provide } from 'vue'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
-import { createKitchenMenus } from '../menus/useKitchenMenus'
+import { createKitchenMenus } from './menus/useKitchenMenus'
 import { createKitchenMenuOverview } from './source'
 import { kitchenMenusWorkspaceKey } from './state'
 

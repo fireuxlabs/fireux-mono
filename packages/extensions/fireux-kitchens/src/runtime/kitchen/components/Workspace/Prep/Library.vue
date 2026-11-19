@@ -17,53 +17,17 @@
         />
       </template>
     </WorkspacePageHeader>
-    <WorkspaceKitchenAIFocus
-      v-if="view === 'recipes' || selectedId"
-      :focus="`kitchen-ai.prep.${view}`"
-      :label="view === 'preparations' ? 'Preparations' : 'Recipes'"
-      context-label="Prep"
-    />
-    <UInput
-      v-if="!selectedId && view === 'recipes'"
-      v-model="search"
-      placeholder="Search recipes"
-      aria-label="Search recipes"
-      icon="i-lucide-search"
-    />
-    <template v-if="!selectedId && view === 'preparations'">
-      <KitchenWorkspacePrepPreparationsCollection
-        :preparations="preparations"
-        :preparation-to="preparationTo"
-        :recipe-count="recipeCount"
+    <template v-if="!selectedId">
+      <KitchenWorkspacePrepLibraryCollection
+        :key="view"
+        :rows="catalogueRows"
+        :labels="catalogueLabels"
+        :icon="
+          view === 'preparations'
+            ? 'i-lucide-cooking-pot'
+            : 'i-lucide-notebook-tabs'
+        "
       />
-      <details class="kitchen-record-assistant">
-        <summary>Ask KitchenAI about preparations</summary>
-        <WorkspaceKitchenAIFocus
-          focus="kitchen-ai.prep.preparations"
-          label="Preparations"
-          context-label="Prep"
-        />
-      </details>
-    </template>
-    <template v-else-if="!selectedId">
-      <div class="prep-library__rows">
-        <FireActionSurface
-          v-for="row in visibleRows"
-          :key="row.id"
-          :to="recipeTo(row.id)"
-          variant="cell"
-          class="prep-library__row"
-        >
-          <UIcon name="i-lucide-notebook-tabs" />
-          <div>
-            <h2>{{ row.name }}</h2>
-            <p v-if="row.description">{{ row.description }}</p>
-          </div>
-        </FireActionSurface>
-      </div>
-      <p v-if="!visibleRows.length">
-        {{ search ? 'No matches.' : 'No recipes yet.' }}
-      </p>
     </template>
     <template v-else-if="selectedPreparation">
       <p v-if="selectedPreparation.description">
@@ -188,6 +152,14 @@
       color="neutral"
       variant="soft"
     />
+    <details class="kitchen-record-assistant">
+      <summary>Ask KitchenAI about {{ title }}</summary>
+      <WorkspaceKitchenAIFocus
+        :focus="`kitchen-ai.prep.${view}`"
+        :label="view === 'preparations' ? 'Preparations' : 'Recipes'"
+        context-label="Prep"
+      />
+    </details>
   </section>
 </template>
 <script setup lang="ts">
@@ -207,7 +179,6 @@ const props = withDefaults(
   }>(),
   { selectedId: '', recipeLinks: () => [], inputLabels: () => ({}) }
 )
-const search = ref('')
 const targetYield = ref<string | number>('')
 const selectedPreparation = computed(() =>
   props.view === 'preparations'
@@ -225,21 +196,10 @@ const title = computed(
     selectedRecipe.value?.name ||
     (props.view === 'preparations' ? 'Preparations' : 'Recipes')
 )
-const visibleRows = computed(() =>
-  props.recipes
-    .filter((row) =>
-      `${row.name} ${row.description || ''}`
-        .toLocaleLowerCase()
-        .includes(search.value.trim().toLocaleLowerCase())
-    )
-    .slice()
-    .sort((a, b) => a.name.localeCompare(b.name))
-)
 watch(
   () => [props.view, props.selectedId, selectedRecipe.value?.yield?.quantity],
   () => {
     targetYield.value = selectedRecipe.value?.yield?.quantity ?? ''
-    search.value = ''
   },
   { immediate: true }
 )
@@ -253,7 +213,29 @@ const outputIds = (recipe: Recipe) => [
 ]
 const recipesFor = (id: string) =>
   props.recipes.filter((recipe) => outputIds(recipe).includes(id))
-const recipeCount = (id: string) => recipesFor(id).length
+const catalogueLabels = computed(() =>
+  props.view === 'preparations'
+    ? { singular: 'preparation', plural: 'preparations' }
+    : { singular: 'recipe', plural: 'recipes' }
+)
+const catalogueRows = computed(() =>
+  props.view === 'preparations'
+    ? props.preparations.map((record) => {
+        const count = recipesFor(record.id).length
+        return {
+          ...record,
+          to: props.preparationTo(record.id),
+          summary: `${count} ${count === 1 ? 'recipe' : 'recipes'}`,
+        }
+      })
+    : props.recipes.map((record) => ({
+        ...record,
+        to: props.recipeTo(record.id),
+        summary: record.yield
+          ? `${record.yield.quantity} ${record.yield.unit}`
+          : undefined,
+      }))
+)
 const usedBy = (id: string) =>
   props.recipes.filter((recipe) =>
     recipe.inputs.some(

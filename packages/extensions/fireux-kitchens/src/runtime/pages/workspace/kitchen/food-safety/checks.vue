@@ -3,7 +3,7 @@
     focus="kitchen-ai.food-safety.checks"
     label="Due checks"
     context-label="Food Safety"
-  /><KitchenFoodSafetyPage view="checks" />
+  /><WorkspaceKitchenFoodSafetyPage view="checks" />
 </template>
 <script setup lang="ts">
 definePageMeta({

@@ -6,6 +6,7 @@
   <BusinessWorkspace />
 </template>
 <script setup lang="ts">
+import BusinessWorkspace from '../../../business/components/Workspace/Index.vue'
 definePageMeta({
   layout: 'workspace',
   workspace: 'business',

@@ -1,10 +1,9 @@
 <template>
-  <KitchenMenuItems />
+  <KitchenWorkspaceMenuItems />
 </template>
 
 <script setup lang="ts">
-import { provideKitchenItemsContext } from '../../../../../kitchen/composables/workspace/items/useKitchenItemsContext'
-provideKitchenItemsContext('all')
+import KitchenWorkspaceMenuItems from '../../../../../kitchen/components/Workspace/Menu/Items/Index.vue'
 
 definePageMeta({
   layout: 'workspace',
