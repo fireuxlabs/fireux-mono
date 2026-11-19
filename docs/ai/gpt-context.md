@@ -90,6 +90,12 @@ Separation of concerns is sufficient reason for a component; reuse is not requir
 Small cohesive controls may stay local. Do not add forwarding wrappers, empty
 controllers or universal abstractions to make file trees look symmetrical.
 
+Keep the path from read to screen to action direct. A composable's return is a
+contract with its current callers. Return only the data they render or use and
+the actions they call. Keep intermediate state private and avoid forwarding
+whole lower-level results. Build controls for the operator's current tasks.
+Remove unused outputs and controls and add them when a real need arises.
+
 ### Mandatory composition checks
 
 These start and finish gates apply to implementation and structural changes.

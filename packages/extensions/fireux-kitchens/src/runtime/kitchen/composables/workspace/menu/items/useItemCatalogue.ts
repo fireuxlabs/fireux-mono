@@ -3,7 +3,6 @@ import { useRoute, useRouter } from '#imports'
 import {
   itemCataloguePath,
   readItemCatalogueQuery,
-  itemCatalogueQuery,
   type ItemCatalogueState,
 } from '../../../../utils/item-catalogue-route'
 import {
@@ -12,19 +11,19 @@ import {
 } from './useKitchenItemsContext'
 
 export function useItemCatalogue(items: KitchenItemsContext) {
-  const { dishes, outcome, kitchenId, catalogue, storageKitchenId, readOnly } =
-    items
+  const {
+    dishes,
+    outcome,
+    kitchenId,
+    catalogue,
+    storageKitchenId,
+    readOnly,
+    error,
+    selectedKitchen,
+  } = items
   const route = useRoute()
   const router = useRouter()
   const initial = readItemCatalogueQuery(route.query)
-  const kindFilters: {
-    value: ItemCatalogueState['kind']
-    label: string
-  }[] = [
-    { value: 'all', label: 'All Items' },
-    { value: 'food', label: 'Food' },
-    { value: 'drink', label: 'Drinks' },
-  ]
   const kind = ref<ItemCatalogueState['kind']>(initial.kind)
   const ready = computed(
     () =>
@@ -62,23 +61,12 @@ export function useItemCatalogue(items: KitchenItemsContext) {
   }
   const filter = ref<ItemCatalogueState['filter']>(initial.filter)
   const view = ref<ItemCatalogueState['layout']>(initial.layout)
-  const catalogueQuery = computed(() => ({
-    ...itemCatalogueQuery({
-      kind: kind.value,
-      search: query.value,
-      filter: filter.value,
-      page: page.value,
-    }),
-  }))
   const itemLink = (
     id: string,
     query: Record<string, string> = {},
     hash = ''
   ) => {
-    const search = new URLSearchParams({
-      ...catalogueQuery.value,
-      ...query,
-    }).toString()
+    const search = new URLSearchParams(query).toString()
     return `${itemCataloguePath}/${encodeURIComponent(id)}${search ? `?${search}` : ''}${hash}`
   }
   const normalize = (value: unknown) =>
@@ -87,22 +75,6 @@ export function useItemCatalogue(items: KitchenItemsContext) {
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
       .trim()
-  const filters = computed(
-    () =>
-      [
-        { value: 'all', label: 'All', count: kindItems.value.length },
-        {
-          value: 'image',
-          label: 'Missing image',
-          count: kindItems.value.filter((d) => !d.image?.trim()).length,
-        },
-        {
-          value: 'description',
-          label: 'Missing description',
-          count: kindItems.value.filter((d) => !d.description?.trim()).length,
-        },
-      ] as const
-  )
   const visibleItems = computed(() =>
     kindItems.value
       .filter(
@@ -114,9 +86,9 @@ export function useItemCatalogue(items: KitchenItemsContext) {
           (filter.value !== 'image' || !dish.image?.trim()) &&
           (filter.value !== 'description' || !dish.description?.trim())
       )
-      .slice()
       .sort((a, b) => a.name.localeCompare(b.name))
   )
+  const visibleCount = computed(() => visibleItems.value.length)
   const page = ref(initial.page)
   const pageSize = 40
   const pageItems = computed(() =>
@@ -126,7 +98,7 @@ export function useItemCatalogue(items: KitchenItemsContext) {
     page.value = 1
   })
   watch(
-    [() => visibleItems.value.length, outcome],
+    [visibleCount, outcome],
     ([count]) => {
       if (!['ready', 'empty'].includes(outcome.value)) return
       page.value = Math.min(
@@ -137,8 +109,8 @@ export function useItemCatalogue(items: KitchenItemsContext) {
     { immediate: true }
   )
   watch(
-    catalogueQuery,
-    (next) => {
+    () => route.query,
+    () => {
       if (route.path !== catalogue.path) return
       const nextQuery = { ...route.query }
       for (const key of [
@@ -150,13 +122,7 @@ export function useItemCatalogue(items: KitchenItemsContext) {
         'category',
       ])
         delete nextQuery[key]
-      Object.assign(nextQuery, next)
-      if (
-        Object.keys(nextQuery).length === Object.keys(route.query).length &&
-        Object.entries(nextQuery).every(
-          ([key, value]) => route.query[key] === value
-        )
-      )
+      if (Object.keys(nextQuery).length === Object.keys(route.query).length)
         return
       void router.replace({
         path: route.path,
@@ -174,19 +140,22 @@ export function useItemCatalogue(items: KitchenItemsContext) {
     filter.value = 'all'
   })
   return {
-    ...items,
+    catalogue,
+    kitchenId,
+    storageKitchenId,
+    outcome,
+    error,
+    readOnly,
+    currency: computed(() => selectedKitchen.value?.currency_code || ''),
     ready,
     canCreate,
     createKind,
     openCreate,
     closeCreate,
-    kindFilters,
     kind,
     query,
-    filter,
-    filters,
     view,
-    visibleItems,
+    visibleCount,
     page,
     pageSize,
     pageItems,

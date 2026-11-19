@@ -4,7 +4,7 @@
     v-model="query"
     :label="catalogue.plural"
     :singular="catalogue.singular"
-    :count="visibleItems.length"
+    :count="visibleCount"
   >
     <template #filters>
       <USelect
@@ -45,8 +45,12 @@ const {
   openCreate,
   query,
   kind,
-  kindFilters,
   view,
-  visibleItems,
+  visibleCount,
 } = useItemCatalogueContext()
+const kindFilters = [
+  { value: 'all', label: 'All Items' },
+  { value: 'food', label: 'Food' },
+  { value: 'drink', label: 'Drinks' },
+]
 </script>

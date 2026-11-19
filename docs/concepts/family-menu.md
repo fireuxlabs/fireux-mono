@@ -62,13 +62,12 @@ per-date publication feature.
 
 Kitchen's combined Food & drinks catalogue filters the same Item family by
 `item_kind` through All/Food/Drinks; unknown historical kinds remain under All.
-Menu names do not classify Items. Its URL retains kind, search, completeness
-filter and page. List/grid stays local to Items. An inbound layout value can set
-the initial view and is then stripped, as are legacy category query values. Food and drink editors return to
-that combined catalogue through `kitchen/utils/item-catalogue-route.ts`; loading
-does not reset a restored page, and settled results clamp an obsolete page.
-`item-reader-internals.test.mjs` covers the round trip and delayed Kitchen/data
-resolution. Item detail has two views: Details and Appears on. Preparation specification,
+Menu names do not classify Items. Type, search, completeness filter, list/grid
+and page are local catalogue state. Older links can initialize those controls.
+The catalogue removes their parameters and retired category parameters from the
+URL. Item record links and return links omit catalogue state. Delayed reads
+preserve the initial page and settled results clamp an obsolete page.
+Item detail has two views: Details and Appears on. Preparation specification,
 prep requirements and Station management belong to Prep & Production; the Menu
 Item route does not acquire their readers. Preparation owns reusable output
 identity in `kitchen/records/prep/preparations/preparation.ts`; Recipe owns inputs, method

@@ -121,9 +121,8 @@ test('Items list shows legacy and explicit groups with starting prices including
     defineEmits: () => () => {},
     readPlaceCurrencyCode: () => 'CHF',
     useItemCatalogueContext: () => ({
-      selectedKitchen: Vue.ref({ currency_code: 'CHF' }),
+      currency: Vue.ref('CHF'),
     }),
-    useItemCatalogueContext: () => ({}),
   })
   assert.equal(
     state.priceLabel({ price: 21, price_options: [], add_ons: [] }),

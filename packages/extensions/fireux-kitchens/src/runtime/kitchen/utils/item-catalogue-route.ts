@@ -24,22 +24,10 @@ export function readItemCatalogueQuery(
   }
 }
 
-export function itemCatalogueQuery(
-  state: Omit<ItemCatalogueState, 'layout'>
-): Record<string, string> {
-  return {
-    ...(state.kind !== 'all' ? { kind: state.kind } : {}),
-    ...(state.search ? { search: state.search } : {}),
-    ...(state.filter !== 'all' ? { filter: state.filter } : {}),
-    ...(state.page !== 1 ? { page: String(state.page) } : {}),
-  }
-}
-
 export function itemCatalogueReturn(query: Record<string, unknown>) {
   return {
     path: itemCataloguePath,
     query: {
-      ...itemCatalogueQuery(readItemCatalogueQuery(query)),
       ...(typeof query.group === 'string' ? { group: query.group } : {}),
     },
   }

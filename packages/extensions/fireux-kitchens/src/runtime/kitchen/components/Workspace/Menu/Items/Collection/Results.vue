@@ -1,6 +1,6 @@
 <template>
   <FireState
-    v-if="pending"
+    v-if="outcome === 'pending'"
     outcome="pending"
     :entity="storageKitchenId ? catalogue.plural : 'Kitchen'"
   />
@@ -49,22 +49,20 @@
       />
     </template>
   </UAlert>
-  <div v-else-if="!visibleItems.length" class="catalogue-empty">
+  <div v-else-if="!visibleCount" class="catalogue-empty">
     <UIcon :name="catalogue.icon" />
-    <h2>{{ dishes.length ? 'No matches' : `No ${catalogue.plural} yet` }}</h2>
+    <h2>
+      {{ outcome === 'ready' ? 'No matches' : `No ${catalogue.plural} yet` }}
+    </h2>
     <UButton
-      v-if="dishes.length"
+      v-if="outcome === 'ready'"
       label="Clear filters"
       color="neutral"
       variant="soft"
       @click="clearFilters"
     />
     <UButton
-      v-else-if="
-        catalogue.itemKind !== 'all' &&
-        !readOnly &&
-        (outcome === 'ready' || outcome === 'empty')
-      "
+      v-else-if="catalogue.itemKind !== 'all' && canCreate"
       :label="`Add ${catalogue.singular}`"
       @click="openCreate(catalogue.itemKind === 'drink' ? 'drink' : 'food')"
       icon="i-lucide-plus"
@@ -109,17 +107,19 @@
 
   <UPagination
     v-if="
-      storageKitchenId && !pending && !error && visibleItems.length > pageSize
+      storageKitchenId &&
+      outcome === 'ready' &&
+      !error &&
+      visibleCount > pageSize
     "
     v-model:page="page"
-    :total="visibleItems.length"
+    :total="visibleCount"
     :items-per-page="pageSize"
     :sibling-count="1"
   />
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import {
   readItemChoiceGroups,
   itemChoiceRule,
@@ -130,13 +130,11 @@ import { useItemCatalogueContext } from '../../../../../composables/workspace/me
 const {
   catalogue,
   storageKitchenId,
-  dishes,
-  pending,
   error,
-  readOnly,
+  canCreate,
   outcome,
-  selectedKitchen,
-  visibleItems,
+  currency,
+  visibleCount,
   pageItems,
   view,
   itemLink,
@@ -145,7 +143,6 @@ const {
   page,
   pageSize,
 } = useItemCatalogueContext()
-const currency = computed(() => selectedKitchen.value?.currency_code || '')
 function choiceSummary(dish: ItemCollectionRow) {
   return readItemChoiceGroups(dish)
     .map(

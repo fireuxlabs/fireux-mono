@@ -5,7 +5,6 @@ import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/run
 import {
   itemCataloguePath,
   readItemCatalogueQuery,
-  itemCatalogueQuery,
   itemCatalogueReturn,
 } from '../runtime/kitchen/utils/item-catalogue-route.ts'
 import { itemPricingHelpers } from './helpers/item-pricing.mjs'
@@ -532,8 +531,8 @@ function readView(overrides = {}) {
     error: null,
     pending: false,
     focus: { name: 'Mine' },
-    readOnly: false,
-    visibleItems: [],
+    canCreate: true,
+    visibleCount: 0,
     dishes: [],
     pageItems: [],
     query: '',
@@ -546,8 +545,6 @@ function readView(overrides = {}) {
       { value: 'food', label: 'Food' },
       { value: 'drink', label: 'Drinks' },
     ],
-    filters: [{ value: 'all', label: 'All', count: 0 }],
-    filter: 'all',
     page: 1,
     pageSize: 40,
     organise: false,
@@ -583,15 +580,15 @@ function recordView(overrides = {}) {
     ...overrides,
   }
 }
-test('Items prices use the supplied Kitchen currency projection and keep missing currency explicit', () => {
-  const selectedKitchen = ref({ id: 'mine', currency_code: 'CHF' })
+test('Items prices use the supplied Kitchen currency and keep missing currency explicit', () => {
+  const currency = ref('CHF')
   const priceLabel = load(
     'kitchen/components/Workspace/Menu/Items/Collection/Results.vue',
     'priceLabel',
     {
       computed,
       defineEmits: () => () => {},
-      useItemCatalogueContext: () => ({ selectedKitchen }),
+      useItemCatalogueContext: () => ({ currency }),
       readPlaceCurrencyCode,
       readItemChoiceGroups,
       itemChoiceRule,
@@ -600,7 +597,7 @@ test('Items prices use the supplied Kitchen currency projection and keep missing
   )
   assert.match(priceLabel({ price: 12.5 }), /CHF/)
   assert.match(priceLabel({ price: 12.5 }), /12\.50/)
-  selectedKitchen.value = { id: 'mine' }
+  currency.value = ''
   assert.equal(priceLabel({ price: 12.5 }), 'Currency not set')
   assert.equal(priceLabel({}), 'Not set')
   assert.equal(priceLabel({ pricing_error: true }), 'Review price & choices')
@@ -805,7 +802,6 @@ test('combined catalogue filters food and drinks and opens each in its correct e
         useRouter: () => ({ replace: async () => {} }),
         itemCataloguePath,
         readItemCatalogueQuery,
-        itemCatalogueQuery,
         context,
         computed,
         ref,
@@ -816,33 +812,27 @@ test('combined catalogue filters food and drinks and opens each in its correct e
     )
   )
   assert.deepEqual(
-    view.visibleItems.value.map((item) => item.id),
+    view.pageItems.value.map((item) => item.id),
     ['soup', 'tea']
   )
   view.kind.value = 'drink'
   await nextTick()
   assert.deepEqual(
-    view.visibleItems.value.map((item) => item.id),
+    view.pageItems.value.map((item) => item.id),
     ['tea']
   )
-  assert.match(
-    view.itemLink('tea'),
-    /^\/workspace\/kitchen\/menu\/items\/tea\?/
-  )
+  assert.equal(view.itemLink('tea'), `${itemCataloguePath}/tea`)
   view.kind.value = 'food'
   await nextTick()
   assert.deepEqual(
-    view.visibleItems.value.map((item) => item.id),
+    view.pageItems.value.map((item) => item.id),
     ['soup']
   )
-  assert.match(
-    view.itemLink('soup'),
-    /^\/workspace\/kitchen\/menu\/items\/soup\?/
-  )
+  assert.equal(view.itemLink('soup'), `${itemCataloguePath}/soup`)
   view.clearFilters()
   view.query.value = 'tea'
   assert.deepEqual(
-    view.visibleItems.value.map((item) => item.id),
+    view.pageItems.value.map((item) => item.id),
     ['tea']
   )
   assert.equal(
@@ -877,7 +867,6 @@ function catalogueView(f, query = {}) {
         watch,
         itemCataloguePath,
         readItemCatalogueQuery,
-        itemCatalogueQuery,
         buildMissingItemImageSuggestions: () => [],
         buildMissingDrinkImageSuggestions: () => [],
       }
@@ -893,40 +882,33 @@ const catalogueRows = () =>
     price: 4,
   }))
 
-test('Food & drinks item round trip restores kind, search, filters and page with local layout', async () => {
+test('Food & drinks catalogue controls and record links keep catalogue state out of the URL', async () => {
   const f = workspaceFixture()
-  f.settle(catalogueRows())
-  const { view, route } = catalogueView(f)
+  const rows = catalogueRows()
+  rows[0].image = 'https://example.com/cola.jpg'
+  f.settle(rows)
+  const { view, route } = catalogueView(f, { filter: 'image' })
   view.kind.value = 'drink'
   view.query.value = 'Cola'
-  view.filter.value = 'image'
   view.view.value = 'grid'
   await nextTick()
   view.page.value = 2
   await nextTick()
-  assert.equal(route.query.page, '2')
-  assert.equal(route.query.kind, 'drink')
-  assert.equal(route.query.layout, undefined)
-  const link = new URL(
-    view.itemLink(view.pageItems.value[0].id),
-    'http://localhost'
-  )
-  assert.equal(
-    link.pathname,
-    `${itemCataloguePath}/${view.pageItems.value[0].id}`
-  )
-  const returnTo = itemCatalogueReturn(Object.fromEntries(link.searchParams))
-  assert.equal(returnTo.path, '/workspace/kitchen/menu/items')
-  assert.deepEqual(returnTo.query, route.query)
-  const restored = catalogueView(f, returnTo.query).view
-  assert.equal(restored.kind.value, 'drink')
-  assert.equal(restored.query.value, 'Cola')
-  assert.equal(restored.filter.value, 'image')
-  assert.equal(link.searchParams.has('layout'), false)
-  assert.equal(restored.view.value, 'list')
-  assert.equal(restored.page.value, 2)
-  assert.equal(restored.pageItems.value[0].id, view.pageItems.value[0].id)
+  assert.deepEqual(route.query, {})
+  assert.equal(view.page.value, 2)
+  assert.equal(view.kind.value, 'drink')
+  assert.equal(view.query.value, 'Cola')
+  assert.equal(view.visibleCount.value, 99)
+  assert.equal(view.view.value, 'grid')
+  const id = view.pageItems.value[0].id
+  assert.equal(view.itemLink(id), `${itemCataloguePath}/${id}`)
+  assert.deepEqual(itemCatalogueReturn({}), {
+    path: itemCataloguePath,
+    query: {},
+  })
   assert.equal(f.state.dishes.value[0].price, 4)
+  view.clearFilters()
+  assert.equal(view.visibleCount.value, 100)
   f.scope.stop()
 })
 
@@ -944,7 +926,7 @@ test('obsolete category links cannot hide Items and retain the type and restored
     page: '2',
   })
   await nextTick()
-  assert.equal(view.visibleItems.value.length, 100)
+  assert.equal(view.visibleCount.value, 100)
   assert.equal(view.kind.value, 'drink')
   assert.equal(view.page.value, 2)
   assert.equal(Object.hasOwn(route.query, 'category'), false)
@@ -976,7 +958,7 @@ test('restored catalogue page survives loading, clamps after results settle, and
   f.scope.stop()
 })
 
-test('catalogue return ignores retired categories and accepts only catalogue state', () => {
+test('catalogue return drops UI state and keeps the workspace group', () => {
   assert.deepEqual(
     itemCatalogueReturn({
       kind: 'food',
@@ -987,13 +969,9 @@ test('catalogue return ignores retired categories and accepts only catalogue sta
       page: '2',
       view: 'pricing',
       menu: 'other',
+      group: 'kitchen',
     }).query,
-    {
-      kind: 'food',
-      search: 'pizza',
-      filter: 'description',
-      page: '2',
-    }
+    { group: 'kitchen' }
   )
   for (const page of ['0', '-1', 'NaN', '1.5', ['2']])
     assert.equal(readItemCatalogueQuery({ page }).page, 1)
@@ -1040,7 +1018,8 @@ test('Items dialogs honour create authority, consume create links and close when
   )
   assert.equal(state.createKind.value, 'drink')
   assert.equal(route.query.create, undefined)
-  assert.equal(route.query.search, 'cola')
+  assert.equal(route.query.search, undefined)
+  assert.equal(view.query.value, 'cola')
   state.onOpenChange(false)
   assert.equal(state.createKind.value, null)
   state.openCreate('food')
@@ -1087,7 +1066,8 @@ test('item editor links encode record identity without changing catalogue state'
   const { view } = catalogueView(f, { search: 'soup & tea' })
   const link = new URL(view.itemLink('food/tea #1'), 'http://localhost')
   assert.equal(link.pathname, `${itemCataloguePath}/food%2Ftea%20%231`)
-  assert.equal(link.searchParams.get('search'), 'soup & tea')
+  assert.equal(view.query.value, 'soup & tea')
+  assert.equal(link.search, '')
   assert.equal(link.hash, '')
   f.scope.stop()
 })
