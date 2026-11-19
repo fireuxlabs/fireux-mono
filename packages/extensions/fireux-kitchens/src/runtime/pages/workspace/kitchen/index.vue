@@ -1,59 +1,8 @@
 <template>
-  <UDashboardToolbar v-if="!fireux.isTenant || ready">
-    <WorkspaceKitchenSelector />
-  </UDashboardToolbar>
-  <div>
-    <div v-if="fireux.isTenant">
-      <AppBrandLogo size="small" />
-    </div>
-    <UPageHeader :title="workspaceTitle" />
-  </div>
-  <WorkspaceKitchenHomeAI
-    v-if="!fireux.isTenant || ready"
-    :perform-action="performLandingAction"
-  />
-  <nav v-if="fireux.isTenant && ready" aria-label="Kitchen actions">
-    <UButton
-      to="/workspace/kitchen/menu"
-      label="Menus"
-      icon="i-lucide-notebook-text"
-    />
-    <UButton
-      to="/workspace/kitchen/team"
-      label="Team"
-      icon="i-lucide-users"
-      color="neutral"
-      variant="soft"
-    />
-    <UButton
-      to="/workspace/kitchen/menu/services"
-      label="Services"
-      icon="i-lucide-layout-dashboard"
-      color="neutral"
-      variant="ghost"
-    />
-  </nav>
-  <WorkspaceKitchen
-    ref="workspaceSurface"
-    :dedicated-app-name="fireux.isTenant ? fireux.appName : undefined"
-  />
+  <WorkspaceKitchenHome />
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
-import WorkspaceKitchen from '../../../kitchen/components/Workspace/Index.vue'
-const fireux = useFireUXConfig()
-const { state } = useWorkspacePageState('kitchen')
-const ready = computed(() => state.value?.derived?.landingState === 'ready')
-const workspaceTitle = computed(() =>
-  fireux.isTenant ? fireux.appName : 'Kitchen Workspace'
-)
-const workspaceSurface = ref<InstanceType<typeof WorkspaceKitchen> | null>(null)
-import type { KitchenLandingIntent } from '../../../kitchen/content/landing-intent'
-const performLandingAction = (intent: KitchenLandingIntent) =>
-  workspaceSurface.value?.performAction(intent) ?? false
 definePageMeta({
   layout: 'workspace',
 

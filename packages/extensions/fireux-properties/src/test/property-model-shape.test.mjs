@@ -1,3 +1,4 @@
+import { useWorkspaceRecord } from '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -234,6 +235,7 @@ test('Malformed granted Property roots fail the selector without clearing its se
     'useWorkspace',
     {
       computed,
+      watch,
       useCookie: (key, options) => get(cookies, key, options.default),
       useState: (key, init) => get(states, key, init),
       useFireUXConfig: () => ({ appId: 'app' }),
@@ -244,8 +246,8 @@ test('Malformed granted Property roots fail the selector without clearing its se
   const scope = effectScope()
   const index = scope.run(() =>
     load(
-      '../runtime/property/composables/workspace/usePropertyWorkspaceIndex.ts',
-      'usePropertyWorkspaceIndex',
+      '../runtime/property/composables/workspace/usePropertyWorkspace.ts',
+      'usePropertyWorkspace',
       {
         computed,
         watch,
@@ -261,6 +263,13 @@ test('Malformed granted Property roots fail the selector without clearing its se
           'useCommandScope',
           { watch, onScopeDispose }
         ),
+        useWorkspaceRecord,
+        useWorkspaceSwitch: () => () => {},
+        defineWorkspace: (create) => create,
+        usePropertyFetch: () => ({
+          property: ref(root()),
+          outcome: ref('ready'),
+        }),
         usePropertyCollection: () => collection,
         usePropertyAccess: () => ({
           ids: computed(() => [...ids.value]),
@@ -275,21 +284,21 @@ test('Malformed granted Property roots fail the selector without clearing its se
       }
     )()
   )
-  assert.equal(index.outcome.value, 'ready')
+  assert.equal(index.collectionOutcome.value, 'ready')
   source.value = [
     { ...root(), id: 'other' },
     { ...root(), slug: 'legacy' },
   ]
   await nextTick()
-  assert.equal(index.outcome.value, 'error')
-  assert.equal(index.selectedId.value, 'p')
+  assert.equal(index.collectionOutcome.value, 'error')
+  assert.equal(index.id.value, 'p')
   assert.equal(collection.count.value, 0)
   assert.deepEqual(index.collection.value, [])
   assert.match(collection.error.value.message, /invalid Property root/)
   source.value = [root()]
   await nextTick()
-  assert.equal(index.outcome.value, 'ready')
-  assert.equal(index.selectedId.value, 'p')
+  assert.equal(index.collectionOutcome.value, 'ready')
+  assert.equal(index.id.value, 'p')
   source.pending.value = true
   assert.deepEqual(index.collection.value, [])
   scope.stop()

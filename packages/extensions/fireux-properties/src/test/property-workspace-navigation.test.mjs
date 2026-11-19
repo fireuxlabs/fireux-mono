@@ -20,11 +20,11 @@ test('Property navigation uses current authorized choices and suppresses failed 
       { id: 'a', name: 'Alpha' },
       { id: 'b', name: 'Beta' },
     ]),
-    selectedId: ref('a'),
-    outcome: ref('ready'),
+    id: ref('a'),
+    collectionOutcome: ref('ready'),
     select: (id) => {
       selections.push(id)
-      index.selectedId.value = id
+      index.id.value = id
     },
   }
   const navigation = compileFunction(
@@ -34,7 +34,7 @@ test('Property navigation uses current authorized choices and suppresses failed 
       'withDefaults',
       'defineProps',
       'useWorkspaceEntryCta',
-      'usePropertyWorkspaceIndex',
+      'usePropertyWorkspace',
       'usePropertyInterface',
     ]
   )(
@@ -57,9 +57,9 @@ test('Property navigation uses current authorized choices and suppresses failed 
   assert.deepEqual(selections, ['b'])
   assert.equal(navigation.item.value.label, 'Beta')
   for (const outcome of ['pending', 'error', 'empty']) {
-    index.outcome.value = outcome
+    index.collectionOutcome.value = outcome
     assert.equal(navigation.item.value.choices.length, 0, outcome)
-    assert.equal(index.selectedId.value, 'b', outcome)
+    assert.equal(index.id.value, 'b', outcome)
   }
   assert.match(source, /useWorkspaceEntryCta\('property'\)/)
 })

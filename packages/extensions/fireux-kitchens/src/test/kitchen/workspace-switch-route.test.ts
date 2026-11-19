@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { kitchenWorkspaceSwitchPath } from '../../runtime/kitchen/utils/workspace-switch-route.ts'
+import { workspaceSwitchPath } from '../../../../../core/fireux-core/src/runtime/workspace/utils/switch-route.ts'
+
+const kitchenWorkspaceSwitchPath = (
+  matched: readonly string[],
+  registered: readonly string[]
+) => workspaceSwitchPath(matched, registered, '/workspace/kitchen')
 
 const routes = [
   '/workspace/kitchen',
@@ -51,4 +56,16 @@ test('static capability and unrelated routes remain in place', () => {
   ]) {
     assert.equal(kitchenWorkspaceSwitchPath([path], routes), undefined)
   }
+})
+
+test('a tenant uses its configured Workspace entrance when no static parent is registered', () => {
+  assert.equal(
+    workspaceSwitchPath(
+      ['/workspace/kitchen/prep/recipes/:recipeId()'],
+      [],
+      '/workspace/kitchen',
+      '/'
+    ),
+    '/'
+  )
 })

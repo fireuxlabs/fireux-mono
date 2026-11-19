@@ -407,7 +407,7 @@ and Footer components directly. Those shared components remain active.
   registered capability above its first dynamic segment (for example a Menu's
   content page returns to Menus). Static capability routes stay in place;
   selecting the same Kitchen preserves the current route. Kitchen's index
-  selection command owns this navigation through `workspace-switch-route.ts`.
+  selection uses Core’s `useWorkspaceSwitch` with the App-resolved Kitchen entrance.
 - `fireux-kitchens` owns `WorkspaceKitchen`, target
   loading, selection, creation, authority, and operational capability
   components. Each route supplies its own Kitchen Hero copy directly to the
@@ -3161,11 +3161,11 @@ projection; active-route resolution and command authority remain unchanged.
 ## Kitchen Workspace selection
 
 Kitchen Workspace remembers the last selected Kitchen through Core's existing
-App/family cookie. An authorised explicit link takes priority, followed by a valid
-remembered selection, then the first available Kitchen once access and target
-reads have settled. There is no separate Primary Kitchen preference, Home control
-or account mutation. Selection grants no access. Verify Core selection tests and
-Kitchen's `workspace-readiness.test.mjs`.
+App/family cookie. An authorised explicit link takes priority, followed by a
+completed guest adoption once its Kitchen is available, a valid remembered
+selection, then the first available Kitchen after access and target reads settle. There is no separate Primary Kitchen preference, Home control
+or account mutation. Selection grants no access. Verify Core’s `workspace-selection.test.mjs` and Kitchen’s
+`kitchen-workspace-internals.test.mjs`.
 
 Kitchen Team uses Core `WorkspaceTeamEditor`'s default people list and read-state
 presentation. Role configuration and invitation controls remain Kitchen-owned;

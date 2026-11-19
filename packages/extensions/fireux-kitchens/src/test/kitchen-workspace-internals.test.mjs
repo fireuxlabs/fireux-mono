@@ -1,3 +1,6 @@
+import { workspaceSwitchPath } from '../../../../core/fireux-core/src/runtime/workspace/utils/switch-route.ts'
+import { isNavigationFailure } from 'vue-router'
+import { useWorkspaceRecord } from '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -246,7 +249,7 @@ test('Kitchen directory hides retained rows during failure/loading and recovers 
       onUnmounted: () => {},
       resolveReadOutcome,
       resolveHttpDocumentOutcome,
-      useAsyncData: () => state,
+      useApiRead: () => state,
     }
   )()
   assert.equal(collection.outcome.value, 'ready')
@@ -283,58 +286,69 @@ function selection() {
     calls = [],
     states = new Map(),
     navigations = []
+  source.access = {
+    ids: computed(() => source.kitchens.value.map((kitchen) => kitchen.id)),
+    outcome: source.outcome,
+  }
+  const bindings = {
+    computed,
+    watch,
+    toValue,
+    defineWorkspace: (factory) => factory,
+    useWorkspaceRecord,
+    useKitchenRead: (readId) => ({
+      kitchen: computed(() => ({ id: readId.value })),
+      place: computed(() => ({ id: readId.value })),
+      outcome: source.outcome,
+      placeOutcome: source.outcome,
+    }),
+    useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
+    useCommandScope,
+    useWorkspaceEntryCta: () => ({
+      workspaceEntryPath: ref('/workspace/kitchen'),
+    }),
+    useFireUXConfig: () => ({ appId: 'app' }),
+    useState: (key, init) => {
+      if (!states.has(key)) states.set(key, ref(init()))
+      return states.get(key)
+    },
+    useRoute: () => ({
+      query: {},
+      path: '/workspace/kitchen/menu/item',
+      meta: { workspace: 'kitchen' },
+      matched: [{ path: '/workspace/kitchen/menu/:menuSlug()' }],
+    }),
+    useRouter: () => ({
+      getRoutes: () => [{ path: '/workspace/kitchen/menu' }],
+    }),
+    useWorkspace: () => ({
+      selectedId,
+      select: (id) => {
+        calls.push(id)
+        selectedId.value = id
+      },
+      reconcile: () => {},
+    }),
+    useKitchenCollection: () => source,
+    useAppSession: () => session,
+    resolveAppUserAccess: () => ({}),
+    workspaceSwitchPath,
+    isNavigationFailure,
+    navigateTo: () => {
+      const wait = navigations.length ? deferred() : navigation
+      navigations.push(wait)
+      return wait.promise
+    },
+  }
+  const useWorkspaceSwitch = load(
+    '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceSwitch.ts',
+    'useWorkspaceSwitch',
+    bindings
+  )
   const create = load(
     '../runtime/kitchen/composables/workspace/useKitchenWorkspace.ts',
     'useKitchenWorkspace',
-    {
-      computed,
-      watch,
-      defineWorkspace: (factory) => factory,
-      useKitchenAccess: () => ({
-        ids: computed(() => source.kitchens.value.map((kitchen) => kitchen.id)),
-        outcome: source.outcome,
-      }),
-      useKitchenRead: (readId) => ({
-        kitchen: computed(() => ({ id: readId.value })),
-        place: computed(() => ({ id: readId.value })),
-        outcome: source.outcome,
-        placeOutcome: source.outcome,
-      }),
-      useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
-      useCommandScope,
-      useWorkspaceEntryCta: () => ({
-        workspaceEntryPath: ref('/workspace/kitchen'),
-      }),
-      useFireUXConfig: () => ({ appId: 'app' }),
-      useState: (key, init) => {
-        if (!states.has(key)) states.set(key, ref(init()))
-        return states.get(key)
-      },
-      useRoute: () => ({
-        query: {},
-        path: '/workspace/kitchen/menu/item',
-        meta: { workspace: 'kitchen' },
-        matched: [],
-      }),
-      useRouter: () => ({ getRoutes: () => [] }),
-      useWorkspace: () => ({
-        selectedId,
-        select: (id) => {
-          calls.push(id)
-          selectedId.value = id
-        },
-        reconcile: () => {},
-      }),
-      useKitchenCollection: () => source,
-      useAppSession: () => session,
-      resolveAppUserAccess: () => ({}),
-      kitchenWorkspaceSwitchPath: () => '/workspace/kitchen/menu',
-      navigateTo: () => {
-        const wait = navigations.length ? deferred() : navigation
-        navigations.push(wait)
-        return wait.promise
-      },
-    }
+    { ...bindings, useWorkspaceSwitch }
   )
   return {
     scope,

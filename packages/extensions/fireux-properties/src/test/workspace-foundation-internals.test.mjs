@@ -1,3 +1,7 @@
+import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/access.ts'
+import { workspaceSwitchPath } from '../../../../core/fireux-core/src/runtime/workspace/utils/switch-route.ts'
+import { isNavigationFailure } from 'vue-router'
+import { useWorkspaceRecord } from '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -64,40 +68,51 @@ function propertyIndexHarness(
     outcome: ref('ready'),
   }
   const scope = effectScope()
-  const createIndex = () =>
-    scope.run(() =>
-      load(
-        '../runtime/property/composables/workspace/usePropertyWorkspaceIndex.ts',
-        'usePropertyWorkspaceIndex',
-        {
-          computed,
-          watch,
-          useCommandScope,
-          useState: (key, init) => {
-            if (!state.has(key)) state.set(key, ref(init()))
-            return state.get(key)
-          },
-          useWorkspace: () => workspace,
-          useAppSession: () => session,
-          useFireUXConfig: () => config,
-          usePropertyAccess: () => access,
-          usePropertyCollection: () => collection,
-          useRoute: () => ({
-            matched: [{ path: '/workspace/property/reservations/:id' }],
-          }),
-          useRouter: () => ({
-            getRoutes: () => [{ path: '/workspace/property/reservations' }],
-          }),
-          propertyWorkspaceSwitchPath: () => destination,
-          navigateTo: (path, options) => {
-            navigations.push({ path, options })
-            const request = navigationRequests.length ? deferred() : navigation
-            navigationRequests.push(request)
-            return request.promise
-          },
-        }
-      )()
-    )
+  const bindings = {
+    computed,
+    watch,
+    toValue,
+    useCommandScope,
+    useWorkspaceRecord,
+    defineWorkspace: (create) => create,
+    useState: (key, init) => {
+      if (!state.has(key)) state.set(key, ref(init()))
+      return state.get(key)
+    },
+    useWorkspace: () => workspace,
+    useAppSession: () => session,
+    useFireUXConfig: () => config,
+    usePropertyAccess: () => access,
+    usePropertyCollection: () => collection,
+    usePropertyFetch: () => ({ property: ref(null), outcome: ref('pending') }),
+    useRoute: () => ({
+      matched: destination
+        ? [{ path: '/workspace/property/reservations/:id' }]
+        : [],
+    }),
+    useRouter: () => ({
+      getRoutes: () => [{ path: '/workspace/property/reservations' }],
+    }),
+    workspaceSwitchPath,
+    isNavigationFailure,
+    navigateTo: (path, options) => {
+      navigations.push({ path, options })
+      const request = navigationRequests.length ? deferred() : navigation
+      navigationRequests.push(request)
+      return request.promise
+    },
+  }
+  const useWorkspaceSwitch = load(
+    '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceSwitch.ts',
+    'useWorkspaceSwitch',
+    bindings
+  )
+  const usePropertyWorkspace = load(
+    '../runtime/property/composables/workspace/usePropertyWorkspace.ts',
+    'usePropertyWorkspace',
+    { ...bindings, useWorkspaceSwitch }
+  )
+  const createIndex = () => scope.run(usePropertyWorkspace)
   const index = createIndex()
   return {
     index,
@@ -186,6 +201,16 @@ test('Property switch selects a current available record after its required navi
   h.scope.stop()
 })
 
+test('Property keeps the current selection when navigation is cancelled', async () => {
+  const h = propertyIndexHarness()
+  const selecting = h.index.select('b')
+  h.navigation.resolve(false)
+  await selecting
+  assert.deepEqual(h.selections, [])
+  assert.equal(h.workspace.selectedId.value, 'a')
+  h.scope.stop()
+})
+
 test('Property switch skips unavailable choices, handles synchronous selection and rechecks the returned collection', async () => {
   const direct = propertyIndexHarness(null)
   await direct.index.select('a')
@@ -270,6 +295,7 @@ for (const entity of ['portfolio', 'property']) {
         computed,
         toValue,
         readMembershipAccessIds,
+        resolveAppUserAccess,
         useFirestoreRead: () => ({
           firestoreFetchDoc: () => {
             bindings++

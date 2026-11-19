@@ -75,6 +75,7 @@
     "test:scope": "node tools/ide/check.mjs test",
     "typecheck:scope": "node tools/ide/check.mjs typecheck",
     "test:unit": "node tools/ide/unit.mjs",
+    "ide:component-types": "node tools/ide/component-types.mjs",
     "ide:doctor": "node tools/ide/workspace.mjs doctor",
     "ide:open": "node tools/ide/workspace.mjs open"
   },

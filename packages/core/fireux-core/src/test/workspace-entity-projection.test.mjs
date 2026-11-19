@@ -1,3 +1,4 @@
+import { useWorkspaceRecord } from '../runtime/workspace/composables/useWorkspaceRecord.ts'
 import {
   KITCHEN_ACCESS_COLLECTION_PATH,
   readKitchenAppAccess,
@@ -119,6 +120,8 @@ for (const [family, path] of Object.entries(paths))
       resolveKitchenAllowance: () => ({ canAdd: true }),
     }
     Object.assign(deps, {
+      useWorkspaceRecord,
+      useWorkspaceSwitch: () => () => {},
       defineWorkspace: (create) => create,
       watch: () => {},
       useState: (_key, init) => ref(init()),

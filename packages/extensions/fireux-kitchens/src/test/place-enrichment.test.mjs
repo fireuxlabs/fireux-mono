@@ -1,3 +1,4 @@
+import { useWorkspaceRecord } from '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
@@ -17,7 +18,15 @@ const compileFunction = (source, args = []) => {
     ...names.map((name) => mocks[name])
   )
 }
-import { computed, ref, toValue, watch, effectScope, nextTick } from 'vue'
+import {
+  computed,
+  reactive,
+  ref,
+  toValue,
+  watch,
+  effectScope,
+  nextTick,
+} from 'vue'
 
 function load(path, dependencies, result) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -102,12 +111,12 @@ test('Place Kitchen lookup stays scoped, uses public reads and hides stale or fa
 test('workspace handoff waits for access and only selects an available Kitchen', () => {
   let reconcile
   const source = { kitchens: ref([{ id: 'allowed' }]), outcome: ref('pending') }
-  const route = {
+  const route = reactive({
     path: '/workspace/kitchen',
     meta: { workspace: 'kitchen' },
     query: { kitchenId: 'allowed', keep: 'yes' },
     hash: '#overview',
-  }
+  })
   const selectedId = ref('previous')
   const navigations = []
   const useIndex = load(
@@ -140,10 +149,11 @@ test('workspace handoff waits for access and only selects an available Kitchen',
         reconcile: () => {},
       }),
       defineWorkspace: (setup) => setup,
-      useKitchenCollection: () => source,
-      useKitchenAccess: () => ({
-        outcome: ref('ready'),
-        ids: ref(['allowed']),
+      useWorkspaceRecord,
+      useWorkspaceSwitch: () => () => {},
+      useKitchenCollection: () => ({
+        ...source,
+        access: { outcome: ref('ready'), ids: ref(['allowed']) },
       }),
       useKitchenRead: () => ({
         kitchen: ref(null),

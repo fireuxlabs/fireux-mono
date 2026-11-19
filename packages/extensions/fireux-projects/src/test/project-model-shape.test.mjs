@@ -1,3 +1,4 @@
+import { useWorkspaceRecord } from '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -141,6 +142,7 @@ test('Malformed granted Project roots fail the collection without exposing a par
         defineWorkspace: (factory) => factory,
         useProjectCollection: () => collection,
         useProjectAccess: () => access,
+        useWorkspaceRecord,
         useProjectRead: () => ({ data: ref(root()), outcome: ref('ready') }),
         useWorkspace: () => ({
           selectedId,

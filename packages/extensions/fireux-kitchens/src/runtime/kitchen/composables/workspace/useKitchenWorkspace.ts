@@ -1,9 +1,9 @@
-import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
+import { useWorkspaceRecord } from 'fireux-core/runtime/workspace/composables/useWorkspaceRecord'
+import { useWorkspaceSwitch } from 'fireux-core/runtime/workspace/composables/useWorkspaceSwitch'
 import { computed, watch } from 'vue'
-import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
-import { useState, useRoute, useRouter, navigateTo } from '#imports'
+import { useState, useRoute, navigateTo } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {
   useWorkspace,
@@ -11,103 +11,72 @@ import {
 } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useKitchenCollection } from '../useKitchenCollection'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
-import { kitchenWorkspaceSwitchPath } from '../../utils/workspace-switch-route'
 import { useKitchenInterface } from '../useKitchenInterface'
 import { useKitchenRead } from '../useKitchenRead'
 
 export const useKitchenWorkspace = defineWorkspace(() => {
+  const selection = useWorkspace('kitchen')
+  const id = selection.selectedId
+  const {
+    kitchens: collection,
+    outcome: collectionOutcome,
+    access,
+  } = useKitchenCollection()
+  const session = useAppSession()
   const { appId } = useFireUXConfig()
   const adoptedSelection = useState(
     `kitchen-adopted-selection:${appId}`,
     () => ''
   )
-  const selectionIntent = useState<number>(
-    `kitchen-selection-intent:${appId}`,
-    () => 0
-  )
   const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
   const route = useRoute()
-  const router = useRouter()
-  const selection = useWorkspace('kitchen')
-  const targets = useKitchenCollection()
-  const session = useAppSession()
-  const captureIntent = useCommandScope([
-    session.uid,
-    session.appUser,
-    selection.selectedId,
-    targets.outcome,
-    selectionIntent,
-  ])
-  const canSelect = (id: string) =>
-    targets.outcome.value === 'ready' &&
-    targets.kitchens.value.some((kitchen) => kitchen.id === id)
-  // Presentation only: retained associations and selection are never truncated.
-  const multipleKitchenView = computed(
-    () =>
-      !session.pending.value &&
-      !session.error.value &&
-      resolveAppUserAccess(session.appUser.value).hasBusinessSubscription
+  const requestedId = computed(() =>
+    route.meta.workspace === 'kitchen' &&
+    typeof route.query.kitchenId === 'string'
+      ? route.query.kitchenId
+      : ''
   )
 
+  function applyEntrySelection(ids: readonly string[]) {
+    if (collectionOutcome.value !== 'ready') return false
+    if (requestedId.value && ids.includes(requestedId.value)) {
+      selection.select(requestedId.value)
+      const query = { ...route.query }
+      delete query.kitchenId
+      void navigateTo(
+        { path: route.path, query, hash: route.hash },
+        { replace: true }
+      )
+      return true
+    }
+    if (!ids.includes(adoptedSelection.value)) return false
+    selection.select(adoptedSelection.value)
+    adoptedSelection.value = ''
+    return true
+  }
+
   watch(
-    [
-      targets.kitchens,
-      targets.outcome,
-      selection.selectedId,
-      adoptedSelection,
-      () => route.query.kitchenId,
-    ],
+    [collection, collectionOutcome, id, adoptedSelection, requestedId],
     () => {
-      const ids = targets.kitchens.value.map((kitchen) => kitchen.id || '')
-      const requestedId =
-        typeof route.query.kitchenId === 'string' ? route.query.kitchenId : ''
-      if (
-        route.meta.workspace === 'kitchen' &&
-        requestedId &&
-        targets.outcome.value === 'ready' &&
-        ids.includes(requestedId)
-      ) {
-        selection.select(requestedId)
-        const { kitchenId: _requested, ...query } = route.query
-        void navigateTo(
-          { path: route.path, query, hash: route.hash },
-          { replace: true }
-        )
-        return
-      }
-      if (
-        targets.outcome.value === 'ready' &&
-        ids.includes(adoptedSelection.value)
-      ) {
-        selection.select(adoptedSelection.value)
-        adoptedSelection.value = ''
-      } else selection.reconcile(ids, targets.outcome.value)
+      const ids = collection.value.flatMap((kitchen) =>
+        kitchen.id ? [kitchen.id] : []
+      )
+      if (!applyEntrySelection(ids))
+        selection.reconcile(ids, collectionOutcome.value)
     },
     { immediate: true }
   )
 
-  // Opening a Workspace is local selection, not an account-primary mutation.
-
-  const id = selection.selectedId
-  const access = targets.access
-  const readId = computed(() =>
-    access.outcome.value === 'ready' && access.ids.value.includes(id.value)
-      ? id.value
-      : ''
-  )
-  const source = useKitchenRead(readId)
-  const { kitchen, place } = source
-  const outcome = computed<ReadOutcome>(() => {
-    if (access.outcome.value !== 'ready') return access.outcome.value
-    if (!id.value) return 'idle'
-    if (!readId.value) return 'empty'
-    if (source.outcome.value === 'ready' && kitchen.value?.id !== readId.value)
-      return 'pending'
-    return source.outcome.value
-  })
+  const {
+    data: kitchen,
+    outcome,
+    readId,
+    source,
+  } = useWorkspaceRecord(id, access, useKitchenRead, (source) => source.kitchen)
+  const { place } = source
   const { surface } = useKitchenInterface()
   const data = computed(() =>
-    outcome.value === 'ready' && kitchen.value?.id === readId.value
+    kitchen.value
       ? surface({
           kitchen: kitchen.value,
           place: place.value,
@@ -116,11 +85,17 @@ export const useKitchenWorkspace = defineWorkspace(() => {
       : null
   )
 
-  const kitchenName = computed(() => data.value?.name || '')
+  // Subscription changes presentation only. Selection uses the full collection.
+  const multipleKitchenView = computed(
+    () =>
+      !session.pending.value &&
+      !session.error.value &&
+      resolveAppUserAccess(session.appUser.value).hasBusinessSubscription
+  )
 
   return {
     data,
-    kitchenName,
+    kitchenName: computed(() => data.value?.name || ''),
     root: computed(() =>
       readId.value && source.root.value?.id === readId.value
         ? source.root.value
@@ -136,21 +111,15 @@ export const useKitchenWorkspace = defineWorkspace(() => {
     ),
     id,
     outcome,
-    collection: targets.kitchens,
+    collection,
     multipleKitchenView,
-    collectionOutcome: targets.outcome,
-    select: async (id: string) => {
-      if (!canSelect(id)) return
-      selectionIntent.value += 1
-      if (id === selection.selectedId.value) return
-      const isCurrent = captureIntent()
-      const destination = kitchenWorkspaceSwitchPath(
-        route.matched.map((record: { path: string }) => record.path),
-        router.getRoutes().map((record: { path: string }) => record.path),
-        workspaceEntryPath.value
-      )
-      if (destination) await navigateTo(destination, { replace: true })
-      if (isCurrent() && canSelect(id)) selection.select(id)
-    },
+    collectionOutcome,
+    select: useWorkspaceSwitch('kitchen', selection, {
+      collection,
+      collectionOutcome,
+      access,
+      session,
+      homePath: workspaceEntryPath,
+    }),
   }
 })

@@ -1,3 +1,4 @@
+import { useWorkspaceRecord } from '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -106,7 +107,8 @@ test('Workspace retains only the granted canonical root through joined Place fai
       return source.read
     },
     useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
-    kitchenWorkspaceSwitchPath: () => '',
+    useWorkspaceRecord,
+    useWorkspaceSwitch: () => () => {},
     navigateTo: () => {
       throw new Error('This read must not navigate.')
     },

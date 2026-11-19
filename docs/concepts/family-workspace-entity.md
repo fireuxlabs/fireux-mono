@@ -63,8 +63,9 @@ in native entrypoint folders and delegate to these owners. Main Apps retain
 host routing, brand and App-specific entry composition.
 
 All active Entity selection consumers use Core `useWorkspace(family)` directly;
-Entity index controllers still reconcile the permitted collection and own any
-navigation needed when switching. There is no second `useXWorkspaceSelection`
+Entity Workspace controllers reconcile the permitted collection and choose
+whether switching needs a route transition. Core owns the shared transition
+used by Kitchen and Property. There is no second `useXWorkspaceSelection`
 forwarding API. Core routing normalizes the supplied family without a domain
 alias table; Apps and route metadata provide canonical family names.
 
@@ -1868,6 +1869,17 @@ and `data`. Home and navigation acquire this same owner. Core `defineWorkspace`
 shares the effects per Nuxt App and releases them with the last consumer; the
 cache is request-isolated during SSR. It does not serialise runtime instances
 into payload state or share actor data between server requests.
+
+`useWorkspace(family)` owns the remembered selection and reconciliation policy.
+Project, Property, Portfolio, Supplier and Kitchen pass their existing access
+and document reader to
+Core's [selected-record helper](../../packages/core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts).
+The helper gates the exact read and masks retained data for a different ID.
+Kitchen still composes its Place projection and entry handoffs. For Kitchen and
+Property, [route-safe switching](../../packages/core/fireux-core/src/runtime/workspace/composables/useWorkspaceSwitch.ts)
+leaves a record route before committing the still-current, still-allowed choice.
+Project selects directly. Domain collections and command authority remain with
+their existing owners.
 
 Common `useXWorkspaceHome`, Identity, Team and Calendar adapters sit directly
 under `composables/workspace`. Named child folders are reserved for genuinely

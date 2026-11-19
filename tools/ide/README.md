@@ -29,6 +29,28 @@ use Add to Codex Chat for a selection or Add File to Codex Chat for a whole file
 A chat kept under the old IDE Management project must be moved by the human in
 the desktop sidebar if the app requests source-folder consent.
 
+## Navigate Nuxt component tags in package source
+
+Generate package-local declarations before using Go to Definition on
+auto-imported Vue tags in a package:
+
+```sh
+pnpm ide:component-types packages/extensions/fireux-kitchens
+pnpm ide:component-types packages/extensions/fireux-projects --workspace project
+```
+
+The command prepares a temporary Nuxt host with the package's own runtime layer
+and module. Nuxt supplies the registered component names, priorities and source
+files. The package's existing TypeScript source globs pick up the Git-ignored
+`src/fireux-ide-components.generated.d.ts`, so Vue Official can navigate tags
+with F12 in VS Code. Pass `--workspace` for a module that registers components
+only when a named Workspace is selected. The flag may be repeated.
+
+Rerun the command after component moves or registration changes. This is a
+package editor view. App-specific overrides resolve through that App's own
+Nuxt declarations. Each generation uses a separate temporary host, so
+components from unrelated Apps and packages do not compete for a name.
+
 ## Explorer focus
 
 The toolbar command **FireUX: Focus Packages and Projects** resets the

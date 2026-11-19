@@ -1,18 +1,8 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
-import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { workspaceSwitchPath } from '../../../../core/fireux-core/src/runtime/workspace/utils/switch-route.ts'
 import { test } from 'node:test'
-const source = readFileSync(
-  new URL(
-    '../runtime/property/utils/workspace-switch-route.ts',
-    import.meta.url
-  ),
-  'utf8'
-).replace(/^export /gm, '')
-const switchPath = compileFunction(
-  `${stripTypeScriptTypes(source)};return propertyWorkspaceSwitchPath`
-)()
+const switchPath = (matched, registered) =>
+  workspaceSwitchPath(matched, registered, '/workspace/property')
 test('Property switching leaves a Reservation record for its registered collection', () => {
   assert.equal(
     switchPath(

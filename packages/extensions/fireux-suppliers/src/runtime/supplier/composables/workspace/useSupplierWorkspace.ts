@@ -1,4 +1,4 @@
-import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
+import { useWorkspaceRecord } from 'fireux-core/runtime/workspace/composables/useWorkspaceRecord'
 import { computed, watch } from 'vue'
 import {
   useWorkspace,
@@ -32,27 +32,11 @@ export const useSupplierWorkspace = defineWorkspace(() => {
   )
 
   const id = selection.selectedId
-  const readId = computed(() =>
-    access.outcome.value === 'ready' && access.ids.value.includes(id.value)
-      ? id.value
-      : ''
-  )
-  const source = useSupplierFetch(readId)
-  const outcome = computed<ReadOutcome>(() => {
-    if (access.outcome.value !== 'ready') return access.outcome.value
-    if (!id.value) return 'idle'
-    if (!readId.value) return 'empty'
-    if (
-      source.outcome.value === 'ready' &&
-      source.supplier.value?.id !== readId.value
-    )
-      return 'pending'
-    return source.outcome.value
-  })
-  const data = computed(() =>
-    outcome.value === 'ready' && source.supplier.value?.id === readId.value
-      ? source.supplier.value
-      : null
+  const { data, outcome } = useWorkspaceRecord(
+    id,
+    access,
+    useSupplierFetch,
+    (source) => source.supplier
   )
 
   return {

@@ -1,3 +1,4 @@
+import { useWorkspaceRecord } from '../../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
 import { resolveAppUserAccess } from '../../../../../core/fireux-core/src/runtime/app/app-user/utils/access.ts'
 import { readKitchenDocument } from '../../runtime/kitchen/utils/read-kitchen-document.ts'
@@ -1054,10 +1055,15 @@ test('adopted Kitchen becomes selected only after the live collection contains i
         key.startsWith('kitchen-adopted-selection:') ? adopted : ref(init()),
       useFireUXConfig: () => ({ appId: 'app' }),
       defineWorkspace: (factory) => factory,
-      useKitchenCollection: () => ({ kitchens, outcome }),
-      useKitchenAccess: () => ({
-        ids: computed(() => kitchens.value.map((row) => row.id)),
+      useWorkspaceRecord,
+      useWorkspaceSwitch: () => () => {},
+      useKitchenCollection: () => ({
+        kitchens,
         outcome,
+        access: {
+          ids: computed(() => kitchens.value.map((row) => row.id)),
+          outcome,
+        },
       }),
       useKitchenRead: () => ({
         kitchen: ref(null),

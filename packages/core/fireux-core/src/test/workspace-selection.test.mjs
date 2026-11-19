@@ -1,3 +1,6 @@
+import { workspaceSwitchPath } from '../runtime/workspace/utils/switch-route.ts'
+import { useWorkspaceRecord } from '../runtime/workspace/composables/useWorkspaceRecord.ts'
+import { isNavigationFailure } from 'vue-router'
 import { useCommandScope } from '../runtime/composables/fireux/commands/useCommandScope.ts'
 import {
   isAppUserRole,
@@ -89,8 +92,94 @@ for (const family of [
         property: 'properties',
       }[family]]: records,
       projectIds: ref([]),
+      access: {
+        ids: computed(() => records.value.map((record) => record.id)),
+        outcome,
+      },
       outcome,
     }
+    const bindings = {
+      defineWorkspace: (create) => create,
+      normalizeString: (value) => String(value ?? '').trim(),
+      useProjectAccess: () => ({ ids: ref([]), outcome: ref('ready') }),
+      useKitchenAccess: () => ({ ids: ref([]), outcome: ref('ready') }),
+      useKitchenRead: () => ({
+        kitchen: ref(null),
+        place: ref(null),
+        outcome: ref('idle'),
+      }),
+      useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
+      useProjectRead: () => ({ data: ref(null), outcome: ref('idle') }),
+      useSupplierFetch: () => ({ supplier: ref(null), outcome: ref('idle') }),
+      usePortfolioFetch: () => ({
+        portfolio: ref(null),
+        outcome: ref('idle'),
+      }),
+      usePropertyFetch: () => ({ property: ref(null), outcome: ref('idle') }),
+      computed,
+      watch,
+      useCommandScope,
+      useWorkspace: harness.useWorkspace,
+      useWorkspaceEntryCta: () => ({
+        workspaceEntryPath: ref('/workspace/kitchen'),
+      }),
+      useSupplierAccess: () => ({
+        ids: computed(() => records.value.map((record) => record.id)),
+        outcome,
+      }),
+      useSupplierCollection: () => source,
+      usePortfolioAccess: () => ({
+        ids: computed(() => records.value.map((record) => record.id)),
+        outcome,
+      }),
+      usePortfolioCollection: () => source,
+      usePropertyAccess: () => ({
+        ids: computed(() => records.value.map((record) => record.id)),
+        outcome,
+      }),
+      usePropertyCollection: () => source,
+      useAppSession: () => ({
+        uid: ref('actor'),
+        pending: ref(false),
+        error: ref(undefined),
+        appUser: ref({ subscription: 'free' }),
+      }),
+      resolveAppUserAccess: load(
+        '../runtime/app/app-user/utils/access.ts',
+        'resolveAppUserAccess',
+        { isAppUserRole, isAppUserSubscription, readAppUserSubscription }
+      ),
+      useFireUXConfig: () => ({ appId: 'proving-app' }),
+      useState: (key, init) => {
+        if (!harness.states.has(key)) harness.states.set(key, ref(init()))
+        return harness.states.get(key)
+      },
+      useRoute: () => ({
+        path: '/workspace/kitchen',
+        meta: { workspace: 'kitchen' },
+        query: {},
+        hash: '',
+        matched: [],
+      }),
+      useRouter: () => ({ getRoutes: () => [] }),
+      useWorkspaceRecord,
+      toValue,
+      workspaceSwitchPath,
+      isNavigationFailure,
+      navigateTo: () => {
+        throw new Error('Selection without a route request must not navigate')
+      },
+      [family === 'project'
+        ? 'useProjectCollection'
+        : family === 'kitchen'
+          ? 'useKitchenCollection'
+          : 'useBlankCollection']: () => source,
+    }
+    const useWorkspaceSwitch = load(
+      '../runtime/workspace/composables/useWorkspaceSwitch.ts',
+      'useWorkspaceSwitch',
+      bindings
+    )
     const useIndex = load(
       family === 'project'
         ? '../../../../extensions/fireux-projects/src/runtime/project/composables/workspace/useProjectWorkspace.ts'
@@ -114,85 +203,7 @@ for (const family of [
               : family === 'portfolio'
                 ? 'usePortfolioWorkspace'
                 : 'usePropertyWorkspace',
-      {
-        defineWorkspace: (create) => create,
-        normalizeString: (value) => String(value ?? '').trim(),
-        useProjectAccess: () => ({ ids: ref([]), outcome: ref('ready') }),
-        useKitchenAccess: () => ({ ids: ref([]), outcome: ref('ready') }),
-        useKitchenRead: () => ({
-          kitchen: ref(null),
-          place: ref(null),
-          outcome: ref('idle'),
-        }),
-        useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
-        useProjectRead: () => ({ data: ref(null), outcome: ref('idle') }),
-        useSupplierFetch: () => ({ supplier: ref(null), outcome: ref('idle') }),
-        usePortfolioFetch: () => ({
-          portfolio: ref(null),
-          outcome: ref('idle'),
-        }),
-        usePropertyFetch: () => ({ property: ref(null), outcome: ref('idle') }),
-        computed,
-        watch,
-        useCommandScope,
-        useWorkspace: harness.useWorkspace,
-        useWorkspaceEntryCta: () => ({
-          workspaceEntryPath: ref('/workspace/kitchen'),
-        }),
-        useSupplierAccess: () => ({
-          ids: computed(() => records.value.map((record) => record.id)),
-          outcome,
-        }),
-        useSupplierCollection: () => source,
-        usePortfolioAccess: () => ({
-          ids: computed(() => records.value.map((record) => record.id)),
-          outcome,
-        }),
-        usePortfolioCollection: () => source,
-        usePropertyAccess: () => ({
-          ids: computed(() => records.value.map((record) => record.id)),
-          outcome,
-        }),
-        usePropertyCollection: () => source,
-        propertyWorkspaceSwitchPath: () => undefined,
-        useAppSession: () => ({
-          uid: ref('actor'),
-          pending: ref(false),
-          error: ref(undefined),
-          appUser: ref({ subscription: 'free' }),
-        }),
-        resolveAppUserAccess: load(
-          '../runtime/app/app-user/utils/access.ts',
-          'resolveAppUserAccess',
-          { isAppUserRole, isAppUserSubscription, readAppUserSubscription }
-        ),
-        useFireUXConfig: () => ({ appId: 'proving-app' }),
-        useState: (key, init) => {
-          if (!harness.states.has(key)) harness.states.set(key, ref(init()))
-          return harness.states.get(key)
-        },
-        useRoute: () => ({
-          path: '/workspace/kitchen',
-          meta: { workspace: 'kitchen' },
-          query: {},
-          hash: '',
-          matched: [],
-        }),
-        useRouter: () => ({ getRoutes: () => [] }),
-        kitchenWorkspaceSwitchPath: load(
-          '../../../../extensions/fireux-kitchens/src/runtime/kitchen/utils/workspace-switch-route.ts',
-          'kitchenWorkspaceSwitchPath',
-          {}
-        ),
-        navigateTo: () => {
-          throw new Error('Selection without a route request must not navigate')
-        },
-        [family === 'project'
-          ? 'useProjectCollection'
-          : family === 'kitchen'
-            ? 'useKitchenCollection'
-            : 'useBlankCollection']: () => source,
-      }
+      { ...bindings, useWorkspaceSwitch }
     )
     const scope = effectScope()
     const index = scope.run(useIndex)
@@ -246,12 +257,44 @@ for (const family of [
   })
 }
 
+test('a Workspace opens one gated reader and hides retained data from the last selection', () => {
+  const id = ref('a')
+  const access = { ids: ref(['a', 'b']), outcome: ref('ready') }
+  const source = { data: ref({ id: 'a' }), outcome: ref('ready') }
+  let target
+  let acquisitions = 0
+  const workspace = useWorkspaceRecord(
+    id,
+    access,
+    (readId) => {
+      target = readId
+      acquisitions++
+      return source
+    },
+    (reader) => reader.data
+  )
+
+  assert.equal(workspace.data.value?.id, 'a')
+  id.value = 'b'
+  assert.equal(target.value, 'b')
+  assert.equal(workspace.outcome.value, 'pending')
+  assert.equal(workspace.data.value, null)
+  source.data.value = { id: 'b' }
+  assert.equal(workspace.data.value?.id, 'b')
+  access.ids.value = ['a']
+  assert.equal(target.value, '')
+  assert.equal(workspace.outcome.value, 'empty')
+  assert.equal(workspace.data.value, null)
+  assert.equal(acquisitions, 1)
+})
+
 test('Kitchen root handoff waits for ready access and preserves unrelated query and hash', async () => {
   const harness = createWorkspace()
   const workspace = harness.useWorkspace('kitchen')
   workspace.select('previous')
   const source = {
     kitchens: ref([{ id: 'other' }, { id: 'allowed' }]),
+    access: { ids: ref(['other', 'allowed']), outcome: ref('ready') },
     outcome: ref('pending'),
   }
   const route = reactive({
@@ -307,11 +350,8 @@ test('Kitchen root handoff waits for ready access and preserves unrelated query 
       },
       useRoute: () => route,
       useRouter: () => ({ getRoutes: () => [] }),
-      kitchenWorkspaceSwitchPath: load(
-        '../../../../extensions/fireux-kitchens/src/runtime/kitchen/utils/workspace-switch-route.ts',
-        'kitchenWorkspaceSwitchPath',
-        {}
-      ),
+      useWorkspaceRecord,
+      useWorkspaceSwitch: () => () => {},
       navigateTo: (to, options) => {
         navigations.push({
           to: { ...to, query: { ...to.query } },

@@ -1,3 +1,4 @@
+import { useWorkspaceRecord } from '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -26,7 +27,8 @@ test('tier changes affect presentation without truncating saved Kitchens or sele
   const kitchens = ref([{ id: 'one' }, { id: 'two' }])
   const selectedId = ref('two')
   const index = compileFunction(`${source}; return useKitchenWorkspace()`, [
-    'useCommandScope',
+    'useWorkspaceRecord',
+    'useWorkspaceSwitch',
     'computed',
     'watch',
     'useAppSession',
@@ -39,11 +41,11 @@ test('tier changes affect presentation without truncating saved Kitchens or sele
     'useWorkspaceEntryCta',
     'useKitchenCollection',
     'defineWorkspace',
-    'useKitchenAccess',
     'useKitchenRead',
     'useKitchenInterface',
   ])(
-    () => () => true,
+    useWorkspaceRecord,
+    () => () => {},
     computed,
     () => {},
     () => session,
@@ -58,9 +60,12 @@ test('tier changes affect presentation without truncating saved Kitchens or sele
     () => ({ appId: 'test' }),
     () => ({ selectedId }),
     () => ({ workspaceEntryPath: ref('/workspace/kitchen') }),
-    () => ({ kitchens, outcome: ref('ready') }),
+    () => ({
+      kitchens,
+      outcome: ref('ready'),
+      access: { ids: ref(['one', 'two']), outcome: ref('ready') },
+    }),
     (factory) => factory,
-    () => ({ ids: ref(['one', 'two']), outcome: ref('ready') }),
     () => ({
       kitchen: ref({ id: 'two' }),
       place: ref(null),

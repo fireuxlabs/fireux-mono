@@ -1,3 +1,4 @@
+import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/access.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -22,7 +23,11 @@ function harness() {
   const selectedId = ref('p'),
     app = {
       uid: ref('u'),
-      appUser: ref({ created: { at: { seconds: 1, nanoseconds: 0 } } }),
+      appUser: ref({
+        role: 'user',
+        subscription: 'free',
+        created: { at: { seconds: 1, nanoseconds: 0 } },
+      }),
       pending: ref(false),
       error: ref(null),
     }
@@ -42,6 +47,7 @@ function harness() {
       computed,
       toValue,
       readMembershipAccessIds,
+      resolveAppUserAccess,
       useFirestoreRead: () => ({ firestoreFetchDoc: () => accessSource }),
     },
     'useMembershipAccess'
@@ -73,33 +79,22 @@ function harness() {
     },
     'usePortfolioFetch'
   )
-  const usePortfolioWorkspace = load(
-    '../runtime/portfolio/composables/workspace/usePortfolioWorkspace.ts',
+  const { usePortfolioScope, usePortfolioChildPath } = load(
+    '../runtime/portfolio/composables/usePortfolioScope.ts',
     {
       computed,
+      toValue,
       usePortfolioAccess,
-      useWorkspace: () => ({ selectedId }),
-      usePortfolioCreate: () => ({}),
-      usePortfolioUpdate: () => ({}),
-      useFirestoreDelete: () => ({}),
       usePortfolioFetch,
-    },
-    'usePortfolioWorkspace'
-  )
-  const active = load(
-    '../runtime/portfolio/composables/workspace/useActivePortfolio.ts',
-    {
-      computed,
-      usePortfolioWorkspace,
       useFireUXConfig: () => ({ appId: 'app', ecosystem: 'host' }),
       resolvePortfolioWorkspaceCollectionPath: () => 'portfolios',
       resolveRuntimePortfolioPath: (collection, id, child) =>
         collection && id ? `${collection}/${id}/${child}` : '',
     },
-    '({useActivePortfolio,usePortfolioWorkspaceChildPath})'
+    '({usePortfolioScope, usePortfolioChildPath})'
   )
-  const runtime = active.useActivePortfolio(),
-    child = active.usePortfolioWorkspaceChildPath(runtime, 'tasks')
+  const runtime = usePortfolioScope(selectedId)
+  const child = usePortfolioChildPath(runtime, 'tasks')
   return {
     selectedId,
     app,
@@ -133,7 +128,11 @@ test('Portfolio root and children subscribe only to ready current membership-bou
   assert.equal(h.rootId, '')
   assert.equal(h.child.value, '')
   assert.equal(h.runtime.canWrite.value, false)
-  h.app.appUser.value = { created: { at: { seconds: 2, nanoseconds: 0 } } }
+  h.app.appUser.value = {
+    role: 'user',
+    subscription: 'free',
+    created: { at: { seconds: 2, nanoseconds: 0 } },
+  }
   assert.equal(h.rootId, '')
   assert.equal(h.child.value, '')
   h.accessSource.value = {
