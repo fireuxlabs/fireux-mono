@@ -14,7 +14,7 @@
         <slot name="utility" />
       </div>
 
-      <MenuDetailExit
+      <MenuExit
         v-if="showExit && !isKioskMenu"
         class="menu-identity__close"
         :aria-label="resolvedExitLabel"

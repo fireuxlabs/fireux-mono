@@ -1,6 +1,10 @@
 <template>
-  <component :is="as || 'article'" class="menu-browse-item">
-    <MenuItemImage :enabled="showItemImages" :image-url="imageUrl" />
+  <component
+    :is="as || 'article'"
+    class="menu-browse-item"
+    :aria-labelledby="nameId"
+  >
+    <MenuItemImage v-if="imageUrl" enabled :image-url="imageUrl" />
     <div class="menu-browse-item__copy">
       <div class="menu-browse-item__heading">
         <component
@@ -14,10 +18,9 @@
         <span
           v-if="price"
           class="menu-browse-item__price"
-          :data-menu-item-price-kind="priceKind"
-          :aria-live="priceKind ? 'polite' : undefined"
-          :aria-atomic="priceKind ? 'true' : undefined"
-          ><span>{{ price }}</span></span
+          :aria-live="announcePrice ? 'polite' : undefined"
+          :aria-atomic="announcePrice ? 'true' : undefined"
+          >{{ price }}</span
         >
       </div>
       <p v-if="promotionLabel">{{ promotionLabel }}</p>
@@ -39,11 +42,10 @@ defineProps<{
   nameTo?: RouteLocationRaw
   name: string
   price?: string
-  priceKind?: 'selected' | 'base'
+  announcePrice?: boolean
   description?: string
   promotionLabel?: string
   imageUrl?: string
-  showItemImages?: boolean
 }>()
 </script>
 
@@ -71,9 +73,6 @@ defineProps<{
 }
 
 .menu-browse-item__price {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.3rem;
   color: var(--menu-primary, var(--ui-text-highlighted));
   font-size: 0.92rem;
   font-weight: var(--font-weight-extrabold);

@@ -1,20 +1,15 @@
 <template>
   <MenuItemDisplay
-    :aria-labelledby="itemNameId"
-    data-menu-item="true"
-    :data-menu-item-id="item.id"
-    data-menu-item-mode="preview"
     :name-id="itemNameId"
     :heading-tag="headingTag"
     :name="item.name"
     :price="itemPrice"
-    :price-kind="hasPriceOptions ? 'selected' : 'base'"
     :description="item.description"
     :promotion-label="item.promotionLabel"
-    :image-url="item.imageUrl"
-    :show-item-images="showItemImages"
+    :image-url="showItemImages ? item.imageUrl : undefined"
+    announce-price
   >
-    <MenuDetailMealDeal
+    <MenuMealDeal
       v-if="item.mealDeal"
       :deal="item.mealDeal"
       :format-price="formatPrice"
@@ -56,9 +51,6 @@ const props = defineProps<{
 
 const itemNameId = computed(() => `${props.accessibilityId}-name`)
 const choiceGroups = computed(() => readItemChoiceGroups(props.item))
-const hasPriceOptions = computed(() =>
-  choiceGroups.value.some((group) => group.pricing === 'full')
-)
 const selections = ref<ItemChoiceSelection>({})
 watch(
   [() => props.item.id, () => props.item.dishId, choiceGroups],

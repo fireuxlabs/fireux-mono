@@ -2,16 +2,16 @@ import {
   normalizeItemPriceOptions,
   normalizeItemAddOns,
 } from '../../utils/item-pricing'
-// Concurrent edit — 2026-07-22 01:58 CEST — Item/MenuItem boundary: derive row media only from its Item.
+// Concurrent edit — 2026-07-22 01:58 CEST — Item/MenuEntry boundary: derive row media only from its Item.
 import { computed, type Ref } from 'vue'
 import type { ItemCollectionRow } from '../../utils/item.ts'
-import { type MenuItem } from '../../../menu/models/menu-item.model.ts'
-import type { MenuSection } from '../../../menu/models/menu-section.model.ts'
+import { type MenuEntry } from '../../../menu/records/sections/entry.ts'
+import type { MenuSection } from '../../../menu/records/sections/section.ts'
 import type { KitchenMenuSectionRow } from './kitchen-menu-rows'
 
 type MenuRowOptions = {
   sections: Ref<MenuSection[]>
-  items: Ref<MenuItem[]>
+  items: Ref<MenuEntry[]>
   dishesById: Ref<Map<string, ItemCollectionRow>>
 }
 
@@ -23,7 +23,7 @@ const record = (value: unknown) =>
 
 export function useKitchenMenuRows(options: MenuRowOptions) {
   const itemsBySectionId = computed(() => {
-    const map = new Map<string, MenuItem[]>()
+    const map = new Map<string, MenuEntry[]>()
     for (const item of options.items.value) {
       const sectionId = text(item.section_id)
       if (!sectionId) continue

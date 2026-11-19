@@ -53,8 +53,8 @@ const specialsBindings = {
       sections: Vue.ref([{ id: 'special', date: '2026-11-23' }]),
     }),
   },
-  './useMenuSectionItemCollection': {
-    useMenuSectionItemCollection: () => ({
+  './useMenuEntryCollection': {
+    useMenuEntryCollection: () => ({
       outcome: Vue.ref('ready'),
       items: Vue.ref([{ dish_id: 'octopus' }]),
     }),

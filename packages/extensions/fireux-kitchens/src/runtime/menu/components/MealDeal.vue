@@ -18,7 +18,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { PublicMenuItem } from '../../models/menu-detail.model'
+import type { PublicMenuItem } from '../models/menu-detail.model'
 defineProps<{
   deal: NonNullable<PublicMenuItem['mealDeal']>
   formatPrice: (price: number) => string

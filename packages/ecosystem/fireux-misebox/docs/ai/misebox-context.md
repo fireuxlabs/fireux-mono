@@ -1871,7 +1871,7 @@ outlined service badges. Browse menus is omitted from services in favour of the 
 action. The Special child links directly to the published Menu and leads with
 up to three canonical public Items from that date's public Section reader and Menu
 payload normalizer; the date is secondary. Both the public Menu and special card
-use the complete `MenuDetailItem` surface, including real choices, price calculation
+use the complete `MenuBrowseItem` surface, including real choices, price calculation
 and optional `MenuItemImage`. The card has no separate Item presentation component.
 Place owns currency. This content
 read is acquired only for an eligible special, in addition to the existing Menu

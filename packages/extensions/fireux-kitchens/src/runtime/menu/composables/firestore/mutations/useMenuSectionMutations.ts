@@ -1,4 +1,4 @@
-import type { MenuSection } from '../../../models/menu-section.model'
+import type { MenuSection } from '../../../records/sections/section'
 import { useMenuMutation } from './useMenuMutation'
 
 export function useMenuSectionMutations() {

@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-22 12:20 CEST — Product Demo pass: expose the structured Browse catalogue as a prop-driven reusable presentation layer. -->
 <template>
   <div class="menu-browse-catalogue">
-    <MenuDetailSectionNav
+    <MenuBrowseCatalogueSectionNav
       v-if="browseSections.length > 1"
       :navigation-label="copy.menuSectionsAriaLabel"
       :choose-label="copy.chooseMenuSectionAriaLabel"
@@ -32,7 +32,7 @@
         </h2>
 
         <div class="menu-browse-catalogue__items">
-          <MenuDetailItem
+          <MenuBrowseItem
             v-for="(item, itemIndex) in section.items"
             :key="item.id"
             :accessibility-id="`${section.anchor}-item-${itemIndex + 1}`"
@@ -56,10 +56,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
-import type { MenuManifestSection } from '../../models/menu-detail.model.ts'
-import type { MenuBrowseSurfaceCopy } from '../../utils/catalogue/surface-copy'
-import { menuSectionLinks } from '../../utils/catalogue/section-links'
+import type { CurrencyDisplayFormat } from '../../../../models/shared/currency-display.model.ts'
+import type { MenuManifestSection } from '../../../models/menu-detail.model.ts'
+import type { MenuBrowseSurfaceCopy } from '../../../utils/catalogue/surface-copy'
+import { menuSectionLinks } from '../../../utils/catalogue/section-links'
 
 const props = withDefaults(
   defineProps<{

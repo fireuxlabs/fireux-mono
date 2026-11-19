@@ -128,7 +128,7 @@
       >
         No daily Menu available today.
       </p>
-      <MenuDetailCatalogue
+      <MenuBrowseCatalogue
         v-else-if="
           renderKind === 'structured' &&
           activeDetailMenu &&

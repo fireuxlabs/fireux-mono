@@ -203,10 +203,10 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
     render: compile(template(specialSource)),
   })
   const itemSource = readFileSync(
-    new URL('../runtime/menu/components/Detail/Item.vue', import.meta.url),
+    new URL('../runtime/menu/components/Browse/Item.vue', import.meta.url),
     'utf8'
   )
-  app.component('MenuDetailItem', {
+  app.component('MenuBrowseItem', {
     props: [
       'item',
       'currencyCode',
@@ -221,7 +221,7 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
     setup: (props) =>
       compileFunction(
         script(itemSource) +
-          ';return {itemNameId,itemPrice,choiceGroups,selections,hasPriceOptions}',
+          ';return {itemNameId,itemPrice,choiceGroups,selections}',
         [
           'computed',
           'ref',
@@ -254,7 +254,7 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
       'nameTo',
       'name',
       'price',
-      'priceKind',
+      'announcePrice',
       'description',
       'promotionLabel',
       'imageUrl',

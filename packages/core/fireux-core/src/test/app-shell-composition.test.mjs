@@ -551,7 +551,7 @@ async function renderRuntimeLayout(layout, layoutFile, page, state = {}) {
     'DevOnly',
     'FirePwaStatus',
     'AppInitializationGate',
-    'MenuDetailExit',
+    'MenuExit',
     'AppDevControls',
     'SproochliLanguageTrigger',
     'UAvatar',

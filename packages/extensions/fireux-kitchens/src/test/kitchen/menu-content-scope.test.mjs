@@ -529,7 +529,7 @@ test('all Add workflows can restore retained placements and exclude already acti
         error: ref(null),
       }),
       useKitchenChildCollection: () => ({ items: promotions }),
-      useMenuSectionItemCollection: () => ({
+      useMenuEntryCollection: () => ({
         items: placements,
         outcome: ref('ready'),
       }),

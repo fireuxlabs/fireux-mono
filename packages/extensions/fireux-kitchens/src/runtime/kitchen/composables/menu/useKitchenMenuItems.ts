@@ -1,11 +1,11 @@
 import { effectScope, ref, watch, type Ref } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import type { MenuItem } from '../../../menu/models/menu-item.model.ts'
-import type { MenuSection } from '../../../menu/models/menu-section.model.ts'
+import type { MenuEntry } from '../../../menu/records/sections/entry.ts'
+import type { MenuSection } from '../../../menu/records/sections/section.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
-const isActive = (item: MenuItem) => text(item.status) !== 'archived'
-const sortItems = (items: MenuItem[]) =>
+const isActive = (item: MenuEntry) => text(item.status) !== 'archived'
+const sortItems = (items: MenuEntry[]) =>
   [...items].sort(
     (a, b) =>
       Number(a.sort_order || 0) - Number(b.sort_order || 0) ||
@@ -17,7 +17,7 @@ export function useKitchenMenuItems(
   sections: Ref<MenuSection[]>
 ) {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const items = ref<MenuItem[]>([])
+  const items = ref<MenuEntry[]>([])
   const pending = ref(false)
   const error = ref<unknown>()
   watch(
@@ -34,7 +34,7 @@ export function useKitchenMenuItems(
       onCleanup(() => scope.stop())
       scope.run(() => {
         const bindings = ids.map((id) =>
-          firestoreFetchCollection<MenuItem>(`${path}/${id}/items`)
+          firestoreFetchCollection<MenuEntry>(`${path}/${id}/items`)
         )
         watch(
           () =>

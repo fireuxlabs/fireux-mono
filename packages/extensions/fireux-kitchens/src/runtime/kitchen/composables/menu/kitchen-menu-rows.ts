@@ -1,12 +1,12 @@
 import type { ItemPriceOption, ItemAddOnOption } from '../../utils/item-pricing'
 import type { ItemCollectionRow } from '../../utils/item'
-import type { MenuItem } from '../../../menu/models/menu-item.model.ts'
-import type { MenuSection } from '../../../menu/models/menu-section.model.ts'
+import type { MenuEntry } from '../../../menu/records/sections/entry.ts'
+import type { MenuSection } from '../../../menu/records/sections/section.ts'
 
 export type KitchenMenuItemRow = {
   id: string
   dish_id: string
-  item?: MenuItem
+  item?: MenuEntry
   dish?: ItemCollectionRow | null
   name: string
   description: string

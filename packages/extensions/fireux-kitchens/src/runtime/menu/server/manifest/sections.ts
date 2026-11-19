@@ -22,7 +22,7 @@ import {
   serverKitchenMenuSectionsTarget,
   serverKitchenMenuItemsTarget,
 } from '../../../kitchen/server/mutation-targets'
-// Concurrent edit — 2026-07-22 01:58 CEST — Item/MenuItem boundary: project menu images only from Item food truth.
+// Concurrent edit — 2026-07-22 01:58 CEST — Item/MenuEntry boundary: project menu images only from Item food truth.
 import type { Firestore } from 'firebase-admin/firestore'
 import { readLegacyItemKind } from '../../../kitchen/utils/item.ts'
 import {

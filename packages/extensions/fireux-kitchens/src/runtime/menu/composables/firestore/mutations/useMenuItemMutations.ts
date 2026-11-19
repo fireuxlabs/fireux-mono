@@ -1,4 +1,4 @@
-import type { MenuItem } from '../../../models/menu-item.model'
+import type { MenuEntry } from '../../../records/sections/entry'
 import { normalizeMenuItemPatch } from '../../../utils/records/item-patch'
 import { useMenuMutation } from './useMenuMutation'
 
@@ -19,7 +19,7 @@ export function useMenuItemMutations() {
     menuId: string,
     sectionId: string,
     itemId: string,
-    patch: Partial<MenuItem>
+    patch: Partial<MenuEntry>
   ) =>
     mutate('item', 'PATCH', {
       kitchenId,

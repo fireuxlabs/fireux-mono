@@ -2,8 +2,8 @@ import {
   normalizeString,
   resolveKitchenChildCollectionPath,
 } from '../../../../kitchen/utils/kitchen-collection-path'
-import { MenuItemStorage } from '../../../models/menu-item.model.ts'
-import { MenuSectionStorage } from '../../../models/menu-section.model.ts'
+import { MenuEntryStorage } from '../../../records/sections/entry.ts'
+import { MenuSectionStorage } from '../../../records/sections/section.ts'
 import { MenuStorage } from '../../../models/menu-storage.model.ts'
 
 type MenuPathOptions = {
@@ -37,6 +37,6 @@ export const menuItemsPath = (options: MenuPathOptions) => {
   const sectionsPath = menuSectionsPath(options)
   const sectionId = normalizeString(options.sectionId)
   return sectionsPath && sectionId
-    ? `${sectionsPath}/${sectionId}/${MenuItemStorage.collection}`
+    ? `${sectionsPath}/${sectionId}/${MenuEntryStorage.collection}`
     : ''
 }

@@ -1,8 +1,20 @@
-import { readPlacePresentation, readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
+import {
+  readPlacePresentation,
+  readPlaceCurrencyCode,
+} from 'fireux-places/runtime/place/utils/place-spine'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model'
 import { readKitchenThemePalette } from './kitchen-readers'
+
+export function kitchenShowsMenuItemImages(
+  kitchenData: Record<string, unknown>
+) {
+  return (
+    (kitchenData.services as { item_images?: unknown } | undefined)
+      ?.item_images === true
+  )
+}
 
 export function readKitchenPresentation(
   kitchenData: Record<string, unknown>,
@@ -40,8 +52,7 @@ export function readKitchenPresentation(
     currencyCode,
     currencyFormat: 'dash',
     showCurrency: true,
-    showItemImages:
-      (kitchenData.services as { item_images?: unknown } | undefined)?.item_images === true,
+    showItemImages: kitchenShowsMenuItemImages(kitchenData),
     ...(workspacePalette
       ? { kitchen_theme: { palette: workspacePalette } }
       : {}),

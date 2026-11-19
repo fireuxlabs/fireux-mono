@@ -18,12 +18,12 @@ import {
   type Ref,
 } from 'vue'
 import type { ItemCollectionRow } from '../../kitchen/utils/item.ts'
-import { type MenuItem } from '../models/menu-item.model.ts'
-import type { MenuSection } from '../models/menu-section.model.ts'
+import { type MenuEntry } from '../records/sections/entry.ts'
+import type { MenuSection } from '../records/sections/section.ts'
 import { useKitchenItemCollection } from '../../kitchen/composables/useKitchenItemCollection'
 import type { Menu } from '../models/menu.model'
 import { useItemUpdate } from '../../kitchen/composables/items/useItemUpdate'
-import { useMenuSectionItemCollection } from './useMenuSectionItemCollection'
+import { useMenuEntryCollection } from './useMenuEntryCollection'
 import { useMenuItemMutations } from './firestore/mutations/useMenuItemMutations'
 
 const clean = (value: unknown) => String(value ?? '').trim()
@@ -32,9 +32,9 @@ const record = (value: unknown) =>
     ? (value as Record<string, unknown>)
     : {}
 
-export type MenuSectionItemRow = {
+export type MenuEntryRow = {
   id: string
-  item: MenuItem
+  entry: MenuEntry
   dish: ItemCollectionRow | null
   promotionId: string
   dishId: string
@@ -105,7 +105,7 @@ function createMenuSectionState(
         (item) => clean(item.id) === sectionId.value
       ) ?? null
   )
-  const itemState = useMenuSectionItemCollection(
+  const itemState = useMenuEntryCollection(
     menuState.storageKitchenId,
     computed(() => (menuState.menu.value ? menuState.menuId.value : '')),
     computed(() => (section.value ? sectionId.value : '')),
@@ -133,7 +133,7 @@ function createMenuSectionState(
     })
     return map
   })
-  const itemRows = computed<MenuSectionItemRow[]>(() =>
+  const itemRows = computed<MenuEntryRow[]>(() =>
     items.value.map((item) => {
       const dish = dishesById.value.get(clean(item.dish_id)) ?? null
       const deal = promotions.items.value.find(
@@ -142,7 +142,7 @@ function createMenuSectionState(
       )
       return {
         id: clean(item.id),
-        item,
+        entry: item,
         dish,
         dishId: clean(item.dish_id),
         promotionId: clean(item.promotion_id),
@@ -221,7 +221,7 @@ function createMenuSectionState(
     items,
     itemRows,
     activeItemRows: computed(() =>
-      itemRows.value.filter((row) => row.item.status !== 'archived')
+      itemRows.value.filter((row) => row.entry.status !== 'archived')
     ),
     itemsPending,
     itemsError: itemState.error,

@@ -1,6 +1,6 @@
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { computed, type Ref } from 'vue'
-import type { MenuItem } from '../models/menu-item.model.ts'
+import type { MenuEntry } from '../records/sections/entry.ts'
 import { useKitchenChildCollection } from '../../kitchen/composables/useKitchenChildCollection'
 
 type Options = {
@@ -9,14 +9,14 @@ type Options = {
   databaseId?: string | Ref<string | null | undefined>
 }
 
-const sortItems = (items: MenuItem[]) =>
+const sortItems = (items: MenuEntry[]) =>
   [...items].sort(
     (a, b) =>
       Number(a.sort_order || 0) - Number(b.sort_order || 0) ||
       String(a.dish_id).localeCompare(String(b.dish_id))
   )
 
-export function useMenuSectionItemCollection(
+export function useMenuEntryCollection(
   kitchenId: Ref<string> | string,
   menuId: Ref<string> | string,
   sectionId: Ref<string> | string,
@@ -31,7 +31,7 @@ export function useMenuSectionItemCollection(
     ).trim()
     return mid && sid ? `menus/${mid}/sections/${sid}/items` : ''
   })
-  const state = useKitchenChildCollection<MenuItem>(
+  const state = useKitchenChildCollection<MenuEntry>(
     collectionName,
     kitchenId,
     options

@@ -501,7 +501,7 @@ owns pricing normalization and validation; trusted
 [Item creation](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/items/create.ts)
 and [update](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/items/update.ts)
 commands retain write authority. Menu-owned
-[placements](../../packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-item.model.ts)
+[placements](../../packages/extensions/fireux-kitchens/src/runtime/menu/records/sections/entry.ts)
 reference Items through `dish_id`; the
 [manifest projection](../../packages/extensions/fireux-kitchens/src/runtime/menu/server/manifest/sections.ts)
 and ordering consumers resolve those Item selling values. These are Item-owned
@@ -836,7 +836,7 @@ KitchenMenu is a Kitchen-scoped record implemented by the Menu domain.
 `menu/composables/useKitchenMenuCollection.ts` reads one Kitchen's menus;
 `useMenuDirectory.ts` reads their public directory projection.
 `useMenuSectionCollection.ts` reads one menu's sections and
-`useMenuSectionItemCollection.ts` reads one section's items.
+`useMenuEntryCollection.ts` reads one section's items.
 Storage ownership does not require repeating
 the entire database path as source-code folders. Public Browse and QR
 consume `menu/composables/useMenu.ts` directly. Card presentation and service-hour

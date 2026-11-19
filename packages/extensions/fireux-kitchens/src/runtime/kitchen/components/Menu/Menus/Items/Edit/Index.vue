@@ -70,12 +70,17 @@
         :message="String(editor.itemsError)"
       />
       <p v-else-if="editor.itemsPending" role="status">Loading items…</p>
-      <div v-else-if="editor.itemRows.length" class="menu-editor-list">
+      <div
+        v-else-if="editor.itemRows.length"
+        class="menu-editor-list menu-items-display"
+        :style="itemDisplayStyle"
+      >
         <KitchenMenuMenusItemsEditRow
           v-for="row in editor.itemRows"
           :key="row.id"
           :row="row"
           :editor="editor"
+          :show-item-images="showItemImages"
         />
       </div>
 
@@ -90,15 +95,46 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
+import {
+  menuAppTheme,
+  menuDisplayTokens,
+} from '../../../../../../menu/utils/menu-display-tokens'
+import { useKitchenMenuRecordContext } from '../../../../../composables/workspace/menus/useKitchenMenuRecordContext'
+import { kitchenShowsMenuItemImages } from '../../../../../utils/kitchen-presentation'
+import { readKitchenThemePalette } from '../../../../../utils/kitchen-readers'
 import { useMenuSectionItemsEditor } from '../../../../../composables/workspace/menus/useMenuSectionItemsEditor'
 const props = defineProps<{ embedded?: boolean }>()
 const editor = reactive(useMenuSectionItemsEditor(Boolean(props.embedded)))
+const { menu, selectedKitchen } = useKitchenMenuRecordContext()
+const showItemImages = computed(() =>
+  selectedKitchen.value
+    ? kitchenShowsMenuItemImages(selectedKitchen.value)
+    : false
+)
+const itemDisplayStyle = computed(() => {
+  const kitchen = selectedKitchen.value
+  const palette =
+    kitchen && menu.value?.theme_mode !== 'default'
+      ? readKitchenThemePalette(kitchen)
+      : null
+  return menuDisplayTokens(palette ?? menuAppTheme.palette)
+})
 </script>
 
 <style src="../../../../../../menu/assets/styles/menu-editor.css"></style>
 
 <style scoped>
+.menu-items-display {
+  padding-inline: calc(var(--spacing) * 3);
+  border-radius: var(--ui-radius);
+  background: var(--menu-bg);
+  color: var(--menu-text);
+}
+.menu-items-display > * + * {
+  border-color: color-mix(in srgb, var(--menu-text) 12%, transparent);
+}
+
 .menu-items-editor__action {
   justify-self: start;
 }

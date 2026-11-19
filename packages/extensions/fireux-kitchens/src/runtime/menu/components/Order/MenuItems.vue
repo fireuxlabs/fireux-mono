@@ -19,7 +19,7 @@
         <div class="fx-card-body-stack">
           <template v-if="item.mealDeal">
             <p>{{ money(item.price) }}</p>
-            <MenuDetailMealDeal :deal="item.mealDeal" :format-price="money" />
+            <MenuMealDeal :deal="item.mealDeal" :format-price="money" />
           </template>
           <div
             v-else-if="item.choiceGroups !== undefined"

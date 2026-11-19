@@ -22,7 +22,7 @@
 import { computed, toRef } from 'vue'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import type { ItemCollectionRow } from '../../../../utils/item'
-import { useMenuSectionItemCollection } from '../../../../../menu/composables/useMenuSectionItemCollection'
+import { useMenuEntryCollection } from '../../../../../menu/composables/useMenuEntryCollection'
 const props = defineProps<{
   sectionId: string
   dishes: ItemCollectionRow[]
@@ -31,7 +31,7 @@ const props = defineProps<{
 }>()
 const { storageKitchenId, menuId, menuSlug, rootCollection, databaseId } =
   useKitchenMenuRecordContext()
-const { items, pending, error } = useMenuSectionItemCollection(
+const { items, pending, error } = useMenuEntryCollection(
   storageKitchenId,
   menuId,
   toRef(props, 'sectionId'),

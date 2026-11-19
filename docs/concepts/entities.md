@@ -95,8 +95,8 @@ Examples of parent-owned Records:
 | Item              | Kitchen          | Kitchen owns reusable Item truth; Menu placements reference it         |
 | Preparation       | Kitchen          | Kitchen owns its reusable output identity and local Recipe bindings    |
 | MenuSourceUpload  | Kitchen          | It is source material for a Kitchen workflow                           |
-| MenuSection       | Menu             | It groups MenuItem records inside one Menu                             |
-| MenuItem          | MenuSection      | It is one parent-owned catalogue row                                   |
+| MenuSection       | Menu             | It groups MenuEntry records inside one Menu                             |
+| MenuEntry          | MenuSection      | It is one parent-owned catalogue row                                   |
 | KitchenSale       | KitchenOrder     | It is the immutable one-to-one result of Order completion              |
 | CustomerProfile   | User             | It stores User-owned ordering preferences, not another person identity |
 | CustomerOrderLink | User             | It points to an Order without copying mutable Order lifecycle state    |
@@ -247,7 +247,7 @@ delete or replace the canonical Kitchen Item. Preparation is also a Kitchen-owne
 Record: it identifies the Kitchen's reusable output and can be referenced by
 several Recipes without acquiring independent authority. Recipe remains an Entity.
 
-MenuSection, MenuItem, and KitchenStation can have stable document ids without
+MenuSection, MenuEntry, and KitchenStation can have stable document ids without
 independent Entity lifecycle. Kitchen Team requests, document links, financial
 facts, and similar parent-owned support should remain Records unless product
 behavior proves otherwise. KitchenStation is owned below Kitchen; its stable
@@ -312,7 +312,7 @@ transition resolves them; moving Preparation source does not make those referenc
 portable or implement public Recipes. Operational Mise en Place planning and
 actual Batch execution remain separate responsibilities.
 
-Item is Kitchen-owned canonical Record truth. MenuItem is a MenuSection-owned
+Item is Kitchen-owned canonical Record truth. MenuEntry is a MenuSection-owned
 placement Record and must reference an Item from the same Kitchen. Inspect the
 owning models, readers and protected commands for actual scope; local source
 review does not verify stored Misebox records.
@@ -477,7 +477,7 @@ Directory and Entity Detail family maps.
 | Independent Business with optional Place links                 | `accepted`  | Business owns organisation identity and Workspace; Place owns each linked location                                                                                                                       |
 | Place read transport                                           | `accepted`  | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth               |
 | Kitchen root + Place + Team composition                        | `accepted`  | Kitchen owns nested identity, configuration and audit/private metadata; its public projection joins the same-id Place. Team roster and membership-bound Workspace access retain separate authority.      |
-| Kitchen Item ownership                                         | `accepted`  | Item is a Kitchen-owned Record; MenuItem owns placement, not copied canonical Item truth. Item source uses Kitchen record and technical roles.                                                           |
+| Kitchen Item ownership                                         | `accepted`  | Item is a Kitchen-owned Record; MenuEntry owns placement, not copied canonical Item truth. Item source uses Kitchen record and technical roles.                                                           |
 | Recipe independent-domain target                               | `migration` | Recipe is an Entity; current Kitchen-scoped source, readers and commands remain until a bounded transition proves the target.                                                                            |
 | Recipe ownership and approved Kitchen use                      | `accepted`  | Every Recipe has one User owner; Kitchen explicitly adopts a version and retains that internal use after owner departure or unpublishing. Implementation and legacy owner mapping remain migration work. |
 | Preparation ownership                                          | `accepted`  | Preparation is a Kitchen-owned Record. Recipe output descriptions are embedded Recipe shapes; Kitchen-specific associations stay with Kitchen.                                                           |

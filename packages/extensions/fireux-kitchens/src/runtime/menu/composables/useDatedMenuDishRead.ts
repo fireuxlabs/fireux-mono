@@ -4,7 +4,7 @@ import { useKitchenItemRead } from '../../kitchen/composables/items/useKitchenIt
 import type { Menu } from '../models/menu.model'
 import { publishedMenuDates } from '../utils/calendar/daily'
 import { useMenuSectionCollection } from './useMenuSectionCollection'
-import { useMenuSectionItemCollection } from './useMenuSectionItemCollection'
+import { useMenuEntryCollection } from './useMenuEntryCollection'
 
 /** Read the first linked dish on an explicitly published menu date. */
 export function useDatedMenuDishRead(
@@ -29,7 +29,7 @@ export function useDatedMenuDishRead(
           ?.id || ''
       : ''
   )
-  const links = useMenuSectionItemCollection(
+  const links = useMenuEntryCollection(
     kitchenId,
     menuId,
     sectionId,

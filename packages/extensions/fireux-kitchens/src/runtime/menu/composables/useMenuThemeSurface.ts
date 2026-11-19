@@ -2,14 +2,8 @@ import { useHead } from '#imports'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
 
-export const menuAppTheme: WorkspaceTheme = {
-  palette: {
-    canvas: 'var(--ui-bg)',
-    text: 'var(--ui-text)',
-    accent: 'var(--ui-primary)',
-    accent_contrast: 'var(--ui-bg)',
-  },
-}
+import { menuAppTheme, menuDisplayTokens } from '../utils/menu-display-tokens'
+export { menuAppTheme } from '../utils/menu-display-tokens'
 
 export function useMenuThemeSurface(
   options: {
@@ -55,11 +49,8 @@ export function useMenuThemeSurface(
         : {}
     return {
       ...ui,
-      '--menu-bg': palette.canvas,
-      '--menu-text': palette.text,
-      '--menu-title': palette.text,
+      ...menuDisplayTokens(palette),
       '--menu-primary-source': palette.accent,
-      '--menu-primary': palette.accent,
       '--menu-secondary': palette.accent,
       '--menu-accent-contrast': palette.accent_contrast,
       '--menu-bg-light': palette.canvas,
@@ -68,9 +59,6 @@ export function useMenuThemeSurface(
       '--menu-text-dark': palette.text,
       '--menu-title-light': palette.text,
       '--menu-title-dark': palette.text,
-      '--menu-font': 'var(--font-sans, ui-sans-serif, system-ui, sans-serif)',
-      '--menu-title-font':
-        'var(--font-sans, ui-sans-serif, system-ui, sans-serif)',
     }
   })
   useHead(

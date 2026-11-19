@@ -32,7 +32,7 @@
           :key="row.key"
           class="service-browse__item"
         >
-          <MenuDetailItem
+          <MenuBrowseItem
             :item="row.item"
             collapse-extras
             :accessibility-id="`service-${index}-${itemIndex}`"

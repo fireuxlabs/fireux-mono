@@ -1,29 +1,29 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
-export type MenuItemStatus = 'active' | 'archived'
-export type MenuItemReference =
+export type MenuEntryStatus = 'active' | 'archived'
+export type MenuEntryReference =
   | { dish_id: string; promotion_id?: never }
   | { promotion_id: string; dish_id?: never }
 
-export type MenuItem = FireuxStamped &
-  MenuItemReference & {
+export type MenuEntry = FireuxStamped &
+  MenuEntryReference & {
     id: string
     kitchen_id: string
     menu_id: string
     section_id: string
-    status: MenuItemStatus
+    status: MenuEntryStatus
     sort_order: number
   }
 
-export const MenuItemStorage = {
+export const MenuEntryStorage = {
   shape: 'scoped',
   path: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
   collection: 'items',
   parent: 'menu-section',
   idParam: 'itemId',
 } as const
-export const MenuItemDefaults: Extract<MenuItem, { dish_id: string }> = {
+export const MenuEntryDefaults: Extract<MenuEntry, { dish_id: string }> = {
   id: '',
   kitchen_id: '',
   menu_id: '',
@@ -41,10 +41,10 @@ export const MenuItemDefaults: Extract<MenuItem, { dish_id: string }> = {
     by: '' as FireuxStamped['updated']['by'],
   },
 }
-export type MenuItemCreateInput = Omit<MenuItem, 'created' | 'updated'>
-export type MenuItemUpdateInput = Partial<
+export type MenuEntryCreateInput = Omit<MenuEntry, 'created' | 'updated'>
+export type MenuEntryUpdateInput = Partial<
   Omit<
-    MenuItem,
+    MenuEntry,
     | 'id'
     | 'created'
     | 'updated'

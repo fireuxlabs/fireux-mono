@@ -1,6 +1,6 @@
 <template>
   <section class="kitchen-special" aria-label="Specials">
-    <MenuDetailItem
+    <MenuBrowseItem
       v-for="item in special.items"
       :key="item.id"
       :item="item"

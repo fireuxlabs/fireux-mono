@@ -25,13 +25,13 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 | ---------------- | -------------- | ------------------------------------------------------------------------------ |
 | Menu             | Kitchen-scoped | One interactive or document Menu: name, slug, publication, audience and format |
 | MenuSection      | Menu-scoped    | Groups Item and meal-deal placements                                           |
-| MenuItem         | Section-scoped | Item or meal-deal reference, availability and display order                    |
+| MenuEntry         | Section-scoped | Item or meal-deal reference, availability and display order                    |
 | Item             | Kitchen-scoped | Stable identity, name, optional description/photo and provenance               |
 | Promotion        | Kitchen-scoped | Item offers or meal deals with set price, choices and supplements              |
 | MenuSourceUpload | Kitchen-scoped | Source material awaiting review; not a published Menu                          |
 
 Kitchen Items are reusable across Menus. Each Menu owns its Sections and
-[MenuItem placements](../../packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-item.model.ts),
+[MenuEntry placements](../../packages/extensions/fireux-kitchens/src/runtime/menu/records/sections/entry.ts),
 which reference Items through `dish_id` (or a meal deal through `promotion_id`).
 The persisted Section child remains `items`; calling these entries or placements
 does not rename storage. Food/Drink is the Item type, not a Menu Section or an
@@ -373,16 +373,16 @@ allergy information. A visitor-selected `sproochli` language replaces that
 interface copy together with the translated Menu projection; the unselected
 default route never rewrites the original Menu content.
 
-`menu/components/Detail/Item.vue` owns the complete public Item surface: name,
+`menu/components/Browse/Item.vue` owns the complete public Item surface: name,
 description, price, choices and optional image. Both the public Menu and Kitchen
-directory special consume `MenuDetailItem` directly. The card supplies canonical
+directory special consume `MenuBrowseItem` directly. The card supplies canonical
 public Items through the existing Menu payload normalizer, preserving real
 choices without exposing private Item context. Selection and price calculation
 remain inside the Menu surface; neither consumer owns a parallel Item layout.
 The surface owns no reader or command and inherits Menu theme tokens with host
 UI fallbacks. Its heading level follows the consuming document hierarchy.
 
-Item owns reusable food media. MenuItem may reference Item but does not own a
+Item owns reusable food media. MenuEntry may reference Item but does not own a
 second food-image field. Kitchen `services.item_images` supplies the customer
 text-only/image-enabled preference through the existing presentation projection.
 Missing and failed images never remove item text, prices or choices. Zero-priced

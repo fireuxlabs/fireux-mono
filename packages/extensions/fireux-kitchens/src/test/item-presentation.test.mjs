@@ -57,7 +57,7 @@ test('zero is a visible amount while missing and invalid terms remain absent', (
   )
 })
 
-const Item = component('menu/components/Detail/Item.vue', {
+const Item = component('menu/components/Browse/Item.vue', {
   '../../../utils/currency-display': currency,
 })
 const ItemDisplay = component('menu/components/ItemDisplay.vue')
@@ -98,10 +98,10 @@ async function renderItem(changes = {}) {
   })
   app.component('MenuItemImage', ItemImage)
   app.component('MenuItemDisplay', ItemDisplay)
-  app.component('MenuDetailItem', Item)
+  app.component('MenuBrowseItem', Item)
   app.component('MenuChoiceBubbles', ChoiceBubbles)
   app.component('MenuItemChoices', ItemChoices)
-  app.component('MenuDetailMealDeal', { render: () => null })
+  app.component('MenuMealDeal', { render: () => null })
   return renderToString(app)
 }
 test('normal zero, free variants and price choices render without a promotion marker', async () => {
@@ -127,7 +127,7 @@ test('normal zero, free variants and price choices render without a promotion ma
       ],
     }),
   })
-  assert.match(pricedOptions, /<span>5 CHF<\/span>/)
+  assert.match(pricedOptions, /aria-live="polite"[^>]*>5 CHF<\/span>/)
   assert.doesNotMatch(pricedOptions, /0 CHF/)
 })
 test('both customer styles keep complete text and prices with or without an image', async () => {
@@ -181,7 +181,7 @@ function mount(Component, props) {
   app.component('UIcon', { render: () => Vue.h('span') })
   app.component('MenuItemImage', ItemImage)
   app.component('MenuItemDisplay', ItemDisplay)
-  app.component('MenuDetailItem', Item)
+  app.component('MenuBrowseItem', Item)
   app.component('MenuChoiceBubbles', ChoiceBubbles)
   app.component('MenuItemChoices', ItemChoices)
   app.component(
@@ -200,7 +200,7 @@ function mount(Component, props) {
     setup: (props) => () => Vue.h('a', { href: props.to }, props.label),
   })
   app.component('FireActionSurface', Surface)
-  app.component('MenuDetailMealDeal', { render: () => null })
+  app.component('MenuMealDeal', { render: () => null })
   app.mount(root)
   const find = (tag, node = root) =>
     node.tag === tag

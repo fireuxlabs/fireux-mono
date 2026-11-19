@@ -706,7 +706,7 @@ test('Item linked read perspectives bind exact ready storage owner instead of re
         useKitchenPrepItems: reader,
         useKitchenMenuCollection: reader,
         useMenuSectionCollection: reader,
-        useMenuSectionItemCollection: reader,
+        useMenuEntryCollection: reader,
         useMenuRecordNavigation: () => ({ rememberView: () => {} }),
       })
     )
@@ -1276,7 +1276,7 @@ test('Item placements return to the inline Menu builder or exact daily section',
         defineEmits: () => (_, result) => emitted.push(result),
         useKitchenItemRead: () => owner,
         useKitchenItemContext: () => owner,
-        useMenuSectionItemCollection: () => ({ items: rows, pending, error }),
+        useMenuEntryCollection: () => ({ items: rows, pending, error }),
       }
     )
     assert.equal(

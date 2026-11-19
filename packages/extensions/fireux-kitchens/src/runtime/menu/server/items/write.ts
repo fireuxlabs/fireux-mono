@@ -17,7 +17,7 @@ import {
 import { normalizeMenuItemPatch } from '../../utils/records/item-patch'
 import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
 import { normalizeKitchenPromotion } from '../../../kitchen/utils/promotions/pricing'
-import type { MenuItem } from '../../models/menu-item.model'
+import type { MenuEntry } from '../../records/sections/entry'
 
 export async function createKitchenMenuItem(event: H3Event, input: unknown) {
   if (!input || typeof input !== 'object' || Array.isArray(input))
@@ -195,9 +195,9 @@ export async function updateKitchenMenuItem(
   const menuId = requireFirestoreDocumentId(input?.menuId, 'Menu id')
   const sectionId = requireFirestoreDocumentId(input?.sectionId, 'Section id')
   const itemId = requireFirestoreDocumentId(input?.itemId, 'Item id')
-  let changes: Partial<MenuItem>
+  let changes: Partial<MenuEntry>
   try {
-    changes = normalizeMenuItemPatch(input?.changes as Partial<MenuItem>)
+    changes = normalizeMenuItemPatch(input?.changes as Partial<MenuEntry>)
   } catch (error) {
     throw createError({
       statusCode: 400,

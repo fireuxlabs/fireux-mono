@@ -157,7 +157,7 @@ test('public meal-deal presentation shows choose counts, included choices and su
   const f = fixture(),
     deal = (await f.read())[0].items[1].mealDeal
   const source = readFileSync(
-    new URL('menu/components/Detail/MealDeal.vue', runtime),
+    new URL('menu/components/MealDeal.vue', runtime),
     'utf8'
   )
   const template = source.slice(
@@ -216,7 +216,7 @@ test('section parent provides one state to all editing controls without injectin
         return { items: ref([]), pending: ref(false), error: ref(null) }
       },
       useRouteParam: () => ref('s'),
-      useMenuSectionItemCollection: () => ({
+      useMenuEntryCollection: () => ({
         items: ref([]),
         pending: ref(false),
       }),
@@ -401,7 +401,7 @@ test('ordering Menu presentation keeps meal deals read-only while retaining norm
       return () => h('button', props.label)
     },
   })
-  app.component('MenuDetailMealDeal', {
+  app.component('MenuMealDeal', {
     props: ['deal', 'formatPrice'],
     setup: () => () => h('div', 'Meal choices'),
   })

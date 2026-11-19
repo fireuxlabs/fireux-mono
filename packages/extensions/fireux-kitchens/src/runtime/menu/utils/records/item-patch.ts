@@ -1,7 +1,7 @@
-import type { MenuItem } from '../../models/menu-item.model'
+import type { MenuEntry } from '../../records/sections/entry'
 export function normalizeMenuItemPatch(
-  patch: Partial<MenuItem>
-): Partial<MenuItem> {
+  patch: Partial<MenuEntry>
+): Partial<MenuEntry> {
   if (
     !patch ||
     typeof patch !== 'object' ||

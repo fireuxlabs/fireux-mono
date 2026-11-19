@@ -3,7 +3,7 @@ import { useMenuRecordNavigation } from './useMenuRecordNavigation'
 import { ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import {
-  type MenuSectionItemRow,
+  type MenuEntryRow,
   useMenuSection,
 } from '../../../../menu/composables/useMenuSection'
 
@@ -39,7 +39,7 @@ export function useMenuSectionItemsEditor(embedded = false) {
     }
   )
   const toast = useToastify()
-  async function removeFromMenu(row: MenuSectionItemRow) {
+  async function removeFromMenu(row: MenuEntryRow) {
     if (!canWrite.value || removing.value || moving.value) return
     if (
       !window.confirm(
@@ -72,7 +72,7 @@ export function useMenuSectionItemsEditor(embedded = false) {
     }
   }
 
-  function canMove(row: MenuSectionItemRow, direction: 'up' | 'down') {
+  function canMove(row: MenuEntryRow, direction: 'up' | 'down') {
     const index = itemRows.value.findIndex((item) => item.id === row.id)
     return (
       canWrite.value &&
@@ -82,7 +82,7 @@ export function useMenuSectionItemsEditor(embedded = false) {
       (direction === 'up' ? index > 0 : index < itemRows.value.length - 1)
     )
   }
-  async function move(row: MenuSectionItemRow, direction: 'up' | 'down') {
+  async function move(row: MenuEntryRow, direction: 'up' | 'down') {
     if (!canMove(row, direction)) return
     const isCurrent = captureItemScope()
     moveError.value = ''

@@ -20,7 +20,7 @@
 import { computed, watch } from 'vue'
 import type { useMenuSection } from '../../../../../menu/composables/useMenuSection'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
-import { useMenuSectionItemCollection } from '../../../../../menu/composables/useMenuSectionItemCollection'
+import { useMenuEntryCollection } from '../../../../../menu/composables/useMenuEntryCollection'
 import {
   menuPublicationReadiness,
   type MenuReadiness,
@@ -44,7 +44,7 @@ const source = props.currentSection
       pending: props.currentSection.itemsPending,
       error: props.currentSection.itemsError,
     }
-  : useMenuSectionItemCollection(
+  : useMenuEntryCollection(
       storageKitchenId,
       menuId,
       computed(() => props.section.id),

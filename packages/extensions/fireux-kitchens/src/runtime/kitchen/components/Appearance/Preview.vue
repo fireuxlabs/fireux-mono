@@ -64,7 +64,7 @@ import type { WorkspacePalette } from 'fireux-core/types/theme'
 import { computed } from 'vue'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useMenuSectionCollection } from '../../../menu/composables/useMenuSectionCollection'
-import { useMenuSectionItemCollection } from '../../../menu/composables/useMenuSectionItemCollection'
+import { useMenuEntryCollection } from '../../../menu/composables/useMenuEntryCollection'
 import { useKitchenItemRead } from '../../composables/items/useKitchenItemRead'
 
 const props = defineProps<{
@@ -89,7 +89,7 @@ const section = computed(() =>
   sections.outcome.value === 'ready' ? sections.sections.value[0] : undefined
 )
 const sectionId = computed(() => section.value?.id || '')
-const items = useMenuSectionItemCollection(
+const items = useMenuEntryCollection(
   kitchenId,
   menuId,
   sectionId,

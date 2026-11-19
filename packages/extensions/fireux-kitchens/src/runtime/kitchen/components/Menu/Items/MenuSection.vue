@@ -14,9 +14,9 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import type { Menu } from '../../../../menu/models/menu.model'
-import type { MenuSection } from '../../../../menu/models/menu-section.model'
+import type { MenuSection } from '../../../../menu/records/sections/section'
 import { useKitchenItemContext } from '../../../composables/items/useKitchenItemContext'
-import { useMenuSectionItemCollection } from '../../../../menu/composables/useMenuSectionItemCollection'
+import { useMenuEntryCollection } from '../../../../menu/composables/useMenuEntryCollection'
 const props = defineProps<{ menu: Menu; section: MenuSection }>()
 const emit = defineEmits<{
   result: [value: 'pending' | 'error' | 'empty' | 'match']
@@ -27,7 +27,7 @@ const {
   databaseId,
   rootCollection,
 } = useKitchenItemContext()
-const { items, pending, error } = useMenuSectionItemCollection(
+const { items, pending, error } = useMenuEntryCollection(
   storageKitchenId,
   computed(() => props.menu.id),
   computed(() => props.section.id),
