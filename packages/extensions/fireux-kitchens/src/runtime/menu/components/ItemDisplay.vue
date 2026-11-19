@@ -37,7 +37,7 @@ import type { RouteLocationRaw } from 'vue-router'
 
 defineProps<{
   as?: 'article' | 'div'
-  headingTag?: 'h3' | 'h4'
+  headingTag?: 'h1' | 'h3' | 'h4'
   nameId?: string
   nameTo?: RouteLocationRaw
   name: string
@@ -66,7 +66,7 @@ defineProps<{
     --menu-title-font,
     var(--font-sans, ui-sans-serif, system-ui, sans-serif)
   );
-  font-size: 1.075rem;
+  font-size: var(--menu-item-title-size, 1.075rem);
   font-weight: var(--font-weight-extrabold);
   line-height: 1.35;
   overflow-wrap: anywhere;
@@ -83,7 +83,7 @@ defineProps<{
 .menu-browse-item__description {
   margin: 0.45rem 0 0;
   color: var(--menu-muted, var(--ui-text-muted));
-  font-size: 0.9rem;
+  font-size: var(--menu-item-description-size, 0.9rem);
   line-height: 1.55;
   overflow-wrap: anywhere;
   white-space: pre-line;
@@ -92,9 +92,12 @@ defineProps<{
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: calc(var(--spacing) * 4);
-  padding: calc(var(--spacing) * 5) 0;
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--menu-text, var(--ui-text)) 12%, transparent);
+  padding: var(--menu-item-padding, calc(var(--spacing) * 5) 0);
+  border-bottom: var(
+    --menu-item-divider,
+    1px solid
+      color-mix(in srgb, var(--menu-text, var(--ui-text)) 12%, transparent)
+  );
 }
 
 .menu-browse-item:has(> .menu-item-image) {

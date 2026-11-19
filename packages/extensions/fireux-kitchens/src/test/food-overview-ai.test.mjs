@@ -185,7 +185,7 @@ test('the overview publishes the same current facts used by its AI and clears th
     computed,
     watchEffect,
     onScopeDispose,
-    useKitchenWorkspace: () => ({ id: ref('k'), kitchenName: ref('Kitchen') }),
+    useKitchenWorkspace: () => ({ id: ref('k') }),
     useWorkspacePageState: () => page,
     useFoodCatalogueSummary: () => ref({}),
     useKitchenOfferings: (id) => {

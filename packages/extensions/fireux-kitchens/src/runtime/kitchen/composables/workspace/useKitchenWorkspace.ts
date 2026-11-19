@@ -98,7 +98,6 @@ export const useKitchenWorkspace = defineWorkspace(() => {
 
   return {
     data,
-    kitchenName: computed(() => data.value?.name || ''),
     root: computed(() =>
       readId.value && source.root.value?.id === readId.value
         ? source.root.value

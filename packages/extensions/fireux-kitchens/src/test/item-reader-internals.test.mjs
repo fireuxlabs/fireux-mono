@@ -431,6 +431,7 @@ function components(app) {
     'KitchenWorkspaceMenuItemsCollection',
     'KitchenWorkspaceMenuItemsCardsCell',
     'MenuItemDisplay',
+    'Preview',
     'UPagination',
     'USelect',
     'UCheckbox',
@@ -658,21 +659,18 @@ test('actual Item collection hides premature counts, categories, filters and Cre
   assert.match(html, /Count: 0/)
   assert.match(html, /No dishes yet/)
 })
-test('Items landing searches one Kitchen read and links directly to Octopus Roll', async () => {
+test('Items landing lists one Kitchen read and links directly to Octopus Roll', async () => {
   const path = 'kitchen/components/Workspace/Menu/Items/Index.vue'
   let reads = 0
   const state = load(
     path,
-    '({ query, results, outcome, storageKitchenId, dishes, itemCataloguePath })',
+    '({ items, outcome, storageKitchenId, error, itemCataloguePath })',
     {
       computed,
-      ref,
-      watch: () => {},
       itemCataloguePath,
       useKitchenWorkspaceItems: () => {
         reads++
         return {
-          kitchenId: ref('la-tapberne'),
           storageKitchenId: ref('la-tapberne'),
           outcome: ref('ready'),
           dishes: ref([
@@ -683,12 +681,10 @@ test('Items landing searches one Kitchen read and links directly to Octopus Roll
       },
     }
   )
-  state.query.value = 'octopus'
   assert.equal(reads, 1)
   const app = createSSRApp({ setup: () => state, render: template(path) })
   app.component('WorkspacePageHeader', { render: () => null })
   app.component('FireState', { render: () => null })
-  app.component('UInput', { render: () => null })
   app.component('NuxtLink', {
     props: ['to'],
     setup:
@@ -701,22 +697,191 @@ test('Items landing searches one Kitchen read and links directly to Octopus Roll
     html,
     /href="\/workspace\/kitchen\/menu\/items\/octopus-roll">Octopus Roll/
   )
-  assert.doesNotMatch(html, /Tortilla/)
+  assert.match(html, /Tortilla de Patata/)
+  assert.doesNotMatch(html, /Search items/)
 })
 
-test('actual Item record error does not render not-found, old read header or editable management', async () => {
-  const html = await render(
-    'kitchen/components/Workspace/Menu/Items/Detail/Index.vue',
-    recordView({ item: null, outcome: 'error', error: new Error('Failed') })
+test('the Item route reads once for the read surfaces', async () => {
+  const route = 'pages/workspace/kitchen/menu/items/[dishId].vue'
+  const path = 'kitchen/components/Workspace/Menu/Items/Detail/Index.vue'
+  const publicItem = 'menu/components/ItemDetail.vue'
+  const renderRecord = (item, menu = '', manifest = null) => {
+    let reads = 0
+    const app = createSSRApp({
+      setup: () =>
+        load(route, '({ item, route, data })', {
+          definePageMeta: () => {},
+          useRoute: () => ({ query: { menu } }),
+          useRouteParam: () => ref('octopus-roll'),
+          useKitchenWorkspace: () => ({
+            outcome: ref('ready'),
+            id: ref('la-tapberne'),
+            data: ref({ slug: 'la-tapberne' }),
+          }),
+          useKitchenItemRead: (kitchenId, itemId) => {
+            reads += 1
+            assert.equal(kitchenId(), 'la-tapberne')
+            assert.equal(itemId.value, 'octopus-roll')
+            return { item: ref(item) }
+          },
+        }),
+      render: template(route),
+    })
+    app.component('KitchenWorkspaceMenuItemsDetail', {
+      props: ['item', 'menu', 'kitchenSlug'],
+      render: template(path),
+    })
+    app.component('WorkspaceItemDetail', {
+      props: ['item'],
+      render: template(
+        'kitchen/components/Workspace/Menu/Items/Detail/WorkspaceItemDetail.vue'
+      ),
+    })
+    app.component('UCard', {
+      setup:
+        (_, { slots }) =>
+        () =>
+          h('div', [slots.header?.(), slots.default?.()]),
+    })
+    app.component('KitchenMenuItemDetail', {
+      props: ['item', 'menu', 'kitchenSlug'],
+      setup: (props) =>
+        load(
+          publicItem,
+          '({ presentation, sections, copy, className, styleVars, pending })',
+          {
+            computed,
+            defineProps: () => props,
+            useMenu: (id, options) => {
+              assert.equal(id(), menu)
+              assert.equal(options.routeScope().kitchenSlug, 'la-tapberne')
+              return { manifest: ref(manifest), pending: ref(false) }
+            },
+            directoryMenuRouteScope: (kitchenSlug) => ({
+              kind: 'directory',
+              kitchenSlug,
+            }),
+            useKitchenOfferingNow: () => ({ now: ref(new Date()) }),
+            promotionPricedSections: (sections) => sections,
+            resolveMenuBrowseSurfaceCopy: () => ({}),
+            useMenuThemeSurface: ({ theme }) => ({
+              className: ref('menu-theme--light'),
+              styleVars: computed(() => ({
+                '--menu-bg': theme()?.palette.canvas,
+              })),
+            }),
+          }
+        ),
+      render: template(publicItem),
+    })
+    app.component('MenuBrowseCatalogue', {
+      props: [
+        'sections',
+        'copy',
+        'currencyCode',
+        'currencyFormat',
+        'showCurrency',
+        'showItemImages',
+      ],
+      setup: (props) => () =>
+        h(
+          'div',
+          {
+            'data-currency': props.currencyCode,
+            'data-images': String(props.showItemImages),
+          },
+          props.sections.flatMap((section) =>
+            section.items.map((item) => item.name)
+          )
+        ),
+    })
+    app.component('ItemPhoto', {
+      props: ['src', 'alt'],
+      setup: (props) => () => h('img', { src: props.src, alt: props.alt }),
+    })
+    app.component('MenuItemImage', {
+      props: ['imageUrl'],
+      setup: (props) => () => h('img', { src: props.imageUrl, alt: '' }),
+    })
+    app.component('MenuItemDisplay', {
+      props: [
+        'as',
+        'nameId',
+        'nameTo',
+        'announcePrice',
+        'promotionLabel',
+        'name',
+        'description',
+        'price',
+        'headingTag',
+        'imageUrl',
+      ],
+      render: template('menu/components/ItemDisplay.vue'),
+    })
+    return renderToString(app).then((html) => {
+      assert.equal(reads, 1)
+      return html
+    })
+  }
+  assert.equal(await renderRecord(null), '<!--v-if-->')
+  const html = await renderRecord({
+    id: 'octopus-roll',
+    name: 'Octopus Roll',
+    description: 'La Tap special',
+  })
+  assert.doesNotMatch(html, /<pre>|Item data/)
+  assert.match(html, /class="menu-item-detail"/)
+  assert.doesNotMatch(html, /Workspace list/)
+  assert.match(
+    html,
+    /Workspace item<\/h2>[\s\S]*<dt>Name<\/dt><dd>Octopus Roll<\/dd>/
   )
-  assert.match(html, /Item unavailable/)
-  assert.doesNotMatch(html, /not found|Item actions|Soup/)
-  const empty = await render(
-    'kitchen/components/Workspace/Menu/Items/Detail/Index.vue',
-    recordView({ item: null, outcome: 'empty' })
+  assert.match(html, /<dt>Description<\/dt><dd>La Tap special<\/dd>/)
+  assert.match(
+    html,
+    /<article[\s\S]*<h1[^>]*>[\s\S]*?Octopus Roll[\s\S]*?<\/h1>[\s\S]*La Tap special[\s\S]*<\/article>/
   )
-  assert.match(empty, /Item not found/)
-  assert.doesNotMatch(empty, /Specification editor/)
+  assert.doesNotMatch(html, /menu-browse-item__price/)
+  assert.doesNotMatch(html, /<img/)
+  assert.doesNotMatch(html, /<dt>Photo<\/dt>/)
+  const withImage = await renderRecord({
+    id: 'octopus-roll',
+    name: 'Octopus Roll',
+    image: '/octopus-roll.jpg',
+  })
+  assert.equal([...withImage.matchAll(/src="\/octopus-roll.jpg"/g)].length, 2)
+  assert.match(withImage, /<dt>Photo<\/dt>/)
+  const placed = { id: 'picanha-smashburger', name: 'Kitchen burger' }
+  const menu = 'comida-casera-2'
+  const manifest = {
+    source: { kitchenSlug: 'la-tapberne', menuSlug: menu },
+    presentation: {
+      currencyCode: 'CHF',
+      showItemImages: false,
+      theme: { palette: { canvas: '#171717' } },
+    },
+    content: {
+      sections: [
+        {
+          id: 'onlyhands',
+          items: [
+            { dishId: placed.id, name: 'Picanha Smashburger' },
+            { dishId: 'other', name: 'Different Item' },
+          ],
+        },
+      ],
+    },
+  }
+  const themed = await renderRecord(placed, menu, manifest)
+  assert.match(themed, /--menu-bg:#171717/)
+  assert.match(
+    themed,
+    /data-currency="CHF" data-images="false">Picanha Smashburger/
+  )
+  assert.doesNotMatch(themed, /Different Item|class="menu-item-detail"/)
+  const missing = await renderRecord(placed, 'other-menu', manifest)
+  assert.match(missing, /Item unavailable on this menu/)
+  assert.doesNotMatch(missing, /Picanha Smashburger/)
 })
 test('Item linked read perspectives bind exact ready storage owner instead of remembered Kitchen selection', () => {
   const owner = {

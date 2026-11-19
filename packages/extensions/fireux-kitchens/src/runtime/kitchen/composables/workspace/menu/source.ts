@@ -54,7 +54,6 @@ export function createKitchenMenuOverview(
   onScopeDispose(() => page.publish({ derived: { outcome: 'idle' } }))
   return {
     kitchenId,
-    kitchenName: workspace.kitchenName,
     storageKitchenId,
     timezone: source.timezone,
     catalogue,

@@ -7,6 +7,7 @@
     @activate="emit('action')"
   >
     <KitchenWorkspaceMenuItemsPhoto
+      v-if="imageUrl"
       :src="imageUrl"
       :alt="title || 'Item'"
       class="item-card__image"

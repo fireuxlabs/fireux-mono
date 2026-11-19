@@ -66,7 +66,7 @@ function fixture() {
     'prepWorkspaceKey,requirePrepWorkspace',
     Vue
   )
-  const kitchenName = Vue.ref('La Tap')
+  const kitchen = Vue.ref({ name: 'La Tap' })
   const kitchenOutcome = Vue.ref('ready')
   const menuOutcome = Vue.ref('empty')
   const selectedId = Vue.ref('k')
@@ -92,7 +92,7 @@ function fixture() {
     error: Vue.ref(null),
   }
   const useKitchenWorkspace = () => ({
-    kitchenName,
+    data: kitchen,
     outcome: kitchenOutcome,
     id: selectedId,
   })
@@ -200,7 +200,7 @@ function fixture() {
     prepChildren,
     prepInputs,
     prepAcquisitions,
-    kitchenName,
+    kitchen,
     kitchenOutcome,
     selectedId,
     publications,
@@ -241,7 +241,7 @@ test('Menu mounts one state object; every child getter reuses it and the exact c
     entrance.description.value,
     "Manage La Tap's menus, items, promotions and services"
   )
-  f.kitchenName.value = 'Other kitchen'
+  f.kitchen.value = { name: 'Other kitchen' }
   f.selectedId.value = 'other'
   await Vue.nextTick()
   assert.match(entrance.description.value, /Other kitchen/)
@@ -275,10 +275,10 @@ test('Prep mounts one state object; children reuse reactive readiness and parent
   assert.equal(children[0].ready.value, true)
   assert.equal(children[0].createTo, '/workspace/kitchen/prep/recipes')
   f.kitchenOutcome.value = 'pending'
-  f.kitchenName.value = 'Another'
+  f.kitchen.value = null
   await Vue.nextTick()
   assert.equal(children[0].ready.value, false)
-  assert.match(entrance.description.value, /Another/)
+  assert.match(entrance.description.value, /your Kitchen's/)
   assert.deepEqual(f.counts(), {
     menuReads: 0,
     overviewReads: 0,

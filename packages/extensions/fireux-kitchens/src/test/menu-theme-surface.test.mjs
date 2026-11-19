@@ -4,6 +4,10 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, toValue } from 'vue'
+import {
+  menuAppTheme,
+  menuDisplayTokens,
+} from '../runtime/menu/utils/menu-display-tokens.ts'
 
 const source = readFileSync(
   new URL(
@@ -13,14 +17,15 @@ const source = readFileSync(
   'utf8'
 )
   .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+  .replace(/^export \{[^}]+\} from ['"][^'"]+['"];?\n/gm, '')
   .replace(/^export /gm, '')
 
 test('page canvas cannot export Menu brand tokens into the host App', () => {
   let head
   const useSurface = compileFunction(
     `${stripTypeScriptTypes(source)}; return useMenuThemeSurface`,
-    ['computed', 'toValue', 'useHead']
-  )(computed, toValue, (value) => {
+    ['computed', 'toValue', 'menuAppTheme', 'menuDisplayTokens', 'useHead']
+  )(computed, toValue, menuAppTheme, menuDisplayTokens, (value) => {
     head = value
   })
   const pageCanvas = ref(true)
@@ -56,8 +61,8 @@ test('page canvas cannot export Menu brand tokens into the host App', () => {
 test('unconfigured menus inherit host tokens and a saved Kitchen palette overrides only its surface', () => {
   const useSurface = compileFunction(
     `${stripTypeScriptTypes(source)}; return useMenuThemeSurface`,
-    ['computed', 'toValue', 'useHead']
-  )(computed, toValue, () => {})
+    ['computed', 'toValue', 'menuAppTheme', 'menuDisplayTokens', 'useHead']
+  )(computed, toValue, menuAppTheme, menuDisplayTokens, () => {})
   const themeSource = ref('default')
   const theme = ref({
     palette: {

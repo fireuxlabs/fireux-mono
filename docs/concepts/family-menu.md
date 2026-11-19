@@ -63,8 +63,8 @@ per-date publication feature.
 Kitchen's combined Food & drinks catalogue filters the same Item family by
 `item_kind` through All/Food/Drinks; unknown historical kinds remain under All.
 Menu names do not classify Items. The operator catalogue reads the selected
-Kitchen's items and offers local text search and links to individual records.
-Item detail has two views: Details and Appears on. Preparation specification,
+Kitchen's items and lists links to individual records.
+Item detail shows the Item's read surfaces. Preparation specification,
 prep requirements and Station management belong to Prep & Production; the Menu
 Item route does not acquire their readers. Preparation owns reusable output
 identity in `kitchen/records/prep/preparations/preparation.ts`; Recipe owns inputs, method
@@ -1064,16 +1064,18 @@ selections stay local. Workspace actions alongside the row handle placement
 and navigation to Item editing.
 
 The Items workspace at `/workspace/kitchen/menu/items` reads the selected
-Kitchen's reusable item collection once. Its local search narrows the list,
-and each row opens the Item record for editing.
+Kitchen's reusable item collection once and lists each Item as a link to
+its record. The `[dishId]` route reads the Item once in the selected Kitchen
+and passes the result to Workspace Item detail.
+`WorkspaceItemDetail` shows the Item's name, description and optional photo
+as read-only fields.
+The same detail composes Menu's `components/ItemDetail.vue` directly. A
+`?menu=<slug>` preview reads the selected Kitchen's published Menu and
+renders the matching placements through the public Browse catalogue and theme.
+Ordering retains its Service context.
 
-Menu section rows link directly to the shared Kitchen Item editor, retaining the
-Menu slug and section for return navigation. The detail parent acquires the Item once and provides its live reader through
-`useKitchenItemContext`; field and relationship children require that
-context. The Item's Appears on view retains its existing Menu/section readers,
-hides settled non-matches and links back to the inline builder (or the exact
-daily section). Historical Pricing, Preparation and Specification view links resolve to Details. Shared Item
-identity, image and description edits apply wherever that Item is used; removal
+Menu section rows link directly to the shared Kitchen Item record. Shared Item
+identity, image and description apply wherever that Item is used. Removal
 from a section is distinct from deleting the Item record.
 
 `useMenuSectionItemSelection` consumes the existing Section context and catalogue

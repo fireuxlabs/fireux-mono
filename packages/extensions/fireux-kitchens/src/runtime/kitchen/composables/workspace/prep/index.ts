@@ -5,7 +5,6 @@ import { createPrepSummaries } from './summaries'
 
 function createKitchenPrepWorkspace() {
   const kitchen = useKitchenWorkspace()
-  const { kitchenName } = kitchen
   const kitchenId = computed(() =>
     kitchen.outcome.value === 'ready' ? kitchen.id.value : ''
   )
@@ -28,10 +27,10 @@ function createKitchenPrepWorkspace() {
   const ready = computed(() => kitchen.outcome.value === 'ready')
   const createTo = '/workspace/kitchen/prep/recipes'
 
-  const description = computed(
-    () =>
-      `Manage ${kitchenName.value ? `${kitchenName.value}'s` : "your Kitchen's"} preparations, recipes, ingredients and production`
-  )
+  const description = computed(() => {
+    const name = kitchen.data.value?.name
+    return `Manage ${name ? `${name}'s` : "your Kitchen's"} preparations, recipes, ingredients and production`
+  })
 
   return { description, ready, createTo, summaries, overview }
 }
