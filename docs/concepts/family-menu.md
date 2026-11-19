@@ -62,11 +62,8 @@ per-date publication feature.
 
 Kitchen's combined Food & drinks catalogue filters the same Item family by
 `item_kind` through All/Food/Drinks; unknown historical kinds remain under All.
-Menu names do not classify Items. Type, search, completeness filter, list/grid
-and page are local catalogue state. Older links can initialize those controls.
-The catalogue removes their parameters and retired category parameters from the
-URL. Item record links and return links omit catalogue state. Delayed reads
-preserve the initial page and settled results clamp an obsolete page.
+Menu names do not classify Items. The operator catalogue reads the selected
+Kitchen's items and offers local text search and links to individual records.
 Item detail has two views: Details and Appears on. Preparation specification,
 prep requirements and Station management belong to Prep & Production; the Menu
 Item route does not acquire their readers. Preparation owns reusable output
@@ -1066,10 +1063,9 @@ with Browse, including the Menu palette and public photo preference. Preview
 selections stay local. Workspace actions alongside the row handle placement
 and navigation to Item editing.
 
-The Items workspace at `/workspace/kitchen/menu/items` manages the reusable
-Kitchen catalogue. It can show catalogue photos and metadata, support search
-and filtering, and link to Item identity, pricing and choice editing. These
-tools belong to the catalogue and its detail surfaces.
+The Items workspace at `/workspace/kitchen/menu/items` reads the selected
+Kitchen's reusable item collection once. Its local search narrows the list,
+and each row opens the Item record for editing.
 
 Menu section rows link directly to the shared Kitchen Item editor, retaining the
 Menu slug and section for return navigation. The detail parent acquires the Item once and provides its live reader through

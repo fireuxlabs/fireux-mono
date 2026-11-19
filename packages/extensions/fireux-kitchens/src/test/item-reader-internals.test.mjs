@@ -658,6 +658,52 @@ test('actual Item collection hides premature counts, categories, filters and Cre
   assert.match(html, /Count: 0/)
   assert.match(html, /No dishes yet/)
 })
+test('Items landing searches one Kitchen read and links directly to Octopus Roll', async () => {
+  const path = 'kitchen/components/Workspace/Menu/Items/Index.vue'
+  let reads = 0
+  const state = load(
+    path,
+    '({ query, results, outcome, storageKitchenId, dishes, itemCataloguePath })',
+    {
+      computed,
+      ref,
+      watch: () => {},
+      itemCataloguePath,
+      useKitchenWorkspaceItems: () => {
+        reads++
+        return {
+          kitchenId: ref('la-tapberne'),
+          storageKitchenId: ref('la-tapberne'),
+          outcome: ref('ready'),
+          dishes: ref([
+            { id: 'octopus-roll', name: 'Octopus Roll' },
+            { id: 'tortilla', name: 'Tortilla de Patata' },
+          ]),
+        }
+      },
+    }
+  )
+  state.query.value = 'octopus'
+  assert.equal(reads, 1)
+  const app = createSSRApp({ setup: () => state, render: template(path) })
+  app.component('WorkspacePageHeader', { render: () => null })
+  app.component('FireState', { render: () => null })
+  app.component('UInput', { render: () => null })
+  app.component('NuxtLink', {
+    props: ['to'],
+    setup:
+      (props, { slots }) =>
+      () =>
+        h('a', { href: props.to }, slots.default?.()),
+  })
+  const html = await renderToString(app)
+  assert.match(
+    html,
+    /href="\/workspace\/kitchen\/menu\/items\/octopus-roll">Octopus Roll/
+  )
+  assert.doesNotMatch(html, /Tortilla/)
+})
+
 test('actual Item record error does not render not-found, old read header or editable management', async () => {
   const html = await render(
     'kitchen/components/Workspace/Menu/Items/Detail/Index.vue',
