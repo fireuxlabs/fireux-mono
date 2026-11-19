@@ -67,7 +67,6 @@ export function useItemCatalogue(items: KitchenItemsContext) {
       kind: kind.value,
       search: query.value,
       filter: filter.value,
-      layout: view.value,
       page: page.value,
     }),
   }))
@@ -159,7 +158,11 @@ export function useItemCatalogue(items: KitchenItemsContext) {
         )
       )
         return
-      void router.replace({ path: route.path, query: nextQuery })
+      void router.replace({
+        path: route.path,
+        query: nextQuery,
+        hash: route.hash,
+      })
     },
     { flush: 'post', immediate: true }
   )

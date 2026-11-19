@@ -25,13 +25,12 @@ export function readItemCatalogueQuery(
 }
 
 export function itemCatalogueQuery(
-  state: ItemCatalogueState
+  state: Omit<ItemCatalogueState, 'layout'>
 ): Record<string, string> {
   return {
     ...(state.kind !== 'all' ? { kind: state.kind } : {}),
     ...(state.search ? { search: state.search } : {}),
     ...(state.filter !== 'all' ? { filter: state.filter } : {}),
-    ...(state.layout !== 'list' ? { layout: state.layout } : {}),
     ...(state.page !== 1 ? { page: String(state.page) } : {}),
   }
 }

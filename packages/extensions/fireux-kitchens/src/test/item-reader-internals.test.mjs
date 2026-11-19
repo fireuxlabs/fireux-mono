@@ -893,7 +893,7 @@ const catalogueRows = () =>
     price: 4,
   }))
 
-test('Food & drinks item round trip restores kind, search, filters, layout and page', async () => {
+test('Food & drinks item round trip restores kind, search, filters and page with local layout', async () => {
   const f = workspaceFixture()
   f.settle(catalogueRows())
   const { view, route } = catalogueView(f)
@@ -906,6 +906,7 @@ test('Food & drinks item round trip restores kind, search, filters, layout and p
   await nextTick()
   assert.equal(route.query.page, '2')
   assert.equal(route.query.kind, 'drink')
+  assert.equal(route.query.layout, undefined)
   const link = new URL(
     view.itemLink(view.pageItems.value[0].id),
     'http://localhost'
@@ -921,7 +922,8 @@ test('Food & drinks item round trip restores kind, search, filters, layout and p
   assert.equal(restored.kind.value, 'drink')
   assert.equal(restored.query.value, 'Cola')
   assert.equal(restored.filter.value, 'image')
-  assert.equal(restored.view.value, 'grid')
+  assert.equal(link.searchParams.has('layout'), false)
+  assert.equal(restored.view.value, 'list')
   assert.equal(restored.page.value, 2)
   assert.equal(restored.pageItems.value[0].id, view.pageItems.value[0].id)
   assert.equal(f.state.dishes.value[0].price, 4)
@@ -1057,10 +1059,15 @@ test('default catalogue URLs are clean and preserve unrelated query parameters',
     kind: 'all',
     search: '',
     filter: 'all',
-    layout: 'list',
+    layout: 'grid',
     page: '1',
     group: 'kitchen',
   })
+  await nextTick()
+  assert.deepEqual(route.query, { group: 'kitchen' })
+  assert.equal(view.view.value, 'grid')
+  view.view.value = 'list'
+  view.view.value = 'grid'
   await nextTick()
   assert.deepEqual(route.query, { group: 'kitchen' })
   assert.equal(view.itemLink('tea'), `${itemCataloguePath}/tea`)
