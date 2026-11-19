@@ -156,7 +156,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useMenuSectionsEditor } from '../../../../../composables/workspace/menus/useMenuSectionsEditor'
 import { useRoute, useRouter } from '#imports'
 const route = useRoute()
@@ -186,11 +186,19 @@ watch(
     openSection.value = ''
   }
 )
-watch(openSection, (section) => {
-  if (route.query.section !== (section || undefined))
-    void router.replace({
-      query: { ...route.query, section: section || undefined },
-    })
+// Return links can open a section once. Browsing sections stays local.
+onMounted(() => {
+  watch(
+    () => route.query.section,
+    (section) => {
+      if (typeof section !== 'string') return
+      openSection.value = section
+      const query = { ...route.query }
+      delete query.section
+      void router.replace({ path: route.path, query, hash: route.hash })
+    },
+    { immediate: true }
+  )
 })
 </script>
 

@@ -1,4 +1,4 @@
-import { readRecipeChanges } from '../runtime/kitchen/recipe/changes.ts'
+import { readRecipeChanges } from '../runtime/recipe/utils/changes.ts'
 import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
 import test from 'node:test'
 import assert from 'node:assert/strict'
@@ -190,7 +190,7 @@ function fixture({ wait, retry } = {}) {
     )
   )
   dependencies.requireRecipeDefinitionReferences = load(
-    '../runtime/kitchen/recipe/server/references.ts',
+    '../runtime/kitchen/server/recipes/references.ts',
     ['requireRecipeDefinitionReferences'],
     dependencies
   ).requireRecipeDefinitionReferences

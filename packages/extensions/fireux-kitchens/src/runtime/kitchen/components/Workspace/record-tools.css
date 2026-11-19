@@ -1,0 +1,20 @@
+.kitchen-record-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing);
+  padding-block-end: calc(var(--spacing) * 2);
+  border-bottom: 1px solid var(--ui-border);
+}
+.kitchen-record-assistant {
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+}
+.kitchen-record-assistant summary {
+  cursor: pointer;
+  color: var(--ui-text);
+  font-weight: var(--font-weight-medium);
+}
+.kitchen-record-assistant[open] summary {
+  margin-bottom: calc(var(--spacing) * 3);
+}

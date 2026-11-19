@@ -261,8 +261,8 @@ owner leaving Kitchen or unpublishing the Recipe. Kitchen owns its association
 and local Preparation bindings; it does not own or automatically edit the source
 Recipe. A separate adapted Recipe is also User-owned.
 
-Current source still lives at `kitchen/recipe/`, with Kitchen-scoped reads and
-commands. Complete these bounded steps before claiming the independent target:
+Recipe models and validation now live at `runtime/recipe/`. The operator slice
+uses `kitchen/workspace/prep/recipes/`; reads and commands remain Kitchen-scoped. Complete these bounded steps before claiming the independent target:
 
 1. Establish an explicit User-owner mapping for existing Recipes. Retain exact
    current scope and provenance; creator/import stamps do not assign ownership.

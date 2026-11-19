@@ -19,12 +19,7 @@
       color="neutral"
       :title="selectedKitchen ? 'Menu not found' : 'Kitchen not found'"
     />
-    <div
-      v-else
-      :key="`${recordScope}/${menu.id}`"
-      class="workspace-surface"
-      :aria-label="viewLabel"
-    >
+    <div v-else :key="`${recordScope}/${menu.id}`" class="workspace-surface">
       <UAlert
         v-if="!canWrite"
         color="neutral"
@@ -41,16 +36,18 @@
         description="This Menu is no longer public. Restore it to draft in Settings when you need it again."
         color="neutral"
       />
-      <KitchenMenuMenusDetailSettings v-if="view === 'details'" />
-      <template v-else-if="view === 'content'">
-        <KitchenMenuMenusDetailDocument
-          v-if="menu.format === 'document' || menu.doc?.url"
-        />
-        <KitchenMenuMenusSectionsCollection v-else />
-      </template>
-      <KitchenMenuMenusPublication v-else-if="view === 'publishing'" />
-      <KitchenMenuMenusDetailSource v-else />
-      <details class="menu-record-ai">
+      <section :key="view" :aria-label="viewLabel" class="menu-record-panel">
+        <KitchenMenuMenusDetailSettings v-if="view === 'details'" />
+        <template v-else-if="view === 'content'">
+          <KitchenMenuMenusDetailDocument
+            v-if="menu.format === 'document' || menu.doc?.url"
+          />
+          <KitchenMenuMenusSectionsCollection v-else />
+        </template>
+        <KitchenMenuMenusPublication v-else-if="view === 'publishing'" />
+        <KitchenMenuMenusDetailSource v-else />
+      </section>
+      <details class="kitchen-record-assistant">
         <summary>Ask KitchenAI about this menu</summary>
         <WorkspaceKitchenAIFocus
           focus="kitchen-ai.menu.menus"
@@ -103,17 +100,25 @@ const viewLabel = computed(
 <style src="../../../../../menu/assets/styles/menu-editor.css"></style>
 
 <style scoped>
-.menu-record-ai {
-  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius);
+@import '../../../Workspace/record-tools.css';
+
+.menu-record-panel {
+  min-width: 0;
+  min-block-size: min(16rem, 38vh);
 }
-.menu-record-ai summary {
-  cursor: pointer;
-  color: var(--ui-text);
-  font-weight: var(--font-weight-medium);
+
+@media (prefers-reduced-motion: no-preference) {
+  .menu-record-panel {
+    animation: menu-panel-enter 140ms ease-out;
+  }
 }
-.menu-record-ai[open] summary {
-  margin-bottom: calc(var(--spacing) * 3);
+
+@keyframes menu-panel-enter {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>

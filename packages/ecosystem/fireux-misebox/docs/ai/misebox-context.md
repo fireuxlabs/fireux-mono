@@ -762,7 +762,7 @@ Rules and deployment readiness are separate from these command checks. Removal
 checks existing references in its transaction; Recipe and Prep creation/update now validate their submitted Ingredient
 associations in the same transaction. Recipe deletion checks incoming Dish and
 Prep Item references through the same preparation-reference owner. `kitchen-crud-boundaries.test.mjs` verifies membership-bound
-authority and the Recipe update allowlist. Recipe create and update share `recipe/changes.ts` for canonical identity text,
+authority and the Recipe update allowlist. Recipe create and update share `recipe/utils/changes.ts` for canonical identity text,
 output, expected yield, inputs, method and source. Retired translation/preparation
 authoring fields, identity, Kitchen ownership and unknown fields are rejected
 before credentials; existing historical fields remain untouched by sparse updates.
@@ -934,9 +934,9 @@ requested identity grants no access.
   The joined display profile is named `presentation`, so it cannot replace the
   canonical Identity map. See `kitchen-identity-shape.test.mjs`.
   `read-kitchen-document.ts` projects current Kitchen fields for exact and
-  membership-collection reads. Stored flat identity fields, currency, management,
-  integrations and historical service arrays are omitted from this view. Nested
-  Identity, stamps and current configuration still require valid values. Verify
+  membership-collection reads. Server-owned currency, management and integrations
+  are omitted from this view. Retired flat identity fields and root service arrays
+  are rejected. Nested Identity, stamps and current configuration require valid values. Verify
   `kitchen-document.test.mjs` and `kitchen-read.test.mjs`. Invalid settled
   records produce errors and clear displayed data. Public summaries remain
   separate, stamp-free projections. `archived` remains a supported Kitchen status.
@@ -2395,7 +2395,7 @@ unconfigured until the operator supplies or approves them. La Tap's original
 
 `fireux-kitchens/runtime/kitchen/records/prep/preparations/preparation.ts` owns Preparation:
 the Kitchen-owned Record identity of a reusable output, including components
-and finished dishes. `kitchen/recipe/models/model.ts` owns Recipe: output reference, purchased
+and finished dishes. `runtime/recipe/models/model.ts` owns Recipe: output reference, purchased
 Ingredient or Preparation inputs, quantities, method and expected yield. A dish
 is currently a role of an output, not a second canonical Entity.
 
@@ -2437,8 +2437,8 @@ historical production fields. Recipe owns output, expected yield, inputs, ordere
 method and optional source alongside its identity text. Native controls remain
 with their focused Inputs/Method children; they own no reads or commands.
 
-`utils/preparation-changes.ts` and `recipe/changes.ts` validate their owned patches.
-`recipe/editor.ts` converts form values and sends sparse deltas, so untouched
+`utils/preparation-changes.ts` and `recipe/utils/changes.ts` validate their owned patches.
+`kitchen/workspace/prep/recipes/form.ts` converts form values and sends sparse deltas, so untouched
 historical data is not rewritten. Recipe read fallback is per field: saving a
 method does not hide untouched historical inputs or yield. Explicit null yield
 means cleared, not a fallback to the old value. An explicit output also takes

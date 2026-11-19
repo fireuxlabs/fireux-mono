@@ -175,7 +175,7 @@ const origin = menuWebsiteOrigin(useRequestURL().origin, fireux.siteUrl)
 const routeInput = computed(() => ({
   scope: fireux.isTenant
     ? tenantMenuRouteScope()
-    : directoryMenuRouteScope(selectedKitchen.value?.slug),
+    : directoryMenuRouteScope(selectedKitchen.value?.identity.slug),
   menuId: menu.value?.slug,
 }))
 const publicUrl = computed(() => {

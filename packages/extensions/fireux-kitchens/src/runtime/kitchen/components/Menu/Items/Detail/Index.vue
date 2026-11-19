@@ -31,8 +31,11 @@
     <p v-else-if="pending" role="status">Loading Item…</p>
     <UAlert v-else-if="!item" color="neutral" title="Item not found" />
     <template v-else>
-      <WorkspacePageHeader :title="item.name" variant="child">
-        <template #actions>
+      <header class="menu-record-heading">
+        <div class="menu-record-identity">
+          <h1 class="menu-record-identity__name">{{ item.name }}</h1>
+        </div>
+        <div class="menu-record-identity__meta">
           <UButton
             :to="menuReturn || catalogueReturn"
             :label="menuReturn ? 'Back to Menu section' : 'Back to Items'"
@@ -48,14 +51,9 @@
             variant="ghost"
             @click="manage = true"
           />
-        </template>
-      </WorkspacePageHeader>
-      <WorkspaceKitchenAIFocus
-        focus="kitchen-ai.menu.items"
-        label="Items"
-        context-label="Menu"
-      />
-      <nav aria-label="Item views" class="item-tabs">
+        </div>
+      </header>
+      <nav aria-label="Item views" class="kitchen-record-navigation">
         <UButton
           v-for="item in views"
           :key="item.id"
@@ -75,6 +73,14 @@
         <KitchenMenuItemsPricing />
       </div>
       <ItemMenus v-if="view === 'menus'" />
+      <details class="kitchen-record-assistant">
+        <summary>Ask KitchenAI about this item</summary>
+        <WorkspaceKitchenAIFocus
+          focus="kitchen-ai.menu.items"
+          label="Items"
+          context-label="Menu"
+        />
+      </details>
       <UModal v-model:open="manage" title="Item actions">
         <template #body
           ><KitchenMenuItemsDelete :remove="removeItem" />
@@ -184,6 +190,8 @@ watchEffect(() => {
 })
 </script>
 <style scoped>
+@import '../../record-detail.css';
+@import '../../../Workspace/record-tools.css';
 .item-workspace {
   display: grid;
   min-width: 0;
@@ -191,10 +199,5 @@ watchEffect(() => {
 }
 .item-details-panels {
   align-items: start;
-}
-.item-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing);
 }
 </style>

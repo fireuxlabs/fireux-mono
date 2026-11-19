@@ -226,7 +226,7 @@ additional card roles solely to mirror its root Entity.
 Recipe and Preparation currently use the supplied-data
 [`Workspace/Prep/Library.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Prep/Library.vue)
 for collection/detail presentation and links. The host owns acquisition; the
-[Recipe editor](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Prep/Recipes/Editor.vue)
+[Recipe editor](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/workspace/prep/recipes/Editor.vue)
 owns its supported authored-definition workflow through the existing command
 lifecycle. There is no current standalone Recipe or Preparation Cards family;
 do not recreate retired Cell/Preparation/PrepItems controls merely for symmetry.

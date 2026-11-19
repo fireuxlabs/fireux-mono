@@ -116,15 +116,7 @@ function isConfiguration(
 
 // These stored fields are outside the Workspace Kitchen model. Server owners
 // can still use the original document (for example, its management scope).
-const omittedWorkspaceFields = [
-  'slug',
-  'status',
-  'visibility',
-  'identity_source',
-  'currency',
-  'management',
-  'integrations',
-]
+const omittedWorkspaceFields = ['currency', 'management', 'integrations']
 
 function isIdentity(value: unknown): value is KitchenIdentity {
   return (
@@ -152,13 +144,11 @@ function isGuidanceIds(value: unknown): value is string[] {
   )
 }
 
-/** Read the Workspace Kitchen without borrowing Place facts or legacy defaults. */
+/** Read the Workspace Kitchen without borrowing Place facts. */
 export function readKitchenDocument(raw: unknown, id: string): Kitchen | null {
   if (!isFirestoreDocumentId(id) || !isRecord(raw)) return null
   const kitchen = { ...raw }
   for (const field of omittedWorkspaceFields) delete kitchen[field]
-  // Historical service lists do not supply current service presentation settings.
-  if (Array.isArray(kitchen.services)) delete kitchen.services
 
   if (
     !hasFields(kitchen, [

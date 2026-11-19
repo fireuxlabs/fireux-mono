@@ -1,5 +1,5 @@
-import type { Recipe } from './models/model'
-import { readRecipeChanges, type RecipeChanges } from './changes'
+import type { Recipe } from '../../../../recipe/models/model'
+import { readRecipeChanges, type RecipeChanges } from '../../../../recipe/utils/changes'
 export function recipeDraft(recipe: Recipe) {
   return {
     name: recipe.name,

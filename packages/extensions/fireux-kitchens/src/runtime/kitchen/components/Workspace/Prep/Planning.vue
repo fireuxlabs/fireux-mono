@@ -1,6 +1,22 @@
 <template>
   <div class="workspace-surface">
-    <UPageHeader :title="title" :description="description" />
+    <WorkspacePageHeader
+      :title="title"
+      :description="description"
+      variant="child"
+    />
+    <nav aria-label="Production views" class="kitchen-record-navigation">
+      <UButton
+        v-for="tab in tabs"
+        :key="tab.view"
+        :to="tab.to"
+        :label="tab.label"
+        :icon="tab.icon"
+        :color="view === tab.view ? 'primary' : 'neutral'"
+        :variant="view === tab.view ? 'soft' : 'ghost'"
+        :aria-current="view === tab.view ? 'page' : undefined"
+      />
+    </nav>
     <p class="fx-type-caption">
       Saved in this browser for your account and kitchen.
     </p>
@@ -11,10 +27,7 @@
 
     <template v-if="ready">
       <UCard v-if="view === 'plan'">
-        <form
-          class="workspace-surface workspace-surface--compact"
-          @submit.prevent="addTask"
-        >
+        <form class="prep-plan-form" @submit.prevent="addTask">
           <UFormField label="Service date"
             ><UInput v-model="date" type="date" required
           /></UFormField>
@@ -72,25 +85,14 @@
         </form>
       </UCard>
     </template>
-    <div>
-      <UButton
-        v-if="view === 'plan'"
-        to="/workspace/kitchen/prep/batches"
-        label="View batches"
-        variant="soft"
+    <details class="kitchen-record-assistant">
+      <summary>Ask KitchenAI about {{ title }}</summary>
+      <WorkspaceKitchenAIFocus
+        :focus="`kitchen-ai.prep.${view}`"
+        :label="title"
+        context-label="Prep"
       />
-      <UButton
-        v-else
-        to="/workspace/kitchen/prep/plan"
-        label="Open prep plan"
-        variant="soft"
-      />
-    </div>
-    <WorkspaceKitchenAIFocus
-      :focus="`kitchen-ai.prep.${view}`"
-      :label="title"
-      context-label="Prep"
-    />
+    </details>
   </div>
 </template>
 <script setup lang="ts">
@@ -100,6 +102,20 @@ import { usePrepProduction } from '../../../composables/workspace/prep/usePrepPr
 const props = withDefaults(defineProps<{ view?: 'plan' | 'batches' }>(), {
   view: 'plan',
 })
+const tabs = [
+  {
+    view: 'plan',
+    label: 'Prep plan',
+    to: '/workspace/kitchen/prep/plan',
+    icon: 'i-lucide-clipboard-list',
+  },
+  {
+    view: 'batches',
+    label: 'Batches',
+    to: '/workspace/kitchen/prep/batches',
+    icon: 'i-lucide-layers',
+  },
+]
 const { tasks, ready, error, add, complete } = usePrepProduction()
 const title = computed(() => (props.view === 'plan' ? 'Prep plan' : 'Batches'))
 const description = computed(() =>
@@ -123,3 +139,14 @@ function addTask() {
   }
 }
 </script>
+
+<style scoped>
+@import '../record-tools.css';
+
+.prep-plan-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  align-items: end;
+  gap: calc(var(--spacing) * 3);
+}
+</style>

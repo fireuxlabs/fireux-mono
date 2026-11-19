@@ -17,10 +17,7 @@ const compileFunction = (source, args = []) => {
   )
 }
 import { computed, ref, watch, toRef, compile, createSSRApp, h } from 'vue'
-import {
-  readItemChoiceGroups,
-  priceItemChoices,
-} from '../runtime/kitchen/utils/item-choices.ts'
+import { useMenuItemChoicePreview } from '../runtime/menu/composables/useMenuItemChoicePreview.ts'
 import { renderToString } from 'vue/server-renderer'
 const base = new URL('../runtime/kitchen/components/', import.meta.url)
 const read = (path) => readFileSync(new URL(path, base), 'utf8')
@@ -227,8 +224,7 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
           'ref',
           'watch',
           'defineProps',
-          'readItemChoiceGroups',
-          'priceItemChoices',
+          'useMenuItemChoicePreview',
           'formatCurrencyAmount',
         ]
       )(
@@ -236,8 +232,7 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
         ref,
         watch,
         () => props,
-        readItemChoiceGroups,
-        priceItemChoices,
+        useMenuItemChoicePreview,
         formatCurrencyAmount
       ),
     render: compile(template(itemSource)),

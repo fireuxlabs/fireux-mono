@@ -3,7 +3,7 @@ import { useKitchenChildCollection } from '../../useKitchenChildCollection'
 import { useIngredientCollection } from '../../../../ingredient/composables/useIngredientCollection'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenPreparationsRead } from '../../preparations/useKitchenPreparationsRead'
-import { useKitchenRecipesRead } from '../../../recipe/composables/useKitchenRecipesRead'
+import { useKitchenRecipesRead } from '../../../workspace/prep/recipes/read'
 
 export function useKitchenWorkspacePrepLibrary(
   view: MaybeRefOrGetter<'preparations' | 'recipes'>

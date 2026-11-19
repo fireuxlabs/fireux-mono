@@ -28,7 +28,7 @@ function load(path, result, deps = {}) {
   )(...Object.values(deps))
 }
 const preparationPath = 'composables/preparations/useKitchenPreparationsRead.ts'
-const recipePath = 'recipe/composables/useKitchenRecipesRead.ts'
+const recipePath = 'workspace/prep/recipes/read.ts'
 const { normalizePreparation } = load(
   preparationPath,
   '({normalizePreparation})'
@@ -285,5 +285,67 @@ test('Prep library coordinates one reader graph, gates Ingredient inputs by view
     preparations: 1,
     recipes: 1,
   })
+  scope.stop()
+})
+
+test('Preparations filters by name or description and keeps each result tied to its record and recipes', () => {
+  const props = {
+    preparations: [
+      { id: 'roll-sauce', name: 'Sauce', description: 'For the octopus roll' },
+      { id: 'aioli', name: 'Aioli', description: 'Garlic mayonnaise' },
+    ],
+    recipes: [
+      { id: 'r1', output_preparation_id: 'aioli', inputs: [] },
+      { id: 'r2', inputs: [] },
+    ],
+    recipeLinks: [
+      { preparationId: 'aioli', recipeId: 'r1' },
+      { preparationId: 'aioli', recipeId: 'r2' },
+    ],
+    view: 'preparations',
+    selectedId: '',
+  }
+  const scope = effectScope()
+  const { query, visible } = scope.run(() => {
+    const recipeCount = load(
+      'components/Workspace/Prep/Library.vue',
+      'recipeCount',
+      {
+        computed,
+        ref,
+        watch,
+        defineProps: () => props,
+        withDefaults: (value) => value,
+      }
+    )
+    return load(
+      'components/Workspace/Prep/Preparations/Collection.vue',
+      '({query,visible})',
+      {
+        computed,
+        ref,
+        defineProps: () => ({ ...props, recipeCount }),
+      }
+    )
+  })
+  assert.deepEqual(
+    visible.value.map(({ id, recipeCount }) => [id, recipeCount]),
+    [
+      ['aioli', 2],
+      ['roll-sauce', 0],
+    ]
+  )
+  query.value = '  OCTOPUS '
+  assert.deepEqual(
+    visible.value.map(({ id }) => id),
+    ['roll-sauce']
+  )
+  query.value = 'aioli'
+  assert.deepEqual(
+    visible.value.map(({ id }) => id),
+    ['aioli']
+  )
+  query.value = 'missing'
+  assert.equal(visible.value.length, 0)
   scope.stop()
 })

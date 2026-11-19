@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { useKitchenWorkspacePrepRecipes } from '../../../../composables/workspace/prep/children'
-import { overviewSummary } from '../../../../utils/overview-summary'
+import { useKitchenWorkspacePrepRecipes } from '../../../composables/workspace/prep/children'
+import { overviewSummary } from '../../../utils/overview-summary'
 
 export function useKitchenWorkspacePrepRecipesOverview() {
   const { summary } = useKitchenWorkspacePrepRecipes()

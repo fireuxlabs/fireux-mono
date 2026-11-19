@@ -17,16 +17,11 @@ const canonical = (id = 'kitchen') => ({
   created: structuredClone(stamp),
 })
 
-const mixedStoredKitchen = (id) => ({
+const storedKitchenWithServerFields = (id) => ({
   ...canonical(id),
-  slug: 'old-slug',
-  status: 'inactive',
-  visibility: false,
-  identity_source: 'place',
   currency: 'CHF',
   management: { mode: 'app', app_id: 'app' },
   integrations: {},
-  services: [{ name: 'Old service' }],
 })
 
 test('Stored Kitchen preserves audited creation, optional update/source and declared capability configuration', () => {
@@ -72,8 +67,8 @@ test('Stored Kitchen preserves audited creation, optional update/source and decl
   assert.equal(Object.hasOwn(readKitchenDocument(stored, id), 'updated'), false)
 })
 
-test('Workspace reads return only current Kitchen fields from mixed stored documents', () => {
-  const raw = mixedStoredKitchen('kitchen')
+test('Workspace reads exclude server-owned fields and reject retired storage fields', () => {
+  const raw = storedKitchenWithServerFields('kitchen')
   const original = structuredClone(raw)
   assert.deepEqual(readKitchenDocument(raw, raw.id), canonical(raw.id))
   assert.deepEqual(raw, original)
@@ -87,6 +82,11 @@ test('Workspace reads return only current Kitchen fields from mixed stored docum
     { ...raw, identity: { ...raw.identity, visibility: null } },
     { ...raw, services: { item_images: 'no' } },
     { ...raw, unknown: true },
+    { ...raw, slug: raw.identity.slug },
+    { ...raw, status: raw.identity.status },
+    { ...raw, visibility: raw.identity.visibility },
+    { ...raw, identity_source: 'place' },
+    { ...raw, services: [{ name: 'Old service' }] },
   ])
     assert.equal(readKitchenDocument(invalid, raw.id), null)
 })
@@ -212,7 +212,7 @@ function targetsHarness() {
 
 test('Membership Kitchen collection masks malformed roots, recovers and ignores revoked bindings', () => {
   const h = targetsHarness()
-  h.kitchen.docs.value = [mixedStoredKitchen('a'), canonical('b')]
+  h.kitchen.docs.value = [storedKitchenWithServerFields('a'), canonical('b')]
   assert.equal(h.state.outcome.value, 'ready')
   assert.equal(h.state.count.value, 2)
   assert.deepEqual(h.options[1].ids.value, ['a', 'b'])

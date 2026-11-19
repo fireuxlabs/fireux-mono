@@ -1,8 +1,8 @@
 import { createError } from 'h3'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
-import { requireKitchenIngredientReferences } from '../../server/core/preparation-references'
-import type { RecipeChanges } from '../changes'
+import { requireKitchenIngredientReferences } from '../core/preparation-references'
+import type { RecipeChanges } from '../../../recipe/utils/changes'
 export async function requireRecipeDefinitionReferences(
   tx: GuardedServerTransaction,
   kitchenId: string,

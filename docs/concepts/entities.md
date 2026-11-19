@@ -295,7 +295,7 @@ Recipe is a first-class Entity with authored inputs, method and expected yield.
 Its accepted target has one User owner and permits existence outside Kitchen.
 Kitchens use approved versions through their own associations; see
 [Recipe ownership and Kitchen use](#recipe-ownership-and-kitchen-use).
-Current source remains `kitchen/recipe/`, with Kitchen-scoped reads and commands;
+Recipe source lives at `runtime/recipe/`. The active reader and commands remain Kitchen-scoped;
 the accepted ownership and version-use contract is not yet implemented.
 
 Preparation is a Kitchen-owned Record identifying a reusable Kitchen output,
@@ -437,8 +437,8 @@ silently rewrite the source definition. Version history is Recipe-owned Records,
 and Kitchen use is Kitchen-owned Records, without nested Entity spines or
 competing Recipe identities.
 
-The current [model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/recipe/models/model.ts),
-[reader](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/recipe/composables/useKitchenRecipesRead.ts)
+The current [model](../../packages/extensions/fireux-kitchens/src/runtime/recipe/models/model.ts),
+[reader](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/workspace/prep/recipes/read.ts)
 and [Kitchen command authority](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/mutation-authority.ts)
 remain Kitchen-bound. Before a data/authority cutover, confirm each existing
 Recipe's User owner explicitly; do not infer it from `created.by`, an import actor

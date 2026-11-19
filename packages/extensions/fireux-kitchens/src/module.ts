@@ -106,7 +106,6 @@ export default defineNuxtModule<ModuleOptions>({
           ['useKitchenWorkspacePrepStations', 'prep/children'],
 
           ['useKitchenWorkspacePrepLibrary', 'prep/library'],
-          ['useKitchenWorkspacePrepRecipeEditor', 'prep/recipe/editor'],
         ] as const) {
           addImports({
             name,

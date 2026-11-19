@@ -1,0 +1,8 @@
+.kitchen-overview-group {
+  display: grid;
+  min-width: 0;
+  gap: calc(var(--spacing) * 3);
+}
+.kitchen-overview-group h2 {
+  margin: 0;
+}

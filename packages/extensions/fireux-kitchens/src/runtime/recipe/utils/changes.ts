@@ -1,5 +1,5 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
-import type { Recipe, RecipeInput } from './models/model'
+import type { Recipe, RecipeInput } from '../models/model'
 export type RecipeChanges = Partial<
   Pick<Recipe, 'name' | 'description' | 'inputs' | 'method'>
 > & {

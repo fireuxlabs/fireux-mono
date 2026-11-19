@@ -71,7 +71,7 @@ resolution. Item detail has two views: Details and Appears on. Preparation speci
 prep requirements and Station management belong to Prep & Production; the Menu
 Item route does not acquire their readers. Preparation owns reusable output
 identity in `kitchen/records/prep/preparations/preparation.ts`; Recipe owns inputs, method
-and expected yield in `kitchen/recipe/models/model.ts`. Their library lives under
+and expected yield in `runtime/recipe/models/model.ts`. Their library lives under
 `/workspace/kitchen/prep`, with historical `prep-items` and `recipes` storage
 paths retained by their owning readers. See the Misebox context’s
 [production boundary](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md#preparations-recipes-and-production).
@@ -1045,6 +1045,17 @@ Station readers or exposes preparation editing. Prep & Production owns the
 preparation surfaces. Trusted Station reference validation remains at
 `kitchen/server/stations/item-references.ts`; removing UI does not migrate data
 or remove server validation.
+
+The Menu record editor at `/workspace/kitchen/menu/{menuSlug}` presents entries
+in their Menu context. Its dish rows share Menu display and choice controls
+with Browse, including the Menu palette and public photo preference. Preview
+selections stay local. Workspace actions alongside the row handle placement
+and navigation to Item editing.
+
+The Items workspace at `/workspace/kitchen/menu/items` manages the reusable
+Kitchen catalogue. It can show catalogue photos and metadata, support search
+and filtering, and link to Item identity, pricing and choice editing. These
+tools belong to the catalogue and its detail surfaces.
 
 Menu section rows link directly to the shared Kitchen Item editor, retaining the
 Menu slug and section for return navigation. The detail parent acquires the Item once and provides its live reader through

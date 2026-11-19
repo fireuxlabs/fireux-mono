@@ -6,12 +6,20 @@
       :name-to="row.dishId ? itemDestination : undefined"
       :description="row.dish?.description"
       :image-url="showItemImages ? row.dish?.image : undefined"
-      :price="priceLabel"
+      :price="itemPrice"
+      :announce-price="Boolean(choiceGroups.length)"
       class="menu-editor-item"
     >
       <span v-if="row.entry.status === 'archived'" class="fx-type-caption"
         >Off menu</span
       >
+      <MenuItemChoices
+        v-if="choiceGroups.length"
+        v-model="selections"
+        :groups="choiceGroups"
+        :money="editor.formatPrice"
+        :show-names="row.dish?.choice_groups !== undefined"
+      />
     </MenuItemDisplay>
     <template #actions>
       <KitchenMenuMenusItemsEditActions
@@ -24,6 +32,7 @@
 </template>
 <script setup lang="ts">
 import { computed, type UnwrapNestedRefs } from 'vue'
+import { useMenuItemChoicePreview } from '../../../../../../menu/composables/useMenuItemChoicePreview'
 import type { MenuEntryRow } from '../../../../../../menu/composables/useMenuSection'
 import type { useMenuSectionItemsEditor } from '../../../../../composables/workspace/menus/useMenuSectionItemsEditor'
 const props = defineProps<{
@@ -39,11 +48,18 @@ const itemDestination = computed(() => ({
     ...(props.editor.embedded ? { inline: '1' } : {}),
   },
 }))
-const priceLabel = computed(() => {
-  if (props.row.price === undefined) return 'Price not set'
-  if (props.row.priceOptions.length) return 'Multiple prices'
-  return props.editor.formatPrice(props.row.price)
-})
+const { choiceGroups, selections, itemPrice } = useMenuItemChoicePreview(
+  () => ({
+    id: props.row.id,
+    dishId: props.row.dishId,
+    price: props.row.price,
+    choice_groups: props.row.dish?.choice_groups,
+    priceOptions: props.row.priceOptions,
+    addOns: props.row.addOns,
+  }),
+  (price) => props.editor.formatPrice(price),
+  'Price not set'
+)
 </script>
 
 <style scoped>

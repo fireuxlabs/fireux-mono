@@ -14,8 +14,6 @@
     </template>
   </WorkspacePageHeader>
 
-  <slot name="intro" />
-
   <WorkspaceKitchenCollectionToolbar
     v-if="outcome === 'ready' || outcome === 'empty'"
     v-model="query"

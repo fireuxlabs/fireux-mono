@@ -1,3 +1,4 @@
+import { useMenuItemChoicePreview } from '../runtime/menu/composables/useMenuItemChoicePreview.ts'
 import { photoImageUrl } from 'fireux-core/runtime/utils/photo-image-url'
 import * as itemChoices from '../runtime/kitchen/utils/item-choices.ts'
 import test from 'node:test'
@@ -59,6 +60,7 @@ test('zero is a visible amount while missing and invalid terms remain absent', (
 
 const Item = component('menu/components/Browse/Item.vue', {
   '../../../utils/currency-display': currency,
+  '../../composables/useMenuItemChoicePreview': { useMenuItemChoicePreview },
 })
 const ItemDisplay = component('menu/components/ItemDisplay.vue')
 const ItemImage = component('menu/components/ItemImage.vue')

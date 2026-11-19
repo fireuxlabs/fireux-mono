@@ -96,10 +96,12 @@
   </UModal>
 </template>
 <script setup lang="ts">
+import KitchenWorkspacePrepRecipesEditorInputs from './Editor/Inputs.vue'
+import KitchenWorkspacePrepRecipesEditorMethod from './Editor/Method.vue'
 import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import type { Recipe } from '../../../../recipe/models/model'
-import type { Preparation } from '../../../../records/prep/preparations/preparation'
-import { useKitchenWorkspacePrepRecipeEditor } from '../../../../composables/workspace/prep/recipe/editor'
+import type { Preparation } from '../../../records/prep/preparations/preparation'
+import { useKitchenWorkspacePrepRecipeEditor } from './editor'
 const props = defineProps<{
   record?: Recipe
   kitchenId: string

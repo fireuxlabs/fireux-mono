@@ -18,57 +18,51 @@
       </template>
     </WorkspacePageHeader>
     <WorkspaceKitchenAIFocus
+      v-if="view === 'recipes' || selectedId"
       :focus="`kitchen-ai.prep.${view}`"
       :label="view === 'preparations' ? 'Preparations' : 'Recipes'"
       context-label="Prep"
     />
     <UInput
-      v-if="!selectedId"
+      v-if="!selectedId && view === 'recipes'"
       v-model="search"
-      :placeholder="
-        view === 'preparations' ? 'Search preparations' : 'Search recipes'
-      "
-      :aria-label="
-        view === 'preparations' ? 'Search preparations' : 'Search recipes'
-      "
+      placeholder="Search recipes"
+      aria-label="Search recipes"
       icon="i-lucide-search"
     />
-    <template v-if="!selectedId">
+    <template v-if="!selectedId && view === 'preparations'">
+      <KitchenWorkspacePrepPreparationsCollection
+        :preparations="preparations"
+        :preparation-to="preparationTo"
+        :recipe-count="recipeCount"
+      />
+      <details class="kitchen-record-assistant">
+        <summary>Ask KitchenAI about preparations</summary>
+        <WorkspaceKitchenAIFocus
+          focus="kitchen-ai.prep.preparations"
+          label="Preparations"
+          context-label="Prep"
+        />
+      </details>
+    </template>
+    <template v-else-if="!selectedId">
       <div class="prep-library__rows">
         <FireActionSurface
           v-for="row in visibleRows"
           :key="row.id"
-          :to="
-            view === 'preparations' ? preparationTo(row.id) : recipeTo(row.id)
-          "
+          :to="recipeTo(row.id)"
           variant="cell"
           class="prep-library__row"
         >
-          <UIcon
-            :name="
-              view === 'preparations'
-                ? 'i-lucide-cooking-pot'
-                : 'i-lucide-notebook-tabs'
-            "
-          />
+          <UIcon name="i-lucide-notebook-tabs" />
           <div>
             <h2>{{ row.name }}</h2>
             <p v-if="row.description">{{ row.description }}</p>
           </div>
-          <span v-if="view === 'preparations'" class="fx-type-caption"
-            >{{ recipesFor(row.id).length }}
-            {{ recipesFor(row.id).length === 1 ? 'recipe' : 'recipes' }}</span
-          >
         </FireActionSurface>
       </div>
       <p v-if="!visibleRows.length">
-        {{
-          search
-            ? 'No matches.'
-            : view === 'preparations'
-              ? 'No preparations yet.'
-              : 'No recipes yet.'
-        }}
+        {{ search ? 'No matches.' : 'No recipes yet.' }}
       </p>
     </template>
     <template v-else-if="selectedPreparation">
@@ -199,7 +193,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import type { Preparation } from '../../../records/prep/preparations/preparation'
-import type { Recipe } from '../../../recipe/models/model'
+import type { Recipe } from '../../../../recipe/models/model'
 const props = withDefaults(
   defineProps<{
     view: 'preparations' | 'recipes'
@@ -232,7 +226,7 @@ const title = computed(
     (props.view === 'preparations' ? 'Preparations' : 'Recipes')
 )
 const visibleRows = computed(() =>
-  (props.view === 'preparations' ? props.preparations : props.recipes)
+  props.recipes
     .filter((row) =>
       `${row.name} ${row.description || ''}`
         .toLocaleLowerCase()
@@ -259,6 +253,7 @@ const outputIds = (recipe: Recipe) => [
 ]
 const recipesFor = (id: string) =>
   props.recipes.filter((recipe) => outputIds(recipe).includes(id))
+const recipeCount = (id: string) => recipesFor(id).length
 const usedBy = (id: string) =>
   props.recipes.filter((recipe) =>
     recipe.inputs.some(
@@ -276,6 +271,7 @@ const scaledQuantity = (quantity: number) => {
 }
 </script>
 <style scoped>
+@import '../record-tools.css';
 .prep-library {
   display: grid;
   min-width: 0;

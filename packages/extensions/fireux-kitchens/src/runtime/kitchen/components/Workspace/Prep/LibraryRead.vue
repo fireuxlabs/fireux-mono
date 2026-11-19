@@ -47,6 +47,7 @@
   />
 </template>
 <script setup lang="ts">
+import KitchenWorkspacePrepRecipesEditor from '../../../workspace/prep/recipes/Editor.vue'
 import { navigateTo } from '#imports'
 import { useKitchenWorkspacePrepLibrary } from '../../../composables/workspace/prep/library'
 const props = defineProps<{

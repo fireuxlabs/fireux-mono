@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { readRecipeChanges } from '../../runtime/kitchen/recipe/changes.ts'
+import { readRecipeChanges } from '../../runtime/recipe/utils/changes.ts'
 
 test('Recipe authoring has one canonical contract and rejects retired or authority fields', () => {
   for (const field of [

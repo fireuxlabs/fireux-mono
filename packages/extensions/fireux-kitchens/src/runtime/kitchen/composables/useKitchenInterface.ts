@@ -71,7 +71,7 @@ export function useKitchenInterface() {
       ...(kitchen.theme ? { theme: kitchen.theme } : {}),
       ...(kitchen.orders ? { orders: kitchen.orders } : {}),
       ...(kitchen.tables ? { tables: kitchen.tables } : {}),
-      ...(services && !Array.isArray(services)
+      ...(services
         ? {
             services: {
               ...(typeof services.title === 'string'

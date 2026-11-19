@@ -6,12 +6,18 @@
   />
   <Menu.Overview />
   <Menu.Create />
-  <UPageGrid as="section" aria-label="Items, promotions and services summary">
-    <Menu.ItemsOverview />
-    <Menu.PromotionsOverview />
-    <Menu.ServicesOverview />
-  </UPageGrid>
-  <Menu.Ai />
+  <section aria-labelledby="menu-tools-heading" class="kitchen-overview-group">
+    <h2 id="menu-tools-heading" class="fx-type-card-heading">Menu tools</h2>
+    <UPageGrid>
+      <Menu.ItemsOverview />
+      <Menu.PromotionsOverview />
+      <Menu.ServicesOverview />
+    </UPageGrid>
+  </section>
+  <details class="kitchen-record-assistant">
+    <summary>Ask KitchenAI about your menus</summary>
+    <Menu.Ai />
+  </details>
 </template>
 
 <script setup lang="ts">
@@ -20,3 +26,8 @@ import { useKitchenWorkspaceMenu } from '../../../composables/workspace/menu/ind
 
 const { description } = useKitchenWorkspaceMenu()
 </script>
+
+<style scoped>
+@import '../overview.css';
+@import '../record-tools.css';
+</style>

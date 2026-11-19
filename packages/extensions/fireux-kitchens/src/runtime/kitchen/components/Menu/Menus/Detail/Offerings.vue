@@ -132,7 +132,7 @@ const entries = computed(() =>
         offerings: offerings.value,
         scope: fireux.isTenant
           ? tenantMenuRouteScope()
-          : directoryMenuRouteScope(selectedKitchen.value?.slug),
+          : directoryMenuRouteScope(selectedKitchen.value?.identity.slug),
         origin,
       })
     : []

@@ -220,7 +220,7 @@ test('publication UI suppresses obsolete completion, errors and busy resets', as
             kitchenId: ref('k'),
             menuId: ref('m'),
             canWrite: ref(true),
-            selectedKitchen: ref({ slug: 'kitchen' }),
+            selectedKitchen: ref({ identity: { slug: 'kitchen' } }),
             publishMenu: () => pending.promise,
             unpublishMenu: () => pending.promise,
           }),

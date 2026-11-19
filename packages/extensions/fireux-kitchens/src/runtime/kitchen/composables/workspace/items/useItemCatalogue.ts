@@ -44,8 +44,17 @@ export function useItemCatalogue() {
       page: page.value,
     }),
   }))
-  const itemLink = (id: string) =>
-    `${itemCataloguePath}/${encodeURIComponent(id)}?${new URLSearchParams(catalogueQuery.value)}`
+  const itemLink = (
+    id: string,
+    query: Record<string, string> = {},
+    hash = ''
+  ) => {
+    const search = new URLSearchParams({
+      ...catalogueQuery.value,
+      ...query,
+    }).toString()
+    return `${itemCataloguePath}/${encodeURIComponent(id)}${search ? `?${search}` : ''}${hash}`
+  }
   const normalize = (value: unknown) =>
     String(value || '')
       .normalize('NFD')
@@ -105,13 +114,24 @@ export function useItemCatalogue() {
     catalogueQuery,
     (next) => {
       if (route.path !== catalogue.path) return
+      const nextQuery = { ...route.query }
+      for (const key of [
+        'kind',
+        'search',
+        'filter',
+        'layout',
+        'page',
+        'category',
+      ])
+        delete nextQuery[key]
+      Object.assign(nextQuery, next)
       if (
-        !Object.hasOwn(route.query, 'category') &&
-        Object.entries(next).every(([key, value]) => route.query[key] === value)
+        Object.keys(nextQuery).length === Object.keys(route.query).length &&
+        Object.entries(nextQuery).every(
+          ([key, value]) => route.query[key] === value
+        )
       )
         return
-      const nextQuery = { ...route.query, ...next }
-      delete nextQuery.category
       void router.replace({ path: route.path, query: nextQuery })
     },
     { flush: 'post', immediate: true }

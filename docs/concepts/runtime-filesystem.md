@@ -253,6 +253,12 @@ src/runtime/kitchen/
 └── server/operations/menus/
 ```
 
+Kitchen Prep Recipes is a bounded trial of feature-first Workspace placement at
+`kitchen/workspace/prep/recipes/`. The screen components and their local reader,
+form and editor are colocated. Recipe's canonical model and validation live at
+the sibling `runtime/recipe/` root. Nuxt routes and HTTP adapters stay in their
+existing roles, and Kitchen-scoped storage and commands are unchanged.
+
 This is an entity-scoped Nuxt runtime, not a capability-owned miniature
 application. Do not create `client`, `server`, `components`, and `models`
 inside an arbitrary feature root outside the entity scope.

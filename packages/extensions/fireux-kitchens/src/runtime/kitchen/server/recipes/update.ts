@@ -7,8 +7,8 @@ import {
   requireKitchenRecordMutationAuthority,
 } from '../core/mutation-authority'
 import { recipeFields, recipeTarget, validateRecipeInput } from './record-input'
-import { readRecipeChanges } from '../../recipe/changes'
-import { requireRecipeDefinitionReferences } from '../../recipe/server/references'
+import { readRecipeChanges } from '../../../recipe/utils/changes'
+import { requireRecipeDefinitionReferences } from './references'
 
 export async function updateRecipe(event: H3Event, input: unknown) {
   const value = recipeFields(input, ['kitchenId', 'recipeId', 'changes'])

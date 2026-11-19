@@ -1,5 +1,5 @@
 <template>
-  <nav aria-label="Menu configuration" class="menu-configuration-nav">
+  <nav aria-label="Menu configuration" class="kitchen-record-navigation">
     <UButton
       v-for="item in items"
       :key="item.view"
@@ -56,11 +56,5 @@ const items = computed(() =>
 )
 </script>
 <style scoped>
-.menu-configuration-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing);
-  padding-block-end: calc(var(--spacing) * 2);
-  border-bottom: 1px solid var(--ui-border);
-}
+@import '../../../Workspace/record-tools.css';
 </style>

@@ -5,10 +5,10 @@
       ><FireCopyError message="Menu could not be loaded"
     /></template>
   </UAlert>
-  <div v-else-if="menu" class="menu-heading-region">
-    <header class="menu-heading" :style="themeStyle">
-      <div class="menu-identity-bar">
-        <div class="menu-identity-bar__meta">
+  <div v-else-if="menu" class="menu-record-heading-region">
+    <header class="menu-record-heading" :style="themeStyle">
+      <div class="menu-record-identity">
+        <div class="menu-record-identity__meta">
           <span
             v-if="currencyCode"
             class="fx-type-caption"
@@ -21,10 +21,10 @@
             >{{ statusLabel }}</UBadge
           >
         </div>
-        <h1 class="menu-identity-bar__name">
+        <h1 class="menu-record-identity__name">
           {{ menu.internal_name || menu.name || menu.id }}
         </h1>
-        <p v-if="menu.description" class="menu-identity-bar__description">
+        <p v-if="menu.description" class="menu-record-identity__description">
           {{ menu.description }}
         </p>
       </div>
@@ -66,8 +66,8 @@ const themeStyle = computed(() => {
   const palette = readKitchenThemePalette(selectedKitchen.value)
   if (!palette) return
   return {
-    '--menu-heading-canvas': palette.canvas,
-    '--menu-heading-accent': palette.accent,
+    '--menu-record-heading-canvas': palette.canvas,
+    '--menu-record-heading-accent': palette.accent,
   }
 })
 const fireux = useFireUXConfig()
@@ -76,7 +76,7 @@ const publicPath = computed(() =>
   menuRoutePath({
     scope: fireux.isTenant
       ? tenantMenuRouteScope()
-      : directoryMenuRouteScope(selectedKitchen.value?.slug),
+      : directoryMenuRouteScope(selectedKitchen.value?.identity.slug),
     menuId: menuSlug.value,
   })
 )
@@ -92,47 +92,9 @@ const statusLabel = computed(() =>
 )
 </script>
 <style scoped>
-.menu-heading-region {
+@import '../../record-detail.css';
+.menu-record-heading-region {
   display: grid;
   gap: calc(var(--spacing) * 4);
-}
-.menu-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: calc(var(--spacing) * 5);
-  padding: clamp(1rem, 3vw, 2rem);
-  border: 1px solid var(--ui-border);
-  border-inline-start: 3px solid var(--menu-heading-accent, var(--ui-primary));
-  border-radius: calc(var(--ui-radius) * 2);
-  background-color: var(--menu-heading-canvas, var(--ui-bg-elevated));
-}
-.menu-identity-bar {
-  display: grid;
-  gap: calc(var(--spacing) * 2);
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.menu-identity-bar__meta {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  min-width: 0;
-  gap: calc(var(--spacing) * 3);
-  overflow-wrap: anywhere;
-}
-.menu-identity-bar__name {
-  margin: 0;
-  color: var(--ui-text-highlighted);
-  font-size: clamp(1.75rem, 4vw, 2.75rem);
-  font-weight: var(--font-weight-semibold);
-  line-height: 1.15;
-  letter-spacing: -0.025em;
-}
-.menu-identity-bar__description {
-  color: var(--ui-text-muted);
-  margin: 0;
-  max-width: 60ch;
 }
 </style>

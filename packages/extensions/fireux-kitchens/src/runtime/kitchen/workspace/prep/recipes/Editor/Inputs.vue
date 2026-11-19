@@ -70,7 +70,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import type { RecipeDraft } from '../../../../../recipe/editor'
+import type { RecipeDraft } from '../form'
 const inputs = defineModel<RecipeDraft['inputs']>({ required: true })
 const props = defineProps<{
   ingredients: Array<{ value: string; label: string }>

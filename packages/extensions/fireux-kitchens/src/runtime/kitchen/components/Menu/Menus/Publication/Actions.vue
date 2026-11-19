@@ -126,7 +126,7 @@ const publicQrUrl = computed(() => {
   const path = menuRouteQrPath({
     scope: fireux.isTenant
       ? tenantMenuRouteScope()
-      : directoryMenuRouteScope(selectedKitchen.value?.slug),
+      : directoryMenuRouteScope(selectedKitchen.value?.identity.slug),
     menuId: menu.value?.slug,
   })
   const origin = menuWebsiteOrigin(requestUrl.origin, fireux.siteUrl)
@@ -136,7 +136,7 @@ const publicMenuPath = computed(() =>
   menuRoutePath({
     scope: fireux.isTenant
       ? tenantMenuRouteScope()
-      : directoryMenuRouteScope(selectedKitchen.value?.slug),
+      : directoryMenuRouteScope(selectedKitchen.value?.identity.slug),
     menuId: menu.value?.slug,
   })
 )

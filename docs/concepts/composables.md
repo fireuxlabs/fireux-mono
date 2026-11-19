@@ -556,16 +556,16 @@ consumed presentation remain explicit, without compulsory CRUD scaffolding.
 ## Recipe and Prep responsibilities
 
 Kitchen's `composables/preparations/useKitchenPreparationsRead.ts` and
-`recipe/composables/useKitchenRecipesRead.ts` each acquire one exact access-bound
+`workspace/prep/recipes/read.ts` each acquire one exact access-bound
 collection through Core. Their private normalization retains historical output
 links and per-field Recipe inputs/method/yield without rewriting documents or
 fabricating provenance. The active `/prep/preparations` and `/prep/recipes` routes
 compose `Workspace/Prep/LibraryRead.vue`; `Library.vue` owns search, links and
 local expected-yield scaling.
 
-`Recipes/Editor.vue` supplies canonical creation and sparse updates through one
+`kitchen/workspace/prep/recipes/Editor.vue` supplies canonical creation and sparse updates through one
 `usePrepMutation` transport and Core `useIdentityEditor`. The trusted create/update
-commands share `recipe/changes.ts` and validate exact current Ingredient and
+commands share `recipe/utils/changes.ts` and validate exact current Ingredient and
 Preparation references in the transaction. Preparation identity editing remains
 separate. Recipe list/detail acquire no mutation controller solely for counts;
 Ingredient acquisition is enabled only for Recipe views. Its failures remain

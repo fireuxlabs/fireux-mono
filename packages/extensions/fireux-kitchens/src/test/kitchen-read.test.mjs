@@ -118,11 +118,7 @@ test('Workspace retains only the granted canonical root through joined Place fai
   )
   try {
     const workspace = scope.run(factory)
-    source.kitchen.value = {
-      ...canonical('a'),
-      slug: 'retired-flat-slug',
-      visibility: true,
-    }
+    source.kitchen.value = canonical('a')
     source.kitchen.outcome.value = 'ready'
     source.place.error.value = new Error('Place failed')
     assert.deepEqual(workspace.root.value, canonical('a'))
@@ -197,7 +193,7 @@ test('Workspace retains only the granted canonical root through joined Place fai
 
 test('Kitchen read returns canonical records, tracks identity and hides failed data', () => {
   const s = setup()
-  s.kitchen.value = { ...canonical('a'), visibility: true, services: [] }
+  s.kitchen.value = canonical('a')
   s.kitchen.outcome.value = 'ready'
   s.place.value = { id: 'a', name: 'Place name' }
   assert.deepEqual(s.read.kitchen.value, canonical('a'))

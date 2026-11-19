@@ -347,7 +347,9 @@ test('actual Prep overview and create consumers render the mounted state without
   const f = fixture()
   const component = (name) => {
     const filename = new URL(
-      `../runtime/kitchen/components/Workspace/Prep/${name}.vue`,
+      name.startsWith('Recipes/')
+        ? `../runtime/kitchen/workspace/prep/recipes/${name.slice('Recipes/'.length)}.vue`
+        : `../runtime/kitchen/components/Workspace/Prep/${name}.vue`,
       import.meta.url
     ).pathname
     const { descriptor } = parse(readFileSync(filename, 'utf8'), { filename })
@@ -374,7 +376,9 @@ export default {render}`
       if (id === './useOverview') {
         const child = name.split('/')[0]
         return load(
-          `kitchen/components/Workspace/Prep/${child}/useOverview`,
+          child === 'Recipes'
+            ? 'kitchen/workspace/prep/recipes/useOverview'
+            : `kitchen/components/Workspace/Prep/${child}/useOverview`,
           `useKitchenWorkspacePrep${child}Overview`,
           {
             ...Vue,

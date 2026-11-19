@@ -427,6 +427,7 @@ function components(app) {
     'UBadge',
     'KitchenMenuItemsCollection',
     'KitchenMenuItemsCardsCell',
+    'MenuItemDisplay',
     'UPagination',
     'USelect',
     'UCheckbox',
@@ -967,7 +968,6 @@ test('catalogue return ignores retired categories and accepts only catalogue sta
       kind: 'food',
       search: 'pizza',
       filter: 'description',
-      layout: 'list',
       page: '2',
     }
   )
@@ -1027,6 +1027,30 @@ test('Items dialogs honour create authority, consume create links and close when
   assert.equal(state.createKind.value, null)
   state.openCreate('drink')
   assert.equal(state.createKind.value, null)
+  f.scope.stop()
+})
+
+test('default catalogue URLs are clean and preserve unrelated query parameters', async () => {
+  const f = workspaceFixture()
+  const { view, route } = catalogueView(f, {
+    kind: 'all',
+    search: '',
+    filter: 'all',
+    layout: 'list',
+    page: '1',
+    group: 'kitchen',
+  })
+  await nextTick()
+  assert.deepEqual(route.query, { group: 'kitchen' })
+  assert.equal(view.itemLink('tea'), `${itemCataloguePath}/tea`)
+  assert.equal(
+    view.itemLink('tea', { view: 'details' }, '#item-price-choices'),
+    `${itemCataloguePath}/tea?view=details#item-price-choices`
+  )
+  assert.deepEqual(itemCatalogueReturn({}), {
+    path: itemCataloguePath,
+    query: {},
+  })
   f.scope.stop()
 })
 

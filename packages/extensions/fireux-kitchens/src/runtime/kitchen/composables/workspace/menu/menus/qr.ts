@@ -35,7 +35,6 @@ export type MenuQrPanel = {
   targets: MenuQrTarget[]
 }
 
-
 export function useKitchenWorkspaceMenuMenusQr() {
   const { menuSources } = useKitchenWorkspaceMenuSources()
   const {
@@ -63,7 +62,7 @@ export function useKitchenWorkspaceMenuMenusQr() {
       menuRoutePath({
         scope: fireux.isTenant
           ? tenantMenuRouteScope()
-          : directoryMenuRouteScope(selectedKitchen.value?.slug),
+          : directoryMenuRouteScope(selectedKitchen.value?.identity.slug),
         menuId: slug,
         context,
         offeringId,

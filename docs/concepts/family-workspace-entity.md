@@ -1300,7 +1300,7 @@ mounts [`useKitchenWorkspacePrep`](../../packages/extensions/fireux-kitchens/src
 whose Overview/Create children use strict internal lookup. Child library routes
 mount [`useKitchenWorkspacePrepLibrary`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/prep/library.ts)
 at their own host, and the Recipe editor uses its
-[explicit-input workflow](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/prep/recipe/editor.ts).
+[explicit-input workflow](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/workspace/prep/recipes/editor.ts).
 These illustrate different coordination needs, not identical internals or
 completed adoption by other groups. Align another family only with a bounded owner/consumer change.
 Verify parent mounting, child reuse, scope changes/disposal and the actual group

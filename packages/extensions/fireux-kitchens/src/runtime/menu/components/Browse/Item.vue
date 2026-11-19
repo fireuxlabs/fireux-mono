@@ -27,12 +27,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import {
-  readItemChoiceGroups,
-  priceItemChoices,
-} from '../../../kitchen/utils/item-choices'
-import type { ItemChoiceSelection } from '../../../kitchen/records/menus/items/item-offer'
+import { computed } from 'vue'
+import { useMenuItemChoicePreview } from '../../composables/useMenuItemChoicePreview'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import { formatCurrencyAmount } from '../../../utils/currency-display'
 import type { PublicMenuItem } from '../../models/menu-detail.model.ts'
@@ -50,44 +46,10 @@ const props = defineProps<{
 }>()
 
 const itemNameId = computed(() => `${props.accessibilityId}-name`)
-const choiceGroups = computed(() => readItemChoiceGroups(props.item))
-const selections = ref<ItemChoiceSelection>({})
-watch(
-  [() => props.item.id, () => props.item.dishId, choiceGroups],
-  (currentOwner, previousOwner) => {
-    const sameItem =
-      previousOwner &&
-      currentOwner[0] === previousOwner[0] &&
-      currentOwner[1] === previousOwner[1]
-    const next: ItemChoiceSelection = {}
-    for (const group of choiceGroups.value) {
-      const current = (sameItem ? selections.value[group.id] || [] : []).filter(
-        (id) => group.options.some((option) => option.id === id)
-      )
-      const cheapest =
-        group.pricing === 'full'
-          ? group.options.reduce((a, b) => (a.price <= b.price ? a : b))
-          : undefined
-      next[group.id] = current.length ? current : cheapest ? [cheapest.id] : []
-    }
-    selections.value = next
-  },
-  { immediate: true, flush: 'sync' }
+const { choiceGroups, selections, itemPrice } = useMenuItemChoicePreview(
+  () => props.item,
+  formatPrice
 )
-const itemPrice = computed(() => {
-  try {
-    return formatPrice(
-      priceItemChoices(
-        props.item.price,
-        choiceGroups.value,
-        selections.value,
-        true
-      ).unitMinor / 100
-    )
-  } catch {
-    return formatPrice(props.item.price)
-  }
-})
 
 function formatPrice(price: number) {
   return formatCurrencyAmount(price, {

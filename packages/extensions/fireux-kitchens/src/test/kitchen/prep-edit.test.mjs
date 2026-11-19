@@ -6,12 +6,12 @@ import { ref, reactive, effectScope, nextTick, computed, toValue } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useIdentityEditor } from 'fireux-core/runtime/composables/fireux/useIdentityEditor'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
-import { readRecipeChanges } from '../../runtime/kitchen/recipe/changes.ts'
+import { readRecipeChanges } from '../../runtime/recipe/utils/changes.ts'
 import {
   recipeDraft,
   recipeDraftChanges,
   recipeDraftRecord,
-} from '../../runtime/kitchen/recipe/editor.ts'
+} from '../../runtime/kitchen/workspace/prep/recipes/form.ts'
 import { readPreparationChanges } from '../../runtime/kitchen/utils/preparation-changes.ts'
 function load(path, result, deps) {
   let source = readFileSync(
@@ -142,7 +142,7 @@ function fixture() {
     },
   }
   deps.requireRecipeDefinitionReferences = load(
-    'recipe/server/references.ts',
+    'server/recipes/references.ts',
     'requireRecipeDefinitionReferences',
     deps
   )
@@ -442,7 +442,7 @@ function recipeEditorFixture(record) {
   let dispatch = async () => ({ id: record?.id || 'new-recipe' })
   const api = scope.run(() =>
     load(
-      'composables/workspace/prep/recipe/editor.ts',
+      'workspace/prep/recipes/editor.ts',
       'useKitchenWorkspacePrepRecipeEditor({ record: () => props.record, kitchenId: () => props.kitchenId, canEdit: () => props.canEdit, preparations: () => props.preparations }, id => emitted.push(["created", id]))',
       {
         ref,
