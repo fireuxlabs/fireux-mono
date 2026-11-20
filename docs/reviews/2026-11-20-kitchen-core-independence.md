@@ -13,6 +13,18 @@
 4. **There is a real downstream consumer of the starter Menu.** `menu/server/document/authority.ts` selects a guest's `main` Menu. Misebox Menu Hosting and guest document flows rely on that contract. Do **not** simply delete starter Menu creation globally.
 5. **The basic update path is already separate.** `kitchen/server/identity/update.ts` and `identity/update-input.ts` guard patches to identity, services and table-count fields; `kitchen/composables/useKitchenRead.ts` reads the canonical root, with optional same-id Place hydration. `kitchen/composables/workspace/useKitchenWorkspace.ts` binds a guarded selected Kitchen to Workspace. Source inspection is not an end-to-end signed-in workflow proof.
 
+## Operator product decision — Workspace-first manifestation, not onboarding (20 Nov 2026)
+
+**North star:** Across industries, give the user an immediately usable **blank management Workspace** rather than an onboarding questionnaire, setup wizard, or forced sequence. On the left, show the capabilities they can choose to manage. They can ignore most of them. In Kitchen, begin with a neutral default label such as **“My Kitchen 1”** and allow the user to rename it, optionally associate a Google Place, and progressively add Items or any other capabilities when useful. **Do not force a Place search, Team setup, Menu creation, or completed profile before showing the Workspace.**
+
+Call the user action **manifesting a Kitchen from the Workspace**, not onboarding into a Kitchen. Preserve secure server-owned identity, membership and Kitchen mutation authority behind the experience; those checks do not need to become a visible series of onboarding questions. Treat owner access as a distinct authority concern from a Kitchen Team roster record. No automatic Team member or starter Menu simply to satisfy a blank Kitchen root, unless an explicit downstream workflow requires it.
+
+**Entry behaviour:** A person choosing to open a Kitchen Workspace must reach the Workspace directly, with an honest empty state and obvious first action, rather than being routed through marketing, account-setup or Kitchen-onboarding screens first. The operator is also considering whether `misebox.app/` itself should foreground the Workspace; this is a **product-routing/SEO decision to assess separately** because the current root route is a public Kitchen-and-Menu directory, while `/workspace/kitchen` already uses an unauthenticated, unselected Workspace entrance. Do not silently replace the public index or break discovery.
+
+**State decision to verify:** An empty Workspace shell is not automatically a stored, owned Kitchen. Before implementing auto-manifestation, explicitly decide when a real canonical Kitchen record is created and when account authentication becomes necessary for protected writes. An unauthenticated page view should not accidentally create an unlimited collection of live Kitchen records. Allow appropriate guest preview or first-intent creation only if backed by an authorized, recoverable flow. Do not silently turn public directory contribution into management rights.
+
+**Acceptance:** The user can open Kitchen Workspace immediately, understand what it can manage, create or manifest one Kitchen through the smallest permitted interaction, rename and reopen it with trusted authority, and add zero optional capabilities. Sign-in and permissions remain real, but needless questions and blocking setup steps do not.
+
 ## Next bounded Codex slice — after Core/User/Workspace gate
 
 **Goal:** Create or adopt one managed Kitchen that has zero Items, Menus, Services and Orders; reopen and edit it through a real Workspace without missing-grant or stale-selection issues.
