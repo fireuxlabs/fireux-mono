@@ -17,11 +17,17 @@ as the approver. It needs repository write access, working Git push
 credentials, and a signed-in Codex CLI. Only configure the GitHub account that
 will author approvals. Anyone or anything acting as that account can approve.
 
-The macOS LaunchAgent runs every 60 seconds while Big Mac is awake and the
-user is logged in. It needs no incoming port. Use stop to unload it and remove
-its login registration, or once to check immediately while it is stopped.
-After updating the bridge itself, stop and start to install the updated runner.
-Status shows its state and local log path.
+The macOS LaunchAgent polls every 60 seconds while Big Mac is awake and the
+user is logged in. It needs no incoming port. The default start is read-only.
+Use poll for an immediate read-only check. To enable execution, stop the
+monitor and explicitly start the executor.
+
+    node tools/walking-bridge/bridge.mjs stop
+    node tools/walking-bridge/bridge.mjs start --armed
+
+Use stop to unload it and remove its login registration. After updating the
+bridge itself, stop and start in the desired mode to install the updated
+runner. Status shows its mode and local log path.
 
 ## Publish and approve a handoff
 

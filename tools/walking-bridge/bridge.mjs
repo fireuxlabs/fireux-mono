@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url'
 const repo = 'fireuxlabs/fireux-mono'
 const url = 'https://github.com/' + repo + '.git'
 const root =
-  process.argv[2] === 'once' && process.argv[3]
+  ['once', 'poll'].includes(process.argv[2]) && process.argv[3]
     ? realpathSync(process.argv[3])
     : fileURLToPath(new URL('../../', import.meta.url))
 const home = homedir()
@@ -450,6 +450,28 @@ export function commitResult(cwd, job, result, identity) {
   return { ...report, reportCommit: git(cwd, 'rev-parse', 'HEAD') }
 }
 
+function approvedJobs(config, base) {
+  const comments = JSON.parse(
+    api(
+      config,
+      apiBase + '/commits/' + base + '/comments',
+      '--paginate',
+      '--slurp'
+    )
+  ).flat()
+  return comments
+    .map((comment) => parseApproval(comment, base, config))
+    .filter(Boolean)
+}
+
+function poll(config) {
+  const base = remoteHead()
+  const count = approvedJobs(config, base).length
+  console.log(
+    'Read-only GitHub poll: ' + base.slice(0, 9) + ', approvals: ' + count
+  )
+}
+
 function tick(config) {
   const lock = join(state, 'running')
   try {
@@ -462,17 +484,7 @@ function tick(config) {
     requireCleanMain()
     const base = remoteHead()
     if (existsSync(join(state, base + '.json'))) return
-    const comments = JSON.parse(
-      api(
-        config,
-        apiBase + '/commits/' + base + '/comments',
-        '--paginate',
-        '--slurp'
-      )
-    ).flat()
-    const jobs = comments
-      .map((comment) => parseApproval(comment, base, config))
-      .filter(Boolean)
+    const jobs = approvedJobs(config, base)
     if (jobs.length !== 1 || !claimJob(state, base)) return
     const job = jobs[0]
     console.log('Claimed approval ' + job.id + ' at ' + base)
@@ -558,13 +570,13 @@ function initialize() {
 }
 const xml = (value) =>
   value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
-function start() {
+function start(armed) {
   requireCleanMain()
   const installed = join(state, 'bridge.mjs')
   writeFileSync(installed, readFileSync(fileURLToPath(import.meta.url)), {
     mode: 0o600,
   })
-  const elements = [process.execPath, installed, 'once', root]
+  const elements = [process.execPath, installed, armed ? 'once' : 'poll', root]
     .map((item) => '<string>' + xml(item) + '</string>')
     .join('')
   const plist =
@@ -593,12 +605,19 @@ function start() {
   writeFileSync(agent, plist, { mode: 0o600 })
   command('/usr/bin/plutil', ['-lint', agent])
   command('/bin/launchctl', ['bootstrap', domain(), agent])
-  console.log('FireUX Walking Bridge started.')
+  console.log(
+    armed
+      ? 'FireUX Walking Bridge armed.'
+      : 'FireUX Walking Bridge monitoring only.'
+  )
 }
 function status() {
   try {
     command('/bin/launchctl', ['print', domain() + '/' + label])
-    console.log('LaunchAgent loaded.')
+    const mode = readFileSync(agent, 'utf8').includes('<string>once</string>')
+      ? 'armed'
+      : 'monitoring only'
+    console.log('LaunchAgent loaded, ' + mode + '.')
   } catch {
     console.log('LaunchAgent not loaded.')
   }
@@ -625,14 +644,16 @@ function main(action) {
     console.log('FireUX Walking Bridge stopped.')
     return
   }
-  if (action !== 'start' && action !== 'once') {
+  if (!['start', 'once', 'poll'].includes(action)) {
     throw Error(
-      'Usage: node tools/walking-bridge/bridge.mjs init|start|stop|status|once'
+      'Usage: node tools/walking-bridge/bridge.mjs init|start [--armed]|stop|status|poll'
     )
   }
   if (!existsSync(settings)) throw Error('Initialize the bridge first.')
-  if (action === 'start') start()
-  else tick(JSON.parse(readFileSync(settings, 'utf8')))
+  if (action === 'start') return start(process.argv[3] === '--armed')
+  const config = JSON.parse(readFileSync(settings, 'utf8'))
+  if (action === 'poll') poll(config)
+  else tick(config)
 }
 if (
   process.argv[1] &&
