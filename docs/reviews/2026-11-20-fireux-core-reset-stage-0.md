@@ -1,14 +1,99 @@
 # FireUX Core reset · Stage 0 ownership and dependency audit
 
 Updated: 2026-11-20
-Ref: 6f3a3d8cf
+Ref: 6b457080d
 Role: reviewed source inventory and proposed cutover
 
-Stage 0 covers the Core module, runtime layer, configuration and the entry points
-that would change during the reset. The [Core reset handoff](../handoffs/2026-11-20-fireux-core-reset-build-order.md)
+Stage 0 traces the repository spine from pnpm discovery through App assembly,
+package exports and Nuxt registration into Core. It maps the ownership and
+cutover dependencies for the reset and optional Workspace extraction.
+The [Core reset handoff](../handoffs/2026-11-20-fireux-core-reset-build-order.md)
 sets the implementation order. The [runtime map](../concepts/runtime-filesystem.md)
 and [Core model map](../concepts/core-models.md) continue to describe the current
 checkout until the relevant slice lands.
+
+## Repository spine from root to runtime
+
+The arrows follow the order in which a consumer reaches the runtime. The App
+builder supplies both sides of the Core entry contract.
+
+```mermaid
+flowchart TD
+    Root["Root tooling, workspace globs and lockfile"] --> Member["App manifest and nuxt.config.ts"]
+    Member --> Builder["fireux-app/config"]
+    Member --> Main["Main App: fireux-ecosystem/config"]
+    Main --> Builder
+    Builder --> Layers["Config-time extends"]
+    Builder --> Modules["Nuxt module setup"]
+    Layers --> CoreLayer["fireux-core/layer and selected native layers"]
+    Modules --> CoreModule["fireux-core plus App and ecosystem modules"]
+    CoreLayer --> Runtime["Core runtime"]
+    CoreModule --> Runtime
+```
+
+| Boundary | Observed ownership and dependency | Consequence for the reset |
+| --- | --- | --- |
+| [Root package](../../package.json), [workspace globs](../../pnpm-workspace.yaml), [install policy](../../.npmrc), [lockfile](../../pnpm-lock.yaml) | Five globs produce 65 members including the root, one Core library, 24 Extensions, eight Ecosystems, 29 Apps and two tools. All 65 have lockfile importers. Node 22 and pnpm 11 are pinned, and the root overrides keep Nuxt, Vue and Vue Router on shared versions. | A Workspace package under an existing library glob would be discovered automatically. Discovery alone installs or registers nothing in an App. Its manifest edges, lockfile links and App selection have to agree. Keep the shared framework versions across linked packages. |
+| [Launcher discovery](../../tools/fireux-launcher/apps.mjs), [Codex map](../../tools/ide/codex-map.mjs) and [CI](../../.github/workflows/ci.yml) | Ports and commands come from App manifests and root scripts. The Codex map inventories source and declared dependencies. CI installs from the frozen lockfile and uses FireUX Blank for its Nuxt build baseline. | The launcher and inventory tools report the spine. Nuxt registers it. Blank exercises Workspace today, so the build baseline needs a complementary Core-only contract. |
+| [App builder](../../packages/extensions/fireux-app/src/config.ts), [default layers and modules](../../packages/extensions/fireux-app/src/defaults.ts), [Main App wrapper](../../packages/extensions/fireux-ecosystem/src/config.ts) | All 29 App configs use these entrypoints, eight via the Main App wrapper and 21 directly. The wrapper adds shared Main App runtime. The builder adds the native App and Core layers, default Blogs, Products and AI modules and layers, and the selected ecosystem module. It keeps the supplied Core module tuple when present. It also sets up UI, Firebase, PWA, CSS and build defaults outside Core's own module and layer. | Prove the Core package with a direct host and the standard App contract with a real App. They exercise distinct dependency sets. An App's Workspace family list currently configures behavior and domain selection. The builder always includes Core, which still supplies the Workspace frame. |
+| Family layers and modules | [FireUX Project](../../packages/ecosystem/fireux-fireux/src/config/app/project-layer.ts), [Misebox Kitchen](../../packages/ecosystem/fireux-misebox/src/config/app/kitchen-layer.ts) and [Granite Portfolio](../../packages/ecosystem/fireux-granite/src/config/app/portfolio-layer.ts) add native layers through config-time `extends`. Their [FireUX](../../packages/ecosystem/fireux-fireux/src/module.ts), [Misebox](../../packages/ecosystem/fireux-misebox/src/module.ts) and [Granite](../../packages/ecosystem/fireux-granite/src/module.ts) modules select domain dependencies from the App's Workspace families. Some domain modules [require their native layer to be present](../../packages/core/fireux-core/src/config/module/runtime-layer.ts). | Keep the family's config-time layer and setup-time module selection in step. Adding a module dependency cannot supply the native routes of a missing layer. Preserve the tenant and Main App choices during extraction. |
+| [Core exports](../../packages/core/fireux-core/package.json), [repo TS aliases](../../tsconfig.base.json), [Node test loader](../../tools/ide/test-loader.mjs) | Core exports its module and native layer from authored source. Wildcard runtime subpaths expose deep implementation paths, including Workspace. Core, App and Ecosystem config exports have a production branch backed by generated artifacts. Repo TypeScript aliases resolve against source, and the test loader adds extensionless relative resolution for Node tests. | Check installed-package exports alongside source tests. Moving a runtime directory changes the public subpath for every direct importer. A source alias, generated Nuxt type declaration or green test alone cannot prove the installed export works. |
+| [Build and release](../../package.json), [Core config build](../../packages/core/fireux-core/build/config.mjs), [package config build](../../tools/package-config/build.mjs), [Firebase release CLI](../../tools/firebase-release/cli.mjs) | Root App builds and typechecks generate Core config artifacts up front. App and Ecosystem build their own config artifacts. The release CLI uses Core's Rules composition and can build Core config during release preparation. | Keep build ordering and production export consumers in the map. Build and resolve the real config artifacts in the Stage 1 gate. Keep release and Rules authority with the existing tools and App owners. |
+
+The manifest graph has no declared internal cycles or upward runtime edges
+from Core to product packages, Extensions to Ecosystems, or libraries to
+concrete Apps. Core is declared directly by all eight Ecosystems, 22
+Extensions and all 29 Apps. A scan of 3,907 tracked TS, JS and Vue files in the
+library and App members, excluding tests, fixtures, docs and generated output,
+found one undeclared literal package import edge. Misebox's labour calculator
+imports `fireux-finance`. The repo has a source alias for that package, but
+Node resolution from the App returned `ERR_MODULE_NOT_FOUND`. This is a
+pre-existing Misebox packaging issue outside the reset. Keep it separate if
+using a full Misebox build as a later gate.
+[Calculator](../../projects/misebox/misebox-app/app/components/Tools/RestaurantLabourCostCalculator.vue)
+
+The relative-import scan also found three Granite contributors that reach
+directly into the sibling Properties source tree for `usePortfolioWorkspace`.
+All three declare `fireux-properties`, but these imports bypass its package
+exports and depend on the checkout layout. Keep the Portfolio provider with
+Properties and include these callers in the Stage 5 consumer check. Jobs
+has a similar source import for a Places model, outside the Workspace
+cutover. The FireUX and Misebox Apps also have explicit repo-relative
+tooling imports for Ignition and release.
+[Compliance](../../packages/extensions/fireux-compliance/src/runtime/portfolio/components/Workspace/Compliance/Index.vue),
+[Documents](../../packages/extensions/fireux-documents/src/runtime/portfolio/components/Workspace/Documents/Index.vue),
+[Tasks](../../packages/extensions/fireux-tasks/src/runtime/portfolio/components/Workspace/Tasks/Index.vue)
+
+## What Nuxt actually registers
+
+| Core entry | Owner and prepared result |
+| --- | --- |
+| [Native layer](../../packages/core/fireux-core/src/runtime/nuxt.config.ts) only | Discovers shared `Fire*` component directories, native pages, layouts, middleware and server files. The probe generated 18 top-level route entries including `/workspace`, the six Core layouts and global Workspace middleware. It did not generate the sampled Workspace component or composable registrations. |
+| [Module](../../packages/core/fireux-core/src/module.ts) only | Registers Entity component groups, composable directories, type references, route policy, SEO hooks and explicit root handlers. The probe generated no native pages or layouts. It still registered `WorkspaceSidebar`, `useWorkspace`, `useAppUserRead` and `useUserRead`, plus the explicit sitemap and manifest handlers. |
+| Layer and module together | Produces both sets of registrations. The layer owns native `server/api` discovery. The module explicitly registers root SEO and manifest handlers. Keep the two surfaces in the smoke test. Inspect the final Nitro method and route table before declaring a handler duplicate or removing one. |
+
+All six App probes generated the Core Workspace entry, layout, middleware,
+sidebar and auto-import, as well as the App membership and User readers. The
+table counts generated top-level route entries whose paths start with
+`/workspace`, including the shared entry.
+
+| App | Selected family | Effective composition beyond the standard App layers | Workspace entries |
+| --- | --- | --- | ---: |
+| [Go QR](../../projects/fireux/go-qr/nuxt.config.ts) | None | FireUX ecosystem and Go QR modules. No domain Workspace layer. | 1 |
+| [FireUX Blank](../../projects/fireux/fireux-blank/nuxt.config.ts) | Blank | App-owned Blank pages and the Bookings module. | 7 |
+| [FireUX Platform](../../projects/fireux/fireux-app/nuxt.config.ts) | Project | Main App, Docs, FireUX Project and native Projects layers. | 15 |
+| [Misebox](../../projects/misebox/misebox-app/nuxt.config.ts) | Kitchen | Main App, Misebox Kitchen and native Kitchens, Places, Businesses and Jobs layers. | 66 |
+| [La Tap](../../projects/misebox/la-tap-berne/nuxt.config.ts) | Kitchen | Tenant App with Misebox Kitchen and native Kitchens and Places layers. The ecosystem module selects Kitchens even though the tenant's module list omits it. | 65 |
+| [Granite](../../projects/granite/granite-app/nuxt.config.ts) | Portfolio | Main App and Granite Portfolio native composition with Properties, Compliance, Documents and Tasks. | 20 |
+
+The temporary hosts used the current installed workspace and Nuxt prepare. Some
+existing ecosystem and domain modules loaded through Nuxt's jiti fallback for
+extensionless imports. The probes establish generated registration, while
+production config export resolution, endpoint methods, rendering and live
+authority each require their own evidence. Node resolution from Misebox
+confirmed the sampled Core App and module config subpaths resolve to authored
+files by default and generated `.mjs` files under the production condition.
+The App and Ecosystem config production entrypoints also resolved to files.
 
 ## Current and proposed dependencies
 
@@ -45,7 +130,7 @@ unless an App or package is named. Decisions are proposed by stage.
 | `runtime/composables/fireux/firebase/`, `runtime/composables/fireux/firestore/`, `runtime/composables/fireux/commands/`, `runtime/utils/firestore-mutations/`, `runtime/server/utils/` | Universal auth, data transport, guarded command and request mechanics. | App and User sessions, membership readers and optional-domain commands. | **Keep** scoped access, listener and transaction semantics. Verify independently of Workspace in Stage 4. |
 | `runtime/composables/{forms,http,media,navigation,public,pwa,shared,ui}/`, `runtime/components/{Auth,Collection,Context,Create,Dashboard,Diagnostics,Onboarding,Provider,Pwa,layouts,molecules}/` | Mixed shared UI and technical glue. Includes domain-neutral controls, App account UI, and Workspace entry integrations. | The Core public component catalogue, native default and Dashboard layouts, and existing extensions. | **Keep** universal controls. **Simplify** mixed ownership by removing downstream assumptions and leaving domain-specific compositions with their owners. Keep neutral Dashboard and account navigation usable without Workspace. |
 | `runtime/assets/`, `runtime/public/`, `runtime/models/utils/stamps.model.ts`, `runtime/types/`, `runtime/utils/`, `runtime/tools/{types.ts,files/}` | Shared presentation assets, record primitives, technical contracts and file tooling. The shared CSS includes Workspace rules and Dashboard uses layout classes named `workspace-*`. | Core public/profile shells, Workspace, Dashboard and domain surfaces. | **Keep** neutral styles and primitives. **Move** Workspace-owned CSS only after verifying its selectors in Dashboard and other consumers. A shared class name alone does not establish ownership. |
-| `runtime/composables/diagnostics/useDiagnosticsUi.ts`, `runtime/app/components/DevControls.vue` | Neutral dev controls with a domain route allowlist in Core. | `fireux-properties/src/runtime/portfolio/components/Create/System.vue` and `fireux-suppliers/src/runtime/supplier/components/Create/System.vue` read note visibility. The allowlist also names Kitchen paths. | **Simplify** first in Stage 1. Remove industry route assumptions from Core and let actual dev-note consumers declare eligibility through an existing route boundary if needed. Preserve visibility state and dev-only behavior. |
+| `runtime/composables/diagnostics/useDiagnosticsUi.ts`, `runtime/app/components/DevControls.vue` | Neutral dev controls with a domain route allowlist in Core. | `fireux-properties/src/runtime/portfolio/components/Create/System.vue` and `fireux-suppliers/src/runtime/supplier/components/Create/System.vue` read note visibility. The allowlist also names Kitchen paths. | **Simplify** after the Stage 1 registration gate. Remove industry route assumptions from Core and let actual dev-note owners declare eligibility. Preserve visibility state and dev-only behavior. |
 | `runtime/app/models/model.ts`, `runtime/app/{composables,server,components}/` | Core App Entity. Owns selected App identity, configured `ecosystem_id`, App initialization, App context, branded assets and App-level readers. | `app/server/detail/read.ts`, `app/server/initialization/initialize.ts`, `app/composables/useAppSession.ts`, `FireuxApp.vue` and App administration routes. | **Keep** canonical identity and App-owned administration. Prove roots in Stage 2. Split the Workspace-specific entry and install behavior in Stage 5. |
 | `runtime/app/{contracts,literature,media,utils}/`, `runtime/app/server/{chat,events,initialization}/` | App-owned support and infrastructure. Literature types import Workspace capability-family vocabulary. App chat and join publication have separate server lifecycles. | Authored App metadata and `/api/chat`, internal join events, and App bootstrap. | **Keep** App-level contracts where independently consumed. **Review** chat’s optionality in Stage 4 and **simplify** the Workspace vocabulary dependency in Stage 5. |
 | `runtime/ecosystem/models/{ecosystem.model.ts,ecosystem-directory.ts}`, `runtime/ecosystem/server/{identity,directory}/`, `runtime/ecosystem/{composables,components}/` | Core Ecosystem Entity and public projection. Core reads and provisions the identity record. Project membership of the Ecosystem is currently required. | Core `/api/ecosystems`, App initialization, FireUX portal `server/project/ecosystem/read.ts`, `server/utils/apps.ts` and Project Apps. | **Keep** the identity and reader. **Simplify** Project coupling by first protecting exact Project-filtered operations in their owner. Remove the requirement for non-Project Core paths only when those consumers are reconciled. |
@@ -84,6 +169,27 @@ unless an App or package is named. Decisions are proposed by stage.
   `pages/workspace/index.vue`, and `tools/catalogue.ts`. Registration, App config,
   CSS and native-layout use form additional edges. Reconcile those before
   moving the directory.
+- **Default App composition already has a Workspace dependency outside
+  Core.** The source scan found 185 files in 18 other members directly
+  importing `fireux-core/runtime/workspace/*`. Kitchens, Properties, Projects
+  and Suppliers account for 141 files. The remaining consumers include
+  default App index operations importing [capability-family vocabulary](../../packages/extensions/fireux-app/src/runtime/app/server/index/operations.ts),
+  default AI importing [the Test Intent contract](../../packages/extensions/fireux-ai/src/runtime/server/utils/test-intent.ts),
+  and Marketplace moderation calling a
+  [Workspace Team member resolver](../../packages/extensions/fireux-marketplace/src/runtime/marketplace-store/server/moderation/commands.ts).
+  Classify these contracts by responsibility. Preserve a Workspace-free
+  dependency path through the default App and AI modules while letting
+  Workspace-enabled integrations select the optional package explicitly.
+  Direct import counts exclude generated tags, auto-import calls, named
+  layouts, CSS and route metadata.
+- **Workspace behavior spans both entrypoints.** Runtime config carries
+  `workspaces` and `workspaceConfig` from App assembly. Core's page transition
+  policy, auth middleware, Tailwind source scan, public and Dashboard
+  navigation, and client and server manifest logic also know about Workspace.
+  Extract only once these consumers have an explicit owner. Preserve the
+  shared Dashboard shell and App install behavior on the no-Workspace path.
+  Keep the per-family access checks and safe PWA start URL validation on
+  the enabled path.
 - **The likely broken consumers are concrete.** Extracting Workspace by
   moving the directory alone breaks the importers above, direct consumers in
   Kitchens, Properties, Projects, Suppliers, Businesses, and the Blank and
@@ -100,26 +206,43 @@ unless an App or package is named. Decisions are proposed by stage.
 | [Go QR](../../projects/fireux/go-qr/nuxt.config.ts) | Existing standalone App, with `workspaces: []`. Nuxt prepare still generated `/workspace`, its layout, sidebar and entry helper. It selects Go QR and standard App extensions. | Real no-Workspace consumer. Verify its public page, App manifest, sign-in and membership work after Workspace becomes optional. Use the module-only host for package independence. |
 | [FireUX Blank](../../projects/fireux/fireux-blank/nuxt.config.ts) | Existing narrow Workspace App with `workspaces: ['blank']`. Nuxt prepare generated Blank Identity, Overview, Team, Test, Calendar and Create, plus the Workspace entrance and layout. | Verify direct Workspace opt-in, selection, scoped reads, access, navigation, and Team after extraction. Use the real FireUX Project App as a follow-up for Project-owned consumers. |
 
-Prepared output proves Nuxt registration. It does not prove a rendered page,
-actual authentication or a live data operation. The 86-test baseline covers
-App context and initialization scope, App users, User session, Ecosystem reads,
-layout registration and page transitions, Workspace entry and selection,
-selected-record projection and Team member behavior. No data or deployment
-operation was performed.
+Prepared output proves Nuxt registration. Rendered pages, authentication and
+live data operations require separate evidence.
 
-## First implementation slice after review
+| Run | Passed | Scope |
+| --- | ---: | --- |
+| Stage 0 initial Core audit | 86 | Core identity, App initialization, User and membership readers, Workspace entry, selection and Team behavior. |
+| Stage 0 repository spine extension | 85 | Core registration, App composition and package artifacts, Main App hosting and repository tooling. This is a separate selection with some overlap. |
+| Stage 1 focused regression | 91 | The 85-test spine selection plus six tests of Core installation, production exports and reference App composition. |
 
-**Stage 1A · Remove industry-specific route knowledge from Core dev controls.**
-The concrete starting point is `runtime/composables/diagnostics/useDiagnosticsUi.ts`.
-Keep the existing visibility toggles in Core and let the actual note-owning
-routes supply the eligibility signal. Compare the current Sidebar and public
-shell behavior before editing. Verify the preserved controls on the affected
-Portfolio and Supplier surfaces and their absence where no notes are rendered.
-Re-run the bare Core prepare probe to confirm unchanged native contracts for
-this slice. Review sitemap and manifest registration separately before removing
-any apparent overlap between native discovery and explicit module handlers.
+## Stage 1 implementation sequence
 
-Then finish the Stage 1 Nuxt registration inventory and prove each canonical
-root in Stage 2. App membership and optional Workspace extraction remain
-separate Stage 3 and Stage 5 cutovers. Return to Kitchen after Core and the
-Workspace seam pass their consumer checks.
+1. **Core module alone.** Install the packed Core package through its module
+   export. Verify explicit component groups, App and User reader auto-imports,
+   and root manifest and SEO handlers.
+2. **Core layer alone.** Install the native layer through `fireux-core/layer`.
+   Verify pages, layouts, global middleware, shared components and native
+   Nitro endpoints.
+3. **Both together and production exports.** Verify that the combined host has
+   both sets of registrations, including GET App status and manifest and POST
+   App membership. Import the generated App and module config entrypoints
+   from the packed package under Node's production condition. This exposed a
+   missing compiled page-layout utility used by the page and ecosystem
+   configuration exports. The existing config build now generates and ships it.
+4. **Reference Apps.** Prepare Go QR with no selected Workspace family and
+   FireUX Blank with its Blank family. Both resolve Core and generate the
+   expected routes. Go QR still gets Core's shared Workspace registrations.
+   Removing those from the no-Workspace path belongs to Stage 5.
+5. **Developer controls.** With the installation gate passing, remove Core's
+   static industry route allowlist. The two Portfolio and two Supplier creation
+   pages declare note availability through Nuxt page metadata. Their existing
+   components still own the notes. Core retains the shared toolbar and
+   visibility state. Granite and Bringli prepare the four intended note
+   routes, and Go QR prepares none. A local browser fixture exercised the
+   actual toolbar and note components through show, hide and copy on those
+   routes, with the route context and clipboard supplied by the fixture.
+   Signed-in App rendering was outside that check.
+
+The [Core installation tests](../../packages/core/fireux-core/src/test/installation.test.mjs)
+exercise steps 1–4. Reconcile the Project relationship in Stage 2, App
+membership in Stage 3 and Workspace in Stage 5 as separate cutovers.

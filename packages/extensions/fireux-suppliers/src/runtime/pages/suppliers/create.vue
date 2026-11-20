@@ -22,6 +22,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 
 definePageMeta({
   layout: 'default',
+  devNotes: true,
   requiresAuth: true,
   title: 'Create Supplier Workspace',
   description: 'Create a Supplier identity and Workspace access together.',

@@ -21,6 +21,7 @@ const canCreate = true
 
 definePageMeta({
   layout: 'workspace',
+  devNotes: true,
 
   workspaceSurface: 'create',
   visibility: { modules: ['fireux-properties'] },

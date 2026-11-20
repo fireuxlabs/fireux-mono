@@ -119,24 +119,21 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from '#imports'
 import { computed, ref, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDiagnosticsUi } from '../../composables/diagnostics/useDiagnosticsUi'
 import { syncAppMediaToStorage } from '../composables/media/sync-app-media'
 
 const router = useRouter()
+const route = useRoute()
 const isDev = import.meta.dev
 let copyTimeout: number | undefined
 onBeforeUnmount(() => {
   if (copyTimeout) clearTimeout(copyTimeout)
 })
-const {
-  panelOpen,
-  notesVisible,
-  supportsInlineNotes,
-  toggleNotes,
-  togglePanel,
-} = useDiagnosticsUi()
+const { panelOpen, notesVisible, toggleNotes, togglePanel } = useDiagnosticsUi()
+const supportsInlineNotes = computed(() => route.meta.devNotes === true)
 const copiedNotes = ref(false)
 const mediaSyncPending = ref(false)
 const mediaSyncState = ref<'idle' | 'success' | 'error'>('idle')

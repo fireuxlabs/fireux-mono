@@ -80,6 +80,9 @@ retains its single App read and setup modal.
 retains its feedback, diagnostics and command owners. Native DevOnly surrounds
 its reference so production compilation can remove executable controls; a hidden
 interface alone is insufficient proof of production isolation.
+Pages that render inline developer notes declare `devNotes: true` in their
+Nuxt page metadata. The shared toolbar reads that declaration to enable its note
+controls, and the note component owns the content and visibility rendering.
 
 Each native layout owns the UMain around its slot. Workspace delegates this to
 WorkspacePage; content that remains bare after middleware owns its UMain; Go QR's embed and ErrorPage own their

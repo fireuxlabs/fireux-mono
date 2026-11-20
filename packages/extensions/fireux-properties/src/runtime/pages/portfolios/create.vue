@@ -24,6 +24,7 @@ import PortfolioCreateSystem from '../../portfolio/components/Create/System.vue'
 
 definePageMeta({
   layout: 'default',
+  devNotes: true,
   requiresAuth: true,
   title: 'Create Portfolio',
   description: 'Create a Portfolio with team access.',

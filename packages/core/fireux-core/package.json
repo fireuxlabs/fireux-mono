@@ -88,6 +88,7 @@
   "files": [
     "src/**/*",
     "dist/config/**/*",
+    "dist/runtime/app/utils/page-layout.mjs",
     "dist/types/theme.mjs",
     "dist/utils/brandAssets.mjs",
     "dist/utils/seo-indexing.mjs",
