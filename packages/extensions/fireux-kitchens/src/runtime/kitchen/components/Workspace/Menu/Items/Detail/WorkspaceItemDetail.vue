@@ -1,29 +1,20 @@
 <template>
-  <UCard class="workspace-item-basics">
-    <template #header>
-      <h2 class="workspace-item-basics__title">Workspace item</h2>
-    </template>
-    <dl class="workspace-item-basics__fields">
-      <div>
-        <dt>Name</dt>
-        <dd>{{ item.name || 'Untitled item' }}</dd>
-      </div>
-      <div>
-        <dt>Description</dt>
-        <dd>{{ item.description || 'No description' }}</dd>
-      </div>
-      <div v-if="item.image">
-        <dt>Photo</dt>
-        <dd>
-          <ItemPhoto
-            class="workspace-item-basics__photo"
-            :src="item.image"
-            :alt="item.name || 'Item'"
-          />
-        </dd>
-      </div>
-    </dl>
-  </UCard>
+  <section class="workspace-item-basics">
+    <div class="workspace-item-basics__copy">
+      <h2 class="workspace-item-basics__name">
+        {{ item.name || 'Untitled item' }}
+      </h2>
+      <p v-if="item.description" class="workspace-item-basics__description">
+        {{ item.description }}
+      </p>
+    </div>
+    <ItemPhoto
+      v-if="item.image"
+      class="workspace-item-basics__photo"
+      :src="item.image"
+      :alt="item.name || 'Item'"
+    />
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -37,46 +28,41 @@ defineProps<{ item: Pick<Item, 'name' | 'description' | 'image'> }>()
 .workspace-item-basics {
   max-inline-size: 48rem;
   margin-block-start: calc(var(--spacing) * 6);
+  display: grid;
+  align-items: start;
+  gap: calc(var(--spacing) * 6);
 }
 
-.workspace-item-basics__title {
+.workspace-item-basics__copy {
+  min-inline-size: 0;
+  max-inline-size: 50ch;
+}
+
+.workspace-item-basics__name {
   margin: 0;
-  font-size: var(--text-base);
+  font-size: var(--text-2xl);
   font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
-.workspace-item-basics__fields {
-  display: grid;
-  gap: calc(var(--spacing) * 4);
-  margin: 0;
-}
-
-.workspace-item-basics__fields > div {
-  display: grid;
-  grid-template-columns: 8rem minmax(0, 1fr);
-  gap: calc(var(--spacing) * 2);
-}
-
-.workspace-item-basics__fields dt {
+.workspace-item-basics__description {
+  margin: calc(var(--spacing) * 3) 0 0;
   color: var(--ui-text-muted);
-  font-size: var(--text-sm);
-}
-
-.workspace-item-basics__fields dd {
-  margin: 0;
+  line-height: 1.6;
   overflow-wrap: anywhere;
   white-space: pre-line;
 }
 
-.workspace-item-basics__photo {
-  inline-size: 7rem;
-  max-inline-size: 100%;
+.workspace-item-basics > .workspace-item-basics__photo {
+  inline-size: 100%;
+  max-inline-size: 24rem;
+  aspect-ratio: 4 / 3;
 }
 
-@media (max-width: 480px) {
-  .workspace-item-basics__fields > div {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--spacing);
+@media (min-width: 48rem) {
+  .workspace-item-basics:has(> .workspace-item-basics__photo) {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   }
 }
 </style>

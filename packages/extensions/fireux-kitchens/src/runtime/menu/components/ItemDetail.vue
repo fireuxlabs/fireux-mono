@@ -14,22 +14,28 @@
       :show-item-images="presentation.showItemImages"
     />
   </div>
-  <p v-else-if="menu" role="status">
-    {{ pending ? 'Loading menu…' : 'Item unavailable on this menu.' }}
+  <p v-else-if="menu || menuSlug || lookingUpMenu" role="status">
+    {{
+      lookingUpMenu || pending
+        ? 'Loading menu…'
+        : 'Item unavailable on this menu.'
+    }}
   </p>
-  <UCard v-else class="menu-item-detail">
-    <MenuItemDisplay
-      heading-tag="h1"
-      :name="item.name"
-      :description="item.description"
-      :image-url="item.image"
-    />
-  </UCard>
+  <MenuItemDisplay
+    v-else
+    class="menu-item-detail"
+    heading-tag="h1"
+    :name="item.name"
+    :description="item.description"
+    :image-url="item.image"
+  />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useApiRead } from 'fireux-core/runtime/composables/http/useApiRead'
 import type { Item } from '../../kitchen/records/menus/items/item'
+import type { MenuDirectoryPage } from '../models/menu-directory.response'
 import { useKitchenOfferingNow } from '../../kitchen/composables/useKitchenOfferingNow'
 import { promotionPricedSections } from '../../kitchen/utils/promotions/pricing'
 import { useMenu } from '../composables/useMenu'
@@ -42,17 +48,49 @@ const props = defineProps<{
   menu?: string
   kitchenSlug?: string
 }>()
+const lookup = computed(() => {
+  if (props.menu || !props.kitchenSlug || !props.item.id) return ''
+  const query = new URLSearchParams({
+    kitchenSlug: props.kitchenSlug,
+    dishId: props.item.id,
+    limit: '1',
+  })
+  return `/api/menus?${query}`
+})
+const directory = useApiRead(
+  () => `item-menu-preview|${lookup.value}`,
+  ({ fetch }) =>
+    lookup.value
+      ? fetch<MenuDirectoryPage>(lookup.value)
+      : Promise.resolve(null)
+)
+const lookingUpMenu = computed(() =>
+  Boolean(lookup.value && directory.pending.value)
+)
+const menuSlug = computed(() => {
+  if (props.menu) return props.menu
+  if (!lookup.value) return ''
+  const result = directory.data.value
+  const match = result?.items[0]
+  return result?.scope.kind === 'directory' &&
+    result.scope.kitchenSlug === props.kitchenSlug &&
+    match?.matching_dishes?.some((dish) => dish.id === props.item.id)
+    ? match.slug || match.id
+    : ''
+})
 const { manifest, pending } = useMenu(
-  () => (props.kitchenSlug ? props.menu || '' : ''),
-  { routeScope: () => directoryMenuRouteScope(props.kitchenSlug) }
+  () => (props.kitchenSlug ? menuSlug.value : ''),
+  {
+    routeScope: () => directoryMenuRouteScope(props.kitchenSlug),
+  }
 )
 const selectedMenu = computed(() => {
   const current = manifest.value
   if (
     current &&
     current.source.kitchenSlug === props.kitchenSlug &&
-    (current.source.menuSlug === props.menu ||
-      current.source.menuId === props.menu)
+    (current.source.menuSlug === menuSlug.value ||
+      current.source.menuId === menuSlug.value)
   )
     return current
   return null
@@ -84,13 +122,18 @@ const { className, styleVars } = useMenuThemeSurface({
 </script>
 
 <style scoped>
+.menu-item-placement,
+.menu-item-detail {
+  max-inline-size: 48rem;
+}
+
 .menu-item-placement {
   min-height: 0;
   margin: 0;
+  border-radius: calc(var(--ui-radius) * 2);
 }
 
 .menu-item-detail {
-  max-inline-size: 48rem;
   --menu-item-title-size: clamp(1.5rem, 4vw, 2.25rem);
   --menu-item-description-size: var(--text-base);
   --menu-item-padding: 0;

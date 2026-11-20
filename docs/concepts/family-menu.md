@@ -1069,9 +1069,12 @@ its record. The `[dishId]` route reads the Item once in the selected Kitchen
 and passes the result to Workspace Item detail.
 `WorkspaceItemDetail` shows the Item's name, description and optional photo
 as read-only fields.
-The same detail composes Menu's `components/ItemDetail.vue` directly. A
-`?menu=<slug>` preview reads the selected Kitchen's published Menu and
-renders the matching placements through the public Browse catalogue and theme.
+The same detail composes Menu's `components/ItemDetail.vue` directly.
+The plain Item URL resolves the first published public Menu in the selected
+Kitchen's Menu order with an active placement of that exact Item. Links from a
+specific Menu may retain `?menu=<slug>` to preview that Menu. The preview uses
+the public Browse catalogue and theme. Items without a published placement
+show their basic presentation.
 Ordering retains its Service context.
 
 Menu section rows link directly to the shared Kitchen Item record. Shared Item

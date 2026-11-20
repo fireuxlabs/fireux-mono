@@ -25,6 +25,7 @@ import { projectMenuDirectoryEntry } from './projection'
 export type ReadMenuDirectoryPageInput = {
   offering?: unknown
   search?: unknown
+  dishId?: unknown
   service?: unknown
   kitchenSlug?: unknown
   cursor?: unknown
@@ -214,6 +215,15 @@ export async function readMenuDirectoryPage(
       statusMessage: 'Unknown Menu service.',
     })
   const search = text(input.search).slice(0, 120)
+  const dishId = text(input.dishId)
+  if (
+    input.dishId !== undefined &&
+    (!isDocumentId(dishId) || !text(input.kitchenSlug))
+  )
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Item lookup requires a Kitchen and valid Item ID.',
+    })
   const limit = pageSize(input.limit)
   let cursor = input.cursor
   let page: MenuDirectoryPage
@@ -246,7 +256,7 @@ export async function readMenuDirectoryPage(
         )
       )
         continue
-      if (!search) {
+      if (!search && !dishId) {
         items.push(menu)
         continue
       }
@@ -254,7 +264,8 @@ export async function readMenuDirectoryPage(
         getRuntimeFirestore(),
         menu,
         search,
-        input.sources
+        input.sources,
+        dishId
       )
       const metadata = [
         menu.name,
@@ -264,7 +275,7 @@ export async function readMenuDirectoryPage(
       ]
         .filter(Boolean)
         .join(' ')
-      if (dishes.length || matchesFoodSearch(metadata, search))
+      if (dishes.length || (!dishId && matchesFoodSearch(metadata, search)))
         items.push({ ...menu, matching_dishes: dishes })
     }
     cursor = page.nextCursor

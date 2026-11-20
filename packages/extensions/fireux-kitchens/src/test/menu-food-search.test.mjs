@@ -34,17 +34,25 @@ function database() {
   }
   return {
     reads,
-    collection: (path) => ({
-      get: async () => {
+    collection: (path) => {
+      const read = async (rows) => {
         reads.push(path)
         return {
-          docs: (data[path] || []).map((row) => ({
+          docs: rows.map((row) => ({
             id: row.id,
             data: () => row,
           })),
         }
-      },
-    }),
+      }
+      const rows = data[path] || []
+      return {
+        get: () => read(rows),
+        where: (field, op, value) => {
+          assert.equal(op, '==')
+          return { get: () => read(rows.filter((row) => row[field] === value)) }
+        },
+      }
+    },
     doc: (path) => ({ path }),
     getAll: async (...refs) =>
       refs.map((ref) => {
@@ -88,6 +96,21 @@ test('document menus and missing ownership do not search catalogue dishes', asyn
     []
   )
   assert.deepEqual(db.reads, [])
+})
+test('Item lookup matches the exact active dish ID and reads no other dishes', async () => {
+  const db = database()
+  assert.deepEqual(
+    await readMatchingMenuItems(db, entry, '', undefined, 'margherita'),
+    [{ id: 'margherita', name: 'Pizza Margherita' }]
+  )
+  assert.deepEqual(
+    db.reads.filter((path) => path.includes('/dishes/')),
+    ['kitchens/venue/dishes/margherita']
+  )
+  assert.deepEqual(
+    await readMatchingMenuItems(db, entry, '', undefined, 'removed'),
+    []
+  )
 })
 test('failed content reads remain errors rather than false empty results', async () => {
   await assert.rejects(

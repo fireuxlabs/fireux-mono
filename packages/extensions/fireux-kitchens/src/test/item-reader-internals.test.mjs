@@ -705,7 +705,7 @@ test('the Item route reads once for the read surfaces', async () => {
   const route = 'pages/workspace/kitchen/menu/items/[dishId].vue'
   const path = 'kitchen/components/Workspace/Menu/Items/Detail/Index.vue'
   const publicItem = 'menu/components/ItemDetail.vue'
-  const renderRecord = (item, menu = '', manifest = null) => {
+  const renderRecord = (item, menu = '', manifest = null, directory = null) => {
     let reads = 0
     const app = createSSRApp({
       setup: () =>
@@ -737,23 +737,26 @@ test('the Item route reads once for the read surfaces', async () => {
         'kitchen/components/Workspace/Menu/Items/Detail/WorkspaceItemDetail.vue'
       ),
     })
-    app.component('UCard', {
-      setup:
-        (_, { slots }) =>
-        () =>
-          h('div', [slots.header?.(), slots.default?.()]),
-    })
     app.component('KitchenMenuItemDetail', {
       props: ['item', 'menu', 'kitchenSlug'],
       setup: (props) =>
         load(
           publicItem,
-          '({ presentation, sections, copy, className, styleVars, pending })',
+          '({ presentation, menuSlug, lookingUpMenu, sections, copy, className, styleVars, pending })',
           {
             computed,
             defineProps: () => props,
+            useApiRead: (key) => {
+              assert.equal(
+                key(),
+                menu
+                  ? 'item-menu-preview|'
+                  : `item-menu-preview|/api/menus?kitchenSlug=la-tapberne&dishId=${item.id}&limit=1`
+              )
+              return { data: ref(directory), pending: ref(false) }
+            },
             useMenu: (id, options) => {
-              assert.equal(id(), menu)
+              assert.equal(id(), menu || directory?.items[0]?.slug || '')
               assert.equal(options.routeScope().kitchenSlug, 'la-tapberne')
               return { manifest: ref(manifest), pending: ref(false) }
             },
@@ -830,27 +833,25 @@ test('the Item route reads once for the read surfaces', async () => {
     description: 'La Tap special',
   })
   assert.doesNotMatch(html, /<pre>|Item data/)
-  assert.match(html, /class="menu-item-detail"/)
+  assert.match(html, /class="[^"]*menu-item-detail"/)
   assert.doesNotMatch(html, /Workspace list/)
   assert.match(
     html,
-    /Workspace item<\/h2>[\s\S]*<dt>Name<\/dt><dd>Octopus Roll<\/dd>/
+    /<h2 class="workspace-item-basics__name">Octopus Roll<\/h2>/
   )
-  assert.match(html, /<dt>Description<\/dt><dd>La Tap special<\/dd>/)
+  assert.match(html, /workspace-item-basics__description">La Tap special<\/p>/)
   assert.match(
     html,
     /<article[\s\S]*<h1[^>]*>[\s\S]*?Octopus Roll[\s\S]*?<\/h1>[\s\S]*La Tap special[\s\S]*<\/article>/
   )
   assert.doesNotMatch(html, /menu-browse-item__price/)
   assert.doesNotMatch(html, /<img/)
-  assert.doesNotMatch(html, /<dt>Photo<\/dt>/)
   const withImage = await renderRecord({
     id: 'octopus-roll',
     name: 'Octopus Roll',
     image: '/octopus-roll.jpg',
   })
   assert.equal([...withImage.matchAll(/src="\/octopus-roll.jpg"/g)].length, 2)
-  assert.match(withImage, /<dt>Photo<\/dt>/)
   const placed = { id: 'picanha-smashburger', name: 'Kitchen burger' }
   const menu = 'comida-casera-2'
   const manifest = {
@@ -861,6 +862,7 @@ test('the Item route reads once for the read surfaces', async () => {
       theme: { palette: { canvas: '#171717' } },
     },
     content: {
+      name: 'Comida Casera',
       sections: [
         {
           id: 'onlyhands',
@@ -873,12 +875,18 @@ test('the Item route reads once for the read surfaces', async () => {
     },
   }
   const themed = await renderRecord(placed, menu, manifest)
+  assert.doesNotMatch(themed, /Public menu preview|Workspace item/)
   assert.match(themed, /--menu-bg:#171717/)
   assert.match(
     themed,
     /data-currency="CHF" data-images="false">Picanha Smashburger/
   )
   assert.doesNotMatch(themed, /Different Item|class="menu-item-detail"/)
+  const defaultMenu = await renderRecord(placed, '', manifest, {
+    scope: { kind: 'directory', kitchenSlug: 'la-tapberne' },
+    items: [{ slug: menu, matching_dishes: [{ id: placed.id }] }],
+  })
+  assert.equal(defaultMenu, themed)
   const missing = await renderRecord(placed, 'other-menu', manifest)
   assert.match(missing, /Item unavailable on this menu/)
   assert.doesNotMatch(missing, /Picanha Smashburger/)

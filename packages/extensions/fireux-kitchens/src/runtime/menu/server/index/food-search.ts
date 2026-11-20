@@ -21,7 +21,8 @@ export async function readMatchingMenuItems(
   db: ReturnType<typeof getRuntimeFirestore>,
   menu: MenuDirectoryEntry,
   query: string,
-  sources?: LiveProjectionSources
+  sources?: LiveProjectionSources,
+  dishId?: string
 ): Promise<Array<{ id: string; name: string }>> {
   const kitchenId = menu.source?.kitchen_id
   const menuId = menu.source?.menu_id
@@ -34,9 +35,12 @@ export async function readMatchingMenuItems(
     sections.docs
       .filter((doc) => doc.data().status !== 'archived')
       .map((doc) => {
-        const placementsQuery = db.collection(
+        const collection = db.collection(
           `${base}/menus/${menuId}/sections/${doc.id}/items`
         )
+        const placementsQuery = dishId
+          ? collection.where('dish_id', '==', dishId)
+          : collection
         sources?.watch(placementsQuery)
         return placementsQuery.get()
       })
@@ -71,7 +75,7 @@ export async function readMatchingMenuItems(
         dish.exists &&
         data?.status !== 'archived' &&
         typeof data?.name === 'string' &&
-        matchesFoodSearch(data.name, query)
+        (!query || matchesFoodSearch(data.name, query))
       )
         matches.push({ id: dish.id, name: data.name })
     }
