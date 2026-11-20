@@ -32,27 +32,29 @@ export default defineEventHandler(async (event) => {
     })
 
     let monitor = 'disabled'
-    try {
-      monitor = await publishAppUserJoinedPublication({
-        version: 1,
-        event_id: result.eventId,
-        source: {
-          firebase_project_id: firebaseProjectId,
-          database_id: databaseId,
-          project_id: projectId,
-          ecosystem_id: ecosystemId,
-          app_id: appId,
-        },
-        user_id: uid,
-        membership_role: result.membershipRole,
-        occurred_at: result.occurredAt,
-      })
-    } catch (error) {
-      console.warn('[user-joined] signup monitor delivery failed', {
-        appId,
-        eventId: result.eventId,
-        error,
-      })
+    if (projectId) {
+      try {
+        monitor = await publishAppUserJoinedPublication({
+          version: 1,
+          event_id: result.eventId,
+          source: {
+            firebase_project_id: firebaseProjectId,
+            database_id: databaseId,
+            project_id: projectId,
+            ecosystem_id: ecosystemId,
+            app_id: appId,
+          },
+          user_id: uid,
+          membership_role: result.membershipRole,
+          occurred_at: result.occurredAt,
+        })
+      } catch (error) {
+        console.warn('[user-joined] signup monitor delivery failed', {
+          appId,
+          eventId: result.eventId,
+          error,
+        })
+      }
     }
 
     return {

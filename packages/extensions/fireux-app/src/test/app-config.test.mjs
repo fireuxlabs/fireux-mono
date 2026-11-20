@@ -68,8 +68,12 @@ export const metaContent = defineFireuxMeta({ seo: { description: 'Fixture publi
         import assert from 'node:assert/strict'
         import { defineFireuxApp } from 'fireux-app/config'
         import { defineFireuxEcosystem } from 'fireux-ecosystem/config'
-        const input = { id: 'fixture', name: 'Fixture', shortName: 'Fixture', context: 'Local config fixture', ecosystem: 'fireux', ecosystemId: 'fireux', projectId: 'fireux', role: 'tenant' }
+        const input = { id: 'fixture', name: 'Fixture', shortName: 'Fixture', context: 'Local config fixture', ecosystem: 'fireux', ecosystemId: 'fireux', role: 'tenant' }
         const app = defineFireuxApp(input)
+        assert.equal(Object.hasOwn(app.runtimeConfig.public.fireux, 'projectId'), false)
+        assert.equal(app.runtimeConfig.public.fireux.ecosystemId, 'fireux')
+        assert.equal(defineFireuxApp({ ...input, projectId: ' fireux ' }).runtimeConfig.public.fireux.projectId, 'fireux')
+        assert.throws(() => defineFireuxApp({ ...input, projectId: ' ' }), /app.projectId/)
         const configuredCore = defineFireuxApp({ ...input, modules: [['fireux-core', { componentCatalogue: true }]] })
         const coreDeclarations = configuredCore.modules.filter(entry => entry === 'fireux-core' || (Array.isArray(entry) && entry[0] === 'fireux-core'))
         assert.deepEqual(coreDeclarations, [['fireux-core', { componentCatalogue: true }]])
@@ -82,7 +86,8 @@ export const metaContent = defineFireuxMeta({ seo: { description: 'Fixture publi
         assert.equal(app.extends.filter(path => path.includes('/fireux-app/src/runtime/')).length, 1)
         assert.equal(app.extends.some(path => path.includes('/fireux-ecosystem/')), false)
         assert.throws(() => defineFireuxEcosystem(input), /Main Apps require role/)
-        const main = defineFireuxEcosystem({ ...input, id: 'fireux-app', role: 'global' })
+        const main = defineFireuxEcosystem({ ...input, id: 'fireux-app', projectId: 'fireux', role: 'global' })
+        assert.equal(main.runtimeConfig.public.fireux.projectId, 'fireux')
         assert.equal(main.extends.filter(path => path.includes('/fireux-ecosystem/')).length, 1)
         console.log('Bundle composition passed')
       `,

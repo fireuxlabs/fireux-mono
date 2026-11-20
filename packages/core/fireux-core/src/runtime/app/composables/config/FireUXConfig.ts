@@ -168,7 +168,7 @@ export function useFireUXConfig(event?: H3Event): Readonly<FireUXConfig> {
     role,
 
     ecosystem,
-    projectId: reqString(fireux, 'projectId'),
+    projectId: optString(fireux, 'projectId'),
     ecosystemId: reqString(fireux, 'ecosystemId'),
     appId: reqString(fireux, 'id'),
     appName: reqString(fireux, 'name'),

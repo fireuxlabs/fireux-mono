@@ -26,8 +26,8 @@ export type FireuxAppSubscriptionCapacity = Record<
 export type FireuxAppConfig = {
   /** Ecosystem package/Firebase binding key. This is infrastructure, not an entity relationship. */
   ecosystem: string
-  /** Canonical FireUX Project entity id. */
-  projectId: string
+  /** Canonical FireUX Project id for Project-scoped integrations. */
+  projectId?: string
   /** Canonical Ecosystem entity id that owns this App relationship. */
   ecosystemId: string
   id: string

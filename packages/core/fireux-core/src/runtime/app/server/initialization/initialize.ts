@@ -157,6 +157,17 @@ export async function initializeRuntimeApp(
     identityUserExists = true
   }
 
+  if (!config.projectId) {
+    const ecosystem = await getRuntimeIdentityFirestore(
+      input.identityDatabaseId
+    )
+      .collection('ecosystems')
+      .doc(config.ecosystemId)
+      .get()
+    if (!ecosystem.exists)
+      conflict(`The App references missing Ecosystem ${config.ecosystemId}.`)
+  }
+
   const ecosystemCreated = await provisionMainAppEcosystem(
     input,
     identityUserExists

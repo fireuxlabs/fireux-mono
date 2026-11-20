@@ -3,9 +3,11 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import { APP_ROLES } from '../runtime/app/models/model.ts'
 function load(path, returned, dependencies = {}) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    .replaceAll('import.meta.dev', 'false')
     .replace(/^export /gm, '')
   return compileFunction(
     `${stripTypeScriptTypes(source)}; return ${returned}`,
@@ -107,6 +109,51 @@ test('configured creation rejects structured or oversized context before writing
     await assert.rejects(f.run({ ...f.input, context }), /must be text/)
   assert.equal(f.writes.length, 0)
 })
+test('a Project-free App initializes under an existing Ecosystem', async () => {
+  const f = fixture({ global: true })
+  f.input.config.projectId = undefined
+  f.records.set('ecosystems/example', { project_id: 'owner-project' })
+
+  const created = await f.run(f.input)
+  assert.equal(created.appCreated, true)
+  assert.equal(created.ecosystemCreated, false)
+  assert.equal(f.records.get('apps/example-app').ecosystem_id, 'example')
+  assert.deepEqual(f.records.get('ecosystems/example'), {
+    project_id: 'owner-project',
+  })
+  assert.equal((await f.run(f.input)).appCreated, false)
+  assert.deepEqual(
+    f.writes.map(({ path }) => path),
+    ['apps/example-app', 'apps/example-app/users/operator']
+  )
+})
+test('a Project-free App cannot create records for a missing Ecosystem', async () => {
+  const f = fixture({ global: true })
+  f.input.config.projectId = undefined
+  await assert.rejects(f.run(f.input), /missing Ecosystem example/)
+  assert.equal(f.writes.length, 0)
+})
+test('Core normalizes ordinary runtime App identity without Project config', () => {
+  const fireux = {
+    id: 'fixture',
+    name: 'Fixture',
+    shortName: 'Fixture',
+    role: 'tenant',
+    ecosystem: 'misebox',
+    ecosystemId: 'misebox',
+  }
+  const read = load(
+    '../runtime/app/composables/config/FireUXConfig.ts',
+    'useFireUXConfig',
+    { APP_ROLES, useRuntimeConfig: () => ({ public: { fireux } }) }
+  )
+  assert.equal(read().appId, 'fixture')
+  assert.equal(read().ecosystemId, 'misebox')
+  assert.equal(read().projectId, undefined)
+  fireux.projectId = ' portal-project '
+  assert.equal(read().projectId, 'portal-project')
+})
+
 test('global main App initialization creates the canonical Ecosystem and preserves later edits', async () => {
   const f = fixture({ global: true })
   const first = await f.run(f.input)

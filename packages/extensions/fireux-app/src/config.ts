@@ -42,6 +42,7 @@ const resolveDependency = createRequire(import.meta.url).resolve
 export function defineFireuxApp(input: FireuxAppConfig): NuxtConfig {
   const app = { ...input, modules: withDefaultAppModules(input.modules) }
   validateFireuxAppConfig(app)
+  const projectId = app.projectId?.trim()
 
   const layers =
     typeof app.extends === 'string' ? [app.extends] : app.extends || []
@@ -101,7 +102,7 @@ export function defineFireuxApp(input: FireuxAppConfig): NuxtConfig {
       ...(siteUrl ? { siteUrl } : {}),
       role: app.role,
       ecosystem: app.ecosystem,
-      projectId: app.projectId,
+      ...(projectId ? { projectId } : {}),
       ecosystemId: app.ecosystemId,
       modules: moduleNames,
       workspaces: app.workspaces || [],

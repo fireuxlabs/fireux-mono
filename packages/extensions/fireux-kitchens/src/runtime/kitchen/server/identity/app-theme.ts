@@ -182,10 +182,7 @@ export async function updateKitchenAppTheme(event: H3Event, value: unknown) {
       mutations.update(APP_MUTATION_TARGETS.runtimeApps, current.ownerAppId, {
         'theme.palette': compact,
         'theme.typography': requested.typography,
-        updated: serverAuditStamp({
-          by: actor.uid,
-          appId: current.ownerAppId,
-        }),
+        updated: serverAuditStamp({ by: actor.uid }),
       })
       return { appId: current.ownerAppId, compact }
     }

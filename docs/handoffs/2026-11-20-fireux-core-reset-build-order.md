@@ -46,10 +46,22 @@ This comes **before** rebuilding Kitchen Core, Items, Menus, Services and Orders
 
 ### 2 — Prove the three Core root Entities, one at a time
 
-- [ ] **App:** canonical model, App identity and configuration, initialization, exact/public readers, guarded commands and owned supporting records. Prove creation/lookup/update where actually supported.
+- [x] **App:** canonical model, App identity and configuration, initialization, exact/public readers, guarded commands and owned supporting records. Prove creation/lookup/update where actually supported.
 - [ ] **Ecosystem:** canonical ecosystem identity, its App relationship, independent reader/commands and evidence of its true owner. It is not a copy of the FireUX developer portal.
 - [ ] **User:** canonical person identity, private account support with its own privacy boundary, authentication/setup and independent readers/commands. The same person exists across Apps.
 - [ ] Reuse shared stamp/value primitives; **do not** introduce one universal Entity superclass or automatically copy a root model across domains.
+
+**App verification, 2026-11-20.** The focused App suite and installation gate
+passed. A Project-free Nuxt fixture used the actual Core App shell, Auth and
+Dashboard routes with synthetic accounts in the local Firebase Auth and
+Firestore emulators. The administrator signed in, passed the App membership
+guard, and saved a tagline through the App editor. The canonical App endpoint
+returned the saved text and actor stamp. Sign-out cleared access and revisiting
+the protected route required authentication. A signed-in basic member was
+redirected away from the admin screen and the edit endpoint returned 403. The
+saved tagline remained intact. The browser used the emulator's default
+database. Deployed sign-in, named-database browser behavior and live data
+remain outside this evidence.
 
 **Important existing dependency to inspect:** the current Ecosystem model at `runtime/ecosystem/models/ecosystem.model.ts` contains a required `project_id` even though **Project** lives in optional `fireux-projects` and is primarily developer-portal management. This is a potential architectural inconsistency. Verify all readers, initializers and consumers; propose how to make Core independent of optional Project without guessing its persisted record semantics. Do not delete stored `project_id` values or migrate records merely to make the TypeScript interface neat.
 

@@ -163,7 +163,13 @@ composes those owners without adding an AI dependency to Core.
 - `role` uses `AppRole` from Core's canonical App model. App configuration and
   runtime policy share that type instead of defining another role union.
 - `ecosystem` is the package/Firebase binding key, not an entity relationship.
-- `projectId` names the canonical FireUX Project entity.
+- Optional `projectId` names the canonical FireUX Project for Project-scoped
+  integrations. Ordinary Apps still require an Ecosystem binding and
+  canonical `ecosystemId`. An App configured without
+  `projectId` initializes under an existing Ecosystem and records local
+  signup events. Main App initialization can provision an Ecosystem when the
+  role is global, the Project and Ecosystem IDs match, and the App ID is
+  `<ecosystemId>-app`. Signup-monitor delivery requires Project scope.
 - Required `ecosystemId` names the canonical Ecosystem entity that contains the
   App. App role does not change this relationship: global, tenant, and
   standalone Apps all belong to an Ecosystem.
@@ -266,7 +272,7 @@ query/result behavior. This is a publication query seam, not mutation authority.
 ## Important fields
 
 - `ecosystem`
-- `projectId`
+- `projectId`, optional
 - `ecosystemId`
 - `databaseId`, optional
 - `id`

@@ -19,7 +19,10 @@ export function validateFireuxAppConfig(app: FireuxAppConfig): void {
     )
   }
 
-  if (!String(app.projectId || '').trim()) {
+  if (
+    app.projectId !== undefined &&
+    (typeof app.projectId !== 'string' || !app.projectId.trim())
+  ) {
     throw new Error(
       '[fireux] app.projectId must name the canonical FireUX Project entity.'
     )
