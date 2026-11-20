@@ -4,7 +4,7 @@
       <UPageCard
         id="kitchen-collection"
         title="Discover Kitchens"
-        description="Browse published Kitchens, restaurant profiles, current Menus and available ordering options."
+        description="Browse published Kitchens, restaurant profiles, current Menus and serving times."
         icon="i-lucide-map"
         to="/kitchens"
         variant="subtle"

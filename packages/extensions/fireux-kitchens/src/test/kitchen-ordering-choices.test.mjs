@@ -20,7 +20,7 @@ function load(path, names, dependencies = {}) {
     Object.keys(dependencies)
   )(...Object.values(dependencies))
 }
-const routes = load('menu/utils/navigation/route', 'menuRoutePath', {
+const routes = load('menu/utils/navigation/route', 'menuRoutePath,menuRouteIndexPath', {
   MenuRouteContexts: [
     'generic',
     'collection',
@@ -34,9 +34,9 @@ const { kitchenOrderingChoices } = load(
   'kitchenOrderingChoices',
   routes
 )
-const { kitchenWebsiteOrderUrl, menuWebsiteSnippet } = load(
+const { kitchenWebsiteMenuUrl, menuWebsiteSnippet } = load(
   'kitchen/utils/menu-website-snippet',
-  'kitchenWebsiteOrderUrl,menuWebsiteSnippet',
+  'kitchenWebsiteMenuUrl,menuWebsiteSnippet',
   routes
 )
 const scope = { kind: 'directory', kitchenSlug: 'venue' }
@@ -123,22 +123,22 @@ test('same-named offerings retain distinct identities and tenant routes', () => 
   )
 })
 test('stable website button targets Kitchen rather than a current Menu or service', () => {
-  const url = kitchenWebsiteOrderUrl({ origin: 'https://misebox.app', scope })
-  assert.equal(url, 'https://misebox.app/kitchens/venue/order')
+  const url = kitchenWebsiteMenuUrl({ origin: 'https://misebox.app', scope })
+  assert.equal(url, 'https://misebox.app/kitchens/venue/menu')
   assert.equal(
-    kitchenWebsiteOrderUrl({
+    kitchenWebsiteMenuUrl({
       origin: 'https://tenant.example',
       scope: { kind: 'tenant' },
     }),
-    'https://tenant.example/order'
+    'https://tenant.example/menus'
   )
   assert.ok(
     menuWebsiteSnippet(url).includes(
-      'href="https://misebox.app/kitchens/venue/order"'
+      'href="https://misebox.app/kitchens/venue/menu"'
     )
   )
   assert.equal(
-    kitchenWebsiteOrderUrl({
+    kitchenWebsiteMenuUrl({
       origin: 'https://misebox.app',
       scope: { kind: 'directory', kitchenSlug: '' },
     }),
@@ -149,7 +149,7 @@ test('stable website button targets Kitchen rather than a current Menu or servic
     'http://untrusted.example',
     'https://user:password@misebox.app',
   ])
-    assert.equal(kitchenWebsiteOrderUrl({ origin, scope }), '')
+    assert.equal(kitchenWebsiteMenuUrl({ origin, scope }), '')
 })
 
 test('public menu projection hides paused entrances and private operational settings', () => {

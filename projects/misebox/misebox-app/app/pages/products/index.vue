@@ -14,7 +14,7 @@
         />
         <UPageCard
           title="Kitchen Workspace"
-          description="Manage Menus and Collection orders with your Kitchen tools."
+          description="Manage Menus and use your Kitchen tools."
           icon="i-lucide-panels-top-left"
           to="#plans"
         />
@@ -56,7 +56,7 @@ definePageMeta({
 })
 useSeoMeta({
   title: 'Products · Misebox',
-  description: 'Pro, Business, Menu Hosting and Collection Ordering.',
+  description: 'Pro, Business, and Menu Hosting.',
 })
 </script>
 

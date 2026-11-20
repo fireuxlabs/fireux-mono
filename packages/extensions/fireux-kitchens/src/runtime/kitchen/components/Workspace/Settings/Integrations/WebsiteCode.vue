@@ -5,7 +5,7 @@
       :model-value="code"
       :rows="expanded ? 20 : 8"
       readonly
-      aria-label="Website ordering HTML code"
+      aria-label="Website menu HTML code"
     />
     <template #footer>
       <div class="fx-card-body-stack">

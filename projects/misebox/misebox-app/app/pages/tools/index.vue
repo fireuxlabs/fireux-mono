@@ -52,9 +52,8 @@ const tools = [
     to: '/tools/restaurant-labour-cost',
   },
   {
-    name: 'Restaurant ordering',
-    description:
-      'Use the Misebox ordering tool with an available restaurant Menu.',
+    name: 'Published menus',
+    description: 'Browse published restaurant menus.',
     to: '/tools/ordering',
   },
 ] as const
@@ -62,7 +61,7 @@ const tools = [
 useSeo({
   title: 'Restaurant Tools · Misebox',
   description:
-    'Use free Misebox restaurant tools without signing in, including Kitchen tools, a labour cost calculator and online ordering.',
+    'Use free Misebox restaurant tools without signing in, including Kitchen tools, a labour cost calculator and published menus.',
   path: '/tools',
   jsonLdBuilder: ({ canonicalUrl, description, title, absoluteUrl }) => ({
     '@context': 'https://schema.org',

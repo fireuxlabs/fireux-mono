@@ -1,7 +1,7 @@
 # Ordering and fulfilment boundary
 
 Updated: 2026-11-20
-Ref: 193e5adc3
+Ref: 330c4384f
 Role: map, not canon
 
 ## Purpose
@@ -12,11 +12,10 @@ source and executable checks establish implementation.
 
 ## Current owners
 
-Kitchen's Orders capability owns draft and submitted Orders, its operator board
-and the trusted commands. Menu owns customer selection and resolves the
-published Menu, selections and prices before handing an order to Kitchen.
-Kitchen Services owns the setup that links Menus and serving hours. The public
-and staff views share the Kitchen-owned read-only ticket.
+Kitchen's Orders capability owns staff drafts, submitted Orders, its operator
+board and the trusted commands. Published Menus expose read-only catalogues.
+Kitchen Services owns the configuration linking Menus and serving times.
+Customer checkout and receipt reads have been removed from these surfaces.
 
 - Kitchen owns the first local Ordering implementation; cross-industry reuse is
   an intended concept, not a proved shared package contract.
@@ -78,7 +77,7 @@ and staff views share the Kitchen-owned read-only ticket.
 - `kitchen/composables/orders/` contains the explicit-Kitchen clients.
   `useKitchenOrderDraftSave` captures client intent before credentials,
   `useKitchenOrderDraftCollection` reads authorized drafts, and
-  `useOrderExchange` serves Menu checkout and the Orders board.
+  `useOrderExchange` serves the Orders board.
 - Draft storage is `kitchens/{kitchenId}/order-drafts/{id}` with schema version,
   revision and audit metadata outside the basic Order. Empty drafts are valid;
   saving is not submission. Saved channels cannot change. Revision conflicts do
@@ -87,46 +86,16 @@ and staff views share the Kitchen-owned read-only ticket.
 ## Connected order exchange
 
 - `kitchen/records/order-submission.ts` keeps execution state, revision and
-  kitchen response outside the basic Order. `utils/order-submission.ts` owns
+  Kitchen response outside the basic Order. `utils/order-submission.ts` owns
   completeness and permitted transitions.
-- `server/orders/submission.ts` owns guarded submission, numbering, idempotency,
-  operator response and customer-scoped reads. Records live in
-  `kitchens/{id}/submitted-orders`; the old Orders collection is untouched.
-  There is no test flag or separate test-order mode. Public Website and Kiosk targets use the published Menu resolver for the exact tenant
-  or directory Kitchen. Tenant ownership is rechecked in the writing transaction.
-  Generic submissions, including POS/Kiosk, require current Kitchen authority;
-  anonymous customers cannot bypass canonical Menu resolution.
-- Operator POS/Kiosk and table Website orders auto-accept. Public Menu Kiosk
-  and Website collection/delivery await acceptance or rejection; rejection requires a reason. Accepted orders
-  progress through preparing, ready and completed with exact revisions.
-- `Workspace/Orders/Board.vue` combines persisted open orders (including empty
-  ones) and the protected submitted-order reader. `/workspace/kitchen/orders/board`
-  is the single board,
-  with membership/access-bound clearing, independent refresh and action transports,
-  multi-select state filters, one next action per ticket and collapsed
-  response/contact details. Open orders use the existing guarded editor in a modal; manual order creation
-  is not exposed on the board.
-  No separate draft page or saved-draft list remains. Submitted reads include
-  completed and declined orders. The protected reader drains internal 1000-record
-  batches; the board has no order cap or pagination controls. Open orders use
-  the same scoped reader in its full-collection mode. Its browser full-screen control isolates the board
-  from Workspace chrome. The separate fixed-item order form and tenant `/order`
-  shortcut are removed. Published structured menus now expose Collection,
-  Delivery and Table ordering when the App declares Website support. These
-  consume `menu/components/Order/Index.vue`, the existing canonical Menu payload and
-  `api/ordering/menu-submit`. Selection uses stable section/item/option IDs.
-  `menu/server/ordering.ts` rechecks publication, item/Dish availability,
-  Sellable variant restrictions and canonical prices in the writing transaction.
-  Changed totals require review; order facts remain separate from the pricing
-  and Menu-selection snapshot. No browser-authored price becomes authoritative.
-- No payment, delivery-zone fee calculation, driver dispatch or production deployment is implied.
-  Anonymous customer sessions can read only their own submitted response through
-  the trusted endpoint; they do not receive operator access. The public Kiosk
-  entrance reuses Menu Selection and `useServiceCheckout`, with explicit Eat in
-  or Takeaway mode eligibility. It does not restore device pairing or kiosk
-  session authority. Its receipt resets after 30 seconds and an abandoned
-  basket after two minutes without changes; uncertain submissions stay locked
-  to their exact retry reference. Kiosk payment remains at the counter.
+- `server/orders/submission.ts` owns staff submission, numbering, idempotency
+  and revision-gated status changes. Its transaction checks Kitchen access.
+  Records remain in `kitchens/{id}/submitted-orders`.
+- `Workspace/Orders/Board.vue` combines saved drafts and submitted orders.
+  It masks obsolete results across membership and Kitchen changes, reads all
+  submitted orders in internal batches, and keeps open-order editing behind the
+  existing editor. Existing orders from customer channels remain readable by
+  authorized staff and retain their saved pricing and lifecycle state.
 
 ## Domain boundary
 
@@ -167,12 +136,3 @@ Kitchen Fulfilment reader and protected commands, without a section-switching wr
 Services configures the existing service choices and their menus and serving times.
 The Misebox reference owns the stage previews and success specimens in
 `components/Docs/OrderingTicket/`, with local example state and shared ticket rendering.
-
-Public Collection, Delivery, Table and Kiosk submissions require a currently open,
-menu-linked service schedule in its configured timezone. `publicMenuServiceOpen`
-reuses the existing weekday-time evaluator on both the customer page and inside
-`menu/server/ordering.ts` before any new-order write. The server clock is authoritative;
-client time is presentation only. Opening is inclusive, closing exclusive; overnight
-windows and multiple alternative schedules retain the existing evaluator semantics.
-Closed services remain browsable but cannot submit; existing receipts and successful
-idempotent retries remain available. This does not add scheduled-order booking.

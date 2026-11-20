@@ -88,7 +88,15 @@ test('only linked published Menus and enabled unpaused supported interactions ca
   )
   assert.deepEqual(
     availableWebsiteInteractions(
-      { ...menu, doc: { url: 'https://example.test/menu.pdf', name: 'menu.pdf', type: 'application/pdf', storage_path: 'menus/menu.pdf' } },
+      {
+        ...menu,
+        doc: {
+          url: 'https://example.test/menu.pdf',
+          name: 'menu.pdf',
+          type: 'application/pdf',
+          storage_path: 'menus/menu.pdf',
+        },
+      },
       service
     ),
     ['browse']
@@ -174,60 +182,85 @@ test('dialog reopening preserves iframe and first click never posts an order', (
 
 test('plain website harness uses the canonical lazy menu snippet', () => {
   const html = readFileSync(
-    new URL('../../../../../../projects/fireux/no-fireux-embed-test/public/misebox.html', import.meta.url),
+    new URL(
+      '../../../../../../projects/fireux/no-fireux-embed-test/public/misebox.html',
+      import.meta.url
+    ),
     'utf8'
   )
-  assert.ok(html.includes(menuWebsiteSnippet(
-    'http://localhost:3001/kitchens/baeren-ringgenberg/menus/food', 'View Menu'
-  )))
+  assert.ok(
+    html.includes(
+      menuWebsiteSnippet(
+        'http://localhost:3001/kitchens/baeren-ringgenberg/menus/food'
+      )
+    )
+  )
   assert.doesNotMatch(html, /<iframe[^>]+\ssrc=/)
 })
 
-test('harness rejects incomplete ordering links and retains the exact named Offering', () => {
+test('harness preserves named offering links for browsing and rejects unsafe URLs', () => {
   const html = readFileSync(
-    new URL('../../../../../../projects/fireux/no-fireux-embed-test/public/misebox.html', import.meta.url),
+    new URL(
+      '../../../../../../projects/fireux/no-fireux-embed-test/public/misebox.html',
+      import.meta.url
+    ),
     'utf8'
   )
-  const script = [...html.matchAll(/<script>\n([\s\S]*?)\n<\/script>/g)].at(-1)?.[1]
+  const script = [...html.matchAll(/<script>\n([\s\S]*?)\n<\/script>/g)].at(
+    -1
+  )?.[1]
   assert.ok(script)
   let submit: (event: { preventDefault: () => void }) => void
   const input = { value: '' }
   const error = { hidden: true, textContent: '' }
   const link = { href: '', textContent: '' }
   const frame = {
-    source: 'previous', target: '',
-    removeAttribute: () => { frame.source = '' },
-    setAttribute: (_name: string, value: string) => { frame.target = value },
+    source: 'previous',
+    target: '',
+    removeAttribute: () => {
+      frame.source = ''
+    },
+    setAttribute: (_name: string, value: string) => {
+      frame.target = value
+    },
   }
   const dialog = { close() {}, setAttribute() {} }
   const button = { setAttribute() {} }
-  const root = { querySelector: (name: 'a' | 'iframe' | 'dialog' | 'button') => ({ a: link, iframe: frame, dialog, button })[name] }
+  const root = {
+    querySelector: (name: 'a' | 'iframe' | 'dialog' | 'button') =>
+      ({ a: link, iframe: frame, dialog, button })[name],
+  }
   const direct = { href: '' }
   const target = { textContent: '' }
   const mode = { textContent: '' }
-  const form = { addEventListener: (_name: string, listener: typeof submit) => { submit = listener } }
-  const elements = { '#setup': form, '#error': error, '#menu-url': input,
+  const form = {
+    addEventListener: (_name: string, listener: typeof submit) => {
+      submit = listener
+    },
+  }
+  const elements = {
+    '#setup': form,
+    '#error': error,
+    '#menu-url': input,
     '#kitchen-setup': { addEventListener() {}, requestSubmit() {} },
-    '[data-misebox-ordering]': root, '#direct': direct, '#target': target, '#mode': mode }
+    '[data-misebox-menu]': root,
+    '#direct': direct,
+    '#target': target,
+    '#mode': mode,
+  }
   vm.runInNewContext(script, {
-    URL, document: { querySelector: (name: keyof typeof elements) => elements[name] },
+    URL,
+    document: {
+      querySelector: (name: keyof typeof elements) => elements[name],
+    },
   })
-  input.value = 'https://misebox.app/kitchens/baeren-ringgenberg/menus/food.collection'
-  submit!({ preventDefault() {} })
-  assert.match(error.textContent, /missing its Offering/)
-  assert.equal(link.href, '')
-  const incomplete = input.value
-  input.value += '?service=counter-test'
-  submit!({ preventDefault() {} })
-  assert.match(error.textContent, /missing its Offering/)
-  assert.equal(link.href, '')
-  input.value = incomplete + '?offering=counter-test'
+  input.value =
+    'https://misebox.app/kitchens/baeren-ringgenberg/menus/food.collection?offering=counter-test'
   submit!({ preventDefault() {} })
   assert.equal(error.hidden, true)
   assert.equal(link.href, input.value)
   assert.equal(frame.target, input.value)
   assert.equal(direct.href, input.value)
-  assert.equal(link.textContent, 'Order now')
   assert.equal(frame.source, '')
   input.value = 'javascript:alert(1)'
   submit!({ preventDefault() {} })

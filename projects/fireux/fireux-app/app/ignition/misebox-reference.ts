@@ -93,27 +93,14 @@ export const miseboxReference: IgnitionAssembly = {
       ],
     },
     {
-      id: 'ordering',
-      role: 'service',
-      owner: 'fireux-kitchens',
-      requirements: ['place-order'],
-      uses: ['menus', 'offerings'],
-      sourcePaths: [
-        source + 'menu/composables/useServiceCheckout.ts',
-        source + 'menu/server/ordering.ts',
-        source + 'kitchen/server/orders/submission.ts',
-      ],
-    },
-    {
       id: 'customer-menu',
       role: 'surface',
       owner: 'fireux-kitchens',
-      requirements: ['menu', 'place-order'],
-      uses: ['ordering'],
+      requirements: ['menu'],
+      uses: ['menus'],
       sourcePaths: [
         source + 'kitchen/components/Detail/ServiceMenu.vue',
-        source + 'menu/components/Selection/Index.vue',
-        source + 'menu/components/Selection/Checkout.vue',
+        source + 'menu/components/Detail/Index.vue',
       ],
     },
     {
@@ -141,13 +128,15 @@ export const miseboxReference: IgnitionAssembly = {
       sourcePaths: [source + 'kitchen/components/Workspace/Orders/Board.vue'],
     },
   ],
-  evidence: collectionOrderingBrief.requirements.map((requirement) => ({
-    requirement: requirement.id,
-    level: 'source-reviewed',
-    observation:
-      'Reference implementation exists; this record does not claim an independently generated or fully accepted customer-to-pickup journey.',
-    references: ['projects/misebox/misebox-app/app/search-demand.ts'],
-  })),
+  evidence: collectionOrderingBrief.requirements
+    .filter(({ id }) => id !== 'place-order')
+    .map((requirement) => ({
+      requirement: requirement.id,
+      level: 'source-reviewed',
+      observation:
+        'Reference implementation exists; this record does not claim an independently generated or fully accepted customer-to-pickup journey.',
+      references: ['projects/misebox/misebox-app/app/search-demand.ts'],
+    })),
   learnings: [
     {
       decision: 'Separate capability ownership from storage nesting.',

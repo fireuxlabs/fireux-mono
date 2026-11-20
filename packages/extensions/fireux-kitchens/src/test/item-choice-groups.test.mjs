@@ -8,9 +8,6 @@ import {
   toggleItemChoice,
 } from '../runtime/kitchen/utils/item-choices.ts'
 import { normalizeItemPricingPatch } from '../runtime/kitchen/utils/item-pricing.ts'
-import { serviceBasketLine } from '../runtime/menu/utils/ordering/basket.ts'
-import { serviceSelections } from '../runtime/menu/utils/ordering/checkout.ts'
-import { readMenuOrderSelections } from '../runtime/menu/server/ordering/selections.ts'
 const option = (id, price = 0) => ({ id, label: id, price })
 const group = (id, min, max, pricing = 'additional') => ({
   id,
@@ -98,52 +95,6 @@ test('historical flat records project without writes; explicit groups win and id
   assert.equal(patch.price, 1)
   assert.equal(patch.choice_groups[0].name, 'Portions')
 })
-test('basket selections round-trip group IDs and reject old flat choices for a grouped Item', () => {
-  const offer = {
-    source: { kitchenId: 'k', menuId: 'm', sectionId: 's' },
-    presentation: { currencyCode: 'CHF' },
-    offerings: [],
-    item: {
-      id: 'i',
-      name: 'Item',
-      price: 99,
-      priceOptions: [],
-      addOns: [],
-      choiceGroups: groups(),
-    },
-  }
-  const choices = {
-    quantity: 1,
-    optionId: '',
-    extraIds: [],
-    groups: {},
-    choiceGroups: selections(),
-  }
-  const line = serviceBasketLine(offer, choices)
-  assert.equal(line.unitMinor, 600)
-  const parsed = readMenuOrderSelections(serviceSelections([line]))
-  assert.deepEqual(parsed[0].choiceGroups, line.choices.choiceGroups)
-  choices.choiceGroups.size.push('a')
-  assert.deepEqual(line.choices.choiceGroups.size, ['b'])
-  assert.throws(() =>
-    serviceBasketLine(offer, {
-      ...choices,
-      choiceGroups: selections(),
-      optionId: 'b',
-    })
-  )
-  assert.throws(() =>
-    readMenuOrderSelections([
-      {
-        sectionId: 's',
-        itemId: 'i',
-        quantity: 1,
-        choiceGroups: { size: ['a', 'a'] },
-      },
-    ])
-  )
-})
-
 test('promotions replace full choice prices and retain additional charges', () => {
   const values = groups()
   const item = {

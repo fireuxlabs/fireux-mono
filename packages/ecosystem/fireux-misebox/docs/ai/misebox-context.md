@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-11-20
-Ref: 193e5adc3
+Ref: 330c4384f
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -128,20 +128,19 @@ their own entrance policies.
 The Main App's `/products` composes Pro and Business from App-owned
 `useMiseboxPricing`, which selects the App layer's shared commercial tiers, alongside the existing
 Products reader without a type filter. App-owned `Products/Services.vue` selects
-the two offers, order, actions and illustrations from its local
+the Menu Hosting offer and illustration from its local
 `ServiceOfferPreview.vue`. Products' shared `ProductSurface`
 renders saved copy, available benefits, optional image/preview, terms and action
 on catalogue and detail routes. No Product IDs or Kitchen language live in that
 shared surface. `Products/Plans.vue` composes
 native Nuxt UI pricing controls from App-owned tier data. `/pricing` consumes the
 same tier selection and Product collection; Free appears only as the default
-plan. Menu Hosting and Collection Ordering remain saved domain-backed offers.
+plan. Menu Hosting remains a saved domain-backed offer.
 Misebox does not expose the App layer's Managed or branded-App packages as its own plans.
 Kitchen capability pages omit repeated upgrade and plan-allowance prompts.
 Core membership/capacity checks and Kitchen command authority still govern use.
 The catalogue offers Menu Hosting for free, alongside direct
-Workspace use. Collection Ordering is a Kitchen capability without a separate Product
-purchase; Kitchen access, plan limits and service readiness still apply. Free is
+Workspace use. Free is
 visible in the shared plan comparison, not a separately sold Product.
 This presentation does not establish Stripe billing or entitlement activation. Root Products are App catalogue offers; Kitchen food and
 drinks belong to Kitchen Dishes, Menu placements and their ordering snapshots.
@@ -150,23 +149,12 @@ operational tool `tools/misebox-migrations/retire-baeren-drink-products.py` guar
 the exact retired seed duplicates and create-only recovery from retained preimages;
 it is not a runtime writer or a generic migration API.
 
-### Collection Ordering Product
+### Customer ordering
 
-The Main App's `/products/collection-ordering` reads the saved catalogue Product
-through Products' `useProductDetail` and composes its shared header with the
-App-owned `CollectionOrdering/Offer.vue`. The offer links existing Kitchen
-Services and Orders surfaces; it owns no ordering reader, command, purchase
-entitlement or fulfilment state.
-
-Kitchen Services owns activation, Menu selection and serving hours. The public
-Collection menu uses `useServiceCheckout` and Kitchen's shared `composables/orders/useOrderExchange`;
-the Workspace order board consumes the same Order submission/exchange owners.
-Products' catalogue-only creation supports an empty price list and no payment
-provider call. Product purchase is not a prerequisite for direct Kitchen use.
-The combined fixture proof in Kitchen's `kitchen/order-submission.test.mjs`
-exercises canonical Menu pricing, duplicate retry, board visibility, operator
-transitions and customer reload. Browser/operational acceptance remains distinct
-from that fixture evidence. No separate Collection Product execution layer exists.
+The public Collection Ordering product route explains the pause and points to
+published Menus. Customer checkout, Kiosk and receipt endpoints are removed.
+Staff Orders retains saved records and its Workspace editor, board and protected
+actions. The public Menu audience retains catalogue data and serving times.
 
 ### Menu Hosting and structured preparation
 
@@ -1985,24 +1973,9 @@ Website ordering/testing and the Delivery & payment doorway belong in Integratio
 `Fulfilment` uses the existing
 `kitchens/{id}/fulfilment/policy` live reader and trusted command for delivery zones
 and payment methods. Its delivery editor lives under Kitchen composables and
-its pure zone helpers under Kitchen utilities. `Integrations` at
-`/workspace/kitchen/settings/integrations` owns Website ordering: button preview,
-copyable code and the direct customer link. The former Channels and Settings
-index entrances redirect there. Website code targets the Kitchen's stable
-`/kitchens/:slug/order` entry, or `/order` in a tenant App. This chooser consumes
-the live published Menu directory and its safe offering-option projection, excludes
-paused and unsupported interactions, and carries the exact selected offering id
-to the existing per-Menu checkout. The dedicated Collection service entrance
-separately combines eligible Menus in one basket through `useServiceCheckout`
-and the canonical multi-Menu resolver. Ordinary offering/menu edits do not require a replacement snippet.
-Kitchen-owned `components/Ordering/Setup.vue` is the shared website-ordering
-workflow in the App setup entrance and Workspace Integrations. It consumes live
-Kitchen/Menu/Offering records through the existing identity and offering readers.
-An explicit Kitchen id uses current membership-bound access without initializing
-Workspace selection. Payment summaries consume that same explicit Kitchen through
-`useKitchenFulfilment`; the existing Workspace reader remains the default for
-Workspace-only consumers. Payment-edit actions in standalone setup use its
-explicit authorized handoff rather than another saved Workspace selection.
+its pure zone helpers under Kitchen utilities. Workspace Integrations owns the copyable website menu
+button and allowed origins. Its button opens the published Kitchen Menu. The
+standalone website menu information page links to Integrations for setup.
 Services composes inline `Workspace/Services/Service.vue` and its Setup
 children; there is no exact-record Service route. Each local editor owns
 availability, menu selection, hours and its scoped automatic configure command.
@@ -2019,44 +1992,9 @@ The public selector is `?offering=<id>`; Menu payloads and directories use `offe
 
 Customer-facing services use `/services` for the catalogue, `/services/ordering`
 for the ordering introduction, and `/services/ordering/setup` for setup. These
-App-owned destinations compose existing capabilities; they are not a service-layer
-registry. Ongoing management remains in Workspace. `/mvp` redirects to setup.
-
-Main Misebox `/services/ordering/setup` reuses the public `landing` layout and its account controls.
-It is an App-owned find/create entrance without the Workspace
-shell. Signed-in users first see their live membership-bound Kitchens through
-`useKitchenCollection`; local choice does not change Workspace selection.
-The setup URL retains that choice as `?kitchen=<id>` for reload/resume; it is
-only a requested identity, never access evidence. Pending collection reads do
-not discard it. Current membership-bound access still gates the setup reader,
-and only an explicit handoff updates the Workspace selection. A requested
-Kitchen absent from settled access/collection results shows an unavailable
-state with Choose another Kitchen; pending reads remain pending, and failed
-reads show a check failure rather than an indefinite wait.
-The public layout owns account controls. The page directly composes root/directory
-`KitchenOnboarding`, reusing its Place-backed search, prerequisites and explicit
-contribution commands. Its selected-review slot displays membership-lifetime-bound
-`useKitchenAccess` results for an existing Kitchen; unknown/error reads are not
-negative membership results. Searching/selecting does not join or select a
-Workspace. Directory contribution and management access retain separate actions.
-Place-derived directory contribution writes only the Kitchen listing (and a
-non-physical Place for name-only creation), retaining attribution and existing
-records without Team/access grants. It does not seed Menus or a Pass. Authorized
-management completion uses the [starter contract](#menu-operator-entitlements) only when it creates a new Kitchen root. It never adds or recreates Menus on an existing Kitchen, including an empty collection after deletion. Pass initialization remains separate; existing records are preserved. Guest creation/adoption and explicit shell provisioning
-retain their separate contracts. See `kitchen/server/index/onboarding/directory.ts`,
-`commands.ts`, `system-menus.ts` and `src/test/kitchen/kitchen-management-defaults.test.mjs`.
-The service entrance keeps a directory result visible with an access-check and
-back-to-search path; it does not select a Workspace or infer authority from creation.
-Workspace Offerings links to its existing Integrations setup, which renders the
-same saved-state workflow without a second search or service-to-Workspace prompt.
-A listing is not trading authorization. Existing App/Team association policy
-contains no independent venue-operator verification; management onboarding for
-a previously absent Kitchen must not be described as proving that right.
-Ordering configuration and operational proof remain separate; the delivery contract
-is in `docs/concepts/menu-ordering.md#website-ordering-delivery-contract`.
-The external Blank website remains a snippet consumer, not a configuration owner.
-Its selected public Kitchen slug does not change the signed-in Workspace selection;
-the operator explicitly chooses that Kitchen in Misebox.
+The website menu preview opens the same public catalogue as the direct link.
+The external Blank website consumes the snippet. Its preview selection is
+separate from the operator's selected Kitchen in Workspace.
 
 Allowed websites is a live, operator-edited integration at
 `kitchens/{id}/integrations/website-ordering`, written by the guarded
@@ -2076,30 +2014,6 @@ order-abuse controls. Local HTTP origins are accepted only in development.
 framed navigation and authorized/denied mutations.
 `offering-configuration.test.mjs` and `kitchen-ordering-choices.test.mjs` cover the
 configuration and selection boundary.
-
-The Kitchen-owned `/kitchens/<slug>/menu.kiosk` entrance composes `MenuKiosk`
-with the existing `PublicKitchenDetailServiceMenu` and Menu Selection owners. Eat in
-and Takeaway are explicit choices over their own configured Menu sets. Public
-Menu projections and `menu/server/ordering.ts` apply the same mode eligibility,
-pause and effective serving-hour checks. The existing Menu-submit adapter accepts
-only website/collection-delivery-table or kiosk/eat-in-takeaway combinations;
-App-declared channels remain required. Kiosk orders use canonical Menu pricing,
-numbering, idempotency and the ordinary Kitchen order board. Public Kiosk
-submissions await Kitchen acceptance; a customer-selected channel grants no
-acceptance authority. Tenant adapters retain their App-bound Menu scope and
-reject a different Kitchen slug. Payment at the
-counter is separate; no payment confirmation or provider charge is created.
-
-`useServiceCheckout` owns the shared basket submission and response lifecycle.
-`useServiceRecovery` retains the exact attempt by App, Kitchen, entrance, mode
-and customer. Kiosk uses the native anonymous customer session rather than a
-staff Workspace session; its surface blocks signed-in staff accounts. A receipt
-returns to the start after 30 seconds; an abandoned basket clears after two
-minutes without changes. An unresolved submission retains its reference for
-retry and cannot be automatically discarded into another order. Loading and
-empty/error states retain the shared Menu owners. No device-pairing, payment
-terminal or retired kiosk session system is restored. Services exposes the
-current public entrance through its existing Kiosk setup.
 
 Counter Offerings can have multiple interactions per
 Kitchen. They never write Firestore or put policy back onto Menu records.
@@ -2510,7 +2424,7 @@ Menu placements still own only references, availability and display order.
 Promotions reprice full-price choices while leaving additional charges intact.
 Imports and Menu Express review explicitly reject grouped Items that their
 current comparison/delivery formats cannot represent, rather than flattening or
-overwriting them. Verify `item-choice-groups.test.mjs`, `collection-checkout.test.mjs`
+overwriting them. Verify `item-choice-groups.test.mjs`
 and the existing Item command and public presentation checks.
 
 There is no shared Sellable record, adoption control or placement-price fallback.
@@ -2803,59 +2717,8 @@ Verify discovery, publication, public-slug and audience metadata tests.
 
 ## Customer Menu service surfaces
 
-Collection composes Menu-owned `components/Selection/Index.vue` over the existing
-service sources. Catalogue, item selection and basket review are focused children;
-The Selection owner stays mounted through catalogue loading, errors and empty
-results, keyed by Kitchen slug and service entrance. `useServiceBasket` owns
-component-local selections, while `service-basket.ts`
-validates option/extra/meal choices and calculates display totals in integer minor
-units. The serving-time notice is composed once above Collection sections. The
-projection retains each chosen offer's Kitchen/Menu/Section identity, and basket
-lines retain service IDs and item identity. Changed or missing catalogue selections
-are flagged without silently repricing existing basket lines. During loading or
-failure, the basket stays accessible but availability is explicitly unverified;
-Add, Edit and quantity increases are blocked, while reduction and removal remain available.
-Successful recovery rechecks existing lines against current offers. The
-`menu-service-basket.test.mjs` lifecycle regression renders the ServiceMenu template
-through refresh, error, recovery, changed/missing items and owner changes. This basket is
-component-scoped and resets on a different Kitchen/service entrance; the Collection
-recovery owner below restores the same customer session after reload.
-Basket Edit reuses `Selection/Item.vue` with a detached copy of saved choices.
-`useServiceItemEditor` owns the local selector lifecycle; cancelling preserves the
-line and returns to the basket. `useServiceBasket.update` validates before replacing
-a line or merging identical selections, including the quantity limit. Stale or
-unverified selections cannot be edited, and edits never write catalogue prices
-or submit Orders. Verify replacement, cancellation, merging and stale-update
-behaviour in `menu-service-basket.test.mjs`.
-Collection required-field messages appear after that field loses focus or a
-submission attempt. `Selection/Checkout.vue` owns only this presentation timing;
-`useServiceCheckout` retains validation and submission guards. Service and
-catalogue blockers stay visible and disable submission immediately. Verify with
-`collection-validation-display.test.mjs` and `collection-checkout.test.mjs`.
-
-Collection composes `Selection/Checkout.vue` with the existing customer Details
-and a focused customer `Selection/Confirmation.vue` receipt. The receipt uses
-the saved response for quantities, choices, line amounts, total, status and
-Kitchen estimates, and receives collection details from the existing public venue
-projection. It adds no reads or order writes. Update failures keep the saved
-receipt visible and expose the existing response refresh. `useServiceCheckout` owns customer input,
-one immutable submission attempt and response polling through `useOrderExchange`.
-The existing `/api/ordering/menu-submit` adapter and Kitchen submission command
-accept selections across the same Kitchen's menus. Each selection retains the
-canonical Menu/section/item IDs, choices, service IDs and expected unit amount;
-the anchor Menu route uses its stable public slug. Ambiguous failures retain the
-same reference and payload. A definite rejection checks the existing receipt
-before unlocking edits, preventing a missed success from producing another order.
-Collection recovery uses tab session storage through `useServiceRecovery`,
-scoped to App, Kitchen, Collection entrance and customer. It preserves basket
-choices, customer fields and the exact pending submission payload/reference.
-Refresh checks for a receipt without automatically submitting; unresolved retries
-reuse that payload. Restored basket entries retain current catalogue checks,
-and reset clears the saved session. Storage failure is visible. There is no new
-server submission store or payment integration.
-Delivery, table and room presentation do not yet consume this selection slice. Regression evidence lives
-in `menu-service-basket.test.mjs`, `menu-service-view.test.mjs` and
-`collection-checkout.test.mjs` and `collection-confirmation.test.mjs`.
+Collection, Delivery, Table and Room share the read-only service catalogue.
+Published Menu details render food, drinks, prices and serving times.
 
 `/kitchens/<slug>/menu.collection` and `/kitchens/<slug>/menu.delivery` are
 public service surfaces, not named Menus.
@@ -2869,8 +2732,7 @@ the existing venue clock refreshes their price presentation without refetching
 for time alone. The endpoint scans all eligible public published Menu
 pages, reuses their public detail payloads and combines interactive items.
 `Detail/ServiceMenu.vue` retains route context, read outcomes and the single
-service-item acquisition. It composes the Collection selector or Menu-owned
-`Service/Catalogue.vue` for read-only Delivery/Table/Room presentation. The
+service-item acquisition. It composes Menu-owned `Service/Catalogue.vue` for read-only presentation. The
 catalogue receives resolved sections and performs no acquisition or commands.
 `service-sections.ts` merges section labels and deduplicates catalogue Dish
 identity across placements while retaining distinct commercial offers. A current
@@ -2883,9 +2745,7 @@ Meal deals deduplicate by Kitchen/Promotion identity and follow their applicable
 serving weekday. Other items without catalogue identity retain their scoped placement identity. Shared serving
 times appear once per section; differing schedules remain beside their items.
 Document Menus remain accessible through the default food landing, rather than inventing items
-from files. Daily specials remains separate. Collection composes the local selection
-and basket slice described above; other service presentations and Order execution
-remain unchanged. Configured
+from files. Daily specials remains separate. Configured
 service schedules are shown, not a promise of order/timeslot acceptance.
 The public Menu entrance defaults to browsing food and drinks, with prominent Collection
 and Delivery actions only when its service-filtered reader finds an eligible published public Menu.

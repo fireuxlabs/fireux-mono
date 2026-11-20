@@ -179,34 +179,16 @@ export function guestMenuSurfaceOptions(options: {
       active: options.activeContext === 'generic' && !options.activeOfferingId,
     },
   ]
-  const seen = new Set<string>()
   for (const choice of choices) {
     if (choice.menu_id !== menuId || !choice.kitchen_offering_id || !choice.to)
       continue
-    if (!choice.order_type) {
-      result.push({
-        value: choice.value,
-        label: choice.label,
-        to: choice.to,
-        active:
-          options.activeContext === 'generic' &&
-          options.activeOfferingId === choice.kitchen_offering_id,
-      })
-      continue
-    }
-    const profile = guestDiscoverableMenuSurfaceProfiles.find((surface) =>
-      surface.visibleOrderTypes.includes(choice.order_type!)
-    )
-    if (!profile) continue
-    const key = `${choice.menu_id}:${choice.kitchen_offering_id}:${profile.context}`
-    if (seen.has(key)) continue
-    seen.add(key)
+    if (choice.order_type) continue
     result.push({
-      value: key,
-      label: `${choice.kitchen_offering_name} · ${profile.label}`,
+      value: choice.value,
+      label: choice.label,
       to: choice.to,
       active:
-        options.activeContext === profile.context &&
+        options.activeContext === 'generic' &&
         options.activeOfferingId === choice.kitchen_offering_id,
     })
   }

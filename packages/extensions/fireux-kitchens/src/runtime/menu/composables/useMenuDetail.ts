@@ -160,7 +160,7 @@ export function useMenuDetail(props: {
 
     return `${path}${nextQuery ? `?${nextQuery}` : ''}${hash ? `#${hash}` : ''}`
   }
-  const orderingSurfaceOptions = computed(() =>
+  const browseSurfaceOptions = computed(() =>
     guestMenuSurfaceOptions({
       behaviour: detailMenu.value?.behaviour,
       menuId: detailMenu.value?.source.menuId || menuId.value,
@@ -226,7 +226,7 @@ export function useMenuDetail(props: {
     menuLanguage,
     menuDirection,
     menuDebug,
-    orderingSurfaceOptions,
+    browseSurfaceOptions,
     documentUrl,
     themeClassName,
     themeStyleVars,

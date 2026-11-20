@@ -1,52 +1,51 @@
 <template>
   <UCard>
     <template #header
-      ><h2>Website ordering</h2>
-      <p>
-        Add one button to your website. Customers choose from your current
-        offerings and menus.
-      </p></template
+      ><h2>Website menu</h2>
+      <p>Add a button so visitors can browse your current menus.</p></template
     >
     <div>
       <div class="fx-card-body-stack">
         <div>
           <span>Button preview</span>
           <UButton
-            label="Order now"
+            label="View menu"
             size="xl"
-            :disabled="!orderUrl"
+            :disabled="!menuUrl"
             @click="previewOpen = true"
           />
         </div>
         <p>
-          Menu, hour and availability changes update the ordering page
+          Menu, hour and availability changes update the menu page
           automatically. You only need new code if the website address changes.
         </p>
         <UButton
           to="/workspace/kitchen/menu/services"
-          label="Configure offerings"
+          label="Configure services"
           color="neutral"
           variant="link"
           trailing-icon="i-lucide-arrow-right"
         />
       </div>
       <div class="fx-card-body-stack">
-        <WorkspaceKitchenSettingsIntegrationsAllowedWebsites :key="kitchen.id" />
+        <WorkspaceKitchenSettingsIntegrationsAllowedWebsites
+          :key="kitchen.id"
+        />
         <USeparator />
         <WorkspaceKitchenSettingsIntegrationsWebsiteCode :code="snippet" />
         <div class="fx-card__actions">
           <UButton
-            :to="orderUrl"
+            :to="menuUrl"
             target="_blank"
-            label="Open ordering page"
+            label="Open menu page"
             color="neutral"
             variant="outline"
             icon="i-lucide-external-link"
-            :disabled="!orderUrl"
+            :disabled="!menuUrl"
           />
         </div>
         <p>
-          The button opens an ordering window, with a direct link as a fallback.
+          The button opens an menu window, with a direct link as a fallback.
         </p>
         <p v-if="isLocal">
           This is a localhost preview. Copy the final code from your published
@@ -55,16 +54,12 @@
       </div>
     </div>
   </UCard>
-  <UModal
-    v-model:open="previewOpen"
-    title="Website ordering preview"
-    fullscreen
-  >
+  <UModal v-model:open="previewOpen" title="Website menu preview" fullscreen>
     <template #body
       ><iframe
         v-if="previewOpen"
         :src="previewPath"
-        title="Kitchen ordering preview"
+        title="Kitchen menu preview"
         class="h-full w-full"
     /></template>
   </UModal>
@@ -79,15 +74,15 @@ import {
   tenantMenuRouteScope,
 } from '../../../../../menu/utils/navigation/route'
 import {
-  kitchenWebsiteOrderUrl,
+  kitchenWebsiteMenuUrl,
   menuWebsiteSnippet,
   menuWebsiteOrigin,
 } from '../../../../utils/menu-website-snippet'
 const props = defineProps<{ kitchen: Pick<Kitchen, 'id' | 'identity'> }>()
 const fireux = useFireUXConfig()
 const origin = menuWebsiteOrigin(useRequestURL().origin, fireux.siteUrl)
-const orderUrl = computed(() =>
-  kitchenWebsiteOrderUrl({
+const menuUrl = computed(() =>
+  kitchenWebsiteMenuUrl({
     origin,
     scope: fireux.isTenant
       ? tenantMenuRouteScope()
@@ -95,14 +90,14 @@ const orderUrl = computed(() =>
   })
 )
 const previewPath = computed(() =>
-  orderUrl.value ? new URL(orderUrl.value).pathname : ''
+  menuUrl.value ? new URL(menuUrl.value).pathname : ''
 )
 const snippet = computed(() =>
-  orderUrl.value ? menuWebsiteSnippet(orderUrl.value) : ''
+  menuUrl.value ? menuWebsiteSnippet(menuUrl.value) : ''
 )
 const previewOpen = ref(false)
 const isLocal = origin.startsWith('http:')
-watch(orderUrl, () => {
+watch(menuUrl, () => {
   previewOpen.value = false
 })
 </script>

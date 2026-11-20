@@ -133,7 +133,7 @@ test('QR targets retain publication and service eligibility boundaries', () => {
     menuWebsiteOrigin: (origin) => origin,
     menuRoutePath: ({ menuId, context = 'generic', offeringId }) =>
       `/menus/${menuId}.${context}${offeringId ? '?offering=' + offeringId : ''}`,
-    menuRouteProjection: () => 'order',
+    menuRouteProjection: () => 'browse',
     directoryMenuRouteScope: () => ({}),
     tenantMenuRouteScope: () => ({}),
     kitchenOrderTypeLabel: (type) => type,

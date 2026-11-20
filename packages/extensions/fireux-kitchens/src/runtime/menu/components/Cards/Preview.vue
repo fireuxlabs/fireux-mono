@@ -36,7 +36,6 @@
         </div>
       </div>
       <MenuCardsActions
-        :offerings="menuOfferings"
         :menu-id="menu.slug || menu.source?.menu_slug || ''"
         :menu-name="menuName"
         :route-scope="effectiveRouteScope"
@@ -61,7 +60,6 @@ const {
   avatarClass,
   kitchenImageUrl,
   kitchenName,
-  menuOfferings,
   menuDescription,
   menuName,
 } = useMenuCardPresentation(

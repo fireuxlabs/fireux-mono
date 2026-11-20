@@ -2,8 +2,6 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
 import { OrderChannels } from '../../types/ordering.ts'
-import { itemPricingHelpers } from '../helpers/item-pricing.mjs'
-import { makeMenuOrdering } from '../helpers/menu-checkout.mjs'
 import {
   load,
   normalizeKitchenOfferings,
@@ -86,37 +84,13 @@ const draft = (channel = 'website') => ({
     ? { placed_by: { kind: 'person', id: 'caller', name: 'Alex' } }
     : {}),
 })
-function harness(
-  resolveMenuOrderLines = async (_tx, input) => ({
-    lines: [
-      {
-        id: 'line-1',
-        item: { id: 'item', name: 'Canonical menu dish' },
-        quantity: input.selections[0].quantity,
-        unit_code: 'C62',
-      },
-    ],
-    pricing: {
-      currency: 'CHF',
-      total: input.expectedTotal,
-      lines: [
-        {
-          line_id: 'line-1',
-          unit_price: input.expectedTotal / input.selections[0].quantity,
-          total: input.expectedTotal,
-        },
-      ],
-    },
-  })
-) {
+function harness() {
   const records = new Map()
   let allowed = true,
-    uid = 'caller',
-    tenant = false
+    uid = 'caller'
   const deps = {
     ...ordering,
     ...utils,
-    resolveMenuOrderLines,
     createHash,
     createError: (v) => Object.assign(new Error(v.statusMessage), v),
     useRuntimeConfig: () => ({
@@ -128,15 +102,11 @@ function harness(
       return v
     },
     defineFirestoreMutationTarget: (v) => v,
-    requireFirebaseBearerUser: async () => ({ uid }),
-    useFireUXConfig: () => ({ appId: 'app', isTenant: tenant }),
-    resolveTenantMenuScope: async () => ({ kitchenId: 'kitchen' }),
     readKitchenMutationActor: async () => ({ uid, runtimeAppId: 'app' }),
     requireKitchenRecordMutationAuthority: async () => {
       if (!allowed) throw new Error('Denied')
     },
     USER_MUTATION_TARGETS: { runtimeUsers: { collectionPath: 'users' } },
-    KITCHEN_MUTATION_TARGETS: { kitchens: { collectionPath: 'kitchens' } },
     serverAuditStamp: () => ({ at: 'now' }),
     runGuardedServerTransaction: async (_p, run) => {
       const staged = []
@@ -181,7 +151,7 @@ function harness(
   }
   const server = load(
     '../../runtime/kitchen/server/orders/submission.ts',
-    'submitKitchenOrder,respondToKitchenOrder,readKitchenOrderResponse,listKitchenSubmittedOrders',
+    'submitKitchenOrder,respondToKitchenOrder,listKitchenSubmittedOrders',
     deps
   )
   const request = load(
@@ -191,21 +161,19 @@ function harness(
   )
   const exchange = load(
     '../../runtime/kitchen/server/orders/exchange-request.ts',
-    'respondToKitchenOrderRequest,readKitchenOrderResponseRequest,listKitchenSubmittedOrdersRequest',
+    'respondToKitchenOrderRequest,listKitchenSubmittedOrdersRequest',
     { ...deps, ...server }
   )
   return {
     ...server,
     exchangeService: server,
     respondToKitchenOrder: exchange.respondToKitchenOrderRequest,
-    readKitchenOrderResponse: exchange.readKitchenOrderResponseRequest,
     listKitchenSubmittedOrders: exchange.listKitchenSubmittedOrdersRequest,
     submitKitchenOrderService: server.submitKitchenOrder,
     submitKitchenOrder: request.submitKitchenOrderRequest,
     records,
     setAllowed: (v) => (allowed = v),
     setUid: (v) => (uid = v),
-    setTenant: (v) => (tenant = v),
   }
 }
 test('submission completeness and auto acceptance vary by origin', () => {
@@ -267,12 +235,9 @@ test('operator response reaches owner and guards revisions and transitions', asy
   s.setAllowed(true)
   await assert.rejects(respond('ready', 1), /transition/)
   await respond('accepted', 1, 'Accepted by Alex')
-  const customer = await s.readKitchenOrderResponse(
-    {},
-    { kitchenId: 'kitchen', orderId: 'order-a' }
-  )
-  assert.equal(customer.submission.state, 'accepted')
-  assert.equal(customer.submission.estimate_minutes, 20)
+  const { submissions: [accepted] } = await s.listKitchenSubmittedOrders({}, 'kitchen')
+  assert.equal(accepted.state, 'accepted')
+  assert.equal(accepted.estimate_minutes, 20)
   await assert.rejects(respond('preparing', 1), /changed/)
   await respond('preparing', 2)
   await respond('ready', 3)
@@ -281,14 +246,7 @@ test('operator response reaches owner and guards revisions and transitions', asy
     (await s.listKitchenSubmittedOrders({}, 'kitchen')).submissions[0].state,
     'completed'
   )
-  s.setUid('other')
-  await assert.rejects(
-    s.readKitchenOrderResponse(
-      {},
-      { kitchenId: 'kitchen', orderId: 'order-a' }
-    ),
-    /not found/
-  )
+
 })
 test('decline requires reason and remains terminal', async () => {
   const s = harness()
@@ -306,11 +264,8 @@ test('decline requires reason and remains terminal', async () => {
     {},
     { ...input, message: 'Kitchen is at capacity.' }
   )
-  const customer = await s.readKitchenOrderResponse(
-    {},
-    { kitchenId: 'kitchen', orderId: 'order-a' }
-  )
-  assert.equal(customer.submission.message, 'Kitchen is at capacity.')
+  const { submissions: [declined] } = await s.listKitchenSubmittedOrders({}, 'kitchen')
+  assert.equal(declined.message, 'Kitchen is at capacity.')
   await assert.rejects(
     s.respondToKitchenOrder(
       {},
@@ -380,230 +335,6 @@ test('submission has no test mode or test metadata', async () => {
     false
   )
 })
-const menuOrdering = makeMenuOrdering({
-  ...menuServices,
-  ...itemPricingHelpers,
-  readKitchenOfferingsInTransaction: async (tx) =>
-    tx.offerings ?? [publicOffering],
-  createError: (v) => Object.assign(new Error(v.statusMessage), v),
-  requireFirestoreDocumentId: (v) => {
-    if (typeof v !== 'string' || !v || v.includes('/'))
-      throw new Error('Invalid ID')
-    return v
-  },
-  kitchenPromotionsTarget: () => ({ path: 'promotions' }),
-  serverKitchenMenusTarget: () => ({ path: 'menus' }),
-  serverKitchenMenuSectionsTarget: () => ({ path: 'sections' }),
-  serverKitchenMenuItemsTarget: () => ({ path: 'items' }),
-  serverKitchenItemsTarget: () => ({ path: 'dishes' }),
-  PLACE_MUTATION_TARGETS: { places: { path: 'places' } },
-  KITCHEN_MUTATION_TARGETS: { kitchens: { path: 'kitchens' } },
-  readPlaceCurrencyCode: (v) => v.currency,
-})
-const menuCart = [{ sectionId: 'pizzas', itemId: 'margherita', quantity: 2 }]
-function menuTx(overrides = {}) {
-  const records = {
-    menus: { status: 'published' },
-    places: { currency: 'CHF' },
-    sections: { status: 'active' },
-    items: { dish_id: 'dish' },
-    dishes: { name: 'Real menu pizza', price: 14 },
-    ...overrides,
-  }
-  return {
-    read: async (target) => ({
-      exists: !!records[target.path],
-      data: records[target.path],
-    }),
-    readAll: async () => [],
-  }
-}
-test('real menu submission resolves canonical dish and price inside its transaction', async () => {
-  const result = await menuOrdering.resolveMenuOrderLines(menuTx(), {
-    kitchenId: 'kitchen',
-    menuId: 'food',
-    selections: menuCart,
-    fulfilment: 'collection',
-    expectedTotal: 28,
-  })
-  assert.equal(result.lines[0].item.name, 'Real menu pizza')
-  assert.equal(result.lines[0].quantity, 2)
-  assert.deepEqual(result.pricing, {
-    currency: 'CHF',
-    total: 28,
-    lines: [{ line_id: 'line-1', unit_price: 14, total: 28 }],
-  })
-})
-test('changed prices, archived items and unpublished menus cannot submit', async () => {
-  const input = {
-    kitchenId: 'kitchen',
-    menuId: 'food',
-    selections: menuCart,
-    fulfilment: 'delivery',
-    expectedTotal: 28,
-  }
-  await assert.rejects(
-    menuOrdering.resolveMenuOrderLines(
-      menuTx({ dishes: { name: 'Real menu pizza', price: 15 } }),
-      input
-    ),
-    /prices changed/
-  )
-  await assert.rejects(
-    menuOrdering.resolveMenuOrderLines(
-      menuTx({ items: { status: 'archived' } }),
-      input
-    ),
-    /no longer available/
-  )
-  await assert.rejects(
-    menuOrdering.resolveMenuOrderLines(
-      menuTx({ menus: { status: 'draft' } }),
-      input
-    ),
-    /no longer available/
-  )
-  await assert.rejects(
-    menuOrdering.resolveMenuOrderLines(
-      menuTx({ menus: { status: 'published', schedule: 'daily' } }),
-      input
-    ),
-    /no longer available/
-  )
-  await assert.rejects(
-    menuOrdering.resolveMenuOrderLines(menuTx({ dishes: null }), input),
-    /dish is unavailable/
-  )
-})
-test('menu size choices are explicit and quantities are bounded', async () => {
-  const input = {
-    kitchenId: 'kitchen',
-    menuId: 'food',
-    selections: menuCart,
-    fulfilment: 'collection',
-    expectedTotal: 32,
-  }
-  const tx = menuTx({
-    dishes: {
-      name: 'Real menu pizza',
-      price: 14,
-      price_options: [{ label: 'Large', price: 16 }],
-    },
-  })
-  await assert.rejects(
-    menuOrdering.resolveMenuOrderLines(tx, input),
-    /Choose an available option/
-  )
-  const result = await menuOrdering.resolveMenuOrderLines(tx, {
-    ...input,
-    selections: [{ ...menuCart[0], optionId: 'large' }],
-  })
-  assert.equal(result.lines[0].item.name, 'Real menu pizza — Large')
-  assert.throws(() =>
-    menuOrdering.readMenuOrderSelections([{ ...menuCart[0], quantity: 0 }])
-  )
-  assert.throws(() =>
-    menuOrdering.readMenuOrderSelections([...menuCart, ...menuCart])
-  )
-})
-
-test('public Menu submission stores canonical lines and pricing without operator authority', async () => {
-  const s = harness()
-  s.setAllowed(false)
-  const result = await s.submitKitchenOrder(
-    {},
-    { kitchenId: 'kitchen', order: draft() },
-    {
-      target: { sourceMenuId: 'food', kitchenSlug: 'restaurant' },
-      selections: [{ sectionId: 'section', itemId: 'item', quantity: 2 }],
-      expectedTotal: 26,
-    }
-  )
-  assert.equal(
-    result.submission.order.lines[0].item.name,
-    'Canonical menu dish'
-  )
-  assert.equal(result.submission.order.lines[0].quantity, 2)
-  assert.equal(result.submission.pricing.total, 26)
-  assert.equal(
-    (
-      await s.readKitchenOrderResponse(
-        {},
-        { kitchenId: 'kitchen', orderId: 'order-a' }
-      )
-    ).submission.pricing.total,
-    26
-  )
-})
-
-test('public menu services require enabled menu-linked offerings, schedules and unpaused interactions', async () => {
-  const input = {
-    kitchenId: 'kitchen',
-    menuId: 'food',
-    selections: menuCart,
-    fulfilment: 'collection',
-    expectedTotal: 28,
-  }
-  for (const offerings of [
-    [],
-    [{ ...publicOffering, enabled: false }],
-    [{ ...publicOffering, menu_ids: ['private'] }],
-    [{ ...publicOffering, hours: undefined }],
-    [
-      {
-        ...publicOffering,
-        interactions: [{ type: 'collection', enabled: false }],
-      },
-    ],
-    [
-      {
-        ...publicOffering,
-        interactions: [
-          { type: 'collection', enabled: true, availability: { paused: true } },
-        ],
-      },
-    ],
-  ]) {
-    await assert.rejects(
-      menuOrdering.resolveMenuOrderLines({ ...menuTx(), offerings }, input),
-      /does not currently offer/
-    )
-  }
-  await menuOrdering.resolveMenuOrderLines(
-    { ...menuTx(), offerings: [publicOffering] },
-    input
-  )
-  await assert.rejects(
-    menuOrdering.resolveMenuOrderLines(
-      {
-        ...menuTx(),
-        offerings: [
-          {
-            ...publicOffering,
-            interactions: [
-              {
-                type: 'dine_in',
-                enabled: true,
-                table_channels: { staff_pos: true, table_qr: false },
-              },
-            ],
-          },
-        ],
-      },
-      { ...input, fulfilment: 'on_site' }
-    ),
-    /does not currently offer/
-  )
-  assert.deepEqual(
-    menuServices
-      .publicMenuOrderTypes(
-        menuServices.kitchenMenuOrdering([publicOffering], 'food')
-      )
-      .map((row) => row.type),
-    ['collection', 'delivery', 'dine_in']
-  )
-})
-
 test('the board reads every submitted order across internal batches without a 100-order cap', async () => {
   const s = harness()
   const first = await s.submitKitchenOrder(
@@ -627,87 +358,6 @@ test('the board reads every submitted order across internal batches without a 10
   )
   s.setAllowed(false)
   await assert.rejects(s.listKitchenSubmittedOrders({}, 'kitchen'), /Denied/)
-})
-
-test('serving schedules enforce each public service at boundaries and overnight in venue timezone', async () => {
-  const input = {
-    kitchenId: 'kitchen',
-    menuId: 'food',
-    selections: menuCart,
-    fulfilment: 'collection',
-    expectedTotal: 28,
-  }
-  const offering = {
-    ...publicOffering,
-    hours: {
-      ...publicOffering.hours,
-      windows: [{ days: ['wednesday'], open: '11:30', close: '13:30' }],
-    },
-  }
-  const tx = { ...menuTx(), offerings: [offering] }
-  for (const fulfilment of ['collection', 'delivery', 'on_site']) {
-    await assert.rejects(
-      menuOrdering.resolveMenuOrderLines(
-        tx,
-        { ...input, fulfilment },
-        new Date('2026-10-14T09:29:59Z')
-      ),
-      /service is closed/
-    )
-    await menuOrdering.resolveMenuOrderLines(
-      tx,
-      { ...input, fulfilment },
-      new Date('2026-10-14T09:30:00Z')
-    )
-    await assert.rejects(
-      menuOrdering.resolveMenuOrderLines(
-        tx,
-        { ...input, fulfilment },
-        new Date('2026-10-14T11:30:00Z')
-      ),
-      /service is closed/
-    )
-  }
-  await assert.rejects(
-    menuOrdering.resolveMenuOrderLines(
-      tx,
-      input,
-      new Date('2026-10-12T10:00:00Z')
-    ),
-    /service is closed/
-  )
-  const overnight = {
-    ...offering,
-    hours: {
-      ...offering.hours,
-      windows: [{ days: ['wednesday'], open: '22:00', close: '02:00' }],
-    },
-  }
-  await menuOrdering.resolveMenuOrderLines(
-    { ...tx, offerings: [overnight] },
-    input,
-    new Date('2026-10-14T23:00:00Z')
-  )
-  await assert.rejects(
-    menuOrdering.resolveMenuOrderLines(
-      { ...tx, offerings: [overnight] },
-      input,
-      new Date('2026-10-15T00:00:00Z')
-    ),
-    /service is closed/
-  )
-  const closed = {
-    ...offering,
-    hours: {
-      ...offering.hours,
-      windows: [{ days: ['tuesday'], open: '11:30', close: '13:30' }],
-    },
-  }
-  await menuOrdering.resolveMenuOrderLines(
-    { ...tx, offerings: [{ ...closed, id: 'closed' }, offering] },
-    input,
-    new Date('2026-10-14T10:00:00Z')
-  )
 })
 
 test('a service cannot borrow another service’s hours and venue DST is respected', () => {
@@ -793,23 +443,11 @@ test('submission service works with explicit server context and no HTTP event', 
   )
 })
 
-test('exchange services use explicit actors and retain caller/App/operator boundaries', async () => {
+test('exchange services use explicit operators and keep the staff board current', async () => {
   const s = harness()
   await s.submitKitchenOrder({}, { kitchenId: 'kitchen', order: draft() })
   const operator = { uid: 'caller', runtimeAppId: 'app' }
   const input = { kitchenId: 'kitchen', orderId: 'order-a' }
-  const receipt = await s.exchangeService.readKitchenOrderResponse(
-    { callerUid: 'caller', appId: 'app' },
-    input
-  )
-  assert.equal(receipt.submission.state, 'received')
-  await assert.rejects(
-    s.exchangeService.readKitchenOrderResponse(
-      { callerUid: 'caller', appId: 'other' },
-      input
-    ),
-    /not found/
-  )
   await assert.rejects(
     s.exchangeService.listKitchenSubmittedOrders(null, 'kitchen'),
     /operator context/
@@ -826,198 +464,5 @@ test('exchange services use explicit actors and retain caller/App/operator bound
     (await s.exchangeService.listKitchenSubmittedOrders(operator, 'kitchen'))
       .submissions[0].state,
     'accepted'
-  )
-})
-
-test('Collection Product journey and Workspace board share one canonical order without a Product purchase', async () => {
-  const { serviceOrder, serviceSelections } = load(
-    '../../runtime/menu/utils/ordering/checkout.ts',
-    'serviceOrder,serviceSelections'
-  )
-  const store = harness((tx, input) =>
-    menuOrdering.resolveMenuOrderLines(
-      {
-        ...tx,
-        read: (target, id) =>
-          target.path ? menuTx().read(target, id) : tx.read(target, id),
-      },
-      input
-    )
-  )
-  const basket = [
-    {
-      source: { kitchenId: 'kitchen', menuId: 'food', sectionId: 'pizzas' },
-      itemId: 'margherita',
-      name: 'Untrusted browser label',
-      choices: { quantity: 2, extraIds: [], groups: {} },
-      unitMinor: 1400,
-      offeringIds: [publicOffering.id],
-    },
-  ]
-  const input = {
-    kitchenId: 'kitchen',
-    order: serviceOrder(
-      basket,
-      'collection-product-proof',
-      'DEMO customer',
-      '000000'
-    ),
-  }
-  const context = {
-    target: { sourceMenuId: 'food', kitchenSlug: 'restaurant' },
-    selections: serviceSelections(basket),
-    expectedTotal: 28,
-  }
-  store.setAllowed(false)
-  const placed = await store.submitKitchenOrder({}, input, context)
-  assert.equal(placed.submission.order.lines[0].item.name, 'Real menu pizza')
-  assert.equal(placed.submission.pricing.total, 28)
-  assert.deepEqual(await store.submitKitchenOrder({}, input, context), placed)
-  store.setAllowed(true)
-  store.setUid('operator')
-  const board = await store.listKitchenSubmittedOrders({}, 'kitchen')
-  assert.equal(board.submissions.length, 1)
-  assert.equal(board.submissions[0].order.id, input.order.id)
-  for (const [index, state] of [
-    'accepted',
-    'preparing',
-    'ready',
-    'completed',
-  ].entries()) {
-    await store.respondToKitchenOrder(
-      {},
-      {
-        kitchenId: 'kitchen',
-        orderId: input.order.id,
-        state,
-        expectedRevision: index + 1,
-        message: 'DEMO workflow proof',
-        estimate_minutes: null,
-      }
-    )
-  }
-  store.setUid('caller')
-  store.setAllowed(false)
-  const reloaded = await store.readKitchenOrderResponse(
-    {},
-    { kitchenId: 'kitchen', orderId: input.order.id }
-  )
-  assert.equal(reloaded.submission.state, 'completed')
-  assert.equal(reloaded.submission.pricing.total, 28)
-  assert.equal(reloaded.submission.order.customer.name, 'DEMO customer')
-  assert.equal(
-    [...store.records.keys()].some(
-      (key) => key.includes('products') || key.includes('checkout')
-    ),
-    false
-  )
-})
-
-test('Kiosk Eat in and Takeaway reach the same Workspace board with canonical pricing and caller-bound retries', async () => {
-  const { serviceOrder, serviceSelections } = load(
-    '../../runtime/menu/utils/ordering/checkout.ts',
-    'serviceOrder,serviceSelections'
-  )
-  const offering = {
-    ...publicOffering,
-    id: 'counter',
-    interactions: ['eat_in', 'takeaway'].map((type) => ({
-      type,
-      enabled: true,
-      menu_ids: ['food'],
-    })),
-  }
-  const store = harness((tx, input) =>
-    menuOrdering.resolveMenuOrderLines(
-      {
-        ...tx,
-        offerings: [offering],
-        read: (target, id) =>
-          target.path ? menuTx().read(target, id) : tx.read(target, id),
-      },
-      input
-    )
-  )
-  const basket = [
-    {
-      source: { kitchenId: 'kitchen', menuId: 'food', sectionId: 'pizzas' },
-      itemId: 'margherita',
-      name: 'Untrusted kiosk label',
-      choices: { quantity: 2, extraIds: [], groups: {} },
-      unitMinor: 1400,
-      offeringIds: ['counter'],
-    },
-  ]
-  store.setAllowed(false)
-  for (const mode of ['eat_in', 'takeaway']) {
-    const order = serviceOrder(basket, `kiosk-${mode}`, '', '', mode)
-    const input = { kitchenId: 'kitchen', order }
-    const context = {
-      target: { sourceMenuId: 'food', kitchenSlug: 'restaurant' },
-      selections: serviceSelections(basket),
-      expectedTotal: 28,
-    }
-    const placed = await store.submitKitchenOrder({}, input, context)
-    assert.equal(placed.submission.order.channel, 'kiosk')
-    assert.equal(
-      placed.submission.order.fulfilment,
-      mode === 'eat_in' ? 'on_site' : 'takeaway'
-    )
-    assert.equal(placed.submission.order.customer, undefined)
-    assert.equal(placed.submission.state, 'received')
-    assert.equal(placed.submission.order.lines[0].item.name, 'Real menu pizza')
-    assert.equal(placed.submission.pricing.total, 28)
-    assert.deepEqual(await store.submitKitchenOrder({}, input, context), placed)
-    store.setUid('other-customer')
-    await assert.rejects(
-      store.readKitchenOrderResponse(
-        {},
-        { kitchenId: 'kitchen', orderId: order.id }
-      ),
-      /not found/
-    )
-    store.setUid('caller')
-  }
-  store.setAllowed(true)
-  store.setUid('operator')
-  const board = await store.listKitchenSubmittedOrders({}, 'kitchen')
-  assert.equal(board.submissions.length, 2)
-  assert.deepEqual(board.submissions.map((row) => row.order.number).sort(), [
-    '1',
-    '2',
-  ])
-  for (const row of board.submissions) {
-    for (const [index, state] of [
-      'accepted',
-      'preparing',
-      'ready',
-      'completed',
-    ].entries()) {
-      await store.respondToKitchenOrder(
-        {},
-        {
-          kitchenId: 'kitchen',
-          orderId: row.order.id,
-          state,
-          expectedRevision: index + 1,
-          message: '',
-          estimate_minutes: null,
-        }
-      )
-    }
-  }
-  store.setUid('caller')
-  store.setAllowed(false)
-  const receipt = await store.readKitchenOrderResponse(
-    {},
-    { kitchenId: 'kitchen', orderId: 'kiosk-takeaway' }
-  )
-  assert.equal(receipt.submission.state, 'completed')
-  assert.equal(receipt.submission.pricing.total, 28)
-  assert.equal(
-    [...store.records.keys()].some((key) =>
-      /products|checkout|payment/.test(key)
-    ),
-    false
   )
 })

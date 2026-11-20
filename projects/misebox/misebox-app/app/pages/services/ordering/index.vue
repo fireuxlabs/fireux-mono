@@ -1,27 +1,17 @@
 <template>
   <section class="pagebody">
     <NuxtLink to="/services">Services</NuxtLink>
-    <h1 class="fx-type-page-title">Ordering</h1>
+    <h1 class="fx-type-page-title">Website menu</h1>
     <p class="fx-type-description">
-      Let customers order from your Kitchen through your website.
-    </p>
-    <p>
-      Choose your Kitchen and Menu, configure ordering, then test the customer
-      journey before adding your website snippet.
+      Let customers browse your published menus from your website.
     </p>
     <UButton
-      to="/services/ordering/setup"
-      label="Set up ordering"
-      icon="i-lucide-arrow-right"
+      to="/workspace/kitchen/settings/integrations"
+      label="Set up your website menu"
     />
-    <p class="fx-type-caption">
-      Use your existing Kitchen and Menus, or create them during setup. Ongoing
-      management stays in your Workspace.
-    </p>
   </section>
 </template>
 <script setup lang="ts">
-import { useSeoMeta } from '#imports'
 definePageMeta({ layout: 'landing', requiresAuth: false })
-useSeoMeta({ title: 'Ordering | Misebox' })
+useSeoMeta({ title: 'Website menu | Misebox' })
 </script>

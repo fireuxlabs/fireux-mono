@@ -302,41 +302,15 @@ it does not assert that every existing owner is aligned.
    prove the same contract. This discipline does not prescribe one universal
    renderer, service class, controller interface or folder inventory.
 
-### Proving comparison: publication and ordering
+### Proving comparison of Menu publication and staff Orders
 
-Source paths below are relative to `fireux-kitchens/src/runtime`.
+| Boundary | Menu publication | Staff Orders |
+| --- | --- | --- |
+| Surface | Kitchen Workspace Menu publication controls | Kitchen Workspace Orders editor and board |
+| Trusted command | `menu/server/publication/publish.ts` validates and updates the same scoped Menu | `kitchen/server/orders/submission.ts` checks Kitchen authority, numbers the Order once and applies revision-gated transitions |
+| Transport | Workspace Menu publication adapters | Operator submission and Workspace Orders adapters |
 
-| Boundary              | Menu publication                                                       | Customer ordering                                                                                                                                           |
-| --------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Surface               | `kitchen/components/Workspace/Menu/Menus/Publication/Actions.vue`                | `menu/components/Order/Index.vue` and named checkout/response children                                                                                      |
-| Domain rules          | `menu/server/publication/validation.ts`                                | `menu/server/ordering.ts` resolves canonical items, prices, fulfilment and serving hours; Kitchen submission validation owns order completeness/transitions |
-| Use-case coordination | `publishKitchenMenu` in `menu/server/publication/publish.ts`           | `submitKitchenOrder` in `kitchen/server/orders/submission.ts`                                                                                               |
-| Transaction invariant | Validate publication and update the same scoped Menu record            | Validate authority and canonical Menu selections; number and persist one submission together                                                                |
-| Material difference   | Operator-authorized publication, including idempotent published status | Customer/operator entrances, caller-bound idempotency, expected totals and execution state                                                                  |
-| Transport             | `server/api/workspace/kitchen/menus/{publish,unpublish}.post.ts`       | `server/api/ordering/{menu-submit,submit,response}.post.ts` and Workspace response adapters                                                                 |
-
-The surviving invariant is **named owner surface → domain-owned lifecycle →
-trusted use-case coordination → participating domain rules**, with authority
-and transaction consistency retained. It does not require identical filenames
-or a shared coordinator implementation. Publication is already a compound
-command with service responsibility; it needs no additional wrapper. Ordering
-remains Kitchen-owned while consuming the supported Menu resolver.
-
-Submission's `kitchen/server/orders/submit-request.ts` owns HTTP credential/App
-preparation. `submitKitchenOrder` receives explicit server context and owns the
-transaction without reading an HTTP event. Its actor input is trusted internal
-server context, never client-authored authority. Operator submissions require an
-operator context; public Menu submissions retain canonical target validation.
-Response/read/list request preparation lives in `exchange-request.ts`; those
-services also receive explicit server actor context. The HTTP adapters retain
-body/query parsing and private no-store headers. Domain services keep authority,
-revision/transition checks, caller/App receipt ownership and complete scoped reads.
-The current service errors use H3-compatible error objects; this is not a claim
-of framework-independent error vocabulary.
-
-Verification: `menu-publication.test.mjs`, `menu-workspace-commands.test.mjs`,
-`menu-order-flow.test.mjs`, `kitchen/order-submission.test.mjs`, consuming App
-typechecks and the current Menu ordering/serving-hour tests. Source-owned tests
-prove their encoded contracts; live customer/kitchen response behaviour remains
-a separate browser check. Refresh this comparison when authority or consumers
-change.
+Both commands retain explicit actor and target scope. The Menu publishes a
+guest-readable catalogue. The Orders board reads authorized drafts and saved
+submissions. Verify these paths with the Menu publication and Kitchen
+order-draft and order-submission tests.

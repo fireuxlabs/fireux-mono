@@ -539,8 +539,7 @@ surfaces consume it rather than owning root Menu navigation. `RouteSurface.vue`
 retains only active dispatch branches. Global Menu frame tokens are explicitly
 registered from `assets/styles/menu-frame.css`; QR and section-navigation CSS are
 colocated with their named projection components. There is no component `styles`
-catch-all. Detail and Order item presentation remain separate until comparison
-proves a common contract without combining browse and purchase actions.
+catch-all. Public Item presentation stays with Menu.
 
 The inspected repository retains one Kitchen-owned Menu shape, alongside distinct
 Ingredient, KitchenIngredient association and SupplierIngredient offering contracts.
@@ -551,8 +550,7 @@ ownership comparison, not a complete repository duplication certification.
 
 Menu storage targets, defaults and input contracts live in
 `menu/models/menu-storage.model.ts`; utilities retain pure
-transformations and policy helpers. Order cart/input contracts live in
-`menu/models/menu-order-flow.model.ts`, independent of the flow controller.
+transformations and policy helpers.
 `useMenuDetail` owns the public browse read/presentation lifecycle, including
 canonical SEO and language intent. The Detail composition retains its optional
 SSR readiness wait and response status.
@@ -626,50 +624,13 @@ endpoint and Order adapters retain their own policy reads. Order selection, cart
 lines and submission belong to those consumers, not the read-only item model.
 `menu-public-slug.test.mjs` verifies catalogue resolution without a fulfilment read.
 
-## Service checkout
+## Service catalogue
 
-Collection's Menu-owned Selection composition retains one local basket across
-catalogue refreshes and errors and composes a focused checkout. The existing
-Menu-submit adapter delegates to the Kitchen submission command; no second Order
-store or submission authority is introduced. `menu/server/ordering.ts` coordinates
-canonical reads across Menu sources. Its focused `ordering/selections.ts` parser
-and `ordering/items.ts` transaction reader reuse Item pricing, Promotion policy
-and `serviceBasketLine` choice calculations. Kitchen, service and Menu hours all
-constrain ordering. Options, extras, meal groups/supplements and bottle choices
-remain in structured saved selections; canonical Order line notes carry the
-choices to the customer response and Kitchen ticket. Normal catalogue records
-are read, never repriced or written by checkout.
-
-`useServiceCheckout` reuses scoped Order exchange for submission and responses,
-freezes an unresolved attempt for idempotent retry and checks for an existing
-receipt before permitting edits after a rejection. `useServiceRecovery` saves
-the basket, customer fields and immutable attempt in tab session storage, scoped
-by App, Kitchen, entrance, service mode and customer. Refresh restores selections
-without silently repricing them, then checks the existing response for a saved
-attempt; restoration never submits. Current catalogue readiness and stale-item
-checks still gate new attempts. Reset removes the saved session. Malformed local
-data is discarded, and unavailable browser storage is reported without breaking
-the local basket. The current Collection flow
-orders during serving hours; next-day slots and payment processing are separate.
-Collection composes a customer-focused `Selection/Confirmation.vue` over the
-existing response. It shows saved quantities, canonical choice notes, line totals
-and total, distinct execution status and Kitchen estimates. Collection details
-come from the already-acquired public venue projection; missing details are
-omitted, and no counter location or payment status is assumed. Failed response
-refreshes retain the receipt and expose the existing read-only refresh action.
-The staff Ticket and other Menu order presentations keep their existing owners.
-Verify `collection-confirmation.test.mjs`, `collection-checkout.test.mjs`,
-`menu-service-basket.test.mjs`, existing
-Order submission/flow and ticket checks. These fixture tests are not evidence of
-live submission or physical fulfilment.
-
-Kiosk's `/kitchens/<slug>/menu.kiosk` uses the same Selection, basket, checkout,
-recovery and canonical Order command. Its `MenuKiosk` composition owns the
-Eat in/Takeaway choice. Services retain the mode-specific Menu sets. Kiosk
-collects no customer contact details, uses a guest browser, and clears receipts
-between customers; unresolved submissions retain their retry reference. Payment
-at the counter is separate from Order state. See the
-[Ordering boundary](order-processing-kitchen-fulfilment.md).
+Collection, Delivery, Table and Room entrances compose the same read-only
+service catalogue from published Menu data. Sections, items, prices and serving
+times retain their Menu and Kitchen owners. The public customer checkout and
+Kiosk entrance have been removed. [Staff Orders](order-processing-kitchen-fulfilment.md)
+continues to operate through Kitchen's Workspace and trusted commands.
 
 ## Safe Item removal
 
@@ -891,7 +852,7 @@ Offering identity, price or Order command is introduced. Verify
 
 Services is a Kitchen-owned capability alongside Menus, Orders and Prep &
 Production. The Menu Entity owns what customers can choose. Services owns how
-and when customers can order across Menus. Orders owns the placed-order
+and when a Kitchen serves its Menus. Orders owns the placed-order
 lifecycle and Prep & Production owns production. Menu may show service
 availability and link to its configuration. Use the
 [glossary](menu-service-glossary.md#kitchen-services) for Services, service setup

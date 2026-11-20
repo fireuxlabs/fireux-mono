@@ -38,7 +38,6 @@
     <footer class="menu-card-cell__footer">
       <MenuCardsActions
         display="icons"
-        :offerings="menuOfferings"
         :menu-id="menu.slug || menu.source?.menu_slug || ''"
         :menu-name="menuName"
         :route-scope="effectiveRouteScope"
@@ -64,7 +63,6 @@ const {
   browseTo,
   kitchenImageUrl,
   kitchenName,
-  menuOfferings,
   menuDescription,
   menuName,
 } = useMenuCardPresentation(

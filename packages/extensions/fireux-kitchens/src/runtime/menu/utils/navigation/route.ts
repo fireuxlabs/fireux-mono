@@ -13,7 +13,7 @@ export type MenuRouteTarget = {
   context: MenuRouteContext
 }
 
-export type MenuRouteProjection = 'browse' | 'order' | 'diagnostic'
+export type MenuRouteProjection = 'browse' | 'diagnostic'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const segment = (value: unknown) => encodeURIComponent(text(value))
@@ -140,7 +140,7 @@ export function menuRouteProjection(
     context === 'kiosk' ||
     context === 'pre_order'
   )
-    return 'order'
+    return 'browse'
 
   return 'diagnostic'
 }

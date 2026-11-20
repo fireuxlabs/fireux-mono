@@ -87,8 +87,8 @@
       />
 
       <MenuDetailServices
-        v-if="orderingSurfaceOptions.length"
-        :options="orderingSurfaceOptions"
+        v-if="browseSurfaceOptions.length"
+        :options="browseSurfaceOptions"
       />
 
       <aside
@@ -208,7 +208,7 @@ const {
   menuLanguage,
   menuDirection,
   menuDebug,
-  orderingSurfaceOptions,
+  browseSurfaceOptions,
   documentUrl,
   themeClassName,
   themeStyleVars,

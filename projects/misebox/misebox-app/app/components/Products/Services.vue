@@ -25,16 +25,6 @@ const selections = [
       'Free PDF or image menu hosting. Publish it yourself and keep the same link and QR when you replace your document.',
     action: { label: 'Upload my menu — free', to: '/products/menu-express' },
   },
-  {
-    id: 'collection-ordering',
-    kind: 'collection' as const,
-    terms:
-      'A Kitchen Workspace capability, not a separate purchase. Requires Kitchen access, published Menus and configured service hours. Online payment is not part of this preview.',
-    action: {
-      label: 'Explore Collection Ordering',
-      to: '/products/collection-ordering',
-    },
-  },
 ]
 const offers = computed(() =>
   selections.flatMap((selection) => {

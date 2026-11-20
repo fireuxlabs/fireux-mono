@@ -15,7 +15,7 @@
       outcome="error"
     />
     <template v-else-if="selectedKitchen">
-      <WorkspaceKitchenSettingsIntegrationsWebsiteOrdering
+      <WorkspaceKitchenSettingsIntegrationsWebsiteMenu
         :key="kitchenId"
         :kitchen="selectedKitchen"
       />
@@ -26,7 +26,7 @@
         icon="i-lucide-map-pinned"
       />
     </template>
-    <UAlert v-else title="Choose a Kitchen to set up website ordering" />
+    <UAlert v-else title="Choose a Kitchen to set up your website menu" />
   </section>
 </template>
 <script setup lang="ts">

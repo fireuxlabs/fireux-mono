@@ -3,7 +3,6 @@ import { createError } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { KITCHEN_MUTATION_TARGETS } from '../mutation-targets'
 import { USER_MUTATION_TARGETS } from 'fireux-core/runtime/user/server/mutation-targets'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
@@ -17,9 +16,6 @@ import {
   orderSubmissionIssues,
   readOrderSubmission,
 } from '../../utils/order-submission'
-import { resolveMenuOrderLines } from '../../../menu/server/ordering'
-import type { MenuOrderSelection } from '../../../menu/models/menu-order-selection.model'
-import type { MenuTarget } from '../../../menu/server/ownership/target-types'
 import type { OrderSubmissionState } from '../../records/order-submission'
 
 const fail = (statusCode: number, statusMessage: string): never => {
@@ -53,23 +49,16 @@ const counterTarget = (kitchenId: string) =>
     collectionPath: `kitchens/${kitchenId}/order-counters`,
   })
 
-export type MenuSubmissionContext = {
-  target: MenuTarget
-  selections: MenuOrderSelection[]
-  expectedTotal: number
-}
 export type OrderSubmissionActor = {
   callerUid: string
   appId: string
-  isTenant: boolean
   ordering: Parameters<typeof requireOrderChannel>[1]
   operator: Awaited<ReturnType<typeof readKitchenMutationActor>> | null
 }
 
 export async function submitKitchenOrder(
   actor: OrderSubmissionActor,
-  input: unknown,
-  menuContext?: MenuSubmissionContext
+  input: unknown
 ) {
   const value = inputRecord(input, ['kitchenId', 'order'])
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
@@ -88,43 +77,13 @@ export async function submitKitchenOrder(
   const issues = orderSubmissionIssues(order)
   if (issues.length) fail(400, issues.join(' '))
   const operator = actor.operator
-  if (menuContext && !['website', 'kiosk'].includes(order.channel))
-    fail(400, 'Choose a supported customer ordering channel.')
-  if (!menuContext && !operator)
-    fail(403, 'Kitchen operator context is required.')
+  if (!operator) return fail(403, 'Kitchen operator context is required.')
   const fingerprint = createHash('sha256')
-    .update(
-      JSON.stringify({
-        order,
-        ...(menuContext
-          ? {
-              menuId: menuContext.target.sourceMenuId,
-              selections: menuContext.selections,
-              expectedTotal: menuContext.expectedTotal,
-            }
-          : {}),
-      })
-    )
+    .update(JSON.stringify({ order }))
     .digest('hex')
   const target = submittedOrdersTarget(kitchenId)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
-    if (operator)
-      await requireKitchenRecordMutationAuthority(tx, operator, kitchenId)
-    if (menuContext) {
-      const kitchen = await tx.read(
-        KITCHEN_MUTATION_TARGETS.kitchens,
-        kitchenId
-      )
-      if (
-        !kitchen.exists ||
-        (kitchen.data?.slug &&
-          kitchen.data.slug !== menuContext.target.kitchenSlug) ||
-        (actor.isTenant &&
-          (kitchen.data?.management?.mode !== 'app' ||
-            kitchen.data?.management?.app_id !== actor.appId))
-      )
-        fail(409, 'Kitchen menu target changed.')
-    }
+    await requireKitchenRecordMutationAuthority(tx, operator, kitchenId)
     const current = await tx.read(target, order.id)
     if (current.exists) {
       if (
@@ -155,16 +114,6 @@ export async function submitKitchenOrder(
         400,
         'This channel does not accept a caller-supplied initiating identity.'
       )
-    const resolved = menuContext
-      ? await resolveMenuOrderLines(tx, {
-          kitchenId,
-          menuId: menuContext.target.sourceMenuId,
-          selections: menuContext.selections,
-          fulfilment: order.fulfilment,
-          expectedTotal: menuContext.expectedTotal,
-          channel: order.channel === 'kiosk' ? 'kiosk' : 'website',
-        })
-      : null
     const counter = counterTarget(kitchenId)
     const previous = await tx.read(counter, 'sequence')
     const next = previous.exists ? Number(previous.data?.value) + 1 : 1
@@ -172,20 +121,11 @@ export async function submitKitchenOrder(
       fail(409, 'Order numbering is unavailable.')
     const stamp = serverAuditStamp({ by: actor.callerUid, appId: actor.appId })
     const submission = {
-      order: readOrder({
-        ...order,
-        ...(resolved ? { lines: resolved.lines } : {}),
-        number: String(next),
-      }),
-      // A public customer's channel choice is not Kitchen acceptance.
-      state:
-        menuContext && order.channel === 'kiosk'
-          ? ('received' as const)
-          : initialOrderSubmissionState(order),
+      order: readOrder({ ...order, number: String(next) }),
+      state: initialOrderSubmissionState(order),
       revision: 1,
       message: '',
       estimate_minutes: null,
-      ...(resolved ? { pricing: resolved.pricing } : {}),
     }
     if (previous.exists) tx.update(counter, 'sequence', { value: next })
     else tx.create(counter, 'sequence', { value: next })
@@ -195,14 +135,6 @@ export async function submitKitchenOrder(
       caller_uid: actor.callerUid,
       source_app_id: actor.appId,
       fingerprint,
-      ...(menuContext
-        ? {
-            menu: {
-              id: menuContext.target.sourceMenuId,
-              selections: menuContext.selections,
-            },
-          }
-        : {}),
       created: stamp,
       updated: stamp,
     })
@@ -264,30 +196,6 @@ export async function respondToKitchenOrder(
       updated: serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId }),
     })
     return { ok: true, kitchen_id: kitchenId, submission }
-  })
-}
-
-export async function readKitchenOrderResponse(
-  actor: { callerUid: string; appId: string },
-  input: unknown
-) {
-  const value = inputRecord(input, ['kitchenId', 'orderId'])
-  const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
-  const id = requireFirestoreDocumentId(value.orderId, 'Order id')
-  return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
-    const current = await tx.read(submittedOrdersTarget(kitchenId), id)
-    if (
-      !current.exists ||
-      current.data?.caller_uid !== actor.callerUid ||
-      current.data?.source_app_id !== actor.appId ||
-      current.data?.kitchen_id !== kitchenId
-    )
-      fail(404, 'Order not found.')
-    return {
-      ok: true,
-      kitchen_id: kitchenId,
-      submission: readOrderSubmission(current.data),
-    }
   })
 }
 

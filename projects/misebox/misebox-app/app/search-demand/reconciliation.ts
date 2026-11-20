@@ -65,12 +65,12 @@ export const kitchenReconciliation = {
         owner: 'Kitchen Integrations',
         settings: [
           'Allowed website origins',
-          'Ordering button and customer entrance derived from current Kitchen context',
+          'Menu button opens the selected Kitchen’s published catalogue',
         ],
-        tool: 'Allow a website and copy its ordering button',
+        tool: 'Allow a website and copy its menu button',
         source_paths: [
           'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/integrations/website-ordering.ts',
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Settings/Integrations/WebsiteOrdering.vue',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Settings/Integrations/WebsiteMenu.vue',
         ],
       },
     ],
@@ -81,8 +81,8 @@ export const kitchenReconciliation = {
         availability: 'enabled',
       },
       {
-        label: 'Ordering setup',
-        path: '/services/ordering/setup',
+        label: 'Website menu setup',
+        path: '/workspace/kitchen/settings/integrations',
         availability: 'enabled',
       },
       {

@@ -135,9 +135,8 @@ export const kitchenCapabilityLinks = Object.entries(kitchenCapabilityCopy).map(
 export const toolsCatalogue = {
   sectionId: 'misebox-tools',
   eyebrow: 'Tools',
-  title: 'Order from a published Menu.',
-  description:
-    'Choose a published Menu. Collection, delivery, and pre-order appear only when the Menu and Kitchen enable them.',
+  title: 'Browse published menus.',
+  description: 'Find food, drinks and prices from published Menus.',
   items: [
     {
       id: 'restaurant-labour-cost',
@@ -150,9 +149,8 @@ export const toolsCatalogue = {
     },
     {
       id: 'ordering',
-      title: 'Ordering',
-      description:
-        'Choose a published Menu and start an available customer order.',
+      title: 'Published menus',
+      description: 'Browse food, drinks and prices from published Menus.',
       icon: 'i-lucide-shopping-basket',
       to: '/tools/ordering',
       action: 'Open tool',

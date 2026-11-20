@@ -50,7 +50,7 @@
       v-if="selectedOffering?.collection_timing === 'next_day'"
       class="service-menu__status"
     >
-      Order today for collection from tomorrow, during the hours below.
+      Collection from tomorrow, during the hours below.
     </p>
     <template v-if="presentation">
       <p v-if="menus.pending.value" role="status" class="service-menu__status">
@@ -71,12 +71,12 @@
         />
       </div>
       <MenuServiceCatalogue
-        v-else-if="sections.length && !checkoutService"
+        v-else-if="sections.length"
         :sections="sections"
         :service-label="serviceLabel"
         :style="styleVars"
       />
-      <p v-else-if="!checkoutService" class="service-menu__empty">
+      <p v-else class="service-menu__empty">
         {{
           service === 'table'
             ? 'No food or drinks are available at your table.'
@@ -86,20 +86,6 @@
         }}
       </p>
     </template>
-    <MenuSelection
-      v-if="checkoutService"
-      :key="kitchenSlug + ':' + offeringId + ':' + service"
-      :sections="sections"
-      :kitchen-slug="kitchenSlug"
-      :entry-id="offeringId"
-      :venue="presentation"
-      :currency-code="currencyCode"
-      :service="checkoutService"
-      @reset="emit('reset')"
-      :catalogue-ready="
-        Boolean(presentation) && !menus.pending.value && !menus.error.value
-      "
-    />
   </section>
 </template>
 <script setup lang="ts">
@@ -123,14 +109,6 @@ const props = defineProps<{
   roomNumber?: string
   tableNumber?: string
 }>()
-const emit = defineEmits<{ reset: [] }>()
-const checkoutService = computed(() =>
-  props.service === 'collection' ||
-  props.service === 'eat_in' ||
-  props.service === 'takeaway'
-    ? props.service
-    : undefined
-)
 const slug = toRef(props, 'kitchenSlug')
 const service = toRef(props, 'service')
 const route = useRoute()
@@ -177,11 +155,7 @@ const sections = computed(() =>
 const { styleVars } = useMenuThemeSurface()
 const { kitchen, place, presentation, outcome, refresh, statusCode, ready } =
   useKitchenDetail(slug)
-const currencyCode = computed(() =>
-  checkoutService.value || service.value === 'delivery'
-    ? readPlaceCurrencyCode(place.value)
-    : ''
-)
+const currencyCode = computed(() => readPlaceCurrencyCode(place.value))
 const venuePath = computed(() => `/kitchens/${encodeURIComponent(slug.value)}`)
 await Promise.all([ready, menus])
 if (import.meta.server && statusCode.value) setResponseStatus(statusCode.value)

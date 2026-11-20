@@ -1,98 +1,33 @@
-# Menu and Ordering boundary
+# Menu and Orders boundary
 
-Updated: 2026-10-14
+Updated: 2026-11-20
+Ref: 330c4384f
 Role: map, not canon
-
-## Purpose
-
-Map readable Menu content separately from the Ordering capability. Inherit
-AGENTS.md, docs/ai/gpt-context.md and the Misebox scoped context; source and checks
-establish behaviour.
 
 ## Current boundary
 
-Menu browsing, publication and Offering/Fulfilment configuration retain their
-existing owners. `menu/server/offerings/projection.ts` retains the older policy
-projection without re-enabling its retired execution stack. Published structured
-Menu cards expose Collection, Delivery and Table ordering only when the App
-declares Website support and the Kitchen grants that service for the Menu. `menu/components/Order.vue` reuses the canonical Menu
-payload for actual items and choices; `menu/server/ordering.ts` owns transactional
-resolution of their current publication, availability, names and prices. The thin
-Menu-submit adapter passes the resolved owner to Kitchen's submission command.
-Table is now an order projection, alongside Collection and Delivery. The retired
-kiosk session flow remains unavailable.
+Published Menus expose read-only catalogue items, prices, publication and
+serving times. Menu and Kitchen ownership is mapped in the
+[Menu family](family-menu.md#catalogue-and-order-dependency-direction).
+The Menu route renderer uses `MenuDetail` for the public detail and
+`MenuJson` for the diagnostic projection. Service-specific Kitchen entrances
+share the read-only Menu catalogue. Public checkout, Kiosk and customer receipt
+routes are removed.
 
-The current entrance requires a configured Offering schedule and evaluates current
-opening times. Scheduled-order slots and delivery-zone fees remain separate. Payment, dispatch and physical handoff are separate responsibilities. The
-customer reads only its own submission response; operator actions retain current
-Kitchen authority. Workspace draft persistence remains separate from submission.
+Kitchen keeps its [staff Orders capability](order-processing-kitchen-fulfilment.md),
+including the order editor, saved drafts, board, and protected status commands.
+Previously saved orders are available to authorized staff. Services retains
+Menu links and serving-hour configuration.
 
-The new Order model and ticket live with Kitchen's first local Ordering consumer.
-See `order-processing-kitchen-fulfilment.md` and the named source files there.
-Misebox's public runtime configuration declares the draft channel vocabulary;
-`kitchen/utils/ordering.ts` validates it when constructing an empty draft.
+## Website menu delivery contract
 
-## Public venue and menu surfaces
-
-The Kitchen home at `/kitchens/{slug}` presents venue information through
-KitchenDetail/PlaceDetail and links to Menus and ordering. It does not load the
-Menu directory or delivery-area reader. Venue opening hours stay with PlaceDetail;
-serving times and delivery information belong to menus and ordering.
-`/kitchens/{slug}/menus` reuses MenuDirectoryScoped for the published
-menu cards, service times and ordering entrances, plus the shared delivery-area
-disclosure, with one return link to venue information;
-it does not repeat the venue header, contact, gallery or opening-hours panels.
-The directory destination remains unchanged. This split does not establish a
-permanent acquisition or eating-journey entrance policy.
+Workspace Integrations composes the copyable website menu button. The button
+opens the Kitchen's published Menu directory. The selected Kitchen controls
+allowed embed origins independently of the public route. The demo host
+exercises this browse entry and retains the direct link fallback.
 
 ## Verification and maintenance
 
-Keep Menu browse/publication checks separate from Ordering behaviour
-checks. Update this map when a complete ordering slice returns; do not restore
-retired interfaces merely to satisfy a previous test or source pointer.
-
-Public Website service buttons and the Menu order command derive supported
-collection, delivery and table ordering from enabled Kitchen offerings linked to
-the Menu, with a valid configured schedule and an enabled, unpaused interaction.
-Table ordering also requires the table QR channel. The App Website channel alone
-does not grant these services. `menu/utils/ordering/availability.ts` owns the shared
-projection; the command re-reads offerings within the order transaction. This
-projection checks configured services; the customer flow and submission command
-separately enforce current opening times.
-Published Menu status controls the public catalogue; menu names such as Food,
-Drinks, Breakfast or Kids do not grant ordering services.
-
-Public Collection, Delivery and Table submissions require a currently open,
-menu-linked service schedule in its configured timezone. `publicMenuServiceOpen`
-reuses the existing weekday-time evaluator on both the customer page and inside
-`menu/server/ordering.ts` before any new-order write. The server clock is authoritative;
-client time is presentation only. Opening is inclusive, closing exclusive; overnight
-windows and multiple alternative schedules retain the existing evaluator semantics.
-Closed services remain browsable but cannot submit; existing receipts and successful
-idempotent retries remain available. This does not add scheduled-order booking.
-
-The customer surface follows the Capability Surface Spine: `menu/components/Order.vue`
-composes `Order/MenuItems.vue`, `Cart.vue`, `Details.vue` and `Response.vue`.
-`menu/composables/useMenuOrderFlow.ts` owns cart/detail state, scoped submission,
-receipt recovery, serving-hour presentation and polling disposal. Children receive
-explicit data/actions and do not add persistence or validation owners. Verify all
-three channels of this public flow with `src/test/menu-order-flow.test.mjs` and
-the protected submission checks; closed live services must not be bypassed for QA.
-
-The customer composition keeps one reactive `flow` binding. Menu read outcomes
-reuse Core StateCard; quantity editing uses Nuxt UI InputNumber (whole 0–99,
-zero removes the line). Library JSON and board details reuse DisclosurePanel.
-The cart shortcut scrolls its local region without changing the selected service
-or route. No new shared quantity or disclosure owner is introduced.
-
-Workspace Menu linked-offering summaries expose the existing `.table` customer
-entrance for enabled, unpaused dine-in interactions with the table QR channel
-enabled, explicit serving hours and a published structured Menu. Links retain
-the exact Menu slug and offering ID. This is configuration eligibility; current
-opening hours remain checked by the customer flow and submission command.
-`menu-offering-summary.test.mjs` protects these gates and tenant/directory links.
-
-Daily Menus publish dated selections for browsing only. Neither configured
-services nor a manually constructed context route grants daily ordering;
-`menu/server/ordering.ts` rejects it transactionally. Stable public Menu/QR links
-remain context-free and date resolution belongs to the public Menu reader.
+Verify Menu browsing, publication, service catalogue and embedding separately
+from staff draft and board behaviour. Start from the published Menu projection
+before designing another customer ordering flow.

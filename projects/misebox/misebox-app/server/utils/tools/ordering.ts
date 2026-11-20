@@ -4,7 +4,6 @@ export const orderingTool = {
   id: 'ordering',
   provider: 'misebox',
   messageSource: 'misebox',
-  title: 'Order from a published Menu',
-  description:
-    'Choose a published Menu. Collection, delivery, and pre-order appear only when the Menu and Kitchen enable them.',
+  title: 'Browse published menus',
+  description: 'Browse food, drinks and prices from a published Menu.',
 } satisfies MiseboxToolContract

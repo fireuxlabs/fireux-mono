@@ -1,5 +1,6 @@
 import {
   menuRoutePath,
+  menuRouteIndexPath,
   type MenuRouteScope,
 } from '../../menu/utils/navigation/route.ts'
 import { tableChannelEnabled } from './table-service.ts'
@@ -92,19 +93,12 @@ export function menuWebsiteOrderUrl(input: {
 }
 
 /** Stable Kitchen entry: ordinary Menu/service edits never change the embed target. */
-export function kitchenWebsiteOrderUrl(input: {
+export function kitchenWebsiteMenuUrl(input: {
   origin: string
   scope: MenuRouteScope
 }) {
   if (input.scope.kind === 'root') return ''
-  const path =
-    input.scope.kind === 'tenant'
-      ? '/order'
-      : input.scope.kitchenSlug.trim()
-        ? '/kitchens/' +
-          encodeURIComponent(input.scope.kitchenSlug.trim()) +
-          '/order'
-        : ''
+  const path = menuRouteIndexPath(input.scope)
   if (!path) return ''
   try {
     const origin = new URL(input.origin)
@@ -133,10 +127,7 @@ const escapeAttribute = (value: string) =>
     .replaceAll('>', '&gt;')
     .replaceAll("'", '&#39;')
 
-export function menuWebsiteSnippet(
-  url: string,
-  label: 'Order now' | 'View Menu' = 'Order now'
-) {
+export function menuWebsiteSnippet(url: string) {
   let parsed: URL
   try {
     parsed = new URL(url)
@@ -155,13 +146,13 @@ export function menuWebsiteSnippet(
   )
     return ''
   const target = escapeAttribute(parsed.href)
-  return `<div data-misebox-ordering>
-  <a href="${target}" target="_blank" rel="noopener" style="display:inline-block;padding:calc(var(--spacing, 0.25em) * 3) calc(var(--spacing, 0.25em) * 5);border-radius:8px;background:#17201a;color:white;text-decoration:none;font:600 16px system-ui">${escapeAttribute(label)}</a>
-  <dialog aria-label="${label === 'View Menu' ? 'View Menu' : 'Order online'}" style="box-sizing:border-box;width:min(960px,96vw);max-width:96vw;height:92dvh;max-height:92dvh;padding:0;border:0;border-radius:12px;background:white">
+  return `<div data-misebox-menu>
+  <a href="${target}" target="_blank" rel="noopener" style="display:inline-block;padding:calc(var(--spacing, 0.25em) * 3) calc(var(--spacing, 0.25em) * 5);border-radius:8px;background:#17201a;color:white;text-decoration:none;font:600 16px system-ui">View Menu</a>
+  <dialog aria-label="View Menu" style="box-sizing:border-box;width:min(960px,96vw);max-width:96vw;height:92dvh;max-height:92dvh;padding:0;border:0;border-radius:12px;background:white">
     <form method="dialog" style="height:48px;display:flex;align-items:center;justify-content:flex-end;padding:0 calc(var(--spacing, 0.25em) * 3)">
-      <button aria-label="${label === 'View Menu' ? 'Close Menu' : 'Close ordering'}" style="padding:calc(var(--spacing, 0.25em) * 2) calc(var(--spacing, 0.25em) * 4);font:600 16px system-ui;cursor:pointer">Close</button>
+      <button aria-label="Close Menu" style="padding:calc(var(--spacing, 0.25em) * 2) calc(var(--spacing, 0.25em) * 4);font:600 16px system-ui;cursor:pointer">Close</button>
     </form>
-    <iframe data-src="${target}" title="Menu and checkout" style="display:block;width:100%;height:calc(100% - 48px);border:0"></iframe>
+    <iframe data-src="${target}" title="Menu" style="display:block;width:100%;height:calc(100% - 48px);border:0"></iframe>
   </dialog>
 </div>
 <script>

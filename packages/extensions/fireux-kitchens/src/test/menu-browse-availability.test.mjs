@@ -174,6 +174,14 @@ test('Menu service choices never advertise another Menu on a basic Menu page', a
       to: '/current',
       kitchen_offering_id: 'collection',
     },
+    {
+      menu_id: 'current-menu',
+      value: 'collection',
+      label: 'Collection ordering',
+      to: '/current.collection',
+      kitchen_offering_id: 'collection',
+      order_type: 'collection',
+    },
   ]
   const options = guestMenuSurfaceOptions({
     behaviour: { choices },

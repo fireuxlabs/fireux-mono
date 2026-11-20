@@ -7,25 +7,6 @@
     propagate-response-status
   />
 
-  <ClientOnly
-    v-else-if="
-      projection === 'order' &&
-      ['collection', 'delivery', 'table'].includes(menuTarget.context)
-    "
-  >
-    <MenuOrder
-      :menu-id="menuTarget.menuId"
-      :context="menuTarget.context as 'collection' | 'delivery' | 'table'"
-      :route-scope="menuRouteScope"
-    />
-    <template #fallback><p>Loading ordering…</p></template>
-  </ClientOnly>
-  <UAlert
-    v-else-if="projection === 'order'"
-    title="Ordering is unavailable for this entrance"
-    color="neutral"
-  />
-
   <MenuJson v-else :endpoint="endpoint" :query="query" />
 </template>
 
