@@ -101,7 +101,6 @@ async function provisionMainAppEcosystem(
 
   return provisionEcosystem({
     uid,
-    identityDatabaseId,
     ecosystemId: config.ecosystemId,
     projectId: config.projectId,
     name: input.ecosystem.name,

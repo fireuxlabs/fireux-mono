@@ -4,6 +4,9 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { APP_ROLES } from '../runtime/app/models/model.ts'
+import { ECOSYSTEM_STATUSES } from '../runtime/ecosystem/models/ecosystem.model.ts'
+
+const now = { seconds: 1, nanoseconds: 0 }
 function load(path, returned, dependencies = {}) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -31,7 +34,7 @@ function fixture({ global = false } = {}) {
   }
   const server = {
     createError: (value) => Object.assign(new Error(value.statusMessage), value),
-    FieldValue: { serverTimestamp: () => 'now' },
+    FieldValue: { serverTimestamp: () => now },
     getRuntimeIdentityFirestore: () => database,
     runGuardedServerTransaction: async (_, action) =>
       action({
@@ -54,6 +57,11 @@ function fixture({ global = false } = {}) {
     'provisionEcosystem',
     {
       ...server,
+      canonicalEcosystem: load(
+        '../runtime/ecosystem/server/identity/read.ts',
+        'canonicalEcosystem',
+        { ECOSYSTEM_STATUSES, createError: server.createError }
+      ),
       requireFirestoreDocumentId: (value) => value,
       ECOSYSTEM_MUTATION_TARGETS: { ecosystems: target('ecosystems') },
     }
@@ -165,8 +173,8 @@ test('global main App initialization creates the canonical Ecosystem and preserv
     name: 'Example Ecosystem',
     description: 'Reviewed purpose',
     image_url: '',
-    created: { at: 'now', by: 'operator' },
-    updated: { at: 'now', by: 'operator' },
+    created: { at: now, by: 'operator' },
+    updated: { at: now, by: 'operator' },
   })
 
   f.records.get('ecosystems/example').name = 'Operator edit'
@@ -181,7 +189,13 @@ test('Ecosystem bootstrap is limited to matching main Apps and rejects Project c
   assert.equal(tenant.records.has('ecosystems/fireux'), false)
 
   const conflict = fixture({ global: true })
-  conflict.records.set('ecosystems/example', { project_id: 'another-project' })
+  conflict.records.set('ecosystems/example', {
+    project_id: 'another-project',
+    status: 'active',
+    name: 'Existing Ecosystem',
+    created: { at: now },
+    updated: { at: now },
+  })
   await assert.rejects(
     conflict.run(conflict.input),
     /does not match runtime projectId/

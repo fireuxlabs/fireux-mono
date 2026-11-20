@@ -354,10 +354,15 @@ records. Public meal-deal projection remains read-only.
   `app/server/identity`. The separate `/api/internal/app/public-settings`
   route delegates featured-content changes to `app/server/settings/update.ts`,
   which writes only the `settings/public` child.
-- App initialization decides when a configured global main App can provision
-  its Ecosystem. The Ecosystem owns root validation and its guarded identity
-  transaction in
+- App initialization decides when a configured global Main App can provision
+  its Project-linked Ecosystem. The Ecosystem owns root validation and its
+  guarded identity transaction in
   `packages/core/fireux-core/src/runtime/ecosystem/server/identity/provision.ts`.
+  The server contract supports a root with no Apps and no Project link. A
+  trusted caller must verify actor and target authority before creation or
+  retry. App membership grants no provisioning authority. Current App
+  initialization requires an existing Ecosystem when configured without a
+  Project.
 - App media single-image and bulk sync share the same development/developer
   command. Only known image kinds are caller inputs; App and bucket come from
   runtime authority. Missing owner artwork fails instead of borrowing a parent

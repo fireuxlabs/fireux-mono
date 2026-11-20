@@ -33,7 +33,7 @@ function isStamp(
   )
 }
 
-function canonicalEcosystem(
+export function canonicalEcosystem(
   id: string,
   value: unknown,
   activeOnly = true

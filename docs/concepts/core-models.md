@@ -97,8 +97,9 @@ remains authoritative; the reverse child grants no ownership or access.
 
 `Ecosystem.project_id` is optional for an Ecosystem's identity and public
 discovery. FireUX Project management requires an exact match to that field.
-App has no
-`project_id`; Project Apps follows Project → Ecosystem → App.
+The Ecosystem's Firebase project ID belongs to infrastructure configuration.
+An Ecosystem can exist with zero Apps. App stores `ecosystem_id`, and Project
+Apps follows Project → Ecosystem → App.
 Protected Project Ecosystem and App views use the approved owning-system records
 through FireUX App's `server/project/ecosystem/read.ts`; a FireUX-local copy is
 not relationship authority. Management may include inactive Ecosystems, while
@@ -368,6 +369,15 @@ Core's `runtime/ecosystem/server/identity/read.ts` owns the canonical root read.
 `useEcosystemDetail` reads the public detail endpoint. The FireUX platform
 directory derives detail links from the document ID and supplies the App count
 from related Apps.
+
+Core's `runtime/ecosystem/server/identity/provision.ts` creates the root in the
+configured identity database. The trusted server caller checks the actor,
+target and prerequisites. Retries validate the existing canonical identity and
+exact Project linkage inside the transaction. An independent retry must agree
+on the name and description. The existing Project-linked Main App initializer
+uses its configured copy only as a creation seed and preserves later edits.
+The server contract supports independent creation. A deployed operator
+entrypoint for that workflow remains open.
 
 Navigation is a shared runtime contract at `runtime/types/navigation.ts`, not an
 Entity model. `NavMeta` describes authored route navigation, `NavItem` is its

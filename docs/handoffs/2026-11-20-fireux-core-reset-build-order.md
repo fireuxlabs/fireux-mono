@@ -71,13 +71,29 @@ Focused tests cover the optional link, rendered App detail, portal scoping and
 existing bootstrap checks. Core typechecking and FireUX portal Nuxt preparation
 passed. This checkpoint changes source and projections only.
 
-**Open · Ecosystem provisioning.** Main App bootstrap still calls the existing
-Project-linked provisioner, which requires `projectId` and checks that the
-stored link matches. Define who can provision an independent Ecosystem and
-verify creation, retries and conflicts through that owner's trusted command.
-Keep the existing Project bootstrap and portal checks intact, and preserve
-stored links and App locators. Ecosystem acceptance stays open until this
-creation path is proven.
+**Ecosystem provisioning checkpoint, 2026-11-20.** Core's server-only command
+creates the Ecosystem root atomically in the configured identity database,
+with an optional FireUX Project link. The caller must verify authority and
+prerequisites even on retry. The command checks the canonical record and exact
+linkage before accepting an existing root. For standalone creation, the
+name and description must agree. Project-linked Main App configuration
+continues to seed copy once and preserves later edits.
+
+All 137 focused tests passed, including Core installation and App composition.
+Core typechecking, focused lint and FireUX portal Nuxt preparation passed.
+The tests created an independent Ecosystem with zero Apps, read it back
+through the canonical reader and directory projection, and exercised a
+transaction retry, conflicting linkage, malformed identity and denied
+prerequisites. The existing developer-only Main App bootstrap and the
+portal's exact Project management filters retain their checks. Ordinary Apps
+configured without a Project still require an existing Ecosystem.
+
+**Open · Standalone operator entrypoint.** The Main App initializer remains
+the only supported caller. No existing standalone operator workflow was
+identified. The standalone command was exercised with focused fakes. Signed-in
+standalone provisioning, deployed behavior and named-database verification
+remain open. Keep Ecosystem acceptance open until a trusted operator workflow
+is identified and verified. No live data or App locators were changed.
 
 **Exit:** App, Ecosystem and User each stand on their own root and shared Core infrastructure. No Project import/authority is necessary for a normal Core App.
 
