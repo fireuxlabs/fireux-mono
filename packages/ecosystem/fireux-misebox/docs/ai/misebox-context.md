@@ -2631,7 +2631,9 @@ Collection selection, creation allowance and the upload queue remain in
 when mounted inside a record and the collection context otherwise, including
 source-only uploads without a Menu. The independent upload-detail route and
 the section editor's item/Dish workflow retain their existing owners.
-Routes and local view handoffs are unchanged. Verify sharing, scope changes,
+The plain Menu record route opens the read overview, described in the
+[Menu family map](../../../../../docs/concepts/family-menu.md#kitchen-workspace-page-patterns).
+Contextual links retain their explicit local view handoffs. Verify sharing, scope changes,
 read outcomes and upload entry with `menu-record-controller.test.mjs`; use
 `menu-record-view.test.mjs` and `menu-record-navigation.test.mjs` for view resets.
 

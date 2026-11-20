@@ -21,6 +21,7 @@ import { guestMenuSurfaceOptions } from '../utils/navigation/context'
 export function useMenuDetail(props: {
   menuId: string
   menuRouteScope: MenuRouteScope
+  embedded?: boolean
   pageCanvas: boolean
   propagateResponseStatus: boolean
 }) {
@@ -182,20 +183,22 @@ export function useMenuDetail(props: {
       pageCanvas: computed(() => props.pageCanvas),
     })
 
-  useSeo({
-    title: () => failure.value?.title || menuName.value,
-    description: () =>
-      failure.value?.description ||
-      menuDescription.value ||
-      `Browse ${menuName.value}.`,
-    path: canonicalPath,
-    robots: () =>
-      failure.value ||
-      detailMenu.value?.content.audience ||
-      documentMenu.value?.audience
-        ? 'noindex, nofollow'
-        : undefined,
-  })
+  if (!props.embedded) {
+    useSeo({
+      title: () => failure.value?.title || menuName.value,
+      description: () =>
+        failure.value?.description ||
+        menuDescription.value ||
+        `Browse ${menuName.value}.`,
+      path: canonicalPath,
+      robots: () =>
+        failure.value ||
+        detailMenu.value?.content.audience ||
+        documentMenu.value?.audience
+          ? 'noindex, nofollow'
+          : undefined,
+    })
+  }
 
   return {
     ready,

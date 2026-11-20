@@ -963,7 +963,8 @@ its intake, customer approval and delivery outside this lower boundary.
 ### Existing record editor
 
 `Menus/Detail/Index.vue` provides the routed record context once and composes
-Settings, content, publication and source surfaces. Metadata controls consume
+the read overview plus Settings, content, publication and source surfaces.
+Metadata controls consume
 `useMenuRecordMetadata`; serving-hours controls consume `useMenuRecordHours`.
 Both take narrow explicit inputs from the existing context and acquire no data.
 The hours owner retains debounce, scope cancellation and failure restoration.
@@ -1057,16 +1058,22 @@ Prep Plan and Batches prioritise the current task and its outcome. Shared
 presentation follows the operator's task. Readers and commands stay with the
 domain that owns them.
 
-The Menu record editor at `/workspace/kitchen/menu/{menuSlug}` presents entries
-in their Menu context. Its dish rows share Menu display and choice controls
-with Browse, including the Menu palette and public photo preference. Preview
-selections stay local. Workspace actions alongside the row handle placement
-and navigation to Item editing.
+The plain Menu record URL at `/workspace/kitchen/menu/{menuSlug}` opens the
+read overview. It shows Workspace identity and, for a public published Menu in
+the directory-scoped Workspace, embeds the same Browse component as the guest
+route. Unpublished Menus retain their Workspace identity and section names.
+Content, publication, source and settings remain explicit navigation choices.
+The content editor's rows share Menu display and choice controls with Browse.
+Preview selections stay local. Workspace actions handle placement and
+navigation to Item detail.
 
 The Items workspace at `/workspace/kitchen/menu/items` reads the selected
 Kitchen's reusable item collection once and lists each Item as a link to
 its record. The `[dishId]` route reads the Item once in the selected Kitchen
-and passes the result to Workspace Item detail.
+and passes the result to Workspace Item detail. The guest placement reader mounts once
+the menu has resolved. The Workspace name has one Edit item action for
+identity and default selling terms. The secondary Delete item action opens a
+named confirmation and links to blocking placements or promotions.
 `WorkspaceItemDetail` shows the Item's name, description and optional photo
 as read-only fields.
 The same detail composes Menu's `components/ItemDetail.vue` directly.
@@ -1077,9 +1084,19 @@ the public Browse catalogue and theme. Items without a published placement
 show their basic presentation.
 Ordering retains its Service context.
 
+The Items collection opens Create and links a newly saved Item to its detail.
+The detail keeps the two reads visible and opens the existing identity and
+pricing editors or removal view on demand. They use the route's live Item
+context.
+The removal view checks usage before enabling confirmation, and the trusted
+delete command rechecks the exact Item and its references.
+
 Menu section rows link directly to the shared Kitchen Item record. Shared Item
 identity, image and description apply wherever that Item is used. Removal
 from a section is distinct from deleting the Item record.
+
+The standalone Section detail exposes rename and archive/restore through the
+same Section command that the Menu's section list uses.
 
 `useMenuSectionItemSelection` consumes the existing Section context and catalogue
 for multi-selection. It owns search, selection and sequential placement intent,
@@ -1119,5 +1136,9 @@ represent missing historical provenance honestly; trusted Item creation still
 writes both creation and update stamps. `useKitchenItemRead` owns acquisition,
 Kitchen access gating and private normalization through Core's Firestore reader.
 `useKitchenItemContext` only shares that existing reader with detail children.
+Item detail opens Menu placements on demand using the existing authorized
+Item usage reader. It shows saved section references, including unpublished
+placements. Public visibility remains owned by the Menu projection. Raw Item
+data and local derived facts are available in development diagnostics.
 There is no separate read-item adapter or `ReadableItem` contract. See
 `src/test/kitchen/item/foundation.test.mjs` and the Item UI scope tests.

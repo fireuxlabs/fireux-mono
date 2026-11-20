@@ -10,7 +10,7 @@ definePageMeta({
   requiresSelection: true,
   nav: {
     key: 'workspace-kitchen-menu-detail',
-    label: 'Menu settings',
+    label: 'Menu details',
     icon: 'i-lucide-list-tree',
     position: 'top',
     hidden: true,

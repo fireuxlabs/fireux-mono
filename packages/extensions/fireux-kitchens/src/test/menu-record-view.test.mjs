@@ -3,7 +3,17 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
-import { ref, watch, effectScope } from 'vue'
+import {
+  compile,
+  computed,
+  createSSRApp,
+  effectScope,
+  h,
+  ref,
+  watch,
+} from 'vue'
+import { parse } from 'vue/compiler-sfc'
+import { renderToString } from 'vue/server-renderer'
 
 function load(file, dependencies) {
   const source = stripTypeScriptTypes(
@@ -28,7 +38,7 @@ test('regular and daily defaults, late loading, refresh and record replacement',
     const menu = ref(null)
     const state = provideMenuRecordView(scope, menu, () => null)
     menu.value = { id: 'daily', schedule: 'daily' }
-    assert.equal(state.view.value, 'content')
+    assert.equal(state.view.value, 'read')
     state.select('source')
     menu.value = null
     menu.value = { id: 'daily', schedule: 'daily' }
@@ -38,7 +48,7 @@ test('regular and daily defaults, late loading, refresh and record replacement',
       'temporary loading must not erase a chosen perspective'
     )
     menu.value = { id: 'regular', schedule: 'regular' }
-    assert.equal(state.view.value, 'content')
+    assert.equal(state.view.value, 'read')
   })
   owner.stop()
 })
@@ -52,7 +62,7 @@ test('account, Kitchen and slug changes reset local view even with same record I
     for (const next of ['b/k/food', 'b/other/food', 'b/other/drinks']) {
       state.select('publishing')
       scope.value = next
-      assert.equal(state.view.value, 'content')
+      assert.equal(state.view.value, 'read')
     }
   })
   owner.stop()
@@ -72,7 +82,7 @@ test('legacy intent overrides default once; a fresh mount returns to default', (
     const state = provideMenuRecordView(scope, menu, consume)
     assert.equal(state.view.value, 'source')
     const reload = provideMenuRecordView(scope, menu, consume)
-    assert.equal(reload.view.value, 'content')
+    assert.equal(reload.view.value, 'read')
   })
   owner.stop()
 })
@@ -110,4 +120,83 @@ test('a discarded Nuxt page cannot consume the mounted record handoff', () => {
   assert.equal(state.view.value, 'content')
   assert.equal(intent, null)
   active.stop()
+})
+
+test('Menu overview composes the matching guest Menu and keeps draft sections readable', async () => {
+  const path =
+    '../runtime/kitchen/components/Workspace/Menu/Menus/Detail/Index.vue'
+  const source = readFileSync(new URL(path, import.meta.url), 'utf8')
+  const { descriptor } = parse(source)
+  const script = stripTypeScriptTypes(
+    descriptor.scriptSetup.content.replace(
+      /^import[\s\S]*?from ['"][^'"]+['"];?\n/gm,
+      ''
+    )
+  )
+
+  async function render(status, audience, view = 'read', isTenant = false) {
+    const deps = {
+      computed,
+      useFireUXConfig: () => ({ isTenant }),
+      provideKitchenMenuRecordContext: () => ({
+        menu: ref({ id: 'menu-id', status, audience }),
+        menuSlug: ref('comida-casera-2'),
+        pending: ref(false),
+        error: ref(null),
+        outcome: ref('ready'),
+        canWrite: ref(true),
+        subscription: ref('pro'),
+        selectedKitchen: ref({ identity: { slug: 'la-tapberne' } }),
+        sections: ref([{ id: 'starters', label: 'Starters' }]),
+      }),
+      useMenuRecordNavigation: () => ({ scope: ref('scope') }),
+      provideMenuRecordView: () => ({ view: ref(view) }),
+      directoryMenuRouteScope: (kitchenSlug) => ({
+        kind: 'directory',
+        kitchenSlug,
+      }),
+    }
+    const setup = compileFunction(
+      script +
+        '\nreturn { menu, menuSlug, pending, error, outcome, canWrite, subscription, selectedKitchen, sections, publicMenuScope, recordScope, view, viewLabel }',
+      Object.keys(deps)
+    )
+    const app = createSSRApp({
+      setup: () => setup(...Object.values(deps)),
+      render: compile(descriptor.template.content),
+    })
+    app.config.warnHandler = () => {}
+    app.component('KitchenWorkspaceMenuMenusDetailHeader', {
+      render: () => h('h1', 'Workspace Menu'),
+    })
+    app.component('KitchenWorkspaceMenuMenusSectionsCollection', {
+      render: () => h('div', 'Menu editor'),
+    })
+    app.component('MenuDetail', {
+      props: { menuId: String, menuRouteScope: Object, embedded: Boolean },
+      setup: (props) => () =>
+        h(
+          'div',
+          `${props.menuRouteScope.kitchenSlug}/${props.menuId}/${props.embedded}`
+        ),
+    })
+    return renderToString(app)
+  }
+
+  const published = await render('published', 'public')
+  assert.match(
+    published,
+    /Workspace Menu[\s\S]*la-tapberne\/comida-casera-2\/true/
+  )
+  assert.doesNotMatch(published, /Menu editor/)
+  for (const [status, audience, isTenant] of [
+    ['draft', 'public', false],
+    ['published', 'private_link', false],
+    ['published', 'public', true],
+  ]) {
+    const workspace = await render(status, audience, 'read', isTenant)
+    assert.match(workspace, /Workspace Menu[\s\S]*Starters/)
+    assert.doesNotMatch(workspace, /la-tapberne\/comida-casera-2|Menu editor/)
+  }
+  assert.match(await render('published', 'public', 'content'), /Menu editor/)
 })

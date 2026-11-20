@@ -27,9 +27,9 @@
         <span v-if="kitchenName">{{ kitchenName }}</span>
       </div>
 
-      <h1 :id="headingId">
+      <component :is="headingTag" :id="headingId" class="menu-identity__title">
         {{ menuName }}
-      </h1>
+      </component>
 
       <p v-if="description" class="menu-identity__description">
         {{ description }}
@@ -57,6 +57,7 @@ const props = withDefaults(
     backToMenusLabel?: string
     closeMenuLabel?: string
     headingId?: string
+    headingTag?: 'h1' | 'h2'
     kitchenName?: string
     menuName: string
     description?: string
@@ -71,6 +72,7 @@ const props = withDefaults(
     backToMenusLabel: 'Back to menus',
     closeMenuLabel: 'Close menu',
     headingId: 'menu-title',
+    headingTag: 'h1',
     kitchenName: '',
     description: '',
     currencyCode: '',
@@ -155,7 +157,7 @@ const resolvedExitLabel = computed(() =>
   flex: 0 0 auto;
 }
 
-.menu-identity h1 {
+.menu-identity__title {
   max-width: 14ch;
   margin: calc(var(--spacing) * 2) 0 0;
   color: var(--menu-title);
@@ -202,7 +204,7 @@ const resolvedExitLabel = computed(() =>
     border-radius: var(--menu-radius);
   }
 
-  .menu-identity h1 {
+  .menu-identity__title {
     margin-top: 0.4rem;
     font-size: clamp(var(--text-3xl), 9vw, var(--text-4xl));
   }
@@ -246,7 +248,7 @@ const resolvedExitLabel = computed(() =>
   font-weight: var(--font-weight-medium);
 }
 
-.menu-identity--open h1 {
+.menu-identity--open .menu-identity__title {
   max-width: 100%;
   margin-top: calc(var(--spacing) * 4);
   font-size: clamp(var(--text-4xl), 6vw, var(--text-6xl));

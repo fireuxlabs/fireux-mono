@@ -21,6 +21,11 @@ const { view, select } = useMenuRecordView()
 const items = computed(() =>
   [
     {
+      label: 'Overview',
+      icon: 'i-lucide-book-open',
+      view: 'read' as const,
+    },
+    {
       label:
         menu.value?.schedule === 'daily'
           ? 'Dates & selections'

@@ -7,7 +7,7 @@
     :data-menu-render-kind="hasMenu ? renderKind : undefined"
     :data-menu-index-path="menuIndexPath || undefined"
     :data-menu-path="hasMenu ? menuPath : undefined"
-    :class="themeClassName"
+    :class="[themeClassName, { 'menu-browse--embedded': embedded }]"
     :style="themeStyleVars"
     :dir="menuDirection"
     :lang="menuLanguage || undefined"
@@ -31,11 +31,13 @@
         :show-currency="showCurrency"
         :description="menuDescription"
         heading-id="menu-browse-title"
+        :heading-tag="embedded ? 'h2' : 'h1'"
         :identity-kind="documentMenu ? 'menu' : 'kitchen-menu'"
         :kitchen-name="kitchenName"
         :menu-name="menuName"
         presentation="open"
         :prices-label="browseSurfaceCopy.pricesLabel"
+        :show-exit="!embedded"
       >
         <template v-if="kitchenLogoUrl && !logoFailed" #brand>
           <img
@@ -144,6 +146,7 @@
       />
 
       <FireDiagnosticsDebugPanel
+        v-if="!embedded"
         title="Menu"
         scope="runtime"
         object-origin="fetched"
@@ -168,6 +171,7 @@ const props = withDefaults(
   defineProps<{
     menuId: string
     menuRouteScope?: MenuRouteScope
+    embedded?: boolean
     pageCanvas?: boolean
     propagateResponseStatus?: boolean
   }>(),
@@ -222,6 +226,11 @@ if (props.propagateResponseStatus) {
   --menu-section-nav-top: calc(
     var(--ui-header-height, 4rem) + var(--spacing) * 3
   );
+}
+
+.menu-browse--embedded {
+  min-height: 0;
+  border-radius: var(--menu-radius);
 }
 
 .menu-browse__logo {

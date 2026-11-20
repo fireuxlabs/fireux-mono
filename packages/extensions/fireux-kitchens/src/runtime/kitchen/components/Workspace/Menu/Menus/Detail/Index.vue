@@ -21,7 +21,7 @@
     />
     <div v-else :key="`${recordScope}/${menu.id}`" class="workspace-surface">
       <UAlert
-        v-if="!canWrite"
+        v-if="view !== 'read' && !canWrite"
         color="neutral"
         :title="
           menu.schedule === 'daily' &&
@@ -37,17 +37,37 @@
         color="neutral"
       />
       <section :key="view" :aria-label="viewLabel" class="menu-record-panel">
-        <KitchenWorkspaceMenuMenusDetailSettings v-if="view === 'details'" />
+        <template v-if="view === 'read'">
+          <MenuDetail
+            v-if="publicMenuScope"
+            :menu-id="menuSlug"
+            :menu-route-scope="publicMenuScope"
+            embedded
+          />
+          <template v-else>
+            <ul v-if="sections.length" aria-label="Menu sections">
+              <li v-for="section in sections" :key="section.id">
+                {{ section.label || section.id }}
+              </li>
+            </ul>
+            <p role="status">No public preview here.</p>
+          </template>
+        </template>
+        <KitchenWorkspaceMenuMenusDetailSettings
+          v-else-if="view === 'details'"
+        />
         <template v-else-if="view === 'content'">
           <KitchenWorkspaceMenuMenusDetailDocument
             v-if="menu.format === 'document' || menu.doc?.url"
           />
           <KitchenWorkspaceMenuMenusSectionsCollection v-else />
         </template>
-        <KitchenWorkspaceMenuMenusPublication v-else-if="view === 'publishing'" />
+        <KitchenWorkspaceMenuMenusPublication
+          v-else-if="view === 'publishing'"
+        />
         <KitchenWorkspaceMenuMenusDetailSource v-else />
       </section>
-      <details class="kitchen-record-assistant">
+      <details v-if="view !== 'read'" class="kitchen-record-assistant">
         <summary>Ask KitchenAI about this menu</summary>
         <WorkspaceKitchenAIFocus
           focus="kitchen-ai.menu.menus"
@@ -60,9 +80,11 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { provideKitchenMenuRecordContext } from '../../../../../composables/workspace/menu/menus/useKitchenMenuRecordContext'
 import { useMenuRecordNavigation } from '../../../../../composables/workspace/menu/menus/useMenuRecordNavigation'
 import { provideMenuRecordView } from '../../../../../composables/workspace/menu/menus/useMenuRecordView'
+import { directoryMenuRouteScope } from '../../../../../../menu/utils/navigation/route'
 const {
   menu,
   menuSlug,
@@ -72,7 +94,22 @@ const {
   canWrite,
   subscription,
   selectedKitchen,
+  sections,
 } = provideKitchenMenuRecordContext()
+const config = useFireUXConfig()
+const publicMenuScope = computed(() => {
+  const record = menu.value
+  const kitchen = selectedKitchen.value
+  if (
+    config.isTenant ||
+    record?.status !== 'published' ||
+    (record.audience && record.audience !== 'public') ||
+    !kitchen?.identity.slug
+  )
+    return null
+
+  return directoryMenuRouteScope(kitchen.identity.slug)
+})
 const { scope, entryView, clearView } = useMenuRecordNavigation()
 const recordScope = computed(() => `${scope.value}/${menuSlug.value}`)
 const { view } = provideMenuRecordView(
@@ -84,6 +121,7 @@ const { view } = provideMenuRecordView(
 const viewLabel = computed(
   () =>
     ({
+      read: 'Overview',
       details: 'Settings',
       content:
         menu.value?.schedule === 'daily'

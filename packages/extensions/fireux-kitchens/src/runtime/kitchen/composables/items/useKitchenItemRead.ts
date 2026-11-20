@@ -39,16 +39,16 @@ export function useKitchenItemRead(
     if (!storageKitchenId.value) return 'empty'
     return source.outcome.value
   })
+  const document = computed(() =>
+    outcome.value === 'ready' ? (source.value ?? null) : null
+  )
   const item = computed(() =>
-    outcome.value === 'ready' && source.value
-      ? readItemIdentity(itemId.value, source.value)
-      : null
+    document.value ? readItemIdentity(itemId.value, document.value) : null
   )
   const selling = computed(() => {
-    if (outcome.value !== 'ready' || !source.value)
-      return { offer: null, error: null }
+    if (!document.value) return { offer: null, error: null }
     try {
-      return { offer: readItemOffer(source.value), error: null }
+      return { offer: readItemOffer(document.value), error: null }
     } catch (error) {
       return { offer: null, error }
     }
@@ -67,6 +67,7 @@ export function useKitchenItemRead(
     rootCollection,
     databaseId,
     collectionPath,
+    document,
     item,
     offer,
     offerError,

@@ -171,6 +171,38 @@ justified App. A hostname never changes membership, selection or permission.
 The native route and configuration remain the owners; no parallel entry model
 or role-specific root component is introduced.
 
+## Workspace collection and record detail
+
+The collection shows many records. Its detail page opens one record for
+inspection. Collection and subcollection placement follow the data owner's
+scope. The first two members of this pattern are Kitchen Menus and Items.
+
+- Resolve the exact record through its owning reader using the route identity
+  and authorised Workspace scope where required. Show the fields useful for
+  the operator's current task and preserve the read's loading, absence and
+  failure outcomes. Prove the read on a real record before expanding the screen
+  to create, update or delete.
+- When the record has a guest-facing surface, show that surface alongside the
+  Workspace read so the operator can see what a guest sees. Reuse the actual
+  public presentation with its public projection, parent context and theme.
+  Keep operational fields with the Workspace view. For an internal record, show
+  the operational view on its own.
+- Compose the views directly. Resolve ordinary defaults at the owning boundary
+  so standard record links need only the record identity. Pass specific parent
+  context when a contextual link needs to preserve it. Add framing where it
+  serves the content.
+- Put Create on the collection and keep Read as the default record view. Put
+  the supported Edit and removal actions with that record. Open editors and
+  confirmation only when invoked. Compose the existing named commands and
+  preserve the domain's exact target, authority and lifecycle. Use the domain's
+  action name when removal is an archive, cancellation or unlink.
+
+The baseline is [Misebox Item detail](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Items/Detail/Index.vue).
+The [Menu and Item read details](family-menu.md#kitchen-workspace-page-patterns)
+pair the operator view with the guest-facing Browse surface when a public
+presentation is available. Check each detail on a real record in its Workspace
+and compare the preview with its guest-facing counterpart.
+
 ## Landing creation allowance
 
 Kitchen exposes allowance, used count, `canAdd`, `canCreate` and `showUpgrade`

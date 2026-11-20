@@ -24,7 +24,7 @@ export function usePrepMutation(sources: WatchSource[] = []) {
   )
   const capture = useCommandScope([scopeKey, ...sources])
   async function send(
-    method: 'POST' | 'PATCH',
+    method: 'POST' | 'PATCH' | 'DELETE',
     entity: 'preparations' | 'recipes',
     kitchenId: string,
     input: object,
@@ -63,7 +63,7 @@ export function usePrepMutation(sources: WatchSource[] = []) {
       !isFirestoreDocumentId(result?.id) ||
       (expectedId !== undefined && result.id !== expectedId)
     )
-      throw new Error('Save response did not identify the requested record.')
+      throw new Error('Command response did not identify the requested record.')
     return result
   }
   function update(
@@ -92,5 +92,19 @@ export function usePrepMutation(sources: WatchSource[] = []) {
   ) {
     return send('POST', 'recipes', kitchenId, { draft }, isOwnerCurrent)
   }
-  return { update, createRecipe, scopeKey }
+  function deleteRecipe(
+    kitchenId: string,
+    recipeId: string,
+    isOwnerCurrent: () => boolean
+  ) {
+    return send(
+      'DELETE',
+      'recipes',
+      kitchenId,
+      { recipeId },
+      isOwnerCurrent,
+      recipeId
+    )
+  }
+  return { update, createRecipe, deleteRecipe, scopeKey }
 }

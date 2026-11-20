@@ -6,7 +6,12 @@ import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorks
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { menuWorkspaceDestination } from '../../../../utils/menu-workspace-destination'
 
-export type MenuRecordView = 'details' | 'content' | 'publishing' | 'source'
+export type MenuRecordView =
+  | 'read'
+  | 'details'
+  | 'content'
+  | 'publishing'
+  | 'source'
 type MenuViewHandoff = {
   scope: string
   slug: string

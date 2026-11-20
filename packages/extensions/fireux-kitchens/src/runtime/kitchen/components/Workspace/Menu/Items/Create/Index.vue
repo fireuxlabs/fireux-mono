@@ -68,17 +68,13 @@ import { useItemEditorScope } from '../../../../../composables/items/useItemEdit
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useRoute } from '#imports'
-import { useItemCatalogueContext } from '../../../../../composables/workspace/menu/items/useItemCatalogue'
 import { useItemCreate } from '../../../../../composables/items/useItemCreate'
 import { useItemImageUpload } from '../../../../../composables/items/useItemImageUpload'
 
-const { kitchenId, readOnly, catalogue } = useItemCatalogueContext()
-const props = defineProps<{ itemKind?: string }>()
-const emit = defineEmits<{ created: [] }>()
-const itemKind = computed(
-  () =>
-    props.itemKind || (catalogue.itemKind === 'all' ? '' : catalogue.itemKind)
-)
+const props = defineProps<{ kitchenId: string; itemKind?: 'food' | 'drink' }>()
+const emit = defineEmits<{ created: [id: string] }>()
+const kitchenId = computed(() => props.kitchenId)
+const itemKind = computed(() => props.itemKind)
 const singular = 'item'
 const toast = useToastify()
 const route = useRoute()
@@ -98,9 +94,7 @@ const imageFile = ref<File | null>(null)
 const imagePreviewUrl = ref('')
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const canCreateItem = computed(
-  () => !readOnly.value && Boolean(normalizeString(kitchenId.value))
-)
+const canCreateItem = computed(() => Boolean(normalizeString(kitchenId.value)))
 const imageInitials = computed(() => {
   const parts = normalizeString(name.value).split(/\s+/).filter(Boolean)
   if (!parts.length) return 'D'
@@ -210,7 +204,7 @@ const addItem = async () => {
     clearImageDraft()
     message.value = `Created ${itemName}.`
     toast.add({ title: 'Item created', icon: 'i-heroicons-check-circle' })
-    emit('created')
+    emit('created', result.id)
   } catch (error) {
     if (!isCurrent()) return
     const errorMessage = String(

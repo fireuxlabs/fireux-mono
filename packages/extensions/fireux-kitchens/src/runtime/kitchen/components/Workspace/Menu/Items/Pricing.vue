@@ -1,6 +1,5 @@
 <template>
-  <UCard id="item-price-choices">
-    <template #header><h2>Price & choices</h2></template>
+  <div id="item-price-choices" class="fx-card-body-stack">
     <UAlert
       v-if="offerError"
       title="Price & choices unavailable"
@@ -9,9 +8,13 @@
       variant="soft"
     />
     <form v-else-if="offer" class="fx-card-body-stack" @submit.prevent="save">
+      <p class="fx-type-caption">
+        Menus use these defaults unless the item’s placement sets its own price
+        or choices.
+      </p>
       <UFormField
         v-if="!groups.some((group) => group.pricing === 'full')"
-        :label="`Normal price (${currency})`"
+        :label="currency ? `Default price (${currency})` : 'Default price'"
         ><!-- @vue-generic {string | number, {}} -->
         <UInput
           v-model="price"
@@ -40,7 +43,7 @@
       <div class="fx-card__actions">
         <UButton
           type="submit"
-          label="Save changes"
+          label="Save pricing"
           :loading="busy"
           :disabled="!canWrite || busy"
         />
@@ -71,7 +74,7 @@
         :update="updateDeposit"
       />
     </FireDisclosurePanel>
-  </UCard>
+  </div>
 </template>
 <script setup lang="ts">
 import { useKitchenWorkspace } from '../../../../composables/workspace/useKitchenWorkspace'

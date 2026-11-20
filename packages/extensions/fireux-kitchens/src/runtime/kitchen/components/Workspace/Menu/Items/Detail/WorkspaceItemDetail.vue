@@ -1,15 +1,18 @@
 <template>
-  <section class="workspace-item-basics">
+  <section v-show="item" class="workspace-item-basics">
     <div class="workspace-item-basics__copy">
-      <h2 class="workspace-item-basics__name">
-        {{ item.name || 'Untitled item' }}
-      </h2>
-      <p v-if="item.description" class="workspace-item-basics__description">
+      <div class="workspace-item-basics__heading">
+        <h2 v-if="item" class="workspace-item-basics__name">
+          {{ item.name || 'Untitled item' }}
+        </h2>
+        <WorkspaceItemEdit />
+      </div>
+      <p v-if="item?.description" class="workspace-item-basics__description">
         {{ item.description }}
       </p>
     </div>
     <ItemPhoto
-      v-if="item.image"
+      v-if="item?.image"
       class="workspace-item-basics__photo"
       :src="item.image"
       :alt="item.name || 'Item'"
@@ -18,10 +21,11 @@
 </template>
 
 <script setup lang="ts">
+import WorkspaceItemEdit from './WorkspaceItemEdit.vue'
 import ItemPhoto from '../Photo.vue'
 import type { Item } from '../../../../../records/menus/items/item'
 
-defineProps<{ item: Pick<Item, 'name' | 'description' | 'image'> }>()
+defineProps<{ item: Pick<Item, 'name' | 'description' | 'image'> | null }>()
 </script>
 
 <style scoped>
@@ -36,6 +40,13 @@ defineProps<{ item: Pick<Item, 'name' | 'description' | 'image'> }>()
 .workspace-item-basics__copy {
   min-inline-size: 0;
   max-inline-size: 50ch;
+}
+
+.workspace-item-basics__heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 3);
 }
 
 .workspace-item-basics__name {

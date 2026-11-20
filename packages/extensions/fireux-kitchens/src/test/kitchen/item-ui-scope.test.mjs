@@ -76,7 +76,8 @@ function deferred() {
   })
   return { promise, resolve, reject }
 }
-const component = (name) => `../../runtime/kitchen/components/Workspace/${name}.vue`
+const component = (name) =>
+  `../../runtime/kitchen/components/Workspace/${name}.vue`
 const specification = evaluate(
   '../../runtime/kitchen/utils/item-specification.ts',
   { isFirestoreDocumentId },
@@ -92,13 +93,13 @@ test('create does not upload or show stale outcomes after Kitchen/account round 
         component('Menu/Items/Create/Index'),
         {
           ...h.deps,
-          defineProps: () => ({}),
-          defineEmits: () => () => {},
-          useItemCatalogueContext: () => ({
-            kitchenId: h.kitchenId,
-            readOnly: ref(false),
-            catalogue: { itemKind: 'food' },
+          defineProps: () => ({
+            get kitchenId() {
+              return h.kitchenId.value
+            },
+            itemKind: 'food',
           }),
+          defineEmits: () => () => {},
           useItemCreate: () => ({ createItem: () => pending.promise }),
           useItemImageUpload: () => ({
             uploadItemImage: (x) => uploads.push(x),
@@ -136,13 +137,13 @@ test('create captures original upload and reports saved Item with failed image h
     component('Menu/Items/Create/Index'),
     {
       ...h.deps,
-      defineProps: () => ({}),
-      defineEmits: () => () => {},
-      useItemCatalogueContext: () => ({
-        kitchenId: h.kitchenId,
-        readOnly: ref(false),
-        catalogue: { itemKind: 'food' },
+      defineProps: () => ({
+        get kitchenId() {
+          return h.kitchenId.value
+        },
+        itemKind: 'food',
       }),
+      defineEmits: () => () => {},
       useItemCreate: () => ({ createItem: () => pending.promise }),
       useItemImageUpload: () => ({
         uploadItemImage: async (x) => {
@@ -212,42 +213,52 @@ test('Menu name flow stops before placement on destination change; failed placem
     }
   }
 })
-test('delete does not navigate or toast after record changes, including same-tick round trip', async () => {
-  const h = setup(),
-    pending = deferred(),
-    navigations = []
-  const api = evaluate(
-    component('Menu/Items/Delete'),
-    {
-      ...h.deps,
-      navigateTo: (x) => navigations.push(x),
-      window: { confirm: () => true },
-      useItemUsage: () => ({
-        usages: ref([]),
-        ready: ref(true),
-        error: ref(null),
-      }),
-      useKitchenItemContext: () => ({
-        kitchenId: h.kitchenId,
-        itemId: h.dishId,
-        item: ref({ name: 'Pizza' }),
-        canWrite: ref(true),
-        catalogue: { singular: 'dish', path: '/dishes' },
-      }),
-      defineProps: () => ({ remove: () => pending.promise }),
-    },
-    '({deleteSelectedItem,deleting})',
-    true
-  )
-  const result = api.deleteSelectedItem()
-  h.dishId.value = 'other'
-  h.dishId.value = 'dish'
-  pending.resolve()
-  await result
-  assert.deepEqual(navigations, [])
-  assert.deepEqual(h.notices, [])
-  assert.equal(api.deleting.value, false)
-})
+for (const changed of [false, true]) {
+  test(`Item delete ${changed ? 'rejects stale record scope' : 'returns to Items when the live document disappears before the response'}`, async () => {
+    const h = setup()
+    const pending = deferred()
+    const calls = []
+    const navigations = []
+    const destination = { path: '/workspace/kitchen/menu/items' }
+    const item = ref({ name: 'Pizza' })
+    const canWrite = ref(true)
+    const { action, removeItem } = evaluate(
+      component('Menu/Items/Detail/WorkspaceItemEdit'),
+      {
+        ...h.deps,
+        navigateTo: (target) => navigations.push(target),
+        itemCatalogueReturn: () => destination,
+        useKitchenItemContext: () => ({
+          kitchenId: h.kitchenId,
+          itemId: h.dishId,
+          item,
+          canWrite,
+        }),
+        useItemDelete: () => ({
+          deleteItem: (...args) => {
+            calls.push(args)
+            return pending.promise
+          },
+        }),
+      },
+      '({action,removeItem})',
+      true
+    )
+    action.value = 'remove'
+    const result = removeItem()
+    assert.deepEqual(calls, [['dish', { kitchenId: 'k' }]])
+    item.value = null
+    canWrite.value = false
+    assert.equal(action.value, null)
+    if (changed) {
+      h.dishId.value = 'other'
+      h.dishId.value = 'dish'
+    }
+    pending.resolve({ id: 'dish' })
+    await result
+    assert.deepEqual(navigations, changed ? [] : [destination])
+  })
+}
 
 test('record edit ignores old failures and spec saves a detached payload', async () => {
   const h = setup(),
@@ -285,17 +296,15 @@ for (const state of ['loading', 'error', 'referenced']) {
   test(`Item removal does not dispatch while usage is ${state}`, async () => {
     const h = setup()
     let removed = 0
-    let confirmed = 0
     const api = evaluate(
       component('Menu/Items/Delete'),
       {
         ...h.deps,
-        window: {
-          confirm: () => {
-            confirmed++
-            return true
+        defineProps: () => ({
+          remove: async () => {
+            removed++
           },
-        },
+        }),
         useItemUsage: () => ({
           usages: ref(
             state === 'referenced'
@@ -312,18 +321,12 @@ for (const state of ['loading', 'error', 'referenced']) {
           canWrite: ref(true),
           catalogue: { singular: 'dish' },
         }),
-        defineProps: () => ({
-          remove: async () => {
-            removed++
-          },
-        }),
       },
       '({deleteSelectedItem})',
       true
     )
     await api.deleteSelectedItem()
     assert.equal(removed, 0)
-    assert.equal(confirmed, 0)
   })
 }
 
@@ -423,13 +426,8 @@ test('item creation requires a price and submits explicit zero without a fixed t
       component('Menu/Items/Create/Index'),
       {
         ...h.deps,
-        defineProps: () => ({ itemKind }),
+        defineProps: () => ({ kitchenId: h.kitchenId.value, itemKind }),
         defineEmits: () => () => {},
-        useItemCatalogueContext: () => ({
-          kitchenId: h.kitchenId,
-          readOnly: ref(false),
-          catalogue: { itemKind },
-        }),
         useItemCreate: () => ({
           createItem: async (draft) => {
             drafts.push(draft)

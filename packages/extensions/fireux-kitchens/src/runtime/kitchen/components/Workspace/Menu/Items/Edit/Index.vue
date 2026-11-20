@@ -1,62 +1,54 @@
 <template>
-  <UCard v-if="item">
-    <template #header>
-      <h2>Details</h2>
-    </template>
-
+  <div v-if="item" class="item-details-identity">
+    <UFormField label="Photo">
+      <FireFormsEditableImagePicker
+        v-if="canWrite"
+        :src="photoImageUrl(itemImageUrl)"
+        :alt="itemName || 'Item'"
+        :initials="imageInitials"
+        avatar-class="item-details-photo"
+        button-label="Change Item photo"
+        :loading="imageUploading"
+        :disabled="busy"
+        :update="handleImageUpload"
+      />
+      <UAvatar
+        v-else
+        :src="photoImageUrl(itemImageUrl) || undefined"
+        :alt="itemName || 'Item'"
+        :text="imageInitials"
+        icon="i-lucide-sandwich"
+        size="3xl"
+        class="item-details-photo"
+      />
+      <p v-if="imageUploading" role="status">Uploading photo…</p>
+    </UFormField>
     <div class="fx-card-body-stack">
-      <div class="item-details-identity">
-        <UFormField label="Photo">
-          <FireFormsEditableImagePicker
-            v-if="canWrite"
-            :src="photoImageUrl(itemImageUrl)"
-            :alt="itemName || 'Item'"
-            :initials="imageInitials"
-            avatar-class="item-details-photo"
-            button-label="Change Item photo"
-            :loading="imageUploading"
-            :disabled="busy"
-            :update="handleImageUpload"
-          />
-          <UAvatar
-            v-else
-            :src="photoImageUrl(itemImageUrl) || undefined"
-            :alt="itemName || 'Item'"
-            :text="imageInitials"
-            icon="i-lucide-sandwich"
-            size="3xl"
-            class="item-details-photo"
-          />
-          <p v-if="imageUploading" role="status">Uploading photo…</p>
-        </UFormField>
-        <div class="fx-card-body-stack">
-          <FireFormsEditableSimpleField
-            label="Name"
-            :value="itemName"
-            placeholder="Item name"
-            :maxlength="140"
-            :disabled="!canWrite || imageUploading"
-            disabled-message="This Item is read-only."
-            :validation-function="validateItemName"
-            :capture-intent="captureScope"
-            :update="handleName"
-          />
-          <FireFormsEditableSimpleField
-            label="Description"
-            type="textarea"
-            :rows="5"
-            :value="itemDescription"
-            placeholder="Description"
-            :maxlength="800"
-            :disabled="!canWrite || imageUploading"
-            disabled-message="This Item is read-only."
-            :capture-intent="captureScope"
-            :update="handleDescription"
-          />
-        </div>
-      </div>
+      <FireFormsEditableSimpleField
+        label="Name"
+        :value="itemName"
+        placeholder="Item name"
+        :maxlength="140"
+        :disabled="!canWrite || imageUploading"
+        disabled-message="This Item is read-only."
+        :validation-function="validateItemName"
+        :capture-intent="captureScope"
+        :update="handleName"
+      />
+      <FireFormsEditableSimpleField
+        label="Description"
+        type="textarea"
+        :rows="5"
+        :value="itemDescription"
+        placeholder="Description"
+        :maxlength="800"
+        :disabled="!canWrite || imageUploading"
+        disabled-message="This Item is read-only."
+        :capture-intent="captureScope"
+        :update="handleDescription"
+      />
     </div>
-  </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">

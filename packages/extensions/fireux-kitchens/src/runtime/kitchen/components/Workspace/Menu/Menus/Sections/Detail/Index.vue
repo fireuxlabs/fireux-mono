@@ -26,12 +26,14 @@
         :section-context="sectionState"
       />
       <KitchenWorkspaceMenuMenusItemsEdit />
+      <SectionActions />
     </template>
   </section>
 </template>
 
 <script setup lang="ts">
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+import SectionActions from './Actions.vue'
 import { provideMenuSection } from '../../../../../../../menu/composables/useMenuSection'
 import { provideKitchenMenuRecordContext } from '../../../../../../composables/workspace/menu/menus/useKitchenMenuRecordContext'
 const menuState = provideKitchenMenuRecordContext()

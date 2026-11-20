@@ -8,6 +8,7 @@
       <KitchenWorkspaceMenuItemsCreate
         v-if="createKind"
         :key="createKind"
+        :kitchen-id="storageKitchenId"
         :item-kind="createKind"
         @created="closeCreate"
       />
@@ -20,7 +21,7 @@ import { watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useItemCatalogueContext } from '../../../../../composables/workspace/menu/items/useItemCatalogue'
 
-const { createKind, canCreate, openCreate, closeCreate } =
+const { createKind, canCreate, openCreate, closeCreate, storageKitchenId } =
   useItemCatalogueContext()
 const route = useRoute()
 const router = useRouter()

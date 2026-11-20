@@ -662,16 +662,21 @@ test('actual Item collection hides premature counts, categories, filters and Cre
 test('Items landing lists one Kitchen read and links directly to Octopus Roll', async () => {
   const path = 'kitchen/components/Workspace/Menu/Items/Index.vue'
   let reads = 0
+  const destinations = []
   const state = load(
     path,
-    '({ items, outcome, storageKitchenId, error, itemCataloguePath })',
+    '({ items, outcome, storageKitchenId, error, itemCataloguePath, canCreate, createOpen, openItem })',
     {
       computed,
+      ref,
+      watch,
       itemCataloguePath,
+      navigateTo: (path) => destinations.push(path),
       useKitchenWorkspaceItems: () => {
         reads++
         return {
           storageKitchenId: ref('la-tapberne'),
+          readOnly: ref(false),
           outcome: ref('ready'),
           dishes: ref([
             { id: 'octopus-roll', name: 'Octopus Roll' },
@@ -683,7 +688,17 @@ test('Items landing lists one Kitchen read and links directly to Octopus Roll', 
   )
   assert.equal(reads, 1)
   const app = createSSRApp({ setup: () => state, render: template(path) })
-  app.component('WorkspacePageHeader', { render: () => null })
+  app.component('WorkspacePageHeader', {
+    setup:
+      (_, { slots }) =>
+      () =>
+        h('header', slots.actions?.()),
+  })
+  app.component('UButton', {
+    props: ['label'],
+    setup: (props) => () => h('button', props.label),
+  })
+  app.component('UModal', { render: () => null })
   app.component('FireState', { render: () => null })
   app.component('NuxtLink', {
     props: ['to'],
@@ -698,39 +713,107 @@ test('Items landing lists one Kitchen read and links directly to Octopus Roll', 
     /href="\/workspace\/kitchen\/menu\/items\/octopus-roll">Octopus Roll/
   )
   assert.match(html, /Tortilla de Patata/)
+  assert.match(html, /Add item/)
   assert.doesNotMatch(html, /Search items/)
+  state.createOpen.value = true
+  state.openItem('new item')
+  assert.equal(state.createOpen.value, false)
+  assert.deepEqual(destinations, [`${itemCataloguePath}/new%20item`])
+})
+
+test('Item usage ignores retained placements when the Kitchen or Item changes', () => {
+  const kitchenId = ref('kitchen-a')
+  const itemId = ref('picanha')
+  const placement = { kind: 'menu', id: 'food', name: 'Comida Casera' }
+  const data = ref({
+    kitchenId: 'kitchen-a',
+    dishId: 'picanha',
+    usages: [placement],
+  })
+  const pending = ref(false)
+  const error = ref(null)
+  let key
+  const usage = load(
+    'kitchen/composables/items/useItemUsage.ts',
+    'useItemUsage(kitchenId, itemId)',
+    {
+      computed,
+      kitchenId,
+      itemId,
+      useAuth: () => ({ currentUser: ref({ uid: 'operator' }) }),
+      useAsyncData: (readKey) => {
+        key = readKey
+        return { data, pending, error }
+      },
+    }
+  )
+  assert.deepEqual(usage.usages.value, [placement])
+  itemId.value = 'octopus-roll'
+  assert.equal(key.value, 'dish-usage:operator:kitchen-a:octopus-roll')
+  assert.equal(usage.ready.value, false)
+  assert.deepEqual(usage.usages.value, [])
+  itemId.value = 'picanha'
+  kitchenId.value = 'kitchen-b'
+  assert.equal(usage.ready.value, false)
+  data.value = { kitchenId: 'kitchen-b', dishId: 'picanha', usages: [] }
+  assert.equal(usage.ready.value, true)
+  pending.value = true
+  assert.equal(usage.ready.value, false)
 })
 
 test('the Item route reads once for the read surfaces', async () => {
   const route = 'pages/workspace/kitchen/menu/items/[dishId].vue'
   const path = 'kitchen/components/Workspace/Menu/Items/Detail/Index.vue'
   const publicItem = 'menu/components/ItemDetail.vue'
-  const renderRecord = (item, menu = '', manifest = null, directory = null) => {
+  const renderRecord = (
+    item,
+    menu = '',
+    manifest = null,
+    directory = null,
+    itemOutcome = item ? 'ready' : 'empty',
+    workspaceOutcome = 'ready'
+  ) => {
     let reads = 0
     const app = createSSRApp({
       setup: () =>
-        load(route, '({ item, route, data })', {
+        load(route, '({ item, route, data, outcome })', {
+          computed,
           definePageMeta: () => {},
+          provideKitchenItemContext: (reader) => reader,
           useRoute: () => ({ query: { menu } }),
           useRouteParam: () => ref('octopus-roll'),
           useKitchenWorkspace: () => ({
-            outcome: ref('ready'),
+            outcome: ref(workspaceOutcome),
             id: ref('la-tapberne'),
             data: ref({ slug: 'la-tapberne' }),
           }),
           useKitchenItemRead: (kitchenId, itemId) => {
             reads += 1
-            assert.equal(kitchenId(), 'la-tapberne')
+            assert.equal(
+              kitchenId(),
+              workspaceOutcome === 'ready' ? 'la-tapberne' : ''
+            )
             assert.equal(itemId.value, 'octopus-roll')
-            return { item: ref(item) }
+            return { item: ref(item), outcome: ref(itemOutcome) }
           },
         }),
       render: template(route),
     })
     app.component('KitchenWorkspaceMenuItemsDetail', {
-      props: ['item', 'menu', 'kitchenSlug'],
+      props: ['item', 'menu', 'kitchenSlug', 'outcome'],
+      setup: () => ({ dev: false }),
       render: template(path),
     })
+    app.component('UAlert', {
+      props: ['title'],
+      render() {
+        return h('p', this.title)
+      },
+    })
+    app.component('FireDisclosurePanel', { render: () => null })
+    app.component('ItemMenuPlacements', { render: () => null })
+    app.component('WorkspaceItemEdit', { render: () => null })
+    app.component('KitchenWorkspaceMenuItemData', { render: () => null })
     app.component('WorkspaceItemDetail', {
       props: ['item'],
       render: template(
@@ -740,21 +823,30 @@ test('the Item route reads once for the read surfaces', async () => {
     app.component('KitchenMenuItemDetail', {
       props: ['item', 'menu', 'kitchenSlug'],
       setup: (props) =>
+        load(publicItem, '({ menuSlug, lookingUpMenu })', {
+          computed,
+          defineProps: () => props,
+          useApiRead: (key) => {
+            assert.equal(
+              key(),
+              menu
+                ? 'item-menu-preview|'
+                : `item-menu-preview|/api/menus?kitchenSlug=la-tapberne&dishId=${item.id}&limit=1`
+            )
+            return { data: ref(directory), pending: ref(false) }
+          },
+        }),
+      render: template(publicItem),
+    })
+    app.component('ItemPlacement', {
+      props: ['dishId', 'menuSlug', 'kitchenSlug'],
+      setup: (props) =>
         load(
-          publicItem,
-          '({ presentation, menuSlug, lookingUpMenu, sections, copy, className, styleVars, pending })',
+          'menu/components/ItemPlacement.vue',
+          '({ presentation, sections, copy, className, styleVars, pending })',
           {
             computed,
             defineProps: () => props,
-            useApiRead: (key) => {
-              assert.equal(
-                key(),
-                menu
-                  ? 'item-menu-preview|'
-                  : `item-menu-preview|/api/menus?kitchenSlug=la-tapberne&dishId=${item.id}&limit=1`
-              )
-              return { data: ref(directory), pending: ref(false) }
-            },
             useMenu: (id, options) => {
               assert.equal(id(), menu || directory?.items[0]?.slug || '')
               assert.equal(options.routeScope().kitchenSlug, 'la-tapberne')
@@ -775,7 +867,7 @@ test('the Item route reads once for the read surfaces', async () => {
             }),
           }
         ),
-      render: template(publicItem),
+      render: template('menu/components/ItemPlacement.vue'),
     })
     app.component('MenuBrowseCatalogue', {
       props: [
@@ -826,7 +918,34 @@ test('the Item route reads once for the read surfaces', async () => {
       return html
     })
   }
-  assert.equal(await renderRecord(null), '<!--v-if-->')
+  const missing = await renderRecord(null)
+  assert.match(missing, /Item not found/)
+  assert.doesNotMatch(missing, /<article|<h2/)
+  assert.match(missing, /workspace-item-basics.*display:none/)
+  assert.match(
+    await renderRecord(null, '', null, null, 'pending'),
+    /Loading item/
+  )
+  assert.match(
+    await renderRecord(null, '', null, null, 'error'),
+    /Item unavailable/
+  )
+  assert.match(
+    await renderRecord(null, '', null, null, 'idle'),
+    /Select a Kitchen/
+  )
+  assert.match(
+    await renderRecord(null, '', null, null, 'idle', 'pending'),
+    /Loading item/
+  )
+  assert.match(
+    await renderRecord(null, '', null, null, 'idle', 'error'),
+    /Item unavailable/
+  )
+  assert.match(
+    await renderRecord(null, '', null, null, 'ready'),
+    /Item unavailable/
+  )
   const html = await renderRecord({
     id: 'octopus-roll',
     name: 'Octopus Roll',
@@ -887,9 +1006,9 @@ test('the Item route reads once for the read surfaces', async () => {
     items: [{ slug: menu, matching_dishes: [{ id: placed.id }] }],
   })
   assert.equal(defaultMenu, themed)
-  const missing = await renderRecord(placed, 'other-menu', manifest)
-  assert.match(missing, /Item unavailable on this menu/)
-  assert.doesNotMatch(missing, /Picanha Smashburger/)
+  const missingPlacement = await renderRecord(placed, 'other-menu', manifest)
+  assert.match(missingPlacement, /Item unavailable on this menu/)
+  assert.doesNotMatch(missingPlacement, /Picanha Smashburger/)
 })
 test('Item linked read perspectives bind exact ready storage owner instead of remembered Kitchen selection', () => {
   const owner = {

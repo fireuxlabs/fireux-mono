@@ -1,14 +1,5 @@
 <template>
-  <UCard v-if="dish && canWrite">
-    <template #header>
-      <div class="card__header">
-        <div>
-          <h2>Delete Item</h2>
-          <p>Remove this Kitchen Item record.</p>
-        </div>
-      </div>
-    </template>
-
+  <div v-if="dish && canWrite" class="fx-card-body-stack">
     <FireCopyError v-if="usageError" :message="String(usageError)" />
     <p v-else-if="!usageReady" role="status">Checking where this is used…</p>
     <div v-else-if="usages.length" class="fx-card-body-stack">
@@ -41,9 +32,9 @@
       :disabled="deleting || !usageReady || usages.length > 0"
       @click="deleteSelectedItem"
     >
-      Delete
+      Delete item
     </UButton>
-  </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -54,6 +45,7 @@ import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenItemContext } from '../../../../composables/items/useKitchenItemContext'
 
+const props = defineProps<{ remove: () => Promise<void> }>()
 const {
   item: dish,
   itemId: dishId,
@@ -68,16 +60,11 @@ const {
 } = useItemUsage(kitchenId, dishId)
 const toast = useToastify()
 const route = useRoute()
-const props = defineProps<{ remove: () => Promise<void> }>()
 const deleting = ref(false)
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
-const captureScope = useItemEditorScope(
-  [kitchenId, dishId, () => route.fullPath, () => props.remove],
-  () => {
-    deleting.value = false
-  }
-)
+const scopeSources = [kitchenId, dishId, () => route.fullPath]
+const captureScope = useItemEditorScope(scopeSources, () => {
+  deleting.value = false
+})
 const deleteSelectedItem = async () => {
   const isCurrent = captureScope()
   if (
@@ -89,17 +76,10 @@ const deleteSelectedItem = async () => {
   )
     return
 
-  const title = normalizeString(dish.value.name)
-  const ok = window.confirm(
-    `Delete Item "${title}"?\n\nThis will only delete the Item document.`
-  )
-  if (!ok) return
-
   deleting.value = true
 
   try {
     await props.remove()
-    if (!isCurrent()) return
   } catch (error) {
     if (!isCurrent()) return
     const message = String(

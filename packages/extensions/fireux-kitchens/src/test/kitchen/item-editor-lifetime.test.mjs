@@ -313,7 +313,13 @@ function mount(h, component, exposed, extra = {}) {
   })
   const app = renderer.createApp({
     setup: () => () =>
-      vue.h(exports.default, { ...props, onSaved: (id) => saved.push(id) }),
+      vue.h(exports.default, {
+        ...(component === 'Menu/Items/Create/Index'
+          ? { kitchenId: identity.kitchenId.value }
+          : {}),
+        ...props,
+        onSaved: (id) => saved.push(id),
+      }),
   })
   const warnings = []
   app.config.warnHandler = (message) => warnings.push(message)
