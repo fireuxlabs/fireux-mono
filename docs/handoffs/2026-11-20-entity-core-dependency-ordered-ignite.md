@@ -21,6 +21,20 @@ The agreed planning sequence is:
 
 A feature may only be treated as ready to build when its prerequisites are identified. Dependency ordering must be paired with human business priority and a verifiable exit condition; a graph alone cannot decide commercial priority.
 
+## Clarification from the Stable example — structure is not build order
+
+The 2026-11-19 [Workspace Spine & Firestore Canon Alignment](workspace-spine-firestore-canon-alignment.md) used a **hypothetical horse Stable** to illustrate predictable navigation, source-file/composable placement and Firestore paths. Its list of Overview, Identity, Horses, Health, Stalls, Feeding, Staff, Bookings and Invoices is a **structural catalogue**, **not a justified construction sequence**. Do not turn that table's row order or folder nesting into an implementation plan.
+
+**Ignite must show two separate views of the same domain:**
+- **Structural map:** UI navigation → route → component/composable → owned source/Firestore path; identifies ownership and namespace consistency. It describes *where something belongs*.
+- **Dependency-ordered delivery plan:** real-world prerequisite → minimal independently useful Entity Core → selectable Workspace → smallest verified capability journeys; explicit hard dependencies, optional capabilities, operator priority and acceptance evidence. It determines *what can be built next*, not where a file happens to sit.
+
+**Illustrative Stable reasoning, not an approved App or a researched industry plan:** an empty Stable and its basic management view should be possible without Horse, Stall or Feeding features. Horse records and Stall records might be separate independently buildable capabilities; assigning a Horse to a Stall needs both. A per-Horse health record needs an existing Horse; a Feeding Plan might need a Horse, but need not depend on Stalls. These are hypotheses to validate against actual operator needs, not universal mandatory gates. Several capabilities may be simultaneously unblocked; an operator's business priorities then decide which to build first.
+
+**Codex / Ignite completion check:** Given a Stable-shaped example alongside the Kitchen example, the plan must **not** treat the proposed navigation order as a delivery order. Report all currently buildable slices, their declared `uses` dependencies, the evidence missing for genuine readiness, and why a downstream feature is blocked. Do not invent hard dependency edges to make a neat linear roadmap. Trace the simplest real Kitchen sequence separately: independently usable Kitchen → Items → draft Menu → public Menu → configured Services → Orders, while treating suppliers, stock, recipes, costs and Team as branches attached at their actual dependency points. Keep domain-specific assumptions out of Core.
+
+**Execution boundary:** This clarification enriches the existing bounded Ignite planning assignment. It does **not** authorize starting Kitchen implementation, building a Stable App, a monorepo-wide cleanup, automatic code generation, live Firestore changes or deployment. Current FireUX Core/User/membership/optional Workspace reset remains the upstream implementation gate.
+
 ## First proof: Kitchen Core, not Ordering
 
 The Kitchen should be a viable domain Entity with **zero Items, Menus or Orders**. Begin with the bounded journey:
