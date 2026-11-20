@@ -1,39 +1,23 @@
 <template>
-  <p v-if="outcome === 'pending'" role="status">Loading item…</p>
-  <UAlert
-    v-else-if="outcome === 'error'"
-    color="error"
-    title="Item unavailable"
-    description="This item could not be loaded."
-  />
-  <p v-else-if="outcome === 'empty'" role="status">Item not found.</p>
-  <p v-else-if="outcome === 'idle'" role="status">
-    Select a Kitchen to view this item.
-  </p>
+  <Detail.Status :outcome="outcome" />
   <KitchenMenuItemDetail
     v-if="item"
     :item="item"
     :menu="menu"
     :kitchen-slug="kitchenSlug"
   />
-  <WorkspaceItemDetail :item="item" />
-  <FireDisclosurePanel
-    v-if="item"
-    title="Menu placements"
-    description="Saved menu sections that include this item."
-  >
-    <ItemMenuPlacements />
-  </FireDisclosurePanel>
-  <FireDisclosurePanel v-if="item && dev" title="Item diagnostics">
-    <KitchenWorkspaceMenuItemData />
-  </FireDisclosurePanel>
+  <Detail.Basics :item="item" />
+  <template v-if="item">
+    <Detail.Menus class="item-capability" />
+    <Detail.Prep v-if="dev" class="item-capability" />
+    <Detail.Team v-if="dev" class="item-capability" />
+    <Detail.Diagnostics v-if="dev" />
+  </template>
 </template>
 
 <script setup lang="ts">
 import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
-import ItemMenuPlacements from './ItemMenuPlacements.vue'
-import KitchenWorkspaceMenuItemData from './ItemData.vue'
-import WorkspaceItemDetail from './WorkspaceItemDetail.vue'
+import * as Detail from './index'
 import KitchenMenuItemDetail from '../../../../../../menu/components/ItemDetail.vue'
 import type { Item } from '../../../../../records/menus/items/item'
 
@@ -45,3 +29,16 @@ defineProps<{
 }>()
 const dev = import.meta.dev
 </script>
+
+<style scoped>
+.item-capability {
+  min-inline-size: 0;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  padding: calc(var(--spacing) * 4);
+}
+
+.item-capability :deep(pre) {
+  overflow-x: auto;
+}
+</style>

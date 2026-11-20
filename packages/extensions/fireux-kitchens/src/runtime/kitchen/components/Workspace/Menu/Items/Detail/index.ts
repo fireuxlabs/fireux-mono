@@ -1,0 +1,6 @@
+export { default as Status } from './Status.vue'
+export { default as Basics } from './WorkspaceItemDetail.vue'
+export { default as Menus } from './MenusCapability.vue'
+export { default as Prep } from './Prep.vue'
+export { default as Team } from './Team.vue'
+export { default as Diagnostics } from './ItemData.vue'

@@ -1136,9 +1136,10 @@ represent missing historical provenance honestly; trusted Item creation still
 writes both creation and update stamps. `useKitchenItemRead` owns acquisition,
 Kitchen access gating and private normalization through Core's Firestore reader.
 `useKitchenItemContext` only shares that existing reader with detail children.
-Item detail opens Menu placements on demand using the existing authorized
-Item usage reader. It shows saved section references, including unpublished
-placements. Public visibility remains owned by the Menu projection. Raw Item
-data and local derived facts are available in development diagnostics.
+Item Detail composes its capability children directly. Menus opens Placements
+on demand through the existing authorized usage reader and shows saved section
+references, including unpublished placements. Public visibility remains owned
+by the Menu projection. Prep & Production and Team currently expose development
+diagnostics, alongside the stored document and selling defaults.
 There is no separate read-item adapter or `ReadableItem` contract. See
 `src/test/kitchen/item/foundation.test.mjs` and the Item UI scope tests.

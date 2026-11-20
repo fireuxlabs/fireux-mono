@@ -810,11 +810,27 @@ test('the Item route reads once for the read surfaces', async () => {
         return h('p', this.title)
       },
     })
-    app.component('FireDisclosurePanel', { render: () => null })
+    app.component('FireDisclosurePanel', {
+      props: ['title'],
+      setup: (props) => () => h('button', props.title),
+    })
     app.component('ItemMenuPlacements', { render: () => null })
     app.component('WorkspaceItemEdit', { render: () => null })
-    app.component('KitchenWorkspaceMenuItemData', { render: () => null })
-    app.component('WorkspaceItemDetail', {
+    for (const [name, file] of [
+      ['Detail.Status', 'Status'],
+      ['Detail.Menus', 'MenusCapability'],
+      ['Detail.Diagnostics', 'ItemData'],
+      ['Detail.Prep', 'Prep'],
+      ['Detail.Team', 'Team'],
+    ]) {
+      app.component(name, {
+        props: name === 'Detail.Status' ? ['outcome'] : [],
+        render: template(
+          `kitchen/components/Workspace/Menu/Items/Detail/${file}.vue`
+        ),
+      })
+    }
+    app.component('Detail.Basics', {
       props: ['item'],
       render: template(
         'kitchen/components/Workspace/Menu/Items/Detail/WorkspaceItemDetail.vue'
@@ -952,6 +968,11 @@ test('the Item route reads once for the read surfaces', async () => {
     description: 'La Tap special',
   })
   assert.doesNotMatch(html, /<pre>|Item data/)
+  assert.match(html, />Menus<[^]*>Placements</)
+  assert.doesNotMatch(
+    html,
+    /Item diagnostics|Saved menu sections that include this item/
+  )
   assert.match(html, /class="[^"]*menu-item-detail"/)
   assert.doesNotMatch(html, /Workspace list/)
   assert.match(

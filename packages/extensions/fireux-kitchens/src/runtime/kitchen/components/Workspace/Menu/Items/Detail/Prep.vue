@@ -1,6 +1,6 @@
 <template>
   <section aria-labelledby="item-production-heading">
-    <h2 id="item-production-heading">Production</h2>
+    <h2 id="item-production-heading">Prep &amp; Production</h2>
     <pre>{{ JSON.stringify(production, null, 2) }}</pre>
   </section>
 </template>
