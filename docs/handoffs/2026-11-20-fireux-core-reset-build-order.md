@@ -141,6 +141,14 @@ This is a **separate explicitly selected implementation slice**, not a reason to
 
 **Exit:** a checked-off Core architectural baseline, optional Workspace boundary and explicit remaining downstream repairs. **Only then return to Kitchen Core.**
 
+## Operator decision — simplest proof first (20 Nov 2026)
+
+**Verification order:** use the simpler **FireUX Ecosystem and Project portal** as the first real Core/Ecosystem proving ground; complement it with the already established **Project-free Core/App fixture** so that testing a Project-linked FireUX portal does not hide a dependency on Project. Only then test the richer Kitchen/Workspace behavior in **Misebox**, which is the product/domain proof, not the first Core smoke test. Prefer existing maintained fixtures/consumers; do not create a new App purely to inflate coverage.
+
+**Deferred, not forgotten:** the independent Ecosystem server provisioner and zero-App behavior are verified in focused tests, but the *authorized standalone operator creation workflow* and real signed-in/deployed verification remain open. Do not block User, AppUser or Misebox progress on a polished workflow. Reopen **before onboarding/provisioning another independent Ecosystem for real use** or offering Ecosystem creation to operators/customers. Specify authorized operator, trusted entrypoint, real Firebase/project prerequisites, retry/conflict behavior and acceptance checks; do not assume creating a Firestore Ecosystem record automatically creates a Firebase project. Keep the existing FireUX Project-linked portal checks intact.
+
+This ordering is about low-complexity proof, **not** making Project mandatory again, or treating an App as one Kitchen/Workspace/customer. The FireUX Ecosystem can be intentionally simple; Misebox proves the domain complexity later.
+
 ## Source-backed initial findings (inspect again before editing)
 
 The following are **observations on committed source, not claims of verified test outcomes**:
