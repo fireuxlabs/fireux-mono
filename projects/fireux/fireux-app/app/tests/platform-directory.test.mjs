@@ -51,10 +51,12 @@ test('Ecosystem directory projection exposes discovery fields without private co
     }
   )
   assert.deepEqual(source, before)
-  const sparse = toEcosystemDirectoryEntry(ecosystem('empty', 'Empty'), {
+  const { project_id, ...independent } = ecosystem('empty', 'Empty')
+  const sparse = toEcosystemDirectoryEntry(independent, {
     appCount: 0,
     detailUrl: '/ecosystems/empty',
   })
+  assert.equal('project_id' in sparse, false)
   assert.equal('description' in sparse, false)
   assert.equal('image_url' in sparse, false)
   assert.equal('website_url' in sparse, false)

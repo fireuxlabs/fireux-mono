@@ -63,7 +63,21 @@ saved tagline remained intact. The browser used the emulator's default
 database. Deployed sign-in, named-database browser behavior and live data
 remain outside this evidence.
 
-**Important existing dependency to inspect:** the current Ecosystem model at `runtime/ecosystem/models/ecosystem.model.ts` contains a required `project_id` even though **Project** lives in optional `fireux-projects` and is primarily developer-portal management. This is a potential architectural inconsistency. Verify all readers, initializers and consumers; propose how to make Core independent of optional Project without guessing its persisted record semantics. Do not delete stored `project_id` values or migrate records merely to make the TypeScript interface neat.
+**Ecosystem read checkpoint, 2026-11-20.** The canonical reader and directory
+projection accept an Ecosystem without a Project link. Public App and Ecosystem
+details render the Project relation only when a link is present. The FireUX
+management portal still requires an exact match with the stored Project link.
+Focused tests cover the optional link, rendered App detail, portal scoping and
+existing bootstrap checks. Core typechecking and FireUX portal Nuxt preparation
+passed. This checkpoint changes source and projections only.
+
+**Open · Ecosystem provisioning.** Main App bootstrap still calls the existing
+Project-linked provisioner, which requires `projectId` and checks that the
+stored link matches. Define who can provision an independent Ecosystem and
+verify creation, retries and conflicts through that owner's trusted command.
+Keep the existing Project bootstrap and portal checks intact, and preserve
+stored links and App locators. Ecosystem acceptance stays open until this
+creation path is proven.
 
 **Exit:** App, Ecosystem and User each stand on their own root and shared Core infrastructure. No Project import/authority is necessary for a normal Core App.
 

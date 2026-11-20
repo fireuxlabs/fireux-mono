@@ -95,7 +95,9 @@ An Ecosystem likewise stores minimal `ecosystems/{ecosystemId}/apps/{appId}`
 children so deletion can prove which Apps still point at it. `App.ecosystem_id`
 remains authoritative; the reverse child grants no ownership or access.
 
-`Ecosystem.project_id` is the required Project relationship. App has no
+`Ecosystem.project_id` is optional for an Ecosystem's identity and public
+discovery. FireUX Project management requires an exact match to that field.
+App has no
 `project_id`; Project Apps follows Project → Ecosystem → App.
 Protected Project Ecosystem and App views use the approved owning-system records
 through FireUX App's `server/project/ecosystem/read.ts`; a FireUX-local copy is

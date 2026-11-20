@@ -362,6 +362,7 @@ test('Project Ecosystem relationship uses owning records even when the hub copy 
     ownerRecords = [
       { id: 'mine', project_id: 'project', status: 'inactive' },
       { id: 'foreign', project_id: 'other', status: 'active' },
+      { id: 'independent', status: 'active' },
     ]
   const read = load(app + 'ecosystem/read.ts', 'readProjectEcosystems', {
     requireProjectOperator: async () => ({

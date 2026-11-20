@@ -7,7 +7,10 @@
         entity="published Ecosystem"
         :error="ecosystemError"
       />
-      <EcosystemDetailProject v-if="ecosystem" :ecosystem="ecosystem" />
+      <EcosystemDetailProject
+        v-if="ecosystem?.project_id"
+        :ecosystem="ecosystem"
+      />
       <EcosystemCardsPreview v-if="ecosystem" :ecosystem="ecosystem" />
     </div>
   </article>

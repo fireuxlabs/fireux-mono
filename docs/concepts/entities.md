@@ -131,7 +131,8 @@ Marketplace Store retains its named owner/team/moderation authority. AppUser has
 no Entity arrays or primary selections.
 
 Project-building relates downward through `Project -> Ecosystem -> App`.
-Ecosystem carries `project_id`; App carries only `ecosystem_id`. FireUX may use
+An Ecosystem linked to a Project carries `project_id`; App carries only
+`ecosystem_id`. FireUX may use
 that chain to discover an App's domain Entities, while those Entities remain
 ignorant of Project, App, and Ecosystem.
 

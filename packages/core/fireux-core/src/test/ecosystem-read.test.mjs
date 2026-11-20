@@ -121,3 +121,32 @@ test('Ecosystem reads require both canonical stamps and report invalid records a
     updated: { at: stamp.at },
   })
 })
+
+test('Ecosystem identity can be read without a Project relationship', async () => {
+  const root = {
+    status: 'active',
+    name: 'Independent Ecosystem',
+    created: stamp,
+    updated: stamp,
+  }
+  let data = root
+  const database = {
+    collection: () => ({
+      doc: (id) => ({
+        get: async () => ({ id, exists: true, data: () => data }),
+      }),
+    }),
+  }
+  assert.deepEqual(await readEcosystem('independent', database), {
+    ...root,
+    id: 'independent',
+  })
+
+  for (const project_id of ['', 1, null]) {
+    data = { ...root, project_id }
+    await assert.rejects(
+      readEcosystem('independent', database),
+      (error) => error.statusCode === 404
+    )
+  }
+})

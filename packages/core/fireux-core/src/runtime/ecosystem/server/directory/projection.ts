@@ -8,7 +8,9 @@ export function toEcosystemDirectoryEntry(
 ): EcosystemDirectoryEntry {
   return {
     id: ecosystem.id,
-    project_id: ecosystem.project_id,
+    ...(ecosystem.project_id !== undefined
+      ? { project_id: ecosystem.project_id }
+      : {}),
     status: ecosystem.status,
     name: ecosystem.name,
     ...(ecosystem.description !== undefined

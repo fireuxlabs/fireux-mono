@@ -10,7 +10,8 @@ export type Ecosystem = {
   context?: string
   created: FireuxStamps['created']
   updated: FireuxStamps['updated']
-  project_id: string
+  /** Optional relationship used by FireUX Project management. */
+  project_id?: string
   status: EcosystemStatus
   name: string
   description?: string

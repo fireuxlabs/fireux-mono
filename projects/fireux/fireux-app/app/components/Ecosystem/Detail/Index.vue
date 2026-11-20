@@ -2,7 +2,10 @@
   <article class="pagebody">
     <EcosystemDetailHeader :ecosystem="ecosystem" />
     <EcosystemDetailApps :ecosystem="ecosystem" />
-    <EcosystemDetailProject :ecosystem="ecosystem" />
+    <EcosystemDetailProject
+      v-if="ecosystem.project_id"
+      :ecosystem="ecosystem"
+    />
   </article>
 </template>
 

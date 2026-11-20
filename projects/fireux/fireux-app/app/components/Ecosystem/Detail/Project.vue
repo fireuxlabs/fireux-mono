@@ -23,7 +23,7 @@ import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 
 const props = defineProps<{ ecosystem: Ecosystem }>()
 const { project, outcome, error } = useProjectDetail(
-  () => props.ecosystem.project_id
+  () => props.ecosystem.project_id ?? ''
 )
 const publicProject = computed(() =>
   project.value?.identity.status === 'active' ? project.value : null

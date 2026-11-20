@@ -40,12 +40,13 @@ function canonicalEcosystem(
 ): Ecosystem | null {
   if (!id || !isRecord(value)) return null
   const source = value
+  const projectId = source.project_id
   const status = ECOSYSTEM_STATUSES.find(
     (candidate) => candidate === source.status
   )
   if (
-    typeof source.project_id !== 'string' ||
-    !source.project_id.trim() ||
+    (projectId !== undefined &&
+      (typeof projectId !== 'string' || !projectId.trim())) ||
     !status ||
     (activeOnly && status !== 'active') ||
     typeof source.name !== 'string' ||
@@ -67,7 +68,7 @@ function canonicalEcosystem(
 
   return {
     id,
-    project_id: source.project_id,
+    ...(projectId !== undefined ? { project_id: projectId } : {}),
     status,
     name: source.name,
     ...(typeof source.description === 'string'

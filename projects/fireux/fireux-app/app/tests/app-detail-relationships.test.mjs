@@ -59,6 +59,7 @@ async function render({
   ecosystemOutcome = 'ready',
   projectOutcome = 'ready',
   projectStatus = 'active',
+  ecosystemRecord = ecosystem,
 } = {}) {
   const reads = []
   const parent = component(
@@ -71,7 +72,7 @@ async function render({
       useEcosystemDetail: (id) => {
         reads.push(['ecosystem', toValue(id)])
         return {
-          ecosystem: ref(ecosystemOutcome === 'ready' ? ecosystem : null),
+          ecosystem: ref(ecosystemOutcome === 'ready' ? ecosystemRecord : null),
           outcome: ref(ecosystemOutcome),
           error: ref(null),
         }
@@ -189,6 +190,15 @@ test('Unavailable Ecosystem relations display their state without starting a Pro
     assert.deepEqual(reads, [['ecosystem', 'own-eco']])
     assert.doesNotMatch(html, /href="\/projects\//)
   }
+})
+
+test('A Project-free Ecosystem renders without starting a Project read', async () => {
+  const { html, reads } = await render({
+    ecosystemRecord: { ...ecosystem, project_id: undefined },
+  })
+  assert.match(html, /Own Ecosystem/)
+  assert.deepEqual(reads, [['ecosystem', 'own-eco']])
+  assert.doesNotMatch(html, /href="\/projects\//)
 })
 
 test('Exact Project reads preserve public active-only policy and truthful failure outcomes', async () => {
