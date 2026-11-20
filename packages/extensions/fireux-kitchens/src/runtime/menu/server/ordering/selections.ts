@@ -34,7 +34,6 @@ export function readMenuOrderSelections(value: unknown): MenuOrderSelection[] {
             'choiceGroups',
             'extraIds',
             'groups',
-            'bottle',
             'offeringIds',
             'quantity',
             'expectedUnitMinor',
@@ -50,11 +49,6 @@ export function readMenuOrderSelections(value: unknown): MenuOrderSelection[] {
       raw.quantity > 99
     )
       return fail('Choose a whole quantity from 1 to 99.')
-    if (
-      raw.bottle !== undefined &&
-      !['deposit', 'exchange'].includes(raw.bottle)
-    )
-      return fail('Invalid bottle choice.')
     if (
       raw.expectedUnitMinor !== undefined &&
       (!Number.isSafeInteger(raw.expectedUnitMinor) ||
@@ -112,7 +106,6 @@ export function readMenuOrderSelections(value: unknown): MenuOrderSelection[] {
         ? { extraIds: ids(raw.extraIds, 100) }
         : {}),
       ...(groups ? { groups } : {}),
-      ...(raw.bottle ? { bottle: raw.bottle } : {}),
       ...(raw.offeringIds !== undefined
         ? { offeringIds: ids(raw.offeringIds, 20) }
         : {}),

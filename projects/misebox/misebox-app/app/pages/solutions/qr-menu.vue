@@ -5,7 +5,15 @@
       Create an interactive Menu or upload a document, publish it, then print
       its QR code.
     </p>
-    <MenuCreate />
+    <UPageCard title="Create a Menu" variant="subtle">
+      <p>
+        Choose an interactive Menu or upload a document in your Kitchen
+        Workspace.
+      </p>
+      <UButton to="/workspace/kitchen/menu?create=1" icon="i-lucide-plus"
+        >Create a Menu</UButton
+      >
+    </UPageCard>
   </UContainer>
 </template>
 

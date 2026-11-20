@@ -46,9 +46,6 @@
             >
               {{ row.item.description }}
             </p>
-            <p v-if="row.item.bottleDeposit" class="service-catalogue__meta">
-              Bottle deposit +{{ money(row.item.bottleDeposit) }} or exchange
-            </p>
             <p v-if="row.item.promotionLabel" class="service-catalogue__meta">
               {{ row.item.promotionLabel }}
             </p>

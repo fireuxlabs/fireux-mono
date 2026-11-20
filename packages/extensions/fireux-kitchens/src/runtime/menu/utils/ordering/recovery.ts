@@ -50,7 +50,7 @@ export function readServiceSession(
         !ids(line.offeringIds) ||
         !ids(line.details) ||
         !minor(line.unitMinor) ||
-        !minor(line.depositUnitMinor)
+        (line.depositUnitMinor !== undefined && line.depositUnitMinor !== 0)
       )
         return null
       if (
@@ -66,8 +66,7 @@ export function readServiceSession(
         !Number.isInteger(choices.quantity) ||
         Number(choices.quantity) < 1 ||
         Number(choices.quantity) > 99 ||
-        (choices.bottle !== undefined &&
-          !['deposit', 'exchange'].includes(String(choices.bottle)))
+        choices.bottle !== undefined
       )
         return null
     }

@@ -1,8 +1,5 @@
 <template>
-  <section aria-labelledby="item-document-heading">
-    <h2 id="item-document-heading">Item document</h2>
-    <pre>{{ JSON.stringify(document, null, 2) }}</pre>
-  </section>
+  <pre>{{ JSON.stringify(document, null, 2) }}</pre>
 </template>
 
 <script setup lang="ts">
@@ -10,3 +7,9 @@ import { useKitchenItemContext } from '../../../../../composables/items/useKitch
 
 const { document } = useKitchenItemContext()
 </script>
+
+<style scoped>
+pre {
+  overflow-x: auto;
+}
+</style>

@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
-import { useKitchenServicesContext } from '../../../composables/offerings/useKitchenServicesContext'
+import { useKitchenServicesContext } from '../../../composables/workspace/services/useKitchenServicesContext'
 import {
   offeringsForOption,
   type KitchenOfferingOption,

@@ -24,7 +24,6 @@ export async function createItem(event: H3Event, input: unknown) {
     'price',
     'price_options',
     'add_ons',
-    'bottle_deposit',
     'choice_groups',
   ])
   const name = itemText(draft.name, true)
@@ -52,9 +51,6 @@ export async function createItem(event: H3Event, input: unknown) {
       !Object.hasOwn(draft, 'price_options') &&
       !Object.hasOwn(draft, 'add_ons')
         ? { choice_groups: [] }
-        : {}),
-      ...(draft.bottle_deposit !== undefined
-        ? { bottle_deposit: draft.bottle_deposit }
         : {}),
     })
   )

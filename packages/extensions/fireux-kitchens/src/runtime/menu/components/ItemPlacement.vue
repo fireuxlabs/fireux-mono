@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenOfferingNow } from '../../kitchen/composables/useKitchenOfferingNow'
+import { useKitchenOfferingNow } from '../../kitchen/composables/services/useKitchenOfferingNow'
 import { promotionPricedSections } from '../../kitchen/utils/promotions/pricing'
 import { useMenu } from '../composables/useMenu'
 import { useMenuThemeSurface } from '../composables/useMenuThemeSurface'

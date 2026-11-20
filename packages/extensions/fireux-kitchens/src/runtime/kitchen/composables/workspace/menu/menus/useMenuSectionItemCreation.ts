@@ -2,7 +2,7 @@ import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands
 import { useItemEditorScope } from '../../../items/useItemEditorScope'
 import { computed, ref, watch } from 'vue'
 import type { useMenuSection } from '../../../../../menu/composables/useMenuSection'
-import { useItemCreate } from '../../../items/useItemCreate'
+import { useItemActions } from '../../../items/useItemActions'
 
 /** Create catalogue Items and place them through the existing Section owner. */
 export function useMenuSectionItemCreation(
@@ -97,7 +97,7 @@ export function useMenuSectionItemCreation(
     },
     { flush: 'sync' }
   )
-  const { createItem: createCatalogueItem } = useItemCreate([
+  const { createItem: createCatalogueItem } = useItemActions([
     ...ownerSources,
     ...draftSources,
   ])

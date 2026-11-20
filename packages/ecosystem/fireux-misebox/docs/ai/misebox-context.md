@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-11-18
-Ref: 2f47a03c2
+Updated: 2026-11-20
+Ref: 193e5adc3
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -159,7 +159,7 @@ Services and Orders surfaces; it owns no ordering reader, command, purchase
 entitlement or fulfilment state.
 
 Kitchen Services owns activation, Menu selection and serving hours. The public
-Collection menu uses `useServiceCheckout` and Kitchen's `useOrderExchange`;
+Collection menu uses `useServiceCheckout` and Kitchen's shared `composables/orders/useOrderExchange`;
 the Workspace order board consumes the same Order submission/exchange owners.
 Products' catalogue-only creation supports an empty price list and no payment
 provider call. Product purchase is not a prerequisite for direct Kitchen use.
@@ -183,13 +183,12 @@ Workspace adoption are not prerequisites for that result. Existing structured
 preparation remains available; its existence does not settle AI's future Product
 responsibility or commercial packaging.
 
-The Main App's `/products/menu-express` visibly composes Menu-owned
-`MenuDocumentUpload`, `MenuDocumentPublished` and `MenuDetailDocumentViewer`:
-upload one PDF/image, preview, publish and later replace with the same Menu and QR.
-`useMenuDocument` owns workflow state. The App page owns Product copy and the
-optional Workspace invitation; Menu components contain no free-price promise or
-App navigation. It reuses existing Kitchen and Menu owners without a separate
-target controller or umbrella surface.
+The Main App's `/products/menu-express` composes its own `MenuHostingUpload`
+and `MenuHostingPublished` with Menu's reusable `MenuDetailDocumentViewer`.
+The workflow uploads one PDF or image, previews it, publishes it and later
+replaces it under the same Menu and QR. `useMenuDocument` owns workflow state.
+The App page owns Product copy and the Workspace invitation. The QR Menu
+solution page owns its own entry card into Kitchen Workspace.
 There is no request, quote, payment, operator approval or Conversation in this basic
 flow. `menu/server/document` owns its scoped reader, recovery authority and shared
 file writer; Workspace's document-upload adapter consumes that same writer.
@@ -638,7 +637,7 @@ and Services are the lower-level child entrances below AI. The existing
 current management entrances and post-delete navigation use `/menu`. The landing
 owns search, archived visibility and its existing creation dialog. Its Menu
 creation context supplies one collection to the group overview and service
-summary, retaining `useMenuList` account/App/Kitchen-scoped list choices. Route order puts Identity & brand
+summary, retaining `useKitchenWorkspaceMenuOverview` account/App/Kitchen-scoped list choices. Route order puts Identity & brand
 and Team before the Kitchen working groups, with Settings last. Identity & brand is also a top-level entrance,
 with the Kitchen listing and its venue/brand editors; it is not nested in Settings.
 Settings retains Payments, Integrations and Access. Overview adds no collection readers or mutations.
@@ -735,7 +734,7 @@ intent so returning opens the originating section on the Menu. Date, archived
 view and record changes release the previous section editor. No command or Item
 identity is copied into the parent.
 
-Menus keeps collection search and status selection in `useMenuList`, in memory for
+Menus keeps collection search and status selection in `useKitchenWorkspaceMenuOverview`, in memory for
 the mounted App session and isolated by App, account and Kitchen. Returning from
 a Menu or source editor restores those choices; a full reload starts fresh.
 The collection controller owns collection/creation state, not record write helpers
@@ -1161,7 +1160,7 @@ that would relabel retained prices. Historical Orders, Sales and other monetary
 facts retain their saved currency; defaults never convert or rewrite them. The
 retained denomination owner is the existing `kitchen/records/menus/items/item-offer.ts` ItemOffer.
 Its accepted adoption contract adds explicit `currency_code` covering base,
-choice prices and bottle deposit in their existing amount units; current runtime
+choice prices in their existing amount units; current runtime
 has not implemented it. New priced terms capture denomination atomically from
 reviewed input or the confirmed Kitchen default. Menu placement stays a reference,
 and single-currency publication/ordering must reject mixed or unresolved offers.
@@ -1769,34 +1768,18 @@ The Menu entrance is `kitchen/components/Workspace/Menu/Index.vue`, registered a
 its existing Menus workflow and combined overview with the exact same collection.
 Only the description returns to the entrance; child-specific composables use
 strict internal lookup, and one active overview publisher supplies page JSON/AI.
-Services owns service-specific projections from that acquired graph. Overview
-uses the existing `useMenuList`, real creation availability and blocked reason,
-Controls and Collection through a bounded local component namespace. Controls
-composes Actions and Filters, with a private `useControls` presentation composable
-consuming the existing overview capability. It uses the shared collection toolbar,
-native status select and the existing creation action. Search/status choices stay
-App/account/Kitchen scoped in `useMenuList`; All excludes archived records, while
-Published, Drafts and Archived select their exact stored statuses. Both Menu list
-consumers share that contract. Counts/filters wait until the read settles and
-creation retains its existing entitlement and pending availability. Collection owns initial loading/error feedback, stale-card
-masking, empty/search results and the existing Card renderer using native
-`UPageGrid`/`UPageCard` and shared `FireState`. Neither child acquires another
-reader or page publisher.
+Services owns service-specific projections from that acquired graph. Menu
+Overview calls `useKitchenWorkspaceMenuOverview` once and supplies Controls and
+Collection. Search and status choices are scoped to App, account and Kitchen.
+All excludes archives. Controls uses the existing creation action and
+availability. Collection owns loading, errors and empty results.
 
-Prep lives under `components/Workspace/Prep`. Its entrance mounts
-`useKitchenWorkspacePrep`; Create and connected child summaries use strict internal
-lookup. Its `Overview/Index.vue` composes Controls and Collection through a local
-component namespace. Controls filters a short preparation preview from the
-existing entrance reader. Collection owns feedback and links to the Preparations library. The entrance acquires existing Preparation/Recipe readers and Kitchen
-Ingredient/Station associations once, gated by the selected Kitchen's readiness.
-Child capabilities expose counts and recorded Recipe input/method gaps from that graph;
-Ingredient counts mean selected catalogue entries, not stock. Prep Plan and
-Batches provide a browser-local workflow scoped by App, operator and Kitchen. Connected Menu/Prep child overviews explicitly
-import their adjacent `useOverview.ts` presentation composable, which consumes the
-corresponding `useKitchenWorkspace…` capability. Domain summary facts and acquired
-state retain their existing owners; card feedback uses the shared
-`kitchen/utils/overview-summary.ts` projection. These private presentation hooks
-are neither auto-imported nor exported through component namespace entrypoints.
+Prep lives under `components/Workspace/Prep`. Its entrance acquires
+Preparations, Recipes, Ingredient associations and Stations once, gated by the
+selected Kitchen's readiness. It passes summaries to the four cards and
+provides the preparation preview state to its Controls and Collection. Ingredient
+counts measure selected catalogue entries. Prep Plan and Batches remain local to
+the browser, scoped by App, operator and Kitchen.
 The shared Navigation Child keeps whole-card linking by default; Services selects
 native title-only linking so its individual service links need no stacking overrides.
 Follow `docs/concepts/composables.md#component-private-presentation-composables`
@@ -1906,6 +1889,10 @@ Content and publication remain owned by dated Sections, reusable Items and the e
 Daily publication command. The homepage stores no copied special or Kitchen boolean.
 
 ## Kitchen offerings
+
+Kitchen's `composables/services/` owns explicitly scoped service data and
+availability. `composables/workspace/services/` owns the operator setup and
+editor state. `Offering` names the saved record.
 
 Named offerings are independently managed Kitchen child records at
 `kitchens/{kitchenId}/offerings/{offeringId}`. Snapshot identity supplies their
@@ -2339,7 +2326,7 @@ consumers against Nuxt registration, Vue compilation and App typechecking.
 `utils/item-identity.ts` selects those fields for the document and collection readers;
 no invented timestamps or copied Kitchen ownership are needed to read identity.
 `records/menus/items/item-offer.ts` owns the Item's separate selling-default value contract: optional
-normal price, choice groups and optional bottle deposit. Selection state is a
+normal price and choice groups. Selection state is a
 request value, not a persisted Item field. This capability is stored on the
 existing `dishes` document; it is not a new Entity or collection.
 
@@ -2349,7 +2336,7 @@ identity readable and block pricing editing rather than becoming empty defaults.
 The detail route does not acquire the entire Items collection for labels.
 `Menu/Items/Edit/Index.vue` exposes photo, name and description. Category and
 flagship controls are absent; Kitchen presentation remains a separate owner.
-`Pricing.vue` edits selling defaults through `useItemOfferUpdate`, using the
+`Pricing.vue` edits selling defaults through `useItemActions().updateItem`, using the
 existing guarded Item mutation transport and trusted update transaction.
 `utils/item-pricing.ts` and `utils/item-choices.ts` retain their shared validation
 and calculation responsibility for Workspace preview, public projection,
@@ -2360,8 +2347,7 @@ minimum is derived by the selling validator.
 
 Pricing drafts survive same-record refresh; Cancel uses the current source.
 Kitchen/Item/access changes invalidate pending UI completion, and editors never
-perform direct browser writes. Bottle deposit is optional and has no hardcoded
-Food/Drink gate. MenuItem placements and Promotions retain their own placement,
+perform direct browser writes. MenuItem placements and Promotions retain their own placement,
 availability and override responsibilities; this slice adds no Menu-specific
 pricing schema or automatic production/stock relationship.
 
@@ -2704,11 +2690,10 @@ Kitchen working collection pages distinguish target readiness, loading, failure 
 Misebox's pricing wrapper derives its Menu allowance and supported actions from current commands: the [Menu allowance and starter contract](#menu-operator-entitlements) governs Free creation; paid custom regular Menus and existing domain tools retain their own gates. Team roster/invitation support does not claim fine-grained permissions; preparation execution, tables, costing and outgoing finance must not appear in pricing without connected source. Existing Jobs and Engagement claims have their own owners and require separate verification. No local copy or controlled test establishes an accepted commercial price, live provider readiness or shipping authorization.
 
 Kitchen Orders has its index and `/orders/board` under `/workspace/kitchen`.
-Services is a separate visible capability at `/workspace/kitchen/menu/services`,
-alongside Items, Menus and Promotions in Food & drink. Its configuration overview
-and inline setup are composed by `Workspace/Services/Index.vue`.
-It reuses the existing scoped Offering reader and setup commands, including
-Delivery settings. Payment settings remain a Kitchen Identity child at
+Services appears at `/workspace/kitchen/menu/services`, alongside Items, Menus
+and Promotions in Food & drink. `Workspace/Services/Index.vue` composes setup
+using the scoped Offering reader and commands, including Delivery settings.
+Payment settings remain a Kitchen Identity child at
 `/workspace/kitchen/identity/payments`. The old Orders/Channels route and sidebar
 child are removed without aliases. No Offering/Fulfilment storage, price or
 Order-processing command changes accompany this move.
@@ -2871,22 +2856,6 @@ server submission store or payment integration.
 Delivery, table and room presentation do not yet consume this selection slice. Regression evidence lives
 in `menu-service-basket.test.mjs`, `menu-service-view.test.mjs` and
 `collection-checkout.test.mjs` and `collection-confirmation.test.mjs`.
-
-Dish may configure an optional `bottle_deposit` amount through the existing
-protected Dish command. Zero/absence means no deposit. Pricing composes the
-focused `Menu/Items/Deposit.vue` field without another record reader;
-normal price, choice groups and deposits retain their own meaning. Pricing uses
-the provided Item context and its existing save coordinator, composing
-`Pricing/Groups.vue` draft controls. Those controls add no readers or writers.
-Public manifests project
-`bottleDeposit` explicitly; descriptions never determine runtime charges.
-Collection item selection composes `Selection/Bottle.vue` for an explicit new
-bottle or matching-bottle exchange choice. New bottles add the configured amount
-per drink; exchanges add zero. Basket lines retain the choice, show the drink
-subtotal and separate deposit, and distinguish otherwise identical selections.
-Deposit changes invalidate existing local selections. This is display/selection
-behaviour only; existing Order submission and pricing remain outside the slice.
-Verify `item-bottle-deposit.test.mjs` and `menu-service-basket.test.mjs`.
 
 `/kitchens/<slug>/menu.collection` and `/kitchens/<slug>/menu.delivery` are
 public service surfaces, not named Menus.
@@ -3142,13 +3111,13 @@ Public `/menus` is the Collection/Delivery portal, collating eligible menus per
 venue with matching schedules and a quiet link to other menus. Full venue service
 discovery belongs to Place and `/kitchens`, not this food portal.
 
-Menu and service terms are defined in [the service glossary](../../../../../docs/concepts/menu-service-glossary.md). Keep fulfilment, ordering channel and timing distinct; vocabulary alignment does not change stored interaction types.
+Use the [Menu and service glossary](../../../../../docs/concepts/menu-service-glossary.md)
+for product labels, saved record names and ordering vocabulary.
 
 Kitchen navigation groups Items, Menus, Promotions and Services beneath the
 Food & drink overview, separate from Prep & Production (Prep plan, Recipes, Ingredients, Stations, Batches).
-Services is the visible setup name at `/workspace/kitchen/menu/services`; existing
-Offering records and commands remain its backing configuration. Named food
-experiences such as Picnic are not new service types. Core's shared Workspace
+The [Services Workspace boundary](../../../../../docs/concepts/family-menu.md#services-workspace-boundary)
+defines its Kitchen ownership and the target grouping. Core's shared Workspace
 sidebar cycles compact, expanded and expand-all using its existing navigation
 projection; active-route resolution and command authority remain unchanged.
 

@@ -14,5 +14,4 @@ export type ItemChoiceSelection = Record<string, string[]>
 export type ItemOffer = {
   price?: number
   choice_groups: ItemChoiceGroup[]
-  bottle_deposit?: number
 }

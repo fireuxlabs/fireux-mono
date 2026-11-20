@@ -33,8 +33,10 @@ import { computed, ref } from 'vue'
 import { navigateTo, useRoute } from '#imports'
 import { useMenuEditorScope } from '../../../../../../menu/composables/useMenuEditorScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useOptionalKitchenMenus } from '../../../../../composables/workspace/menu/menus/useKitchenMenus'
-import { useKitchenWorkspaceMenus } from '../../../../../composables/workspace/menu/menus/useKitchenWorkspaceMenus'
+import {
+  useOptionalKitchenMenus,
+  useKitchenWorkspaceMenus,
+} from '../../../../../composables/workspace/menu/menus/useKitchenWorkspaceMenus'
 
 const { activeKitchenAppId, canWrite, currencyCode, kitchenId } =
   useOptionalKitchenMenus() ?? useKitchenWorkspaceMenus()

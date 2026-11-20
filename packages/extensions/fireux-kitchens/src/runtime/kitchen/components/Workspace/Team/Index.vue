@@ -53,7 +53,7 @@
 import { computed, ref } from 'vue'
 import WorkspaceTeamEditor from 'fireux-core/runtime/workspace/components/Team/Editor.vue'
 import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
-import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
+import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/useKitchenWorkspaceTeam'
 
 type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 

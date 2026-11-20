@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { readOpeningHoursStatus } from 'fireux-places/runtime/place/utils/opening-hours-status'
-import { useKitchenOfferingNow } from '../../composables/useKitchenOfferingNow'
+import { useKitchenOfferingNow } from '../../composables/services/useKitchenOfferingNow'
 import type { KitchenPublicOffering } from '../../utils/public-offerings'
 const props = withDefaults(
   defineProps<{

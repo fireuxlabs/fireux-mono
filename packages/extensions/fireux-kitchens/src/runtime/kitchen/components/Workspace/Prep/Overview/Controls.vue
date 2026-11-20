@@ -12,9 +12,9 @@
   />
 </template>
 <script setup lang="ts">
-import { requirePrepWorkspace } from '../../../../composables/workspace/prep/state'
+import { useKitchenPrepOverview } from '../../../../composables/workspace/prep/index'
 
-const { query, summary, results } = requirePrepWorkspace().overview
+const { query, summary, results } = useKitchenPrepOverview()
 </script>
 <style scoped>
 .prep-overview-heading {

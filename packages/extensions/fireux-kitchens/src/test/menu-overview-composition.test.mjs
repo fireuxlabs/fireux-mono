@@ -65,7 +65,7 @@ const specialsBindings = {
       item: Vue.computed(() => (id.value ? { name: 'Octopus Roll' } : null)),
     }),
   },
-  '../../useKitchenOfferingNow': {
+  '../../services/useKitchenOfferingNow': {
     useKitchenOfferingNow: () => ({
       now: Vue.ref(new Date('2026-11-18T12:00:00Z')),
     }),
@@ -142,37 +142,6 @@ function mount() {
   const outcome = Vue.ref('ready'),
     canCreateMenu = Vue.ref(true)
   const choices = Vue.ref({})
-  const listExports = {}
-  const listCode = ts.transpileModule(
-    readFileSync(
-      new URL('kitchen/composables/workspace/menu/menus/useMenuList.ts', runtime),
-      'utf8'
-    ),
-    {
-      compilerOptions: {
-        module: ts.ModuleKind.CommonJS,
-        target: ts.ScriptTarget.ES2022,
-      },
-    }
-  ).outputText
-  compileFunction(listCode, ['require', 'exports'])((name) => {
-    if (name === 'vue') return Vue
-    if (name.endsWith('/calendar/daily')) return { publishedMenuDates }
-    if (name === '#imports') return { useState: () => choices }
-    if (name.endsWith('/useAppSession'))
-      return { useAppSession: () => ({ uid: Vue.ref('actor') }) }
-    if (name === './useKitchenMenus')
-      return {
-        useKitchenMenus: () => ({
-          rawMenus: rows,
-          activeKitchenAppId: Vue.ref('app'),
-          kitchenId: Vue.ref('k'),
-        }),
-      }
-    assert.fail(name)
-  }, listExports)
-  const list = listExports.useMenuList()
-  const { query, status } = list
   let creates = 0
   const overviewSource = readFileSync(
     new URL('kitchen/composables/workspace/menu/overview.ts', runtime),
@@ -187,6 +156,9 @@ function mount() {
   const overviewExports = {}
   const capability = {
     selectedKitchen: Vue.ref(null),
+    rawMenus: rows,
+    activeKitchenAppId: Vue.ref('app'),
+    kitchenId: Vue.ref('k'),
     derived: Vue.computed(() => ({
       capability: {
         primitives: { create: { available: canCreateMenu.value } },
@@ -217,45 +189,26 @@ function mount() {
           },
         }),
       }
-    if (name === './menus/useMenuList') return { useMenuList: () => list }
+    if (name === '#imports') return { useState: () => choices }
+    if (name.endsWith('/useAppSession'))
+      return { useAppSession: () => ({ uid: Vue.ref('actor') }) }
     assert.fail(name)
   }, overviewExports)
-  const loadPresenter = (path) => {
-    const code = ts.transpileModule(
-      readFileSync(new URL(path, runtime), 'utf8'),
-      {
-        compilerOptions: {
-          module: ts.ModuleKind.CommonJS,
-          target: ts.ScriptTarget.ES2022,
-        },
-      }
-    ).outputText
-    const exports = {}
-    compileFunction(code, ['require', 'exports'])((name) => {
-      if (name === 'vue') return Vue
-      if (name.endsWith('/menu/overview')) return overviewExports
-      assert.fail(name)
-    }, exports)
-    return exports
-  }
-  const local = loadPresenter(`${base}Overview/Controls/useControls.ts`)
+  const { query, status } = overviewExports.useKitchenWorkspaceMenuOverview()
   const Actions = component(`${base}Overview/Controls/Actions.vue`)
   const Filters = component(`${base}Overview/Controls/Filters.vue`)
   const Controls = component(`${base}Overview/Controls/Index.vue`, {
     './index': { Actions, Filters },
-    './useControls': local,
   })
   const Grid = component(`${base}Overview/Collection/Grid.vue`, {
     './index': { Card, SpecialsCard },
   })
   const Collection = component(`${base}Overview/Collection/Index.vue`, {
     './index': { Grid },
-    './useCollection': loadPresenter(
-      `${base}Overview/Collection/useCollection.ts`
-    ),
   })
   const overview = component(`${base}Overview/Index.vue`, {
     './index': { Controls, Collection },
+    '../../../../composables/workspace/menu/overview': overviewExports,
   })
   const node = (type, text = '') => ({
     type,
@@ -474,10 +427,7 @@ test('composed menu overview retains ordering, controlled search/status choices,
 
     assert.deepEqual(
       view.all('a').map((node) => node.props.href),
-      [
-        '/workspace/kitchen/menu/specials',
-        '/workspace/kitchen/menu/drinks',
-      ]
+      ['/workspace/kitchen/menu/specials', '/workspace/kitchen/menu/drinks']
     )
     view
       .all('button')

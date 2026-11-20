@@ -221,7 +221,7 @@ test('section parent provides one state to all editing controls without injectin
         pending: ref(false),
       }),
       useMenuItemMutations: () => ({}),
-      useItemUpdate: () => ({}),
+      useItemActions: () => ({}),
       ...itemPricingHelpers,
     }
   )

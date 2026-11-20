@@ -96,7 +96,7 @@ import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { defineDevDebugPayload } from 'fireux-core/runtime/types/dev-debug'
 import { useKitchenMenuCollection } from '../../../../../menu/composables/useKitchenMenuCollection'
-import { useKitchenOfferingCollection } from '../../../../composables/useKitchenOfferingCollection'
+import { useKitchenOfferingCollection } from '../../../../composables/services/useKitchenOfferingCollection'
 import { resolveKitchenOperationHours } from '../../../../utils/kitchen-readers'
 import { resolveServiceHours } from '../../../../utils/service-hours'
 import {

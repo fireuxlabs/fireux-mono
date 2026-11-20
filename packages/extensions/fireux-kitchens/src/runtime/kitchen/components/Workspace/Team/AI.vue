@@ -32,7 +32,7 @@ import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/workspace/composab
 import { teamIntentRecords } from 'fireux-core/runtime/workspace/utils/team-intent-records'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
-import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
+import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/useKitchenWorkspaceTeam'
 const props = defineProps<{
   team: ReturnType<typeof useKitchenWorkspaceTeam>
 }>()

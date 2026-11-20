@@ -25,6 +25,6 @@
   </section>
 </template>
 <script setup lang="ts">
-import { provideKitchenServicesContext } from '../../../composables/offerings/useKitchenServicesContext'
+import { provideKitchenServicesContext } from '../../../composables/workspace/services/useKitchenServicesContext'
 const { source, retained, snapshot, options } = provideKitchenServicesContext()
 </script>

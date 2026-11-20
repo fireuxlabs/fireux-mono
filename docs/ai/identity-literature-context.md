@@ -1,7 +1,7 @@
 # Identity and product literature context
 
-Updated: 2026-11-16
-Ref: e71fff3f0
+Updated: 2026-11-20
+Ref: 193e5adc3
 Role: living context
 Scope: cross-system Main App identity, landing, pricing, product literature and public metadata references
 
@@ -34,8 +34,10 @@ shared public-language or pricing seam applies to them.
   `app/content/meta/source.ts`. App-owned `Framework` compositions present the
   offer, shared SaaS foundations, industry libraries and developer resources;
   the `framework` layout owns their public shell. Nuxt and Nuxt UI remain the
-  technical and interface foundation. Docs leads to the
-  `/getting-started` guide and public `/docs` reference. Showcase reuses the
+  technical and interface foundation. The homepage's Docs links open the public
+  `/docs` overview, which links to `/getting-started` and the architecture
+  explanation at `/context`. The architecture page uses the framework shell and
+  links back to Docs. Showcase reuses the
   public `/apps` reader. The
   template overview describes the existing source starter without promoting
   paused domain previews or a package/download service. Project Workspace remains

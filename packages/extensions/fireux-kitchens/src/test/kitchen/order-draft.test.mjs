@@ -222,7 +222,7 @@ test('save captures original data and cannot dispatch or complete into an obsole
     )
     const state = scope.run(() =>
       load(
-        '../../runtime/kitchen/composables/workspace/orders/useKitchenOrderDraftSave.ts',
+        '../../runtime/kitchen/composables/orders/useKitchenOrderDraftSave.ts',
         'useKitchenOrderDraftSave',
         {
           ...Vue,
@@ -326,7 +326,7 @@ test('paged reader uses authorized Kitchen scope and masks retained or invalid r
   let path, options
   const state = scope.run(() =>
     load(
-      '../../runtime/kitchen/composables/workspace/orders/useKitchenOrderDraftCollection.ts',
+      '../../runtime/kitchen/composables/orders/useKitchenOrderDraftCollection.ts',
       'useKitchenOrderDraftCollection',
       {
         ...Vue,

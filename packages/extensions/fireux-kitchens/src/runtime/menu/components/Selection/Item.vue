@@ -7,12 +7,6 @@
     <p v-if="offer.item.description" class="service-item-editor__description">
       {{ offer.item.description }}
     </p>
-    <MenuSelectionBottle
-      v-if="offer.item.bottleDeposit"
-      v-model="choices.bottle"
-      :deposit="offer.item.bottleDeposit"
-      :money="money"
-    />
     <MenuItemChoices
       :groups="choiceGroups"
       :model-value="selectedGroups"

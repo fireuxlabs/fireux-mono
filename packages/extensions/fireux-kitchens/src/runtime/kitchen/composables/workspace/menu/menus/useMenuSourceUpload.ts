@@ -10,7 +10,7 @@ import { navigateTo, useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import { useOptionalKitchenMenuRecordContext } from './useKitchenMenuRecordContext'
-import { useOptionalKitchenMenus } from './useKitchenMenus'
+import { useOptionalKitchenMenus } from './useKitchenWorkspaceMenus'
 import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
 
 export function useMenuSourceUpload(

@@ -3,7 +3,6 @@ import type { MenuServiceOffer } from './sections'
 
 export type ServiceItemChoices = {
   choiceGroups?: Record<string, string[]>
-  bottle?: 'deposit' | 'exchange'
   optionId: string
   extraIds: string[]
   groups: Record<string, string[]>
@@ -18,7 +17,6 @@ export type ServiceBasketLine = {
   currency: string
   choices: ServiceItemChoices
   details: string[]
-  depositUnitMinor: number
   unitMinor: number
   signature: string
 }
@@ -45,19 +43,6 @@ export function serviceBasketLine(
       throw new Error('This item has no valid price.')
     return minor
   }
-  const deposit =
-    item.bottleDeposit === undefined ? 0 : money(item.bottleDeposit)
-  if (
-    deposit
-      ? !['deposit', 'exchange'].includes(choices.bottle || '')
-      : choices.bottle !== undefined
-  )
-    throw new Error(
-      deposit
-        ? 'Choose a new bottle or a bottle exchange.'
-        : 'This item does not have a bottle deposit.'
-    )
-  const depositUnitMinor = choices.bottle === 'deposit' ? deposit : 0
   const choicePricing =
     item.choiceGroups !== undefined
       ? priceItemChoices(
@@ -108,7 +93,6 @@ export function serviceBasketLine(
     )
   )
     throw new Error('A meal choice has changed.')
-  unitMinor += depositUnitMinor
   const selection = {
     ...choices,
     extraIds,
@@ -121,7 +105,7 @@ export function serviceBasketLine(
       offer.source,
       item.id,
       choices.optionId,
-      choices.bottle,
+      null, // Preserve keys for saved baskets without a deposit.
       extraIds,
       groups,
       ...(choicePricing ? [choicePricing.selections] : []),
@@ -135,7 +119,6 @@ export function serviceBasketLine(
     choices: selection,
     details,
     unitMinor,
-    depositUnitMinor,
     signature,
   }
 }

@@ -90,7 +90,6 @@ export function normalizeItemPricingPatch(
     'price',
     'price_options',
     'add_ons',
-    'bottle_deposit',
     'choice_groups',
   ])
   if (
@@ -109,14 +108,6 @@ export function normalizeItemPricingPatch(
       patch.price < 0)
   )
     throw new Error('Price must be a non-negative number.')
-  if (
-    'bottle_deposit' in patch &&
-    (typeof patch.bottle_deposit !== 'number' ||
-      !Number.isFinite(patch.bottle_deposit) ||
-      patch.bottle_deposit < 0 ||
-      !Number.isSafeInteger(Math.round(patch.bottle_deposit * 100)))
-  )
-    throw new Error('Bottle deposit must be a valid non-negative amount.')
   const normalized = { ...patch }
   if (Object.hasOwn(patch, 'choice_groups')) {
     normalized.choice_groups = normalizeItemChoiceGroups(patch.choice_groups)
@@ -207,9 +198,6 @@ export function readItemPricing(
       : {}),
     price_options: data.price_options ?? [],
     add_ons: data.add_ons ?? [],
-    ...(data.bottle_deposit !== undefined
-      ? { bottle_deposit: data.bottle_deposit }
-      : {}),
   } as ItemPricing)
   return patch as ItemPricing & { price: number }
 }
@@ -223,15 +211,9 @@ export function readItemOffer(data: Record<string, unknown>): ItemOffer {
       : {}),
     price_options: data.price_options ?? [],
     add_ons: data.add_ons ?? [],
-    ...(Object.hasOwn(data, 'bottle_deposit')
-      ? { bottle_deposit: data.bottle_deposit }
-      : {}),
   })
   return {
     ...(pricing.price !== undefined ? { price: pricing.price } : {}),
     choice_groups: normalizeItemChoiceGroups(readItemChoiceGroups(pricing)),
-    ...(pricing.bottle_deposit !== undefined
-      ? { bottle_deposit: pricing.bottle_deposit }
-      : {}),
   }
 }

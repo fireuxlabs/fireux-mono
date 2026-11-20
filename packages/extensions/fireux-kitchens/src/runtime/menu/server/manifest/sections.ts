@@ -195,9 +195,6 @@ export async function readKitchenMenuSections(
                 description: readRecordString(dish || {}, 'description'),
                 image_url: readRecordString(dish || {}, 'image'),
                 price: pricing.price,
-                ...(pricing.bottle_deposit
-                  ? { bottleDeposit: pricing.bottle_deposit }
-                  : {}),
                 ...(pricing.choice_groups !== undefined
                   ? { choiceGroups: pricing.choice_groups }
                   : {}),

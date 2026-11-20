@@ -100,7 +100,7 @@ test('create does not upload or show stale outcomes after Kitchen/account round 
             itemKind: 'food',
           }),
           defineEmits: () => () => {},
-          useItemCreate: () => ({ createItem: () => pending.promise }),
+          useItemActions: () => ({ createItem: () => pending.promise }),
           useItemImageUpload: () => ({
             uploadItemImage: (x) => uploads.push(x),
           }),
@@ -144,7 +144,7 @@ test('create captures original upload and reports saved Item with failed image h
         itemKind: 'food',
       }),
       defineEmits: () => () => {},
-      useItemCreate: () => ({ createItem: () => pending.promise }),
+      useItemActions: () => ({ createItem: () => pending.promise }),
       useItemImageUpload: () => ({
         uploadItemImage: async (x) => {
           uploads.push(x)
@@ -191,7 +191,7 @@ test('Menu name flow stops before placement on destination change; failed placem
             throw Error('placement failed')
           },
         }),
-        useItemCreate: () => ({ createItem: () => pending.promise }),
+        useItemActions: () => ({ createItem: () => pending.promise }),
       },
       '({addNames,names,prices,error,busy})',
       true
@@ -234,7 +234,7 @@ for (const changed of [false, true]) {
           item,
           canWrite,
         }),
-        useItemDelete: () => ({
+        useItemActions: () => ({
           deleteItem: (...args) => {
             calls.push(args)
             return pending.promise
@@ -279,7 +279,7 @@ test('record edit ignores old failures and spec saves a detached payload', async
       ...h.deps,
       useAuth: () => ({ currentUser: h.currentUser }),
       useKitchenItemContext: () => identity,
-      useItemUpdate: () => ({ updateItem: () => pending.promise }),
+      useItemActions: () => ({ updateItem: () => pending.promise }),
       useItemImageUpload: () => ({ uploadItemImage: async () => {} }),
     },
     '({updateItemField})',
@@ -428,7 +428,7 @@ test('item creation requires a price and submits explicit zero without a fixed t
         ...h.deps,
         defineProps: () => ({ kitchenId: h.kitchenId.value, itemKind }),
         defineEmits: () => () => {},
-        useItemCreate: () => ({
+        useItemActions: () => ({
           createItem: async (draft) => {
             drafts.push(draft)
             return { id: 'item' }
@@ -472,7 +472,7 @@ test('Menu new-name creation asks for each price and preserves an explicit zero'
         canWrite: ref(true),
         createItem: async (input) => placements.push(input),
       }),
-      useItemCreate: () => ({
+      useItemActions: () => ({
         createItem: async (draft) => {
           drafts.push(draft)
           return { id: draft.name }

@@ -68,7 +68,7 @@ import { useItemEditorScope } from '../../../../../composables/items/useItemEdit
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useRoute } from '#imports'
-import { useItemCreate } from '../../../../../composables/items/useItemCreate'
+import { useItemActions } from '../../../../../composables/items/useItemActions'
 import { useItemImageUpload } from '../../../../../composables/items/useItemImageUpload'
 
 const props = defineProps<{ kitchenId: string; itemKind?: 'food' | 'drink' }>()
@@ -133,7 +133,7 @@ const captureScope = useItemEditorScope(draftSources, () => {
   saving.value = false
   message.value = ''
 })
-const { createItem } = useItemCreate([...draftSources, canCreateItem])
+const { createItem } = useItemActions([...draftSources, canCreateItem])
 const { uploadItemImage } = useItemImageUpload([...draftSources, canCreateItem])
 const addItem = async () => {
   const isCurrent = captureScope()

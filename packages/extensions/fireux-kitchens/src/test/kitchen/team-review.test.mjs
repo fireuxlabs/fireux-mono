@@ -95,7 +95,7 @@ function fixture(t) {
   }
   const team = scope.run(() =>
     load(
-      'composables/workspace/team/useKitchenWorkspaceTeam.ts',
+      'composables/workspace/useKitchenWorkspaceTeam.ts',
       'useKitchenWorkspaceTeam()',
       deps
     )

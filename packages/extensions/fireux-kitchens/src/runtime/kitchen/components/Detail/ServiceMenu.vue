@@ -116,7 +116,7 @@ import {
   serviceSections,
   type MenuServiceSource,
 } from '../../../menu/utils/ordering/sections'
-import { useKitchenOfferingNow } from '../../composables/useKitchenOfferingNow'
+import { useKitchenOfferingNow } from '../../composables/services/useKitchenOfferingNow'
 const props = defineProps<{
   kitchenSlug: string
   service: MenuService

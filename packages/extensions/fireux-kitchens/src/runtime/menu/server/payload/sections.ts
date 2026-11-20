@@ -121,11 +121,6 @@ export const readMenuManifestSections = (
           description: itemDescription(itemRecord),
           imageUrl: itemImageUrl(itemRecord),
           price: priceNumber(itemRecord.price),
-          ...(typeof itemRecord.bottleDeposit === 'number' &&
-          Number.isFinite(itemRecord.bottleDeposit) &&
-          itemRecord.bottleDeposit > 0
-            ? { bottleDeposit: itemRecord.bottleDeposit }
-            : {}),
           priceLabel: itemPriceLabel(itemRecord),
           ...(itemRecord.choiceGroups !== undefined
             ? {

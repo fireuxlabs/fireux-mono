@@ -60,7 +60,7 @@ import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenItemContext } from '../../../../../composables/items/useKitchenItemContext'
 import { useItemImageUpload } from '../../../../../composables/items/useItemImageUpload'
-import { useItemUpdate } from '../../../../../composables/items/useItemUpdate'
+import { useItemActions } from '../../../../../composables/items/useItemActions'
 import type { ItemIdentityChanges } from '../../../../../utils/item-identity'
 
 const { item, itemId, kitchenId, canWrite } = useKitchenItemContext()
@@ -80,7 +80,7 @@ const captureScope = useItemEditorScope(
   }
 )
 const ownerSources = [kitchenId, itemId, () => route.fullPath, canWrite]
-const { updateItem } = useItemUpdate(ownerSources)
+const { updateItem } = useItemActions(ownerSources)
 const { uploadItemImage } = useItemImageUpload(ownerSources)
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

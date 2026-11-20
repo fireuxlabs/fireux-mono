@@ -6,7 +6,7 @@ import {
 } from '../../../../menu/utils/calendar/daily'
 import { useDatedMenuDishRead } from '../../../../menu/composables/useDatedMenuDishRead'
 import { shiftMenuDate } from '../../../../menu/utils/calendar/date'
-import { useKitchenOfferingNow } from '../../useKitchenOfferingNow'
+import { useKitchenOfferingNow } from '../../services/useKitchenOfferingNow'
 import type { Menu } from '../../../../menu/models/menu.model'
 
 export function useKitchenWorkspaceMenuSpecials(

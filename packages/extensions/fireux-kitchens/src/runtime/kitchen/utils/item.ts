@@ -61,9 +61,6 @@ export function normalizeItem(value: unknown): ItemCollectionRow {
           : {}),
         price_options: source.price_options ?? [],
         add_ons: source.add_ons ?? [],
-        ...(source.bottle_deposit !== undefined
-          ? { bottle_deposit: source.bottle_deposit }
-          : {}),
       }),
     }
   } catch (error) {

@@ -119,7 +119,7 @@ test('QR targets retain publication and service eligibility boundaries', () => {
     computed: Vue.computed,
     useKitchenWorkspaceMenuSources: () => ({ menuSources: Vue.ref([]) }),
     useKitchenWorkspaceMenus: () => ({
-      selectedKitchen: Vue.ref({ slug: 'venue' }),
+      selectedKitchen: Vue.ref({ identity: { slug: 'venue' } }),
       menus,
       storageKitchenId: Vue.ref('kitchen-ready'),
       outcome: Vue.ref('ready'),
@@ -189,7 +189,7 @@ test('an applied source retains its Menu destination after reload', async () => 
 
 test('Kitchen Menu preparation is usable without a Product, purchase or service request', async () => {
   const Express = component('kitchen/components/Workspace/Menu/Menus/Prepare.vue', {
-    '../../../../composables/workspace/menu/menus/useKitchenMenus': {
+    '../../../../composables/workspace/menu/menus/useKitchenWorkspaceMenus': {
       useKitchenMenus: () => ({
         outcome: Vue.ref('ready'),
         error: Vue.ref(null),

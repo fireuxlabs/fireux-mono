@@ -261,8 +261,10 @@ production uses the configured provider. Facts, instructions, available actions 
 response schema are built once before transport selection. Project Landing AI
 uses the same bounded interaction through the existing Project intent route's
 landing branch, owned by `fireux-projects/runtime/project/server/landing-intent.ts`.
-Project Index exposes current selection and Create Project controls; FireUX's
-landing page owns navigation to the existing `/apps/create` setup review.
+Project Index exposes current selection and Create Project controls. The FireUX
+App's [Project Workspace Home](../../projects/fireux/fireux-app/app/components/Workspace/Project/Home/Index.vue)
+composes that surface inside the shared frame, supplies the page introduction,
+and handles the specific action to open `/workspace/project/apps` for review.
 Chat performs no writes and cannot save launch intents, create Apps, provision
 infrastructure or deploy. Guest requests receive no Project record context.
 `fireux-projects/src/test/project-landing-intent.test.mjs` covers intent validation,
@@ -1863,6 +1865,17 @@ The Workspace migration checks listed as removed in
 in this document describe historical verification, not current coverage.
 
 ## Capability organisation
+
+Use the same placement test in every Workspace Entity. Composables that
+coordinate Workspace selection, navigation or an operator workflow live under
+`composables/workspace`. Explicitly scoped domain readers and commands stay
+with their owning Entity or capability, even when their current consumer is a
+Workspace page. Guest-facing readers also live in the Entity's composable spine.
+Compare the boundary with a maintained sibling before adopting a Kitchen change
+as a family pattern. Keep a single cohesive workflow as a file and group
+multiple related workflows under the capability by name. Pass presentation
+facts from their owner to child components and keep command adapters together
+when the caller owns one shared editor lifetime.
 
 Common Home, Identity, Team and supported Calendar adapters live directly under
 `composables/workspace`; domain-specific collections use named capability child

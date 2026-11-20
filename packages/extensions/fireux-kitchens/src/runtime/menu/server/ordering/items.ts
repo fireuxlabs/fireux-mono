@@ -145,7 +145,6 @@ export function orderItemReader(
             : 'food',
       name: String(data.name).trim(),
       price: terms.price,
-      ...(terms.bottle_deposit ? { bottleDeposit: terms.bottle_deposit } : {}),
       ...(terms.choice_groups !== undefined
         ? { choiceGroups: terms.choice_groups }
         : {}),

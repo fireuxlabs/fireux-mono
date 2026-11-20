@@ -61,11 +61,6 @@ function fixture() {
     'kitchenMenusWorkspaceKey,requireMenuWorkspace',
     Vue
   )
-  const prepState = load(
-    base + 'prep/state',
-    'prepWorkspaceKey,requirePrepWorkspace',
-    Vue
-  )
   const kitchen = Vue.ref({ name: 'La Tap' })
   const kitchenOutcome = Vue.ref('ready')
   const menuOutcome = Vue.ref('empty')
@@ -99,7 +94,6 @@ function fixture() {
   const deps = {
     ...Vue,
     kitchenMenusWorkspaceKey: menuState.kitchenMenusWorkspaceKey,
-    prepWorkspaceKey: prepState.prepWorkspaceKey,
     useKitchenWorkspace,
     useWorkspacePageState: () => {
       publishers++
@@ -107,14 +101,10 @@ function fixture() {
     },
   }
   const menus = load(
-    base + 'menu/menus/useKitchenMenus',
+    base + 'menu/menus/useKitchenWorkspaceMenus',
     'createKitchenMenus,provideKitchenMenus,useKitchenMenus,useOptionalKitchenMenus',
     {
       ...deps,
-      useKitchenWorkspaceMenus: () => {
-        menuReads++
-        return lower
-      },
       defineWorkspaceCapabilityContext: (v) => v,
     }
   )
@@ -158,6 +148,10 @@ function fixture() {
   const workspace = load(base + 'menu/index', 'useKitchenWorkspaceMenu', {
     ...deps,
     createKitchenMenus: menus.createKitchenMenus,
+    useKitchenWorkspaceMenus: () => {
+      menuReads++
+      return lower
+    },
     createKitchenMenuOverview: index.createKitchenMenuOverview,
   })
   const prepInputs = {
@@ -180,25 +174,23 @@ function fixture() {
       return acquire(name, id)
     },
   })
-  const prepChildren = load(
-    base + 'prep/children',
-    'useKitchenWorkspacePrepPreparations,useKitchenWorkspacePrepRecipes,useKitchenWorkspacePrepIngredients,useKitchenWorkspacePrepStations',
-    { ...Vue, requirePrepWorkspace: prepState.requirePrepWorkspace }
+  const prep = load(
+    base + 'prep/index',
+    'useKitchenWorkspacePrep,useKitchenPrepOverview',
+    {
+      ...deps,
+      createPrepSummaries: summaries.createPrepSummaries,
+    }
   )
-  const prep = load(base + 'prep/index', 'useKitchenWorkspacePrep', {
-    ...deps,
-    createPrepSummaries: summaries.createPrepSummaries,
-  })
   return {
     menus,
     index,
     menuState,
-    prepState,
     services,
     workspace,
     prep,
-    prepChildren,
     prepInputs,
+    lower,
     prepAcquisitions,
     kitchen,
     kitchenOutcome,
@@ -233,7 +225,7 @@ test('Menu mounts one state object; every child getter reuses it and the exact c
   assert.deepEqual(f.counts(), {
     menuReads: 1,
     overviewReads: 1,
-    publishers: 2,
+    publishers: 1,
   })
   // The capability's publisher is disabled: only the combined group publishes.
   assert.equal(f.publications.length, 1)
@@ -249,7 +241,7 @@ test('Menu mounts one state object; every child getter reuses it and the exact c
   assert.deepEqual(f.counts(), {
     menuReads: 1,
     overviewReads: 1,
-    publishers: 2,
+    publishers: 1,
   })
   app.unmount()
   assert.deepEqual(f.publications.at(-1), { derived: { outcome: 'idle' } })
@@ -259,7 +251,7 @@ test('Menu mounts one state object; every child getter reuses it and the exact c
   assert.equal(f.publications.length, count)
 })
 
-test('Prep mounts one state object; children reuse reactive readiness and parent gets only description', async () => {
+test('Prep mounts one overview and supplies its summary cards', async () => {
   const f = fixture(),
     children = []
   let entrance
@@ -267,17 +259,15 @@ test('Prep mounts one state object; children reuse reactive readiness and parent
     () => {
       entrance = f.prep.useKitchenWorkspacePrep()
     },
-    () => children.push(f.prepState.requirePrepWorkspace())
+    () => children.push(f.prep.useKitchenPrepOverview())
   )
-  assert.deepEqual(Object.keys(entrance), ['description'])
   assert.equal(children[0], children[1])
-  assert.equal(children[0].description, entrance.description)
-  assert.equal(children[0].ready.value, true)
-  assert.equal(children[0].createTo, '/workspace/kitchen/prep/recipes')
+  assert.equal(children[0].summary.value, entrance.summaries.value.preparations)
+  assert.equal(children[0].summary.value.outcome, 'ready')
   f.kitchenOutcome.value = 'pending'
   f.kitchen.value = null
   await Vue.nextTick()
-  assert.equal(children[0].ready.value, false)
+  assert.equal(children[0].summary.value.outcome, 'pending')
   assert.match(entrance.description.value, /your Kitchen's/)
   assert.deepEqual(f.counts(), {
     menuReads: 0,
@@ -297,11 +287,9 @@ test('required child access without a mounted group fails without constructing s
         /require their workspace owner/
       )
       assert.throws(
-        f.prepState.requirePrepWorkspace,
-        /require their workspace owner/
+        f.prep.useKitchenPrepOverview,
+        /requires its workspace owner/
       )
-      for (const useChild of Object.values(f.prepChildren))
-        assert.throws(useChild, /require their workspace owner/)
       assert.throws(
         f.services.useKitchenWorkspaceMenuServices,
         /require their workspace owner/
@@ -323,14 +311,14 @@ test('standalone menu preparation mounts a capability without a group owner', ()
   let owner
   const app = mount(
     () => {
-      owner = f.menus.provideKitchenMenus()
+      owner = f.menus.provideKitchenMenus(f.lower)
     },
     () => {
       assert.equal(f.menus.useKitchenMenus(), owner)
     }
   )
   assert.deepEqual(f.counts(), {
-    menuReads: 1,
+    menuReads: 0,
     overviewReads: 0,
     publishers: 1,
   })
@@ -370,19 +358,9 @@ export default {render}`
           Controls: component('Overview/Controls'),
           Collection: component('Overview/Collection'),
         }
-      if (id.endsWith('/prep/state')) return f.prepState
-      if (id === './useOverview') {
-        const child = name.split('/')[0]
-        return load(
-          `kitchen/components/Workspace/Prep/${child}/useOverview`,
-          `useKitchenWorkspacePrep${child}Overview`,
-          {
-            ...Vue,
-            ...f.prepChildren,
-            ...load('kitchen/utils/overview-summary', 'overviewSummary', {}),
-          }
-        )
-      }
+      if (id.endsWith('/prep/index')) return f.prep
+      if (id.endsWith('/utils/overview-summary'))
+        return load('kitchen/utils/overview-summary', 'overviewSummary', {})
       assert.fail(`Unexpected child dependency: ${id}`)
     }, exports)
     return exports.default
@@ -390,7 +368,7 @@ export default {render}`
   const Overview = component('Overview/Index'),
     Create = component('Create')
   const cards = ['Preparations', 'Recipes', 'Ingredients', 'Stations'].map(
-    (name) => component(`${name}/Overview`)
+    (name) => [name.toLowerCase(), component(`${name}/Overview`)]
   )
   for (const scenario of [
     'ready',
@@ -406,9 +384,13 @@ export default {render}`
     const app = Vue.createSSRApp({
       setup() {
         const entrance = f.prep.useKitchenWorkspacePrep()
-        assert.deepEqual(Object.keys(entrance), ['description'])
         return () =>
-          Vue.h('div', [Vue.h(Overview), ...cards.map((card) => Vue.h(card))])
+          Vue.h('div', [
+            Vue.h(Overview),
+            ...cards.map(([key, card]) =>
+              Vue.h(card, { summary: entrance.summaries.value[key] })
+            ),
+          ])
       },
     })
     app.component('UPageCard', {
@@ -483,18 +465,21 @@ export default {render}`
 test('Prep children share one gated acquisition graph and reactive honest summaries', async () => {
   const f = fixture()
   const children = []
+  let entrance
   const app = mount(
-    () => f.prep.useKitchenWorkspacePrep(),
-    () => children.push(f.prepState.requirePrepWorkspace())
+    () => {
+      entrance = f.prep.useKitchenWorkspacePrep()
+    },
+    () => children.push(f.prep.useKitchenPrepOverview())
   )
-  assert.equal(children[0].summaries, children[1].summaries)
+  assert.equal(children[0], children[1])
   assert.deepEqual(
     f.prepAcquisitions.map(({ name }) => name),
     ['preparations', 'recipes', 'ingredients', 'stations']
   )
   const ids = f.prepAcquisitions.map(({ id }) => id)
   assert.ok(ids.every((id) => id === ids[0] && id.value === 'k'))
-  const summaries = children[0].summaries
+  const summaries = entrance.summaries
   assert.equal(summaries.value.preparations.status, '0 preparations')
   assert.equal(summaries.value.ingredients.status, '0 selected ingredients')
   f.prepInputs.recipes.recipes.value = [{ inputs: [], method: [] }]

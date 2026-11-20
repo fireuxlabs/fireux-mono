@@ -94,7 +94,7 @@ function harness(t, delayed = false) {
   }
   const transports = []
   const useOrderExchange = load(
-    base + 'composables/useOrderExchange.ts',
+    base + 'composables/orders/useOrderExchange.ts',
     'useOrderExchange',
     {
       ref,

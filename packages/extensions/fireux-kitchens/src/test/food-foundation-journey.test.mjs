@@ -73,7 +73,6 @@ const policy = load(
   'readKitchenOrderTypeConfig',
   {
     ...whatsApp,
-    KitchenOrderContactFields: ['name', 'phone', 'email'],
     KitchenOrderTypes: types,
   }
 )
@@ -451,7 +450,6 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
         name: 'Fixture drink',
         price: 4,
         item_kind: 'drink',
-        bottle_deposit: 2,
       },
     }
   )
@@ -639,7 +637,10 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
       [11, 11]
     )
     assert.equal(pizza.addOns[0].price, 2)
-    assert.equal(items.find((row) => row.dishId === drink.id).bottleDeposit, 2)
+    assert.equal(
+      items.find((row) => row.dishId === drink.id).bottleDeposit,
+      undefined
+    )
     const deal = items.find((row) => row.mealDeal)
     assert.equal(deal.price, 15)
     assert.equal(deal.mealDeal.groups[1].dishes[0].supplement, 1)

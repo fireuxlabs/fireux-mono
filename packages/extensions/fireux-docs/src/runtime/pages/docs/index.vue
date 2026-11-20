@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       title="FireUX Docs"
-      description="Build a Nuxt App with FireUX, from configuration to server code."
+      description="Understand how FireUX is organised and learn how to build an App with it."
     />
 
     <UPageBody>
@@ -28,7 +28,17 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'docs', title: 'FireUX Docs' })
+definePageMeta({
+  layout: 'docs',
+  title: 'FireUX Docs',
+  requiresAuth: false,
+  nav: {
+    key: 'framework-docs',
+    label: 'Docs',
+    order: 10,
+    menus: ['framework'],
+  },
+})
 useSeoMeta({
   title: 'FireUX Docs',
   description: 'Guides and reference for building Apps with FireUX.',
@@ -43,6 +53,13 @@ const groups = [
         description: 'Run the starter App locally.',
         icon: 'i-lucide-play',
         to: '/getting-started',
+      },
+      {
+        label: 'FireUX architecture',
+        description:
+          'See how Apps, Workspaces, Capabilities and Tools fit together.',
+        icon: 'i-lucide-network',
+        to: '/context',
       },
       {
         label: 'App configuration',

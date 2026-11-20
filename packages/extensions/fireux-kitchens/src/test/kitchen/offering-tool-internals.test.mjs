@@ -83,7 +83,7 @@ test('Collection and Delivery overview include all matching services and publish
   ])
   const state = scope.run(() =>
     load(
-      '../../runtime/kitchen/composables/offerings/useKitchenServicesContext.ts',
+      '../../runtime/kitchen/composables/workspace/services/useKitchenServicesContext.ts',
       'createKitchenServicesContext',
       {
         ...vue,
@@ -180,7 +180,7 @@ test('Configure and service editor use the same menu choices and readiness', () 
     false
   )
   const source = readFileSync(
-    new URL(base + 'Menu/Services/Index.vue', import.meta.url),
+    new URL(base + 'Workspace/Services/Index.vue', import.meta.url),
     'utf8'
   )
   assert.match(source, /WorkspaceKitchenServicesService/)
@@ -190,7 +190,7 @@ test('Configure and service editor use the same menu choices and readiness', () 
 test('the client configure URL has one matching native Services endpoint', () => {
   const adapter = readFileSync(
     new URL(
-      '../../runtime/kitchen/composables/offerings/useKitchenOfferings.ts',
+      '../../runtime/kitchen/composables/services/useKitchenOfferings.ts',
       import.meta.url
     ),
     'utf8'

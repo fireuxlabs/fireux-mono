@@ -77,7 +77,7 @@ function harness(existing = true, key = 'collection') {
   })
   const state = scope.run(() =>
     loadOfferingSource(
-      'kitchen/composables/offerings/useServiceSetup',
+      'kitchen/composables/workspace/services/useServiceSetup',
       'useServiceSetup',
       {
         ...vue,

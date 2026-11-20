@@ -465,7 +465,7 @@ test('new Item placement reuses catalogue owners and never attaches an obsolete 
         ref,
         watch,
         useItemEditorScope: scope(currentUser),
-        useItemCreate: () => ({
+        useItemActions: () => ({
           createItem: async (...args) => {
             calls.push(args)
             return created.promise
@@ -522,7 +522,7 @@ test('all Add workflows can restore retained placements and exclude already acti
           commands.push(input)
         },
       }),
-      useItemUpdate: () => ({}),
+      useItemActions: () => ({}),
       useKitchenItemCollection: () => ({
         dishes,
         outcome: ref('ready'),
@@ -556,7 +556,7 @@ test('all Add workflows can restore retained placements and exclude already acti
     useMenuEditorScope: scope(currentUser),
     useItemEditorScope: scope(currentUser),
     useToastify: () => ({ add() {} }),
-    useItemCreate: () => ({ createItem: assert.fail }),
+    useItemActions: () => ({ createItem: assert.fail }),
   }
   const dish = load(
     '../../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionItemSelection.ts',
@@ -613,7 +613,7 @@ test('a Menu placement retry reuses its saved Item before the catalogue listener
       computed,
       watch,
       useItemEditorScope: scope(currentUser),
-      useItemCreate: () => ({
+      useItemActions: () => ({
         createItem: async (draft) => {
           created.push(draft)
           return { id: 'dish-' + created.length }

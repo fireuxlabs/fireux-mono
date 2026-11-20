@@ -43,7 +43,7 @@ function fixture() {
   let acquisitions = 0
   const context = scope.run(() =>
     load(
-      'composables/offerings/useKitchenServicesContext.ts',
+      'composables/workspace/services/useKitchenServicesContext.ts',
       'createKitchenServicesContext()',
       {
         ...Vue,
@@ -147,12 +147,12 @@ test('the mounted Services section addresses every named record, an ordinary sin
     Symbol,
   }
   deps.useServiceSetup = load(
-    'composables/offerings/useServiceSetup.ts',
+    'composables/workspace/services/useServiceSetup.ts',
     'useServiceSetup',
     deps
   )
   deps.provideKitchenServiceEditor = load(
-    'composables/offerings/useKitchenServiceEditor.ts',
+    'composables/workspace/services/useKitchenServiceEditor.ts',
     'provideKitchenServiceEditor',
     deps
   )
@@ -252,7 +252,11 @@ test('mounted service editors and local drafts survive refresh/error; actual own
       ),
     render: Vue.compile(parse(source).descriptor.template.content),
   })
-  for (const name of ['WorkspaceKitchenServicesStatus', 'FireDiagnosticsDebugPanel'])
+  for (const name of [
+    'WorkspaceKitchenAIFocus',
+    'WorkspaceKitchenServicesStatus',
+    'FireDiagnosticsDebugPanel',
+  ])
     app.component(name, { render: () => null })
   app.component('WorkspaceKitchenServicesService', {
     setup() {

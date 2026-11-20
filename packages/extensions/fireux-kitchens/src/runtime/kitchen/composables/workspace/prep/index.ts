@@ -1,5 +1,4 @@
-import { computed, provide, ref } from 'vue'
-import { prepWorkspaceKey } from './state'
+import { computed, inject, provide, ref, type InjectionKey } from 'vue'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { createPrepSummaries } from './summaries'
 
@@ -24,20 +23,28 @@ function createKitchenPrepWorkspace() {
     )
   })
   const overview = { query, summary, results }
-  const ready = computed(() => kitchen.outcome.value === 'ready')
-  const createTo = '/workspace/kitchen/prep/recipes'
 
   const description = computed(() => {
     const name = kitchen.data.value?.name
     return `Manage ${name ? `${name}'s` : "your Kitchen's"} preparations, recipes, ingredients and production`
   })
 
-  return { description, ready, createTo, summaries, overview }
+  return { description, summaries, overview }
 }
 
-/** Mount the shared Prep state once for the operational children. */
+const prepOverviewKey: InjectionKey<
+  ReturnType<typeof createKitchenPrepWorkspace>['overview']
+> = Symbol('KitchenPrepOverview')
+
+export function useKitchenPrepOverview() {
+  const overview = inject(prepOverviewKey, null)
+  if (!overview) throw new Error('Prep overview requires its workspace owner.')
+  return overview
+}
+
+/** Mount the Prep reads once for the overview and its summary cards. */
 export function useKitchenWorkspacePrep() {
   const workspace = createKitchenPrepWorkspace()
-  provide(prepWorkspaceKey, workspace)
-  return { description: workspace.description }
+  provide(prepOverviewKey, workspace.overview)
+  return { description: workspace.description, summaries: workspace.summaries }
 }

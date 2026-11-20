@@ -28,7 +28,6 @@ export type MenuManifestAddOn = {
 
 export type PublicMenuItem = {
   choiceGroups?: ItemChoiceGroup[]
-  bottleDeposit?: number
   mealDeal?: {
     promotionId: string
     days: string[]

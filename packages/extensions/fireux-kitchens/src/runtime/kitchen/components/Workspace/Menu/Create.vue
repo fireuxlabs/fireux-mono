@@ -9,7 +9,7 @@
   </UModal>
 </template>
 <script setup lang="ts">
-import { useKitchenMenus } from '../../../composables/workspace/menu/menus/useKitchenMenus'
+import { useKitchenMenus } from '../../../composables/workspace/menu/menus/useKitchenWorkspaceMenus'
 const { dialogs } = useKitchenMenus()
 const { createOpen } = dialogs
 </script>

@@ -32,6 +32,6 @@
   />
 </template>
 <script setup lang="ts">
-import { useKitchenServicesContext } from '../../../composables/offerings/useKitchenServicesContext'
+import { useKitchenServicesContext } from '../../../composables/workspace/services/useKitchenServicesContext'
 const { source, retained } = useKitchenServicesContext()
 </script>

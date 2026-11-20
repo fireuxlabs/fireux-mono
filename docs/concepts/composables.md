@@ -150,7 +150,7 @@ construction semantics; this is not family-wide naming adoption.
 Specialist lower capabilities currently include
 [`provideMenuSection` / `useMenuSection`](../../packages/extensions/fireux-kitchens/src/runtime/menu/composables/useMenuSection.ts)
 and
-[`provideKitchenServiceEditor` / `useKitchenServiceEditor`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/offerings/useKitchenServiceEditor.ts).
+[`provideKitchenServiceEditor` / `useKitchenServiceEditor`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/services/useKitchenServiceEditor.ts).
 Their explicit provider plumbing is not the public group-parent naming template.
 Not every `useX` is an injected getter: ordinary readers, command
 adapters and local workflow composables retain their construction semantics.
@@ -159,9 +159,9 @@ Workspace families also consume Core's
 through capability names; its App-scoped instance and last-consumer cleanup are
 a separate, explicit sharing mechanism, not a reason to introduce providers.
 
-Keep meaningful scopes and lower responsibilities in names. `useMenuList` owns
-list interaction/projection over an existing source; a child summary does not
-need its own composable merely to match its component name. `Context` remains
+Keep meaningful scopes and lower responsibilities in names. Kitchen's Menu
+overview owns list interaction over its existing Menu collection. Prep passes
+summary props to its cards from the parent that acquires their data. `Context` remains
 appropriate when the result actually is record/domain
 background, such as Core's
 [`useRecordContext`](../../packages/core/fireux-core/src/runtime/composables/shared/useRecordContext.ts);
@@ -486,7 +486,6 @@ data controllers.
 Ordering funnel controllers live directly under `order/funnel`, including the
 Collection, Delivery and PreOrder variants. Their model and pure input helpers
 live in Kitchen `models/order-funnel.model.ts` and `utils/order-input.ts`.
-Kitchen menu row types live in `models/kitchen-menu-rows.model.ts`.
 No forwarding files retain the previous paths. Other entities keep their current
 placement until their own complete consumer cutover; Kitchen's capability list
 is not a required template for them.
@@ -509,13 +508,13 @@ terms, not a separate Sellable or offer Entity.
 
 The routed [Orders Board](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Orders/Board.vue)
 owns submitted-order polling and combines those results with saved drafts from
-[useKitchenOrderDraftCollection](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/orders/useKitchenOrderDraftCollection.ts).
+[useKitchenOrderDraftCollection](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/orders/useKitchenOrderDraftCollection.ts).
 Its selected Kitchen is gated by App session and Kitchen access. Draft acquisition
 masks rows outside its ready owner and read outcome. Board owns filters, editor
 selection and local response inputs; scope changes synchronously clear those
 values and submitted rows, and unmount clears polling and fullscreen listeners.
 
-[useOrderExchange](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useOrderExchange.ts)
+[useOrderExchange](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/orders/useOrderExchange.ts)
 owns authenticated transport and current-intent checks across Kitchen, account,
 App and supplied access scope. Board uses separate instances for refresh and
 response actions. Requests detach payloads before credentials and reject obsolete

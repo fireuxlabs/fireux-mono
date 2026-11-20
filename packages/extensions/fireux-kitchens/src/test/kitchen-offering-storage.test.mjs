@@ -229,7 +229,7 @@ function readerHarness() {
   })
   const api = scope.run(() =>
     loadOfferingSource(
-      'kitchen/composables/useKitchenOfferingCollection',
+      'kitchen/composables/services/useKitchenOfferingCollection',
       'useKitchenOfferingCollection',
       {
         computed,

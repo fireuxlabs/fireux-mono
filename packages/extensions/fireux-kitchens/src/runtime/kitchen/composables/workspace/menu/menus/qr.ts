@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useKitchenWorkspaceMenuSources } from './useKitchenWorkspaceMenuSources'
-import { useKitchenOfferingCollection } from '../../../useKitchenOfferingCollection'
+import { useKitchenOfferingCollection } from '../../../services/useKitchenOfferingCollection'
 import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
 import { useRequestURL } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

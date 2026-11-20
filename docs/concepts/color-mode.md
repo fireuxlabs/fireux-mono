@@ -28,9 +28,8 @@ and the
 No FireUX preference store, DOM observer, media listener, legacy-key migration
 or activation hook sits alongside it.
 
-Core [Logo](../../packages/core/fireux-core/src/runtime/app/components/Brand/Logo.vue),
-[Wordmark](../../packages/core/fireux-core/src/runtime/app/components/Brand/Wordmark.vue),
-and FireUX App [Fuel](../../projects/fireux/fireux-app/app/components/Landing/Fuel.vue)
+Core [Logo](../../packages/core/fireux-core/src/runtime/app/components/Brand/Logo.vue)
+and [Wordmark](../../packages/core/fireux-core/src/runtime/app/components/Brand/Wordmark.vue)
 consume native state. The App Shell does not bootstrap a second engine.
 Brand asset-role selection and failed-image fallback stay with the brand owners;
 native image controls do not replace those product rules by themselves.

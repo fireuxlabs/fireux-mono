@@ -1,7 +1,7 @@
 # Menu and service glossary
 
-Updated: 2026-10-17
-Ref: c91260201
+Updated: 2026-11-20
+Ref: 193e5adc3
 Role: map, not canon
 
 Parent: [Menu family](family-menu.md). Related: [Product language](product-language.md).
@@ -11,17 +11,39 @@ map, not a new storage model. Current source and tests establish behaviour.
 
 ## Food and venue
 
-| Term          | Meaning                                                                            |
-| ------------- | ---------------------------------------------------------------------------------- |
-| Place         | Physical venue: name, address, branding and facilities.                            |
-| Kitchen       | Food operation at a Place; owns dishes, menus, promotions and service settings.    |
-| Dish          | Food or drink with normal prices, variants, options and extras.                    |
-| Menu          | Organises dishes and meal deals into sections, or presents an uploaded document.   |
-| Promotion     | Dish offer or meal deal supplying promotional prices.                              |
-| Service       | A Misebox-provided way to serve customers, enabled and configured by the operator. |
-| Serving times | When a service is available, in the venue's local time.                            |
-| Browse        | Explore menus without selecting how to receive food.                               |
-| Surface       | Screen presenting existing food and service choices; not a second stored Menu.     |
+| Term      | Meaning                                                                               |
+| --------- | ------------------------------------------------------------------------------------- |
+| Place     | Physical venue: name, address, branding and facilities.                               |
+| Kitchen   | Food operation at a Place; owns dishes, menus, promotions and service settings.       |
+| Item      | The Kitchen-owned record for a dish or drink. The operator catalogue is called Items. |
+| Menu      | Organises dishes and meal deals into sections, or presents an uploaded document.      |
+| Promotion | A discount or meal deal supplying promotional prices.                                 |
+| Browse    | Explore menus without selecting how to receive food.                                  |
+| Surface   | A screen that presents existing food and service choices.                             |
+
+Use **dish** or **drink** in customer copy when it describes the food. In source
+and architecture docs, use **Item** for the Kitchen-owned record. The collection
+is `dishes` and the route parameter is `dishId`. A **Menu placement**
+references an Item in a Menu section. **Item selling terms** describe price and
+choice groups. The source calls that shape `ItemOffer`.
+
+## Kitchen Services
+
+| Term          | Meaning                                                                                                                           |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Services      | The Kitchen Workspace capability for configuring how and when customers can order across Menus.                                   |
+| Service       | A way to serve customers that the operator can enable and configure, such as Collection or Delivery.                              |
+| Service setup | An operator's configuration for a service, optionally presented under a name such as Picnic.                                      |
+| `Offering`    | The internal name for a saved Kitchen-owned service setup. It carries availability, linked Menus, serving hours and interactions. |
+| Interaction   | A saved rule for browsing or ordering within an Offering. A mixed setup can share menus and hours across several interactions.    |
+| Serving times | When a service is available in the venue's local time.                                                                            |
+
+Picnic is a named Collection setup with its own menus, collection hours and
+next-day timing. Its saved identity and customer link survive changes to that
+timing. “From tomorrow” uses the venue's local calendar. The Services chooser
+currently creates one setup per type/channel.
+See the [Services Workspace boundary](family-menu.md#services-workspace-boundary)
+for ownership and current navigation.
 
 ## How food is received
 
@@ -44,8 +66,9 @@ map, not a new storage model. Current source and tests establish behaviour.
 | Online ordering        | Customer uses their own device for Collection or Delivery.                |
 | Staff POS              | Operator-facing device/channel; may support several ways of serving food. |
 
-These axes combine: a server can take a takeaway order. A kiosk is a channel,
-not a fulfilment method. Do not infer a kiosk or counter service from Eat in alone.
+A **channel** describes how an order is taken. **Fulfilment** describes how the
+customer receives it. A server can take a takeaway order. A kiosk can support
+both Eat in and Takeaway.
 
 ## Timing
 
@@ -69,7 +92,8 @@ these records or change their behaviour. Pre-order is not another delivery metho
 
 ## Source and verification
 
-- Kitchen setup choices: `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/offering-options.ts`.
+- Kitchen setup choices in [`offering-options.ts`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/offering-options.ts) and the saved [`KitchenOffering` contract](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/offering-policy.ts).
+- Item and selling-term contracts in [`item.ts`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/menus/items/item.ts) and [`item-offer.ts`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/menus/items/item-offer.ts).
 - Service type labels: `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-order-label.ts`.
 - Public directory labels: `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/service-summary.ts`.
 - Menu entrances: `packages/extensions/fireux-kitchens/src/runtime/menu/utils/navigation/context.ts`.
@@ -81,20 +105,6 @@ venue offering. Table, room and kiosk customer entrances carry their own context
 The current setup chooser does not expose every conceptual combination, including
 a separate counter-ordering option. Do not claim every glossary entry is configured
 or available at every venue. Refresh this map when service vocabulary changes.
-
-Workspace entry: `/workspace/kitchen/menu/services`, separate from Orders.
-Services configures each provided option inline using the existing records and commands.
-
-Services names the Workspace setup surface. `Offering` remains an internal record
-name. Operators use Service consistently; “offering” and “channel” are not
-alternative names for that setup. Recipes and Ingredients belong to Prep &
-Production; Menus and Services belong to customer-facing menu setup.
-
-An existing named setup such as **Picnic** can retain Collection next-day timing,
-its own menus and collection hours, and its named entrance. The current Services
-chooser does not create additional named setups of an already configured type. Its separate
-identity, Services row and customer link remain when its collection timing changes. “From tomorrow”
-uses the venue’s local calendar, rather than meaning 24 hours from now.
 
 Services use one setup pattern: switch Off or On; On reveals inline configuration.
 Changes persist automatically through the existing service commands. Off retains

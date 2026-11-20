@@ -10,6 +10,6 @@
   />
 </template>
 <script setup lang="ts">
-import { useKitchenServiceEditor } from '../../../../composables/offerings/useKitchenServiceEditor'
+import { useKitchenServiceEditor } from '../../../../composables/workspace/services/useKitchenServiceEditor'
 const { editor, disabled } = useKitchenServiceEditor()
 </script>

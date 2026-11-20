@@ -5,7 +5,7 @@ import { useRuntimeConfig } from '#imports'
 import { useMenu } from './useMenu'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useOrderExchange } from '../../kitchen/composables/useOrderExchange'
+import { useOrderExchange } from '../../kitchen/composables/orders/useOrderExchange'
 import { publicMenuServiceOpen } from '../utils/ordering/availability'
 import { orderSubmissionIssues } from '../../kitchen/utils/order-submission'
 import type {

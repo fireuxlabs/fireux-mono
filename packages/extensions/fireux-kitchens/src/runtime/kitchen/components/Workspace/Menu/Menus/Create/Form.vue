@@ -56,8 +56,10 @@ import { starterMenu } from '../../../../../../menu/content/starter-menu'
 import { useMenuEditorScope } from '../../../../../../menu/composables/useMenuEditorScope'
 import { useMenuRecordNavigation } from '../../../../../composables/workspace/menu/menus/useMenuRecordNavigation'
 const { openView } = useMenuRecordNavigation()
-import { useOptionalKitchenMenus } from '../../../../../composables/workspace/menu/menus/useKitchenMenus'
-import { useKitchenWorkspaceMenus } from '../../../../../composables/workspace/menu/menus/useKitchenWorkspaceMenus'
+import {
+  useOptionalKitchenMenus,
+  useKitchenWorkspaceMenus,
+} from '../../../../../composables/workspace/menu/menus/useKitchenWorkspaceMenus'
 const {
   createMenu,
   kitchenId,

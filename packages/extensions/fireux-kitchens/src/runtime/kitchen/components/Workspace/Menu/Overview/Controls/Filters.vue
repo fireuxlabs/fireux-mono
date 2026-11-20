@@ -16,7 +16,7 @@
   </WorkspaceKitchenCollectionToolbar>
 </template>
 <script setup lang="ts">
-import type { MenuListStatus } from '../../../../../composables/workspace/menu/menus/useMenuList'
+import type { MenuListStatus } from '../../../../../composables/workspace/menu/overview'
 
 defineProps<{
   count: number

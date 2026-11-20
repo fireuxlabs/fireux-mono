@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import type { useKitchenOfferings } from '../../offerings/useKitchenOfferings'
-import { useKitchenOfferingNow } from '../../useKitchenOfferingNow'
+import type { useKitchenOfferings } from '../../services/useKitchenOfferings'
+import { useKitchenOfferingNow } from '../../services/useKitchenOfferingNow'
 import { resolveServiceHours } from '../../../utils/service-hours'
 import { serviceOverviewSnapshot } from '../../../utils/service-overview'
 import { foodServiceSummary } from '../../../utils/food-service-summary'

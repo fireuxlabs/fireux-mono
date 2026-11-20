@@ -13,7 +13,10 @@
   </UPageCard>
 </template>
 <script setup lang="ts">
-import { useKitchenWorkspacePrepStationsOverview } from './useOverview'
+import { computed } from 'vue'
+import type { PrepSummary } from '../../../../composables/workspace/prep/summaries'
+import { overviewSummary } from '../../../../utils/overview-summary'
 
-const { overview } = useKitchenWorkspacePrepStationsOverview()
+const props = defineProps<{ summary: PrepSummary }>()
+const overview = computed(() => overviewSummary(props.summary))
 </script>

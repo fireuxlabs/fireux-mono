@@ -21,15 +21,16 @@
 const areas = [
   {
     title: 'Products',
-    description: 'Browse FireUX Apps, templates and modules.',
+    description: 'Browse FireUX offers for Apps, templates and services.',
     icon: 'i-lucide-box',
     to: '/products',
   },
   {
     title: 'Docs',
-    description: 'Understand the framework and work from the source workspace.',
+    description:
+      'Read the FireUX guides, architecture overview and developer reference.',
     icon: 'i-lucide-book-open',
-    to: '/getting-started',
+    to: '/docs',
   },
   {
     title: 'Components',

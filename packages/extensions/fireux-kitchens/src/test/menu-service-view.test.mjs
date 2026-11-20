@@ -392,7 +392,7 @@ test('delivery pagination skips collection-only menus without losing later match
   assert.equal(calls[1].service, 'delivery')
 })
 
-test('service items paginate, respect tenant scope and retain the correct Kiosk bottle policy', async () => {
+test('service items paginate, respect tenant scope and retain Kiosk service mode', async () => {
   const handlerSource = readFileSync(
     new URL(
       '../runtime/server/api/menus/service/items.get.ts',
@@ -443,7 +443,6 @@ test('service items paginate, respect tenant scope and retain the correct Kiosk 
     $fetch: async (url, options) => {
       fetched.push({ url, options })
       const manifest = sourceMenu(url, 'Food', ['shared']).manifest
-      manifest.content.sections[0].items[0].bottleDeposit = 10
       return {
         kind: 'manifest',
         manifest,
@@ -478,10 +477,6 @@ test('service items paginate, respect tenant scope and retain the correct Kiosk 
     assert.equal(calls.at(-1).kitchenSlug, undefined)
     assert.deepEqual(fetched.at(-1).options.query, {})
     assert.equal(result.sources[0].offerings.length, 1)
-    assert.equal(
-      result.sources[0].manifest.content.sections[0].items[0].bottleDeposit,
-      mode === 'eat_in' ? undefined : 10
-    )
   }
   query.kitchenSlug = 'foreign'
   pages.push({

@@ -22,7 +22,7 @@ import { type MenuEntry } from '../records/sections/entry.ts'
 import type { MenuSection } from '../records/sections/section.ts'
 import { useKitchenItemCollection } from '../../kitchen/composables/useKitchenItemCollection'
 import type { Menu } from '../models/menu.model'
-import { useItemUpdate } from '../../kitchen/composables/items/useItemUpdate'
+import { useItemActions } from '../../kitchen/composables/items/useItemActions'
 import { useMenuEntryCollection } from './useMenuEntryCollection'
 import { useMenuItemMutations } from './firestore/mutations/useMenuItemMutations'
 
@@ -116,7 +116,7 @@ function createMenuSectionState(
     }
   )
   const itemMutations = useMenuItemMutations()
-  const catalogueCommands = useItemUpdate([
+  const catalogueCommands = useItemActions([
     menuState.storageKitchenId,
     menuState.menuId,
     sectionId,

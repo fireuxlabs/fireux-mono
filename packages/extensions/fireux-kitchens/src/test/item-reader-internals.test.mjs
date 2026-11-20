@@ -814,12 +814,11 @@ test('the Item route reads once for the read surfaces', async () => {
       props: ['title'],
       setup: (props) => () => h('button', props.title),
     })
-    app.component('ItemMenuPlacements', { render: () => null })
     app.component('WorkspaceItemEdit', { render: () => null })
     for (const [name, file] of [
       ['Detail.Status', 'Status'],
       ['Detail.Menus', 'MenusCapability'],
-      ['Detail.Diagnostics', 'ItemData'],
+      ['Detail.Document', 'ItemDocument'],
       ['Detail.Prep', 'Prep'],
       ['Detail.Team', 'Team'],
     ]) {
@@ -968,10 +967,9 @@ test('the Item route reads once for the read surfaces', async () => {
     description: 'La Tap special',
   })
   assert.doesNotMatch(html, /<pre>|Item data/)
-  assert.match(html, />Menus<[^]*>Placements</)
   assert.doesNotMatch(
     html,
-    /Item diagnostics|Saved menu sections that include this item/
+    /Item diagnostics|>Placements<|Saved menu sections that include this item/
   )
   assert.match(html, /class="[^"]*menu-item-detail"/)
   assert.doesNotMatch(html, /Workspace list/)

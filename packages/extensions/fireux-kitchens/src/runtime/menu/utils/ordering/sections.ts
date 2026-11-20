@@ -83,7 +83,7 @@ const termsKey = (offer: MenuServiceOffer) =>
     offer.item.priceOptions,
     offer.item.addOns,
     offer.item.choiceGroups,
-    offer.item.bottleDeposit,
+    null, // Preserve keys for saved baskets without a deposit.
     offer.item.mealDeal?.groups,
   ])
 

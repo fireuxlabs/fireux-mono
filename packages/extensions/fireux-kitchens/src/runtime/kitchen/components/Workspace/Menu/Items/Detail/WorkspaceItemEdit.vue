@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { navigateTo, useRoute } from '#imports'
-import { useItemDelete } from '../../../../../composables/items/useItemDelete'
+import { useItemActions } from '../../../../../composables/items/useItemActions'
 import { itemCatalogueReturn } from '../../../../../utils/item-catalogue-route'
 import ItemDelete from '../Delete.vue'
 import ItemEdit from '../Edit/Index.vue'
@@ -70,7 +70,7 @@ const secondaryActions = [
   },
 ]
 const scopeSources = [kitchenId, itemId, () => route.fullPath]
-const { deleteItem } = useItemDelete([...scopeSources, canWrite])
+const { deleteItem } = useItemActions([...scopeSources, canWrite])
 const deleting = ref(false)
 const captureScope = useItemEditorScope(scopeSources, () => {
   deleting.value = false

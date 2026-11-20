@@ -166,72 +166,8 @@ test('quantity bounds, incompatible currencies and separate basket instances are
   assert.throws(() => mixed.add(other, choices()), /currencies/)
 })
 
-test('bottle deposit requires a deliberate choice and keeps normal drink prices unchanged', () => {
-  const drink = offer('drinks', { name: 'Cola', price: 4, bottleDeposit: 10 })
-  const before = structuredClone(drink)
-  assert.throws(
-    () => policy.serviceBasketLine(drink, choices()),
-    /new bottle or a bottle exchange/
-  )
-  assert.throws(
-    () => policy.serviceBasketLine(drink, choices({ bottle: 'other' })),
-    /new bottle/
-  )
-  const deposit = policy.serviceBasketLine(
-    drink,
-    choices({ bottle: 'deposit', quantity: 2 })
-  )
-  const exchange = policy.serviceBasketLine(
-    drink,
-    choices({ bottle: 'exchange' })
-  )
-  assert.equal(deposit.depositUnitMinor, 1000)
-  assert.equal(deposit.unitMinor, 1400)
-  assert.equal(exchange.depositUnitMinor, 0)
-  assert.equal(exchange.unitMinor, 400)
-  assert.notEqual(deposit.key, exchange.key)
-  assert.deepEqual(drink, before)
-  assert.throws(
-    () => policy.serviceBasketLine(offer(), choices({ bottle: 'deposit' })),
-    /does not have/
-  )
-})
-
-test('new bottles and exchanges stay separate and deposits follow quantity and removal', () => {
-  const drink = offer('drinks', { name: 'Cola', price: 4, bottleDeposit: 10 })
-  const basket = useServiceBasket([drink])
-  basket.add(drink, choices({ bottle: 'deposit', quantity: 2 }))
-  basket.add(drink, choices({ bottle: 'exchange' }))
-  assert.equal(basket.totalMinor.value, 3200)
-  assert.equal(basket.lines.value.length, 2)
-  basket.add(drink, choices({ bottle: 'exchange' }))
-  assert.equal(basket.lines.value.length, 2)
-  assert.equal(basket.totalMinor.value, 3600)
-  basket.adjust(basket.lines.value[0].key, -1)
-  assert.equal(basket.totalMinor.value, 2200)
-  basket.remove(basket.lines.value[0].key)
-  assert.equal(basket.totalMinor.value, 800)
-})
-
-test('deposit changes invalidate existing selections and malformed charges cannot enter the basket', () => {
-  const sources = ref([offer('drinks', { price: 4, bottleDeposit: 10 })])
-  const basket = useServiceBasket(sources)
-  basket.add(sources.value[0], choices({ bottle: 'exchange' }))
-  sources.value = [offer('drinks', { price: 4, bottleDeposit: 12 })]
-  assert.equal(basket.staleKeys.value.length, 1)
-  for (const bottleDeposit of [-1, NaN, Infinity, Number.MAX_VALUE])
-    assert.throws(
-      () =>
-        policy.serviceBasketLine(
-          offer('drinks', { bottleDeposit }),
-          choices({ bottle: 'deposit' })
-        ),
-      /valid price/
-    )
-})
-
-test('absent and disabled deposits leave ordinary options and extras unchanged', () => {
-  for (const deposit of [{}, { bottleDeposit: 0 }]) {
+test('legacy deposits do not affect ordinary options and extras', () => {
+  for (const deposit of [{}, { bottleDeposit: 10 }]) {
     const item = offer('drinks', {
       price: 4,
       priceOptions: [{ id: 'large', label: 'Large', price: 5 }],
@@ -244,25 +180,8 @@ test('absent and disabled deposits leave ordinary options and extras unchanged',
       choices({ optionId: 'large', extraIds: ['extra'], quantity: 2 })
     )
     assert.equal(line.unitMinor, 550)
-    assert.equal(line.depositUnitMinor, 0)
-    assert.equal(line.choices.bottle, undefined)
     assert.deepEqual(item, before)
   }
-})
-
-test('deposit choices stay local to their drink in a mixed basket', () => {
-  const food = offer('food', { price: 11, promotionLabel: 'Sunday pizzas' })
-  const drink = offer('drinks', { price: 4, bottleDeposit: 10 })
-  const basket = useServiceBasket([food, drink])
-  const before = structuredClone([food, drink])
-  basket.add(food, choices())
-  basket.add(drink, choices({ bottle: 'deposit' }))
-  assert.equal(basket.totalMinor.value, 2500)
-  assert.equal(basket.lines.value[0].unitMinor, 1100)
-  assert.equal(basket.lines.value[0].depositUnitMinor, 0)
-  basket.remove(basket.lines.value[1].key)
-  assert.equal(basket.totalMinor.value, 1100)
-  assert.deepEqual([food, drink], before)
 })
 
 test('Collection keeps the same basket through refresh, error, empty recovery and changed items', async () => {
@@ -472,22 +391,6 @@ test('editing replaces options, extras and quantity without changing catalogue p
   assert.deepEqual(item, before)
 })
 
-test('editing bottle choice merges identical selections and keeps deposit totals exact', () => {
-  const drink = offer('drinks', { price: 4, bottleDeposit: 10 })
-  const basket = useServiceBasket([drink])
-  basket.add(drink, choices({ bottle: 'deposit', quantity: 2 }))
-  basket.add(drink, choices({ bottle: 'exchange', quantity: 3 }))
-  basket.update(
-    basket.lines.value[0].key,
-    drink,
-    choices({ bottle: 'exchange', quantity: 2 })
-  )
-  assert.equal(basket.lines.value.length, 1)
-  assert.equal(basket.count.value, 5)
-  assert.equal(basket.totalMinor.value, 2000)
-  assert.equal(basket.lines.value[0].depositUnitMinor, 0)
-})
-
 test('failed updates leave both original and matching selections intact', () => {
   const item = offer('food', {
     addOns: [{ id: 'cheese', label: 'Cheese', price: 1 }],
@@ -563,7 +466,7 @@ test('an item changed during editing stays in the basket and reports an error', 
   assert.equal(basket.totalMinor.value, 1300)
 })
 
-test('existing selector prefills a detached draft including meal choices and bottle choice', () => {
+test('existing selector prefills a detached draft including meal choices', () => {
   const source = readFileSync(
     new URL('../runtime/menu/components/Selection/Item.vue', import.meta.url),
     'utf8'
@@ -572,7 +475,6 @@ test('existing selector prefills a detached draft including meal choices and bot
     optionId: 'large',
     extraIds: ['cheese'],
     groups: { main: ['pizza'] },
-    bottle: 'exchange',
     quantity: 2,
   })
   const before = structuredClone(initialChoices)
@@ -594,7 +496,6 @@ test('existing selector prefills a detached draft including meal choices and bot
   assert.deepEqual(JSON.parse(JSON.stringify(state.choices)), before)
   state.choices.extraIds.push('onion')
   state.choices.groups.main.push('salad')
-  state.choices.bottle = 'deposit'
   assert.deepEqual(
     initialChoices,
     before,

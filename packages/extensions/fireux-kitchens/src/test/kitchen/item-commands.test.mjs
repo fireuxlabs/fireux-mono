@@ -17,7 +17,7 @@ function load(path, dependencies, name) {
   dependencies = { ...itemPricingHelpers, ...dependencies }
 
   dependencies = commandScopeDeps({ isFirestoreDocumentId, ...dependencies })
-  if (name === 'useItemMutation' && !dependencies.useItemEditorScope)
+  if (path.endsWith('/useItemActions.ts') && !dependencies.useItemEditorScope)
     dependencies.useItemEditorScope = load(
       '../../runtime/kitchen/composables/items/useItemEditorScope.ts',
       dependencies,
@@ -420,8 +420,8 @@ test('Item transport snapshots nested input and invalidates account/Kitchen roun
         routePath = ref('/dishes/cola'),
         calls = [],
         disposed = []
-      const useItemMutation = load(
-        '../../runtime/kitchen/composables/items/useItemMutation.ts',
+      const useItemActions = load(
+        '../../runtime/kitchen/composables/items/useItemActions.ts',
         {
           onBeforeUnmount: (fn) => disposed.push(fn),
           watch,
@@ -432,14 +432,13 @@ test('Item transport snapshots nested input and invalidates account/Kitchen roun
             return response
           },
         },
-        'useItemMutation'
+        'useItemActions'
       )
-      const input = { draft: { name: 'Cola' } },
-        pending = useItemMutation([selectedId, routePath]).mutate(
-          'POST',
-          input,
-          'k'
-        )
+      const draft = { name: 'Cola' }
+      const pending = useItemActions([selectedId, routePath]).createItem(
+        draft,
+        { kitchenId: 'k' }
+      )
       const done =
         scope === 'stable' || stage === 'response'
           ? pending
@@ -465,7 +464,7 @@ test('Item transport snapshots nested input and invalidates account/Kitchen roun
         currentUser.value = scope === 'signout' ? null : { uid: 'other' }
         currentUser.value = user
       }
-      input.draft.name = 'Changed'
+      draft.name = 'Changed'
       resolveUser(user)
       resolveToken('token')
       resolveResponse({ id: 'cola' })
@@ -478,36 +477,32 @@ test('Item transport snapshots nested input and invalidates account/Kitchen roun
     }
 })
 
-test('existing three public adapters retain caller signatures and choose exact command envelopes', async () => {
+test('Item actions send the exact command envelopes from one editor scope', async () => {
   const calls = []
-  const useItemMutation = () => ({
-    mutate: async (...args) => {
-      calls.push(args)
-      return { id: 'dish' }
+  const currentUser = ref({ uid: 'operator', getIdToken: async () => 'token' })
+  const actions = load(
+    '../../runtime/kitchen/composables/items/useItemActions.ts',
+    {
+      useAuth: () => ({ currentUser }),
+      useRequireUser: async () => currentUser.value,
+      useItemEditorScope: () => () => () => true,
+      $fetch: async (_url, { method, body }) => {
+        calls.push([method, body])
+        return { id: 'dish' }
+      },
     },
-  })
-  const create = load(
-    '../../runtime/kitchen/composables/items/useItemCreate.ts',
-    { useItemMutation },
-    'useItemCreate'
+    'useItemActions'
   )()
-  const update = load(
-    '../../runtime/kitchen/composables/items/useItemUpdate.ts',
-    { useItemMutation },
-    'useItemUpdate'
-  )()
-  const remove = load(
-    '../../runtime/kitchen/composables/items/useItemDelete.ts',
-    { useItemMutation },
-    'useItemDelete'
-  )()
-  await create.createItem({ name: 'Item' }, { kitchenId: 'k' })
-  await update.updateItem('dish', { description: 'Copy' }, { kitchenId: 'k' })
-  await remove.deleteItem('dish', { kitchenId: 'k' })
+  await actions.createItem({ name: 'Item' }, { kitchenId: 'k' })
+  await actions.updateItem('dish', { description: 'Copy' }, { kitchenId: 'k' })
+  await actions.deleteItem('dish', { kitchenId: 'k' })
   assert.deepEqual(calls, [
-    ['POST', { draft: { name: 'Item' } }, 'k'],
-    ['PATCH', { dishId: 'dish', changes: { description: 'Copy' } }, 'k'],
-    ['DELETE', { dishId: 'dish' }, 'k'],
+    ['POST', { draft: { name: 'Item' }, kitchenId: 'k' }],
+    [
+      'PATCH',
+      { dishId: 'dish', changes: { description: 'Copy' }, kitchenId: 'k' },
+    ],
+    ['DELETE', { dishId: 'dish', kitchenId: 'k' }],
   ])
 })
 
@@ -880,7 +875,7 @@ test('Item completion refreshes Menu projections without invalidating the editor
   const currentUser = ref({ uid: 'operator', getIdToken: async () => 'token' })
   let refreshed = []
   const factory = load(
-    '../../runtime/kitchen/composables/items/useItemMutation.ts',
+    '../../runtime/kitchen/composables/items/useItemActions.ts',
     {
       watch,
       useAuth: () => ({ currentUser }),
@@ -905,12 +900,11 @@ test('Item completion refreshes Menu projections without invalidating the editor
         return { id: 'test-dish' }
       },
     },
-    'useItemMutation'
+    'useItemActions'
   )
-  const result = await factory().mutate(
-    'POST',
-    { draft: { name: 'TEST', price: 8.5 } },
-    'k'
+  const result = await factory().createItem(
+    { name: 'TEST', price: 8.5 },
+    { kitchenId: 'k' }
   )
   assert.equal(result.id, 'test-dish')
   assert.deepEqual(refreshed, ['menu|id=food', 'menu-collection|app=misebox'])

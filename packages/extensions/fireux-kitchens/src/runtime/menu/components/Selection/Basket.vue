@@ -17,24 +17,7 @@
             again.
           </p>
         </div>
-        <span>{{
-          money(
-            ((line.unitMinor - line.depositUnitMinor) * line.choices.quantity) /
-              100
-          )
-        }}</span>
-      </div>
-      <div v-if="line.choices.bottle">
-        <span>{{
-          line.choices.bottle === 'exchange'
-            ? 'Bottle exchange · no deposit'
-            : `Bottle deposit · ${line.choices.quantity} bottle${line.choices.quantity === 1 ? '' : 's'}`
-        }}</span>
-        <span v-if="line.depositUnitMinor"
-          >+{{
-            money((line.depositUnitMinor * line.choices.quantity) / 100)
-          }}</span
-        >
+        <span>{{ money((line.unitMinor * line.choices.quantity) / 100) }}</span>
       </div>
       <div class="service-basket__actions">
         <UButton

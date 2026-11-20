@@ -86,8 +86,8 @@ test('Price & choices reads legacy Items without writes, saves a detached explic
         canWrite: Vue.ref(true),
       }),
       useItemEditorScope: () => () => () => true,
-      useItemOfferUpdate: () => ({
-        updateOffer: (...args) => {
+      useItemActions: () => ({
+        updateItem: (...args) => {
           calls.push(args)
           return saving
         },

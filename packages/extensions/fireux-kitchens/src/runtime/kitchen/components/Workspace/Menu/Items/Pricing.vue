@@ -61,19 +61,6 @@
         <FireCopyError :message="error" />
       </div>
     </form>
-    <FireDisclosurePanel
-      v-if="offer && !offerError"
-      title="Bottle deposit"
-      :default-open="false"
-    >
-      <KitchenWorkspaceMenuItemsDeposit
-        :value="offer.bottle_deposit"
-        :currency="currency"
-        :disabled="!canWrite || busy"
-        :capture-intent="captureIntent"
-        :update="updateDeposit"
-      />
-    </FireDisclosurePanel>
   </div>
 </template>
 <script setup lang="ts">
@@ -82,7 +69,7 @@ const workspace = useKitchenWorkspace()
 const selectedKitchen = workspace.data
 import { computed, ref, watch } from 'vue'
 import { useKitchenItemContext } from '../../../../composables/items/useKitchenItemContext'
-import { useItemOfferUpdate } from '../../../../composables/items/useItemOfferUpdate'
+import { useItemActions } from '../../../../composables/items/useItemActions'
 import { useItemEditorScope } from '../../../../composables/items/useItemEditorScope'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import type {
@@ -154,17 +141,7 @@ const captureIntent = useItemEditorScope([kitchenId, itemId, canWrite], () => {
   error.value = ''
   message.value = ''
 })
-const { updateOffer } = useItemOfferUpdate([kitchenId, itemId, canWrite])
-async function updateDeposit(value: string) {
-  const current = captureIntent()
-  if (!canWrite.value || !offer.value || offerError.value || busy.value)
-    throw new Error('Price & choices are read-only.')
-  const changes = normalizeItemPricingPatch({ bottle_deposit: Number(value) })
-  await updateOffer(itemId.value, changes, {
-    kitchenId: kitchenId.value,
-    isCurrent: current,
-  })
-}
+const { updateItem } = useItemActions([kitchenId, itemId, canWrite])
 const amount = (value: string | number) => {
   if (String(value).trim() === '' || !Number.isFinite(Number(value)))
     throw new Error('Enter a valid price.')
@@ -183,7 +160,7 @@ async function save() {
         : amount(price.value),
       choice_groups: normalizeItemChoiceGroups(groups.value),
     })
-    await updateOffer(itemId.value, changes, {
+    await updateItem(itemId.value, changes, {
       kitchenId: kitchenId.value,
       isCurrent: current,
     })

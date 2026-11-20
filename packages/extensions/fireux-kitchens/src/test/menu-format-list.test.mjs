@@ -13,7 +13,7 @@ function listFixture(records) {
   const state = ref({})
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/composables/workspace/menu/menus/useMenuList.ts',
+      '../runtime/kitchen/composables/workspace/menu/overview.ts',
       import.meta.url
     ),
     'utf8'
@@ -24,21 +24,18 @@ function listFixture(records) {
     computed,
     useState: () => state,
     useAppSession: () => ({ uid }),
-    useKitchenMenus: () => ({
-      rawMenus: menus,
-      kitchenId,
-      activeKitchenAppId,
-    }),
   }
-  const mount = compileFunction(
+  const useMenuList = compileFunction(
     stripTypeScriptTypes(source) + '; return useMenuList;',
     Object.keys(deps)
   )(...Object.values(deps))
+  const mount = () =>
+    useMenuList({ rawMenus: menus, kitchenId, activeKitchenAppId })
   return { mount, menus, kitchenId, activeKitchenAppId, uid }
 }
 const list = (records) => listFixture(records).mount()
 
-test('Menu list keeps regular menus together and Daily specials and archives separate', () => {
+test('Menu list shows regular and daily menus and makes archives opt-in', () => {
   const records = [
     { id: 'food', name: 'Food', format: 'interactive', status: 'published' },
     { id: 'pdf', name: 'Wine list', format: 'document', status: 'published' },
@@ -58,20 +55,13 @@ test('Menu list keeps regular menus together and Daily specials and archives sep
   ]
   const before = structuredClone(records)
   const state = list(records)
-  const groups = () =>
-    state.groups.value.map(({ label, menus }) => [
-      label,
-      menus.map(({ id }) => id),
-    ])
-  assert.deepEqual(groups(), [
-    ['Menus', ['food', 'pdf', 'empty-document']],
-    ['Daily specials', ['daily']],
-  ])
+  const ids = () => state.visibleMenus.value.map(({ id }) => id)
+  assert.deepEqual(ids(), ['food', 'pdf', 'daily', 'empty-document'])
   state.status.value = 'archived'
-  assert.deepEqual(groups(), [['Archived', ['old']]])
+  assert.deepEqual(ids(), ['old'])
   state.status.value = 'all'
   state.query.value = 'wine'
-  assert.deepEqual(groups(), [['Menus', ['pdf']]])
+  assert.deepEqual(ids(), ['pdf'])
   assert.deepEqual(records, before)
 })
 
@@ -120,7 +110,7 @@ test('Menu search and status selection survive opening a record and remounting t
   assert.equal(returned.query.value, 'drinks')
   assert.equal(returned.status.value, 'archived')
   assert.deepEqual(
-    returned.filteredMenus.value.map((menu) => menu.id),
+    returned.visibleMenus.value.map((menu) => menu.id),
     ['old']
   )
   assert.deepEqual(records, before)
@@ -147,11 +137,11 @@ test('Menu list choices are isolated by account, Kitchen and App, and follow liv
     assert.equal(list.status.value, 'archived')
   }
   fixture.menus.value = []
-  assert.equal(list.filteredMenus.value.length, 0)
+  assert.equal(list.visibleMenus.value.length, 0)
   assert.equal(list.query.value, 'old')
   assert.equal(list.status.value, 'archived')
   fixture.menus.value = [{ id: 'old', name: 'Old menu', status: 'archived' }]
-  assert.equal(list.filteredMenus.value[0].id, 'old')
+  assert.equal(list.visibleMenus.value[0].id, 'old')
 })
 
 test('list owner sorts published first then saved order and name without mutating the source', () => {

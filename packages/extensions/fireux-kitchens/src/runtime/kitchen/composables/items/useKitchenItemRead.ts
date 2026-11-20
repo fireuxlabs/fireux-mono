@@ -66,7 +66,6 @@ export function useKitchenItemRead(
     storageKitchenId,
     rootCollection,
     databaseId,
-    collectionPath,
     document,
     item,
     offer,
@@ -76,10 +75,5 @@ export function useKitchenItemRead(
     readOnly: computed(() => !canWrite.value),
     pending,
     error,
-    debug: computed(() => ({
-      kitchenId: kitchenId.value,
-      itemId: itemId.value,
-      outcome: outcome.value,
-    })),
   }
 }

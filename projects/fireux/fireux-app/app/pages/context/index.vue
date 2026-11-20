@@ -1,54 +1,61 @@
 <template>
-  <UPage>
-    <UPageHeader
-      headline="FireUX"
-      title="Context"
-      :description="context.summary"
-    />
+  <UContainer>
+    <UPage>
+      <UPageHeader title="FireUX architecture" :description="context.summary">
+        <template #links>
+          <UButton
+            to="/docs"
+            label="FireUX Docs"
+            color="neutral"
+            variant="outline"
+          />
+        </template>
+      </UPageHeader>
 
-    <UPageBody>
-      <UPageSection title="What we are building">
-        <p>{{ context.mission.intent }}</p>
-        <p>{{ context.mission.whiteLabel }}</p>
-        <p>{{ context.mission.example }}</p>
-      </UPageSection>
+      <UPageBody>
+        <UPageSection title="What we are building">
+          <p>{{ context.mission.intent }}</p>
+          <p>{{ context.mission.whiteLabel }}</p>
+          <p>{{ context.mission.example }}</p>
+        </UPageSection>
 
-      <UPageSection title="The FireUX structure">
-        <UPageGrid>
-          <UCard v-for="(meaning, term) in context.structure" :key="term">
-            <template #header>
-              <h3 class="platform-context__term">{{ term }}</h3>
-            </template>
-            <p>{{ meaning }}</p>
-          </UCard>
-        </UPageGrid>
-      </UPageSection>
+        <UPageSection title="The FireUX structure">
+          <UPageGrid>
+            <UCard v-for="(meaning, term) in context.structure" :key="term">
+              <template #header>
+                <h3 class="platform-context__term">{{ term }}</h3>
+              </template>
+              <p>{{ meaning }}</p>
+            </UCard>
+          </UPageGrid>
+        </UPageSection>
 
-      <UPageSection title="Using this context">
-        <p>{{ context.consumption.purpose }}</p>
-        <p>{{ context.consumption.boundary }}</p>
-        <UButton :href="context.consumption.endpoint" variant="soft">
-          Read public context JSON
-        </UButton>
-        <p class="platform-context__note">
-          The JSON includes a schema version and content revision. Consumers
-          choose when to read it; current records and available tools remain
-          authoritative.
-        </p>
-      </UPageSection>
+        <UPageSection title="Using this context">
+          <p>{{ context.consumption.purpose }}</p>
+          <p>{{ context.consumption.boundary }}</p>
+          <UButton :href="context.consumption.endpoint" variant="soft">
+            Read public context JSON
+          </UButton>
+          <p class="platform-context__note">
+            The JSON includes a schema version and content revision. Consumers
+            choose when to read it; current records and available tools remain
+            authoritative.
+          </p>
+        </UPageSection>
 
-      <UPageSection
-        title="Research an industry"
-        description="Use the shared method to turn evidence into ranked capability proposals and compare them with current implementation."
-      >
-        <UButton to="/context/research" variant="soft">
-          Industry and Capability Research
-        </UButton>
-      </UPageSection>
+        <UPageSection
+          title="Research an industry"
+          description="Use the shared method to turn evidence into ranked capability proposals and compare them with current implementation."
+        >
+          <UButton to="/context/research" variant="soft">
+            Industry and Capability Research
+          </UButton>
+        </UPageSection>
 
-      <UButton to="/product" variant="link">Explore FireUX</UButton>
-    </UPageBody>
-  </UPage>
+        <UButton to="/product" variant="link">Explore FireUX</UButton>
+      </UPageBody>
+    </UPage>
+  </UContainer>
 </template>
 
 <script setup lang="ts">
@@ -56,8 +63,8 @@ import { readPlatformContext } from '../../../shared/platform-context'
 
 const context = readPlatformContext()
 
-definePageMeta({ layout: 'landing' })
-useSeoMeta({ title: 'FireUX context', description: context.summary })
+definePageMeta({ layout: 'framework', requiresAuth: false })
+useSeoMeta({ title: 'FireUX architecture', description: context.summary })
 </script>
 
 <style scoped>

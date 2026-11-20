@@ -1,4 +1,4 @@
-import { useKitchenOfferingCollection } from '../../../useKitchenOfferingCollection'
+import { useKitchenOfferingCollection } from '../../../services/useKitchenOfferingCollection'
 import { useRouter } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'

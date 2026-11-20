@@ -23,7 +23,7 @@ import { computed, ref } from 'vue'
 import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
 import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 import * as People from './index'
-import { useKitchenWorkspaceTeam } from '../../../../composables/workspace/team/useKitchenWorkspaceTeam'
+import { useKitchenWorkspaceTeam } from '../../../../composables/workspace/useKitchenWorkspaceTeam'
 import { kitchenTeamAgentTools } from '../../../../tools/team'
 
 const teamView = ref<{ openAction: (intent: TeamAIIntent) => void }>()

@@ -1,5 +1,5 @@
 <template>
-  <Landing />
+  <FrameworkProduct />
 </template>
 
 <script setup lang="ts">

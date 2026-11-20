@@ -6,8 +6,8 @@
     />
     <UPageBody>
       <div class="fx-page-stack menu-hosting">
-        <MenuDocumentUpload :menu="menu" />
-        <MenuDocumentPublished
+        <MenuHostingUpload :menu="menu" />
+        <MenuHostingPublished
           v-if="menu.data?.status === 'published' && menu.data.document"
           :menu="menu.data"
           :url="menu.publicUrl"
@@ -57,6 +57,8 @@
 </template>
 <script setup lang="ts">
 import { reactive } from 'vue'
+import MenuHostingUpload from '../../../components/MenuHosting/Upload.vue'
+import MenuHostingPublished from '../../../components/MenuHosting/Published.vue'
 import { useMenuDocument } from 'fireux-kitchens/runtime/menu/composables/useMenuDocument'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'

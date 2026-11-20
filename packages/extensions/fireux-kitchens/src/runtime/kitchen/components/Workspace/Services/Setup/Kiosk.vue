@@ -29,7 +29,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useKitchenServiceEditor } from '../../../../composables/offerings/useKitchenServiceEditor'
+import { useKitchenServiceEditor } from '../../../../composables/workspace/services/useKitchenServiceEditor'
 import { kitchenOrderTypeLabel } from '../../../../utils/kitchen-order-label'
 import { computed } from 'vue'
 const { editor, services, disabled, menus, workspace } =

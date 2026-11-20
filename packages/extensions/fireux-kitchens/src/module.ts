@@ -91,6 +91,23 @@ export default defineNuxtModule<ModuleOptions>({
           './runtime/menu/composables',
           './runtime/user/composables',
         ])
+        addImports({
+          name: 'useOrderExchange',
+          from: resolver.resolve(
+            './runtime/kitchen/composables/orders/useOrderExchange'
+          ),
+        })
+        for (const name of [
+          'useKitchenOfferingCollection',
+          'useKitchenOfferingNow',
+        ]) {
+          addImports({
+            name,
+            from: resolver.resolve(
+              `./runtime/kitchen/composables/services/${name}`
+            ),
+          })
+        }
         // Public Workspace entrypoints only; internal constructors and keys stay private.
         for (const [name, path] of [
           ['useKitchenWorkspaceMenu', 'menu/index'],
@@ -98,10 +115,6 @@ export default defineNuxtModule<ModuleOptions>({
           ['useKitchenWorkspaceMenuAi', 'menu/ai'],
           ['useKitchenWorkspaceMenuServices', 'menu/services'],
           ['useKitchenWorkspacePrep', 'prep/index'],
-          ['useKitchenWorkspacePrepPreparations', 'prep/children'],
-          ['useKitchenWorkspacePrepRecipes', 'prep/children'],
-          ['useKitchenWorkspacePrepIngredients', 'prep/children'],
-          ['useKitchenWorkspacePrepStations', 'prep/children'],
 
           ['useKitchenWorkspacePrepLibrary', 'prep/library'],
         ] as const) {

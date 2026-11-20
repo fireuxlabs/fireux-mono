@@ -138,12 +138,6 @@ export async function resolveMenuOrderLines(
         selection.itemId,
         promotionDay(hours.timezone, now)
       )
-      if (
-        !['collection', 'delivery', 'takeaway'].includes(
-          String(input.fulfilment)
-        )
-      )
-        delete item.bottleDeposit
       const resolved = serviceBasketLine(
         {
           source: {
@@ -166,7 +160,6 @@ export async function resolveMenuOrderLines(
           optionId: selection.optionId || '',
           extraIds: selection.extraIds || [],
           groups: selection.groups || {},
-          ...(selection.bottle ? { bottle: selection.bottle } : {}),
         }
       )
       if (
@@ -195,12 +188,6 @@ export async function resolveMenuOrderLines(
                   (extra) =>
                     `${extra.label}${extra.price ? ` (+${currency} ${extra.price.toFixed(2)})` : ''}`
                 )
-      if (selection.bottle)
-        notes.push(
-          selection.bottle === 'exchange'
-            ? 'Bottle exchange · no deposit'
-            : `Bottle deposit · ${currency} ${(resolved.depositUnitMinor / 100).toFixed(2)} per bottle`
-        )
       const id = `line-${index + 1}`
       lines.push({
         id,

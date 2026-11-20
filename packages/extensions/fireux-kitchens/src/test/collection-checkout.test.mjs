@@ -168,17 +168,7 @@ const selections = [
     menuId: 'drinks',
     sectionId: 'main',
     itemId: 'cola',
-    quantity: 1,
-    bottle: 'deposit',
-    offeringIds: ['collection'],
-    expectedUnitMinor: 1400,
-  },
-  {
-    menuId: 'drinks',
-    sectionId: 'main',
-    itemId: 'cola',
-    quantity: 1,
-    bottle: 'exchange',
+    quantity: 2,
     offeringIds: ['collection'],
     expectedUnitMinor: 400,
   },
@@ -192,7 +182,7 @@ const selections = [
     expectedUnitMinor: 1700,
   },
 ]
-const input = (value = selections, total = 68) => ({
+const input = (value = selections, total = 58) => ({
   kitchenId: 'venue',
   menuId: 'food',
   selections: checkoutSelections.readMenuOrderSelections(value),
@@ -201,23 +191,20 @@ const input = (value = selections, total = 68) => ({
 })
 const monday = new Date('2026-10-19T12:00:00Z')
 
-test('one canonical checkout resolves two menus, variants, extras, meal supplements and both bottle choices', async () => {
+test('one canonical checkout resolves two menus, variants, extras, meal supplements', async () => {
   const { records, tx } = catalogue(),
     before = structuredClone(records)
   const result = await ordering.resolveMenuOrderLines(tx, input(), monday)
-  assert.equal(result.lines.length, 4)
-  assert.equal(result.pricing.total, 68)
+  assert.equal(result.lines.length, 3)
+  assert.equal(result.pricing.total, 58)
   assert.deepEqual(
     result.pricing.lines.map((line) => line.unit_price),
-    [16.5, 14, 4, 17]
+    [16.5, 4, 17]
   )
   assert.equal(result.lines[0].item.name, 'Pizza — Large')
   assert.deepEqual(result.lines[0].notes, ['Cheese (+CHF 1.50)'])
-  assert.deepEqual(result.lines[1].notes, [
-    'Bottle deposit · CHF 10.00 per bottle',
-  ])
-  assert.deepEqual(result.lines[2].notes, ['Bottle exchange · no deposit'])
-  assert.deepEqual(result.lines[3].notes, ['Main: Pizza (+CHF 2.00)'])
+  assert.equal(result.lines[1].notes, undefined)
+  assert.deepEqual(result.lines[2].notes, ['Main: Pizza (+CHF 2.00)'])
   assert.deepEqual(records, before)
 })
 
@@ -230,9 +217,8 @@ test('server rejects tampered choices, prices, foreign sources and missing menu/
       (rows) => (rows[0].offeringIds = ['delivery']),
       /does not currently offer/,
     ],
-    [(rows) => (rows[1].bottle = undefined), /bottle/],
-    [(rows) => (rows[3].groups = { main: [] }), /Choose 1/],
-    [(rows) => (rows[3].groups = { unknown: ['pizza'] }), /Choose 1/],
+    [(rows) => (rows[2].groups = { main: [] }), /Choose 1/],
+    [(rows) => (rows[2].groups = { unknown: ['pizza'] }), /Choose 1/],
     [(rows) => (rows[0].expectedUnitMinor = 1), /prices changed/],
   ]) {
     const { tx } = catalogue(),
@@ -299,7 +285,7 @@ test('standalone dish offers use the serving weekday without changing the normal
   )
   records.get('kitchens/venue/promotions/meal').status = 'paused'
   await assert.rejects(
-    ordering.resolveMenuOrderLines(tx, input([selections[3]], 17), monday),
+    ordering.resolveMenuOrderLines(tx, input([selections[2]], 17), monday),
     /meal deal is unavailable/
   )
 })
@@ -510,10 +496,7 @@ test('the existing command stores canonical choices once and retries without ano
   const beforeItems = structuredClone(
     [...records].filter(([path]) => path.includes('/dishes/'))
   )
-  const channels = loadOfferingSource(
-    'kitchen/records/order',
-    'OrderChannels'
-  )
+  const channels = loadOfferingSource('kitchen/records/order', 'OrderChannels')
   const orderModel = loadOfferingSource(
     'kitchen/utils/ordering',
     'readOrder,requireOrderChannel',
@@ -586,7 +569,7 @@ test('the existing command stores canonical choices once and retries without ano
   const context = {
     target: { sourceMenuId: 'food', kitchenSlug: 'venue' },
     selections: input().selections,
-    expectedTotal: 68,
+    expectedTotal: 58,
   }
   const result = await submitKitchenOrder(
     actor,
@@ -594,15 +577,13 @@ test('the existing command stores canonical choices once and retries without ano
     context
   )
   assert.equal(result.submission.order.number, '1')
-  assert.equal(result.submission.order.lines.length, 4)
-  assert.deepEqual(result.submission.order.lines[3].notes, [
+  assert.equal(result.submission.order.lines.length, 3)
+  assert.deepEqual(result.submission.order.lines[2].notes, [
     'Main: Pizza (+CHF 2.00)',
   ])
-  assert.equal(result.submission.pricing.total, 68)
+  assert.equal(result.submission.pricing.total, 58)
   const saved = records.get('kitchens/venue/submitted-orders/checkout-test')
   assert.deepEqual(saved.menu.selections, context.selections)
-  assert.equal(saved.menu.selections[1].bottle, 'deposit')
-  assert.equal(saved.menu.selections[2].bottle, 'exchange')
   const again = await submitKitchenOrder(
     actor,
     { kitchenId: 'venue', order },
@@ -679,7 +660,7 @@ test('the existing endpoint carries the route slug and full multi-menu selection
     kitchenSlug: 'venue-slug',
     menuId: 'main-menu',
     selections,
-    expectedTotal: 68,
+    expectedTotal: 58,
     order: { channel: 'website', fulfilment: 'collection' },
   }
   const { handler } = loadSubmitEndpoint({
@@ -699,9 +680,9 @@ test('the existing endpoint carries the route slug and full multi-menu selection
     },
   })
   assert.deepEqual(await handler({}), { ok: true })
-  assert.equal(called.context.selections.length, 4)
+  assert.equal(called.context.selections.length, 3)
   assert.equal(called.context.selections[1].menuId, 'drinks')
-  assert.deepEqual(called.context.selections[3].groups, { main: ['pizza'] })
+  assert.deepEqual(called.context.selections[2].groups, { main: ['pizza'] })
   for (const fulfilment of ['on_site', 'takeaway']) {
     body.order = { channel: 'kiosk', fulfilment }
     assert.deepEqual(await handler({}), { ok: true })
@@ -720,7 +701,7 @@ test('the existing endpoint carries the route slug and full multi-menu selection
   await assert.rejects(handler({}), /supported customer ordering channel/)
 })
 
-test('Kiosk resolves only the selected mode menus and preserves canonical takeaway deposits', async () => {
+test('Kiosk resolves only the selected mode menus with ordinary takeaway pricing', async () => {
   const { tx } = catalogue()
   tx.offerings = [
     {
@@ -732,15 +713,15 @@ test('Kiosk resolves only the selected mode menus and preserves canonical takeaw
       ],
     },
   ]
-  const drink = { ...selections[1], offeringIds: ['kiosk'] }
+  const drink = { ...selections[1], quantity: 1, offeringIds: ['kiosk'] }
   const kioskInput = {
-    ...input([drink], 14),
+    ...input([drink], 4),
     channel: 'kiosk',
     fulfilment: 'takeaway',
   }
   const result = await ordering.resolveMenuOrderLines(tx, kioskInput, monday)
-  assert.equal(result.pricing.total, 14)
-  assert.match(result.lines[0].notes[0], /Bottle deposit/)
+  assert.equal(result.pricing.total, 4)
+  assert.equal(result.lines[0].notes, undefined)
   await assert.rejects(
     ordering.resolveMenuOrderLines(
       tx,
@@ -898,7 +879,6 @@ test('refresh restores the exact basket choices and customer fields without plac
     optionId: '',
     extraIds: [],
     groups: {},
-    bottle: 'exchange',
     quantity: 2,
   })
   const before = JSON.parse(JSON.stringify(state.basket.lines.value))
@@ -1061,7 +1041,7 @@ test('malformed recovery data is ignored and blocked browser storage does not br
   }
 })
 
-test('recovery preserves variants, extras, meal supplements and both bottle choices exactly', async () => {
+test('recovery preserves variants, extras, meal supplements exactly', async () => {
   const state = checkoutHarness()
   state.basket.clear()
   const pizza = {
@@ -1111,8 +1091,7 @@ test('recovery preserves variants, extras, meal supplements and both bottle choi
     extraIds: ['cheese'],
     quantity: 2,
   })
-  state.basket.add(drink, { ...choices, bottle: 'deposit' })
-  state.basket.add(drink, { ...choices, bottle: 'exchange' })
+  state.basket.add(drink, { ...choices, quantity: 2 })
   state.basket.add(deal, { ...choices, groups: { main: ['pizza'] } })
   await state.checkout.submit()
   const sent = state.requests[0].payload
@@ -1120,7 +1099,7 @@ test('recovery preserves variants, extras, meal supplements and both bottle choi
   const restored = checkoutHarness({ storage: state.storage, seed: false })
   try {
     await Promise.resolve()
-    assert.equal(restored.basket.totalMinor.value, 6800)
+    assert.equal(restored.basket.totalMinor.value, 5800)
     assert.deepEqual(
       helpers.serviceSelections(restored.basket.lines.value),
       sent.selections

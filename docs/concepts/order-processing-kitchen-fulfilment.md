@@ -1,6 +1,7 @@
 # Ordering and fulfilment boundary
 
-Updated: 2026-10-13
+Updated: 2026-11-20
+Ref: 193e5adc3
 Role: map, not canon
 
 ## Purpose
@@ -11,9 +12,15 @@ source and executable checks establish implementation.
 
 ## Current owners
 
+Kitchen's Orders capability owns draft and submitted Orders, its operator board
+and the trusted commands. Menu owns customer selection and resolves the
+published Menu, selections and prices before handing an order to Kitchen.
+Kitchen Services owns the setup that links Menus and serving hours. The public
+and staff views share the Kitchen-owned read-only ticket.
+
 - Kitchen owns the first local Ordering implementation; cross-industry reuse is
   an intended concept, not a proved shared package contract.
-- `kitchen/models/order.model.ts`: Order identity, number, channel vocabulary,
+- `kitchen/records/order.ts`: Order identity, number, channel vocabulary,
   App declaration shape and lines. `number` may be empty until assigned; the
   ticket renders Order as presentation copy. Optional `placed_by` identifies a person or
   system by name and optional reference; optional `location` supplies a name and
@@ -68,8 +75,10 @@ source and executable checks establish implementation.
   on creation and preserves it on updates. Existing Save/reopen tools remain.
 - `kitchen/server/orders/save-draft.ts` owns the protected create/update command;
   its HTTP adapter is thin. Current Kitchen authority is checked in the transaction.
-- `useKitchenOrderDraftSave` captures client intent before credentials;
-  `useKitchenOrderDraftCollection` supplies a membership-bound live read with paged and full-collection modes.
+- `kitchen/composables/orders/` contains the explicit-Kitchen clients.
+  `useKitchenOrderDraftSave` captures client intent before credentials,
+  `useKitchenOrderDraftCollection` reads authorized drafts, and
+  `useOrderExchange` serves Menu checkout and the Orders board.
 - Draft storage is `kitchens/{kitchenId}/order-drafts/{id}` with schema version,
   revision and audit metadata outside the basic Order. Empty drafts are valid;
   saving is not submission. Saved channels cannot change. Revision conflicts do
@@ -77,7 +86,7 @@ source and executable checks establish implementation.
 
 ## Connected order exchange
 
-- `order-submission.model.ts` keeps execution state, revision and
+- `kitchen/records/order-submission.ts` keeps execution state, revision and
   kitchen response outside the basic Order. `utils/order-submission.ts` owns
   completeness and permitted transitions.
 - `server/orders/submission.ts` owns guarded submission, numbering, idempotency,
@@ -104,7 +113,7 @@ source and executable checks establish implementation.
   from Workspace chrome. The separate fixed-item order form and tenant `/order`
   shortcut are removed. Published structured menus now expose Collection,
   Delivery and Table ordering when the App declares Website support. These
-  consume `menu/components/Order.vue`, the existing canonical Menu payload and
+  consume `menu/components/Order/Index.vue`, the existing canonical Menu payload and
   `api/ordering/menu-submit`. Selection uses stable section/item/option IDs.
   `menu/server/ordering.ts` rechecks publication, item/Dish availability,
   Sellable variant restrictions and canonical prices in the writing transaction.
@@ -145,7 +154,7 @@ changes; do not retain retired execution paths as current source pointers.
 ## Workspace configuration surfaces
 
 Orders has its index and board. Service configuration lives separately at
-`/workspace/kitchen/menu/services`, implemented by `Workspace/Offerings/Index.vue`.
+`/workspace/kitchen/menu/services`, implemented by `Workspace/Services/Index.vue`.
 The existing setup and individual Offering pages reuse Kitchen records and
 commands; the old Orders/Channels entrance is removed without aliases. Delivery
 settings remain composed here and payment methods remain at
@@ -156,8 +165,8 @@ Payments presentation is composed directly by `Workspace/Settings/Payments/Index
 Delivery settings by `Workspace/Orders/Delivery/Index.vue`. Both reuse the existing
 Kitchen Fulfilment reader and protected commands, without a section-switching wrapper.
 Services configures the existing service choices and their menus and serving times.
-Library stage previews share `Orders/Examples/Preview.vue`; success presentation is
-`Orders/Examples/Success.vue`, with local example state and shared validation retained.
+The Misebox reference owns the stage previews and success specimens in
+`components/Docs/OrderingTicket/`, with local example state and shared ticket rendering.
 
 Public Collection, Delivery, Table and Kiosk submissions require a currently open,
 menu-linked service schedule in its configured timezone. `publicMenuServiceOpen`

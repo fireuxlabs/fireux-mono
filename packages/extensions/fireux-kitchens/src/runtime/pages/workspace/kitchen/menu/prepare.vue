@@ -6,8 +6,11 @@
   /><KitchenWorkspaceMenuMenusPrepare />
 </template>
 <script setup lang="ts">
-import { provideKitchenMenus } from '../../../../kitchen/composables/workspace/menu/menus/useKitchenMenus'
-provideKitchenMenus()
+import {
+  provideKitchenMenus,
+  useKitchenWorkspaceMenus,
+} from '../../../../kitchen/composables/workspace/menu/menus/useKitchenWorkspaceMenus'
+provideKitchenMenus(useKitchenWorkspaceMenus())
 definePageMeta({
   layout: 'workspace',
 

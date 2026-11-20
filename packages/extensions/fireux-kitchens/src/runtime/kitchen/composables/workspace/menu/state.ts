@@ -1,5 +1,5 @@
 import { inject, type ComputedRef, type InjectionKey } from 'vue'
-import type { createKitchenMenus } from './menus/useKitchenMenus'
+import type { createKitchenMenus } from './menus/useKitchenWorkspaceMenus'
 import type { createKitchenMenuOverview } from './source'
 
 type MenuWorkspace = {

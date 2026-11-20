@@ -3,7 +3,7 @@ import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { computed, watchEffect, onScopeDispose } from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { useFoodCatalogueSummary } from './catalogue'
-import { useKitchenOfferings } from '../../offerings/useKitchenOfferings'
+import { useKitchenOfferings } from '../../services/useKitchenOfferings'
 import { createMenuServices } from './services'
 
 /** One read-only overview and publisher, sharing the parent's exact Menu collection. */

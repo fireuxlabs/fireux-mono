@@ -1,5 +1,5 @@
 import { promotionPricedSections } from '../../kitchen/utils/promotions/pricing'
-import { useKitchenOfferingNow } from '../../kitchen/composables/useKitchenOfferingNow'
+import { useKitchenOfferingNow } from '../../kitchen/composables/services/useKitchenOfferingNow'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'

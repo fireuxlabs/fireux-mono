@@ -127,7 +127,7 @@ import {
 } from '../../../utils/ordering'
 import { useRuntimeConfig } from '#imports'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
-import { useKitchenOrderDraftSave } from '../../../composables/workspace/orders/useKitchenOrderDraftSave'
+import { useKitchenOrderDraftSave } from '../../../composables/orders/useKitchenOrderDraftSave'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUserRead } from 'fireux-core/runtime/user/composables/useUserRead'
 import type { Order, SavedOrderDraft } from '../../../records/order'

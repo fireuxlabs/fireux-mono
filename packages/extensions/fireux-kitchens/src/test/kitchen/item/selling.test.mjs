@@ -44,7 +44,6 @@ test('canonical selling choices win and workspace/public price calculation uses 
     price: 99,
     choice_groups: [group()],
     price_options: [{ label: 'Old', price: 50 }],
-    bottle_deposit: 2,
   }
   const before = structuredClone(raw)
   const offer = readItemOffer(raw)
@@ -59,38 +58,6 @@ test('canonical selling choices win and workspace/public price calculation uses 
     /choose/
   )
   assert.deepEqual(raw, before)
-})
-
-test('selling adapter rejects identity/legacy fields and snapshots canonical changes before credentials', async () => {
-  const calls = []
-  const use = load(
-    'composables/items/useItemOfferUpdate.ts',
-    'useItemOfferUpdate',
-    {
-      normalizeItemPricingPatch,
-      useItemMutation: () => ({
-        mutate: async (...args) => {
-          calls.push(args)
-          return { id: 'aioli' }
-        },
-      }),
-    }
-  )
-  const api = use()
-  await assert.rejects(
-    api.updateOffer('aioli', { name: 'Wrong' }, { kitchenId: 'k' }),
-    /Unsupported/
-  )
-  await assert.rejects(
-    api.updateOffer('aioli', { price_options: [] }, { kitchenId: 'k' }),
-    /Unsupported/
-  )
-  assert.equal(calls.length, 0)
-  const draft = { choice_groups: [group()] }
-  await api.updateOffer('aioli', draft, { kitchenId: 'k' })
-  draft.choice_groups[0].options[0].price = 100
-  assert.equal(calls[0][1].changes.price, 8)
-  assert.equal(calls[0][1].changes.choice_groups[0].options[0].price, 8)
 })
 
 test('pricing draft survives same-record refresh, resets on navigation, and ignores obsolete save feedback', async () => {
@@ -137,8 +104,8 @@ test('pricing draft survives same-record refresh, resets on navigation, and igno
             return () => captured === version
           }
         },
-        useItemOfferUpdate: () => ({
-          updateOffer: (id, changes, target) => {
+        useItemActions: () => ({
+          updateItem: (id, changes, target) => {
             calls.push({ id, changes, target })
             return new Promise((resolve) => {
               resolveSave = resolve

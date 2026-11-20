@@ -29,7 +29,6 @@ export function serviceSelections(
         [...values],
       ])
     ),
-    ...(line.choices.bottle ? { bottle: line.choices.bottle } : {}),
     offeringIds: [...line.offeringIds],
     quantity: line.choices.quantity,
     expectedUnitMinor: line.unitMinor,

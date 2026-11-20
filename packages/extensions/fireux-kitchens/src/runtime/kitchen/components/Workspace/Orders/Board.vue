@@ -156,10 +156,10 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
-import { useKitchenOrderDraftCollection } from '../../../composables/workspace/orders/useKitchenOrderDraftCollection'
+import { useKitchenOrderDraftCollection } from '../../../composables/orders/useKitchenOrderDraftCollection'
 import { useKitchenAccess } from '../../../composables/useKitchenAccess'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
-import { useOrderExchange } from '../../../composables/useOrderExchange'
+import { useOrderExchange } from '../../../composables/orders/useOrderExchange'
 import type { SavedOrderDraft } from '../../../records/order'
 import type {
   OrderSubmission,

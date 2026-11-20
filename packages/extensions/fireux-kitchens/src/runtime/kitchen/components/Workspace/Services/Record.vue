@@ -43,7 +43,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { provideKitchenServiceEditor } from '../../../composables/offerings/useKitchenServiceEditor'
+import { provideKitchenServiceEditor } from '../../../composables/workspace/services/useKitchenServiceEditor'
 import type { KitchenOffering } from '../../../utils/offering-policy'
 import { kitchenOrderTypeLabel } from '../../../utils/kitchen-order-label'
 import type { KitchenOfferingOption } from '../../../utils/offering-options'

@@ -1,8 +1,8 @@
 import { computed, ref, watch, onMounted, onScopeDispose, type Ref } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useOrderExchange } from '../../kitchen/composables/useOrderExchange'
-import { useKitchenOfferingNow } from '../../kitchen/composables/useKitchenOfferingNow'
+import { useOrderExchange } from '../../kitchen/composables/orders/useOrderExchange'
+import { useKitchenOfferingNow } from '../../kitchen/composables/services/useKitchenOfferingNow'
 import { readOpeningHoursStatus } from 'fireux-places/runtime/place/utils/opening-hours-status'
 import { orderSubmissionIssues } from '../../kitchen/utils/order-submission'
 import {

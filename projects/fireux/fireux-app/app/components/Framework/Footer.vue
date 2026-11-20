@@ -21,7 +21,7 @@
 const links = [
   { label: 'Products', to: '/products' },
   { label: 'Capabilities', to: '/capabilities' },
-  { label: 'Product', to: '/product' },
+  { label: 'How FireUX works', to: '/product' },
   { label: 'Pricing', to: '/pricing' },
   { label: 'About', to: '/about' },
   { label: 'Patterns', to: '/patterns' },

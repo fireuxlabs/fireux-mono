@@ -1,7 +1,7 @@
 # Workspace, Capability, and Tool family
 
-Updated: 2026-11-16
-Ref: a068b6eaa
+Updated: 2026-11-20
+Ref: 193e5adc3
 Role: map, not canon
 
 ## Purpose
@@ -47,13 +47,13 @@ owns its executors; Waste's existing command consumes its schema. Menu's catalog
 is consumed by the Kitchen tool directory as workflow documentation, without
 claiming standalone agent invocation.
 
-## Responsibility, persistence and service orchestration
+## Responsibility, persistence and server orchestration
 
 Capability describes a business responsibility, not a mandatory field, subcollection, Entity or folder at the storage boundary. Each capability exposes its owned fields or records, rules and supported Tools through its current domain owner. Small stable configuration can be nested on that owner; independently managed or growing records retain their existing root or parent-scoped identity. A capability page may also compose a lower Entity's supported editor without taking ownership of its data. Kitchen Identity combines Kitchen-owned `identity` controls with Place-owned venue fields; dine-in offering setup exposes the existing Kitchen-owned `tables.count` editor; Menus manages separately identified Menu records scoped to the Kitchen.
 
-The trusted service layer coordinates use cases through domain-supported behaviour. It may use one or several capabilities and keeps workflow-specific execution state, such as an Order's acceptance/payment lifecycle, with the owning workflow. Ordering through a Menu does not make Orders a nested Menu field or make ordering execution a Menu editor responsibility. The previous Menu-order execution boundary is deleted. The rebuilt Ordering capability keeps Order facts separate from submission state, revision and responses. Kitchen owns protected saving, submission and operator transitions; Menu owns canonical item and price resolution for public submissions. See [Ordering boundary](order-processing-kitchen-fulfilment.md). Payment execution and driver dispatch remain outside this implementation. The save command retains its H3 authentication adapter; it is not a transport-independent service API.
+Trusted server orchestration coordinates use cases through domain-supported behaviour. It may use one or several capabilities and keeps workflow-specific execution state, such as an Order's acceptance/payment lifecycle, with the owning workflow. Ordering through a Menu does not make Orders a nested Menu field or make ordering execution a Menu editor responsibility. The rebuilt Ordering capability keeps Order facts separate from submission state, revision and responses. Kitchen owns protected saving, submission and operator transitions; Menu owns canonical item and price resolution for public submissions. See [Ordering boundary](order-processing-kitchen-fulfilment.md). Payment execution and driver dispatch remain outside this implementation. The save command retains its H3 authentication adapter; it is not a transport-independent service API.
 
-When a service reveals missing information, assign that information to the lowest domain owner that gives it meaning, add the owning capability's model, reader, editing Tool and authority as needed, then let the service consume it. Do not move every service's settings onto one generic configuration map or copy shared venue facts into each Workspace Entity. Public/customer surfaces consume supported projections of the same capability data; they do not expose private records solely because the client can hide them.
+When a workflow needs more information, assign it to the lowest domain owner that gives it meaning. Add the owning capability's model, reader, editing Tool and authority as needed so the workflow can consume it. Keep settings with the owning capability and shared venue facts with Place. Public/customer surfaces consume supported projections of the same capability data; they do not expose private records solely because the client can hide them.
 
 Kitchen's Sproochli attachment proves the separate-record boundary alongside
 its child-only fulfilment policy. Root copies are migration preimages, never
@@ -65,7 +65,7 @@ Demo fulfilment also stays outside root configuration. See Kitchen's
 `src/test/kitchen-child-attachment.test.mjs`; this does not prove provider readiness,
 live data conversion or a complete translation editing capability.
 
-Kitchen named Offerings similarly retain independent parent-scoped identities
+Saved Kitchen service setups ([Offering records](menu-service-glossary.md#kitchen-services)) retain parent-scoped identities
 at `kitchens/{kitchenId}/offerings/{offeringId}`. Their live private reader is
 membership-bound; canonical saved validation and commands share interaction
 constraints. Public Menu/Kitchen readers use supported child projections, and the rebuilt Menu submission command validates those projections transactionally.
@@ -194,7 +194,7 @@ Identity, Team, Test, Apps, and Ecosystem are Project capabilities.
 
 ## Kitchen proving set
 
-Identity, Team, Test, Menus, Dishes, Drinks, Recipes, Ingredients, Food Safety,
+Identity, Team, Test, Menus, Items, Services, Recipes, Ingredients, Food Safety,
 Orders, Inventory, Purchasing, Receiving, Waste, Stations, Suppliers, Finance,
 Costs, Waste Report, and Performance are Kitchen capabilities.
 
@@ -251,15 +251,14 @@ Property creation Tool must be proved before it is advertised.
 Project/Kitchen Test and Kitchen Offerings consume that same local intent
 mechanism without introducing a generic capability executor. Portfolio Document
 and Task contributions retain Portfolio ownership and exact command results;
-Property Reservations retain their protected night-lock transaction. Business
-Kitchen Offerings are parent-owned records, distinct from the trusted Service Layer.
+Property Reservations retain their protected night-lock transaction.
 
 Source-owned scope tests live in Core `src/test/workspace-team-command-scope`,
 `team-ui-completion-scope`, and `onboarding-command-scope.test.mjs`, with Kitchen
 onboarding completion tests protecting live-collection handoff. These controlled
 checks do not establish browser or production use.
 
-## Entity–Capability–Service Spine
+## Entity ownership and server orchestration
 
 This is a repository-wide ownership and composition discipline, extending the
 Capability Surface Spine. It applies to Apps, ecosystems, extensions and Core;
@@ -270,7 +269,7 @@ it does not assert that every existing owner is aligned.
   and product compositions do not become Entities through folder naming.
 - **Capability:** names a supported business responsibility, with its rules,
   commands and surfaces. It is not a compulsory storage or folder container.
-- **Service:** coordinates a concrete use case through supported domain
+- **Server orchestration:** coordinates a concrete use case through supported domain
   capabilities. It owns sequencing and the transaction boundary where required,
   while each participating domain retains its validation and authority.
 - **Surface:** composes the controls for that responsibility; client controllers
@@ -284,9 +283,9 @@ it does not assert that every existing owner is aligned.
 2. Keep Nuxt-discovered routes, layouts and transport entrypoints at the runtime
    root. Register nested components/composables explicitly. Routes delegate to
    named owner compositions; domain commands remain server-owned.
-3. A service may be an existing named function in `server/<capability>/...`.
-   `server/services` is optional, not the target shape. Do not introduce a
-   forwarding service around one command or move files merely to gain the name.
+3. Trusted orchestration may live in an existing named function in
+   `server/<capability>/...`. Use the owning command directly when it already
+   handles the use case.
 4. Place coordination with the lowest owner of the complete use case, following
    `App → Ecosystem → Extension → Core`. Cross-domain coordination within a
    cohesive extension does not automatically require ecosystem placement.

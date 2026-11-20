@@ -1,6 +1,6 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { readWeekdayTimeOpenState } from '../../utils/weekday-time'
-import { useKitchenOfferingNow } from '../../kitchen/composables/useKitchenOfferingNow'
+import { useKitchenOfferingNow } from '../../kitchen/composables/services/useKitchenOfferingNow'
 
 type MenuOfferingChipColor = 'neutral' | 'success' | 'error'
 

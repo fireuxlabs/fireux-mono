@@ -31,7 +31,6 @@ export async function updateItem(event: H3Event, input: unknown) {
     'price',
     'price_options',
     'add_ons',
-    'bottle_deposit',
     'choice_groups',
   ])
   if (!Object.keys(changes).length)
@@ -58,7 +57,7 @@ export async function updateItem(event: H3Event, input: unknown) {
       validateItemSpecification(changes.spec)
     )
   const pricing = Object.fromEntries(
-    ['price', 'price_options', 'add_ons', 'bottle_deposit', 'choice_groups']
+    ['price', 'price_options', 'add_ons', 'choice_groups']
       .filter((key) => key in changes)
       .map((key) => [key, changes[key]])
   )

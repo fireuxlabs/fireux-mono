@@ -64,9 +64,6 @@ export default defineEventHandler(async (event) => {
               headers: { accept: 'application/json' },
             }
           )
-          if (payload.kind === 'manifest' && service === 'eat_in')
-            for (const section of payload.manifest.content.sections)
-              for (const item of section.items) delete item.bottleDeposit
           return payload.kind === 'manifest'
             ? {
                 manifest: payload.manifest,

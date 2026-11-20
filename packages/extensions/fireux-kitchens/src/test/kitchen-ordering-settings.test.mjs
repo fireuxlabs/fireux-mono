@@ -202,7 +202,7 @@ test('the current service editor and name command retain the selected Offering I
     (row) => row.key === 'pre_order'
   )
   const useServiceSetup = load(
-    'kitchen/composables/offerings/useServiceSetup',
+    'kitchen/composables/workspace/services/useServiceSetup',
     'useServiceSetup',
     {
       ...vue,
@@ -238,7 +238,7 @@ test('the current service editor and name command retain the selected Offering I
   try {
     const { editor } = scope.run(() =>
       load(
-        'kitchen/composables/offerings/useKitchenServiceEditor',
+        'kitchen/composables/workspace/services/useKitchenServiceEditor',
         'createKitchenServiceEditor',
         deps
       ).createKitchenServiceEditor(option, () =>

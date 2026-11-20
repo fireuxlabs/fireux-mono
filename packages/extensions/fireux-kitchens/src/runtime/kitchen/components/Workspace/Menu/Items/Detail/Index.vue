@@ -8,10 +8,10 @@
   />
   <Detail.Basics :item="item" />
   <template v-if="item">
-    <Detail.Menus class="item-capability" />
-    <Detail.Prep v-if="dev" class="item-capability" />
-    <Detail.Team v-if="dev" class="item-capability" />
-    <Detail.Diagnostics v-if="dev" />
+    <Detail.Document v-if="dev" />
+    <Detail.Menus />
+    <Detail.Prep />
+    <Detail.Team />
   </template>
 </template>
 
@@ -29,16 +29,3 @@ defineProps<{
 }>()
 const dev = import.meta.dev
 </script>
-
-<style scoped>
-.item-capability {
-  min-inline-size: 0;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius);
-  padding: calc(var(--spacing) * 4);
-}
-
-.item-capability :deep(pre) {
-  overflow-x: auto;
-}
-</style>

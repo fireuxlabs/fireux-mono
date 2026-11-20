@@ -144,22 +144,16 @@ function context() {
       'useItemEditorScope',
       deps
     )
-    deps.useItemMutation = load(
-      '../../runtime/kitchen/composables/items/useItemMutation.ts',
-      'useItemMutation',
+    deps.useItemActions = load(
+      '../../runtime/kitchen/composables/items/useItemActions.ts',
+      'useItemActions',
       deps
     )
-    for (const name of [
-      'useItemCreate',
-      'useItemUpdate',
-      'useItemDelete',
+    deps.useItemImageUpload = load(
+      '../../runtime/kitchen/composables/items/useItemImageUpload.ts',
       'useItemImageUpload',
-    ])
-      deps[name] = load(
-        `../../runtime/kitchen/composables/items/${name}.ts`,
-        name,
-        deps
-      )
+      deps
+    )
     deps.useMenuSectionItemCreation = load(
       '../../runtime/kitchen/composables/workspace/menu/menus/useMenuSectionItemCreation.ts',
       'useMenuSectionItemCreation',
@@ -417,19 +411,13 @@ test('Item commands capture member/access/local intent before credentials and pr
         const h = context(),
           local = vue.ref('original'),
           api = h.scope.run(() =>
-            h.deps.useItemMutation([
-              h.selectedId,
-              () => h.route.fullPath,
-              local,
-            ])
+            h.deps.useItemActions([h.selectedId, () => h.route.fullPath, local])
           ),
-          flight = api.mutate(
-            method,
+          target = { kitchenId: h.selectedId.value },
+          flight =
             method === 'POST'
-              ? { draft: { name: 'Item' } }
-              : { dishId: 'dish', changes: { name: 'Item' } },
-            h.selectedId.value
-          )
+              ? api.createItem({ name: 'Item' }, target)
+              : api.updateItem('dish', { name: 'Item' }, target)
         if (stage !== 'auth') {
           h.auth.resolve(h.user)
           await drain()
@@ -467,12 +455,14 @@ test('Item adapters validate safe string identities and exact update/delete resp
       ...(method === 'POST' ? [] : ['other']),
     ]) {
       const h = context(),
-        api = h.scope.run(() => h.deps.useItemMutation()),
-        flight = api.mutate(
-          method,
-          method === 'POST' ? { draft: { name: 'Item' } } : { dishId: 'dish' },
-          h.selectedId.value
-        )
+        api = h.scope.run(() => h.deps.useItemActions()),
+        target = { kitchenId: h.selectedId.value },
+        flight =
+          method === 'POST'
+            ? api.createItem({ name: 'Item' }, target)
+            : method === 'PATCH'
+              ? api.updateItem('dish', {}, target)
+              : api.deleteItem('dish', target)
       await finish(h)
       h.response.resolve({ id })
       await assert.rejects(flight, /response did not identify/)

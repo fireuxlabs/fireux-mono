@@ -3,7 +3,7 @@
     <UPage>
       <UPageHeader
         title="Getting started"
-        description="Run the FireUX starter App and see how it brings Core, Nuxt UI, and an Ecosystem together."
+        description="Configure and run the FireUX starter App from the source workspace."
       >
         <template #links>
           <UButton to="/docs" label="Developer docs" />
@@ -12,6 +12,14 @@
 
       <UPageBody>
         <UPageSection id="starter" title="Run the starter">
+          <p>
+            In <code>projects/templates/fireux-template</code>, use
+            <code>.env.example</code> to create a local <code>.env</code> if you
+            do not have one. Keep <code>APP_DOMAIN</code> set to
+            <code>http://localhost:3010</code> for local development and set
+            <code>NUXT_FIREBASE_APP_ID</code> to the Firebase Web App ID for the
+            configured Ecosystem.
+          </p>
           <p>
             With the workspace dependencies installed, run this from the
             repository root.
@@ -75,12 +83,6 @@
 definePageMeta({
   layout: 'framework',
   requiresAuth: false,
-  nav: {
-    key: 'framework-docs',
-    label: 'Docs',
-    order: 10,
-    menus: ['framework'],
-  },
 })
 useSeoMeta({
   title: 'Getting started · FireUX',
