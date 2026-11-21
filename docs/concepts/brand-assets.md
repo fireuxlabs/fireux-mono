@@ -81,9 +81,11 @@ dimensions and byte ranges must match the embedded images.
 
 - `pnpm check:assets` audits every `projects/*/*` Nuxt App, including the starter;
   add an App directory to check one. CI runs it after dependency installation.
-- Core's native `build:before` hook rejects invalid production App assets.
-  Development remains available for editing, and independent Core consumers do
-  not acquire an App asset obligation.
+- Core's native `build:before` hook reports missing or invalid App artwork
+  as warnings rather than failing the App build. Development remains available
+  for editing, and independent Core consumers do not acquire an App asset
+  obligation. Explicit `pnpm check:assets` and release artifact validation still
+  reject incomplete or invalid brand exports.
 - `tools/firebase-release/output.mjs` checks the packaged `.output/public`
   family before release. Both generic and Misebox release flows use this gate.
 - `src/test/app-brand-assets.test.mjs` covers the validator and build hook;
