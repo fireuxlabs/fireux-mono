@@ -246,3 +246,84 @@ live data operations require separate evidence.
 The [Core installation tests](../../packages/core/fireux-core/src/test/installation.test.mjs)
 exercise steps 1–4. Reconcile the Project relationship in Stage 2, App
 membership in Stage 3 and Workspace in Stage 5 as separate cutovers.
+
+## Stages 4–5 ownership review
+
+Source snapshot: `c457e5ea2`. This section updates the cutover proposal and
+uses the earlier tables as the historical Stage 0 baseline. App configuration
+now supports Project-free Apps. The trusted developer endpoint composes the
+Main App bootstrap, and AppUser is already an App-owned record. Both stay
+outside this extraction.
+
+### Ownership inventory
+
+| Owner | Keep or relocate | Boundary |
+| --- | --- | --- |
+| Universal Core | Nuxt module and layer mechanics; Firebase/Auth, guarded Firestore and request tooling; App, Ecosystem and User identity; AppUser membership; the App shell, neutral Dashboard, UI primitives and App PWA defaults. | Core owns authorization and persistence for its records. Workspace may consume those contracts. |
+| Optional Workspace | Family selection and switching, selected-record scope, Workspace entry and navigation, shell and page framing, Team presentation, Workspace tool registration and install behaviour. | The optional package registers its own components, composables, routes, middleware, layout and CSS sources. Keep existing route and component names for enabled consumers. |
+| Domain extensions and Apps | Project and domain access grants, Team role policy and write authority, entity records and capability screens. Product and platform directory composition belongs to the Apps or Ecosystems that supply it. | Keep canonical storage and authorization with the same owner. Shared roster mechanics may move with Workspace only after checking callers outside Workspace. |
+
+### Dependency map
+
+| Current edge | Actual consumer and proposed disposition |
+| --- | --- |
+| [Core module](../../packages/core/fireux-core/src/module.ts) and [component registration](../../packages/core/fireux-core/src/config/module/components-config.ts) register Workspace imports and `Workspace*` components. [Core stylesheet](../../packages/core/fireux-core/src/runtime/assets/styles/main.css) scans Workspace components. | Transfer discovery to the optional package. Separate Workspace styles from styles that the neutral Dashboard currently shares. Verify both layouts before removing or relocating selectors. |
+| The Core layer discovers [the Workspace layout](../../packages/core/fireux-core/src/runtime/layouts/workspace.vue), [entry page](../../packages/core/fireux-core/src/runtime/pages/workspace/index.vue), [Dashboard bridge](../../packages/core/fireux-core/src/runtime/pages/dashboard/workspace.vue) and [global Workspace middleware](../../packages/core/fireux-core/src/runtime/middleware/fireux-workspace.global.ts). Core [auth middleware](../../packages/core/fireux-core/src/runtime/middleware/fireux-auth.global.ts) currently skips this route family. | Move these native entries together. Preserve availability checks, auth ordering and the Kitchen Dashboard redirect. Replace the Core auth exception with a neutral route mechanism only if required by the opt-in integration. |
+| [Header](../../packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue), [Dashboard navigation](../../packages/core/fireux-core/src/runtime/composables/navigation/useDashboardNav.ts) and [Dashboard App overview](../../packages/core/fireux-core/src/runtime/components/Dashboard/Overview/App.vue) call Workspace entry directly. | Core keeps the shells and App controls. Workspace supplies its entry links and visibility. Review existing navigation and layout composition seams before adding one. |
+| [App manifest composable](../../packages/core/fireux-core/src/runtime/app/composables/useAppManifest.ts) imports Workspace route and entry code. The [manifest handler](../../packages/core/fireux-core/src/runtime/server/manifest.webmanifest.get.ts) separately validates family, origin and start URL. [App config](../../packages/core/fireux-core/src/runtime/app/composables/config/FireUXConfig.ts) normalizes Workspace policy. | Preserve the default App manifest. Place Workspace install and family policy with the optional owner and verify the client and server agree. Keep unsafe URL rejection and the documented tenant origin behaviour. |
+| [Tool catalogue](../../packages/core/fireux-core/src/runtime/tools/catalogue.ts) imports the Workspace Team primitive. [App literature](../../packages/core/fireux-core/src/runtime/app/literature/types.ts) and the default [App Operations endpoint](../../packages/extensions/fireux-app/src/runtime/app/server/index/operations.ts) use Workspace capability vocabulary. | Keep neutral discovery in Core. Workspace contributes its tools and operations. Decide ownership of descriptive vocabulary separately from executable capability registration so default App builds stay independent. |
+| Default [AI Test intent](../../packages/extensions/fireux-ai/src/runtime/server/utils/test-intent.ts) consumes a Workspace type and serves Project and Kitchen Test routes. [Marketplace moderation](../../packages/extensions/fireux-marketplace/src/runtime/marketplace-store/server/moderation/commands.ts) imports the Team member resolver for identity lookup. | Resolve these two consumers before repointing imports. Test-specific behaviour should live with the optional feature and consume neutral AI generation. Marketplace needs scoped User lookup, not a dependency on the Workspace Team runtime. Preserve the existing directory eligibility check. |
+
+A literal scan of TypeScript and Vue sources found **187 files across 18
+non-Core package/App roots** importing `fireux-core/runtime/workspace/`.
+Kitchens (52), Properties (37), Projects (32) and Suppliers (22) account for
+143 of them. Blank, Businesses, Misebox and the portal have direct imports
+too. The scan excludes auto-import calls, generated component tags, layout
+metadata and CSS. Treat each of those as a separate cutover edge.
+
+### Proposed removal and cutover order
+
+1. Establish the negative and positive fixture assertions below. First verify
+   the neutral Auth, App, User and membership paths without relying on a
+   Workspace route. Use Go QR to check a real no-Workspace App and Blank
+   as the first opt-in consumer.
+2. Resolve Core shell, navigation, manifest, metadata and tool contributions.
+   Remove Core's Workspace-specific registrations and App-level calls when
+   their opt-in equivalents exist. The diagnostics-only
+   `canOwnMultipleWorkspaces` session field is a removal candidate. Actual
+   capacity checks remain with the enforcing capability.
+3. Transfer the native Workspace entries and implementation with their
+   consumers. Include the default App/AI and Marketplace edges above,
+   then migrate the explicit domain imports and registration in dependency
+   order. Remove the old Core implementation and imports at cutover. Keep
+   existing data paths and command authority.
+
+### Acceptance test for the packed Core fixture
+
+Extend [the existing installation test](../../packages/core/fireux-core/src/test/installation.test.mjs).
+Its current assertions expect Workspace registrations under both installation
+modes. Change that contract at cutover and retain the positive assertions for
+Core's own public surface.
+
+- Prepare packed Core **module alone, layer alone, and both** in the existing
+  temporary Nuxt host. Verify the optional Workspace package cannot resolve
+  from that host. Check the archive and production import graph for leftover
+  Workspace implementation and reverse imports, including type-only imports.
+  Check the generated registry for the absence of the `workspace` layout,
+  Workspace middleware, `WorkspaceSidebar`, `useWorkspace`,
+  `/workspace` and `/dashboard/workspace` and their child routes. Also check
+  CSS discovery and Nitro handlers for Workspace sources.
+- Keep Core registration assertions appropriate to each install mode.
+  The combined host must still expose App status, membership, App manifest,
+  and its normal auth and User entrypoints. Exercise a signed-in emulator
+  journey through canonical User setup, App read, explicit Join and repeat
+  Join, then sign out. Generated files verify registration. The signed-in
+  journey verifies the actual consumers and stored result.
+- Verify Go QR's normal homepage and App manifest with no Workspace entries.
+  Verify Blank with the optional package enabled, including layout and
+  routes, authorized selection and switching, denied access, and Workspace
+  manifest deep-link validation. Use the Project portal as the next check
+  for domain Team and Project-specific authority.
+
+This review authorizes no source moves. The cutover and its acceptance
+checks remain pending review.
