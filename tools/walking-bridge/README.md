@@ -65,18 +65,20 @@ checkpoint for an approved retry.
 
 - The worker edits a disposable clone of the approved revision. It uses a
   dedicated filesystem profile, no command network, no approval escalation, and
-  no hooks, apps, or plugins. Repo Git metadata and environment files are
-  denied to worker commands. The controller uses GitHub independently of the
-  worker and does not evaluate any GitHub text as shell commands.
+  no hooks, apps, or plugins. The trusted controller checks the exact revision
+  and clean checkout before launch and owns diff validation and publication.
+  The worker verifies files directly. Git metadata and environment files are
+  denied to worker commands.
 - One local run lock serializes workers. The shared checkout must be clean and
   on main before work and before publication. Main advancing blocks publication,
   and pushes use ordinary fast-forward semantics. Stop the service before
   working through a competing interactive session. The bridge cannot detect
   a clean Codex or editor session that has not written changes yet.
 - Approved scopes cover regular source and documentation files under docs,
-  packages or projects. The controller rejects out-of-scope edits, staged
-  edits, deletions, renames, links, executables, dependency manifests, Rules
-  and release/deploy paths. The worker is for offline development only.
+  packages or projects. The controller reserves `docs/handoffs/` for handoffs
+  and its own reports. The controller rejects out-of-scope edits, staged edits,
+  deletions, renames, links, executables, dependency manifests, Rules and
+  release/deploy paths. The worker is for offline development only.
   Shell commands may edit or test inside the disposable checkout. The sandbox
   controls environment access, while the publication check controls the final
   diff. Review high-impact or destructive tasks interactively.

@@ -324,6 +324,9 @@ outside living context; `AGENTS.md` remains the required-context router.
   on `main` in the shared checkout and preserve unrelated and concurrent work.
   Do not create branches or worktrees unless the user explicitly requests an
   exception.
+  For the [Walking Bridge](../../tools/walking-bridge/README.md), the trusted
+  controller performs Git preflight and publication. Its restricted worker
+  works in the approved disposable checkout and uses file-level checks.
 - Never stage, commit, push, deploy or modify live data without user
   authorization for that action. `pnpm gitsave` requires `main`, stages shared
   work, commits and pushes `origin/main`. Run it only after an explicit save request.

@@ -12,7 +12,7 @@ Verify the **existing** ChatGPT handoff → GitHub approval → Big Mac Walking 
 
 Create this Markdown file, and no other source file:
 
-`docs/handoffs/reviews/2026-11-21-walking-bridge-smoke-test-result.md`
+`docs/reviews/walking-bridge-smoke-test.md`
 
 Its complete contents should be:
 
@@ -26,7 +26,8 @@ This file was created by Codex from the approved documentation-only GitHub hando
 No application code, Firebase rules, or production resources were changed.
 ```
 
-Do not modify this handoff, the bridge implementation, other documentation, or application files. Do not edit the bridge's generated result report: the controller owns that report.
+Verify the file directly against the expected text above and report the check.
+The controller owns Git verification and the generated JSON report.
 
 ## Acceptance
 
@@ -41,4 +42,4 @@ The operator and ChatGPT will verify those GitHub artifacts afterwards. This tes
 
 ## Separate approval required
 
-Follow the existing instructions in `tools/walking-bridge/README.md`. Only the configured approver may issue a new top-level GitHub **commit** comment on the then-current `main` SHA, scoped narrowly to `docs/handoffs/reviews/2026-11-21-walking-bridge-smoke-test-result.md`. The bridge must be explicitly armed on Big Mac; it is currently understood to be monitoring only. Do not auto-approve from this document.
+Follow the existing instructions in `tools/walking-bridge/README.md`. The configured approver posts a new top-level GitHub **commit** comment on the current `main` SHA, scoped to `docs/reviews/walking-bridge-smoke-test.md`. Arming on Big Mac requires separate operator authorization.

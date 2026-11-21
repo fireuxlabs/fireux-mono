@@ -308,10 +308,14 @@ function runJob(config, job, dir) {
   writeFileSync(join(cwd, '.git/info/exclude'), '\n/.walking-home/\n', {
     flag: 'a',
   })
+  if (git(cwd, 'status', '--porcelain', '--untracked-files=all'))
+    throw Error('Walking Bridge checkout is dirty before worker launch.')
   writeFileSync(schemaFile, JSON.stringify(schema))
   const prompt = [
     'Execute only the approved FireUX handoff below in this disposable checkout.',
     'Read AGENTS.md and the required repository context. Use scoped offline verification.',
+    'The trusted Walking Bridge controller has verified the exact approved revision and clean checkout.',
+    'The controller owns Git preflight, diff validation, commits, and publication. Do not invoke Git or inspect .git.',
     'Approved edit paths: ' + job.scopes.join(', '),
     'Do not delete or rename tracked files, commit, push, deploy, access live data, use secrets,',
     'change dependency manifests, run another task, or bypass command restrictions.',

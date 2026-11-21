@@ -120,6 +120,20 @@ test('change verification accepts scoped edits and refuses destructive or sensit
     )
 })
 
+test('the smoke test may create only its review file outside the handoff tree', () => {
+  const file = 'docs/reviews/walking-bridge-smoke-test.md'
+  assert.deepEqual(changePaths('?? ' + file + '\0', [file]), [file])
+  const reserved = 'docs/handoffs/reviews/walking-bridge-smoke-test.md'
+  assert.throws(
+    () => changePaths('?? ' + reserved + '\0', [reserved]),
+    /approved/
+  )
+  assert.throws(
+    () => changePaths('?? docs/reviews/other.md\0', [file]),
+    /approved/
+  )
+})
+
 test('a SHA can be claimed once and a crash does not authorize replay', (t) => {
   const state = mkdtempSync(join(tmpdir(), 'fireux-walking-test-'))
   t.after(() => rmSync(state, { recursive: true, force: true }))
