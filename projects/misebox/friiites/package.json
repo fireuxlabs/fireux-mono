@@ -23,6 +23,7 @@
     "firebase-functions": "^6.3.2",
     "fireux-app": "workspace:*",
     "fireux-core": "workspace:*",
+    "fireux-workspace": "workspace:*",
     "fireux-go-qr": "workspace:*",
     "fireux-kitchens": "workspace:*",
     "fireux-misebox": "workspace:*",

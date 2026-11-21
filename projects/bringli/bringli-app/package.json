@@ -22,6 +22,7 @@
     "fireux-bringli": "workspace:*",
     "fireux-businesses": "workspace:*",
     "fireux-core": "workspace:*",
+    "fireux-workspace": "workspace:*",
     "fireux-ecosystem": "workspace:*",
     "fireux-places": "workspace:*",
     "fireux-suppliers": "workspace:*",

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -110,6 +111,7 @@ function hasHandler(result, route, method) {
 
 function assertCoreRegistration(result, { module, layer }) {
   assert.equal(result.components.includes('FirePwaStatus'), layer)
+  assert.equal(result.layouts.includes('dashboard'), layer)
   assert.equal(hasHandler(result, '/api/app/status', 'GET'), layer)
   assert.equal(
     hasHandler(result, '/api/internal/app/membership', 'POST'),
@@ -131,12 +133,26 @@ function assertCoreRegistration(result, { module, layer }) {
   )
 }
 
-function assertCurrentWorkspaceRegistration(result, { module, layer }) {
+function assertCurrentWorkspaceRegistration(result, { selected, layer }) {
   assert.equal(result.pages.includes('/workspace'), layer)
   assert.equal(result.layouts.includes('workspace'), layer)
   assert.equal(result.middleware.includes('fireux-workspace-global'), layer)
-  assert.equal(result.components.includes('WorkspaceSidebar'), module)
-  assert.equal(result.imports.includes('useWorkspace'), module)
+  assert.equal(result.components.includes('WorkspaceSidebar'), selected)
+  assert.equal(/\buseWorkspace\b/.test(result.imports), selected)
+}
+
+function coreWorkspaceImports() {
+  const runtime = join(installed, 'src/runtime')
+  return readdirSync(runtime, { recursive: true })
+    .filter(
+      (path) => !path.startsWith('workspace/') && /\.(ts|vue)$/.test(path)
+    )
+    .filter((path) =>
+      /\b(?:from\s+|import\s*\(?\s*)['"](?:fireux-workspace(?=[/'"])|[^'"]*\/workspace\/)/.test(
+        readFileSync(join(runtime, path), 'utf8')
+      )
+    )
+    .sort()
 }
 
 for (const [name, module, layer] of [
@@ -166,7 +182,7 @@ for (const [name, module, layer] of [
       result.layers.join(', ')
     )
     assertCoreRegistration(result, { module, layer })
-    assertCurrentWorkspaceRegistration(result, { module, layer })
+    assertCurrentWorkspaceRegistration(result, { selected: false, layer })
   })
 
   if (verifyCoreOnly) {
@@ -213,6 +229,8 @@ for (const [name, module, layer] of [
           handlers: result.handlers.filter(({ route }) =>
             route?.startsWith('/api/workspace')
           ),
+          runtimeImports: coreWorkspaceImports(),
+          bundledRuntime: existsSync(join(installed, 'src/runtime/workspace')),
         },
         {
           pages: [],
@@ -221,6 +239,8 @@ for (const [name, module, layer] of [
           components: [],
           imports: [],
           handlers: [],
+          runtimeImports: [],
+          bundledRuntime: false,
         }
       )
     })
@@ -280,7 +300,10 @@ for (const [name, workspaces, path] of [
     try {
       const result = await prepare(cwd, join(scratch, name))
       assertCoreRegistration(result, { module: true, layer: true })
-      assertCurrentWorkspaceRegistration(result, { module: true, layer: true })
+      assertCurrentWorkspaceRegistration(result, {
+        selected: workspaces.length > 0,
+        layer: true,
+      })
       assert.deepEqual(result.workspaces, workspaces)
       assert.ok(result.pages.includes(path), path)
       if (!workspaces.length) {

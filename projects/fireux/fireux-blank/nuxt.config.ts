@@ -2,7 +2,7 @@ import { defineFireuxApp } from 'fireux-app/config'
 
 export default defineFireuxApp({
   ecosystem: 'fireux',
-  modules: ['fireux-bookings'],
+  modules: ['fireux-workspace', 'fireux-bookings'],
   projectId: 'fireux',
   ecosystemId: 'fireux',
   id: 'fireux-blank',

@@ -24,6 +24,7 @@
     "fireux-app": "workspace:*",
     "fireux-businesses": "workspace:*",
     "fireux-core": "workspace:*",
+    "fireux-workspace": "workspace:*",
     "fireux-go-qr": "workspace:*",
     "fireux-jobs": "workspace:*",
     "fireux-kitchens": "workspace:*",

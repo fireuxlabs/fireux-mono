@@ -1,0 +1,21 @@
+{
+  "name": "fireux-workspace",
+  "version": "0.1.0",
+  "description": "Optional FireUX Workspace composition",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/module.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src/**/*"
+  ],
+  "dependencies": {
+    "@nuxt/kit": "^4.6.1",
+    "fireux-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "nuxt": "^4.6.1"
+  }
+}

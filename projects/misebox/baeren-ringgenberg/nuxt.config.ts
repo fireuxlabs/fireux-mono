@@ -22,6 +22,7 @@ export default defineFireuxApp({
     },
   },
   modules: [
+    'fireux-workspace',
     [
       'fireux-kitchens',
       { ordering: { channels: ['pos', 'kiosk', 'website'] } },

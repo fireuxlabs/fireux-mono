@@ -24,5 +24,5 @@ export default defineFireuxEcosystem({
     'supplier.team': { free: 3, pro: 7, business: null },
   },
   domains: ['suppliers'],
-  modules: ['fireux-places', 'fireux-businesses'],
+  modules: ['fireux-workspace', 'fireux-places', 'fireux-businesses'],
 })

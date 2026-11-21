@@ -49,6 +49,7 @@ const appConfig = defineFireuxEcosystem({
     noindexPaths: ['/apps/fireux-blank'],
   },
   modules: [
+    'fireux-workspace',
     ['fireux-core', { componentCatalogue: true }],
     [
       'fireux-products',

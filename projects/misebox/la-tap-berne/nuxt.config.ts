@@ -19,7 +19,7 @@ export default defineFireuxApp({
       canCreate: false,
     },
   },
-  modules: ['fireux-places', 'fireux-go-qr'],
+  modules: ['fireux-workspace', 'fireux-places', 'fireux-go-qr'],
   extends: [
     'fireux-misebox/kitchen-layer',
     'fireux-core/layer',

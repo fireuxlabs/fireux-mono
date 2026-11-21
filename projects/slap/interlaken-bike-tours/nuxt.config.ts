@@ -13,6 +13,7 @@ const fireux = defineFireuxApp({
   shortName: 'Bike Tours',
   role: 'tenant',
   modules: [
+    'fireux-workspace',
     'fireux-businesses',
     ['fireux-bookings', { businessWorkspace: true }],
   ],

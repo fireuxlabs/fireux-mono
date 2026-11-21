@@ -30,8 +30,10 @@ runtime ownership and registration guards are removed.
 The Core native runtime layer registers shared components under the `Fire`
 library prefix. Atoms, Molecules and Organisms are internal folder categories,
 not public name segments. Role folders below them remain part of the name.
-The Core module registers its separate App, User, Ecosystem and Workspace trees
-with their existing prefixes. App-local shared-component overrides use their
+The Core module registers its App, User and Ecosystem trees with their existing
+prefixes. The optional `fireux-workspace` module registers the shared Workspace
+components and composables. It uses their existing Core source paths until the
+runtime cutover. App-local shared-component overrides use their
 canonical Fire name. Keep one registration owner per tree and migrate consumers
 with registration; do not retain old-name aliases.
 

@@ -19,6 +19,7 @@ export default defineFireuxEcosystem({
     staticPaths: ['/', '/product', '/get-started', '/programme'],
   },
   modules: [
+    'fireux-workspace',
     ['fireux-core', { componentCatalogue: true }],
     [
       'fireux-kitchens',

@@ -17,6 +17,7 @@ export default defineFireuxEcosystem({
     siteUrl: 'https://buenohost-app.web.app',
   },
   workspaces: ['property'],
+  modules: ['fireux-workspace'],
   extends: ['fireux-core/layer', 'fireux-buenohost/property-layer'],
   subscriptionCapacity: {
     property: { free: 1, pro: 1, business: null },

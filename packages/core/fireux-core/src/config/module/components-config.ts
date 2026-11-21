@@ -7,12 +7,6 @@ export function configureComponents(resolver: Resolver) {
     filePath: resolver.resolve('./runtime/app/components/FireuxApp.vue'),
   })
   // Shared Fire components are registered by the native runtime layer.
-  registerComponentsDir(resolver, './runtime/workspace/components', {
-    global: false,
-    pathPrefix: true,
-    prefix: 'Workspace',
-  })
-
   registerComponentsDir(resolver, './runtime/app/components', {
     global: false,
     pathPrefix: true,

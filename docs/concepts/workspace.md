@@ -26,6 +26,12 @@ Related maps: [repository](fireux-mono.md), [components](components.md),
 
 ## Ownership
 
+Dashboard is a universal Core surface for App and account work. Workspace is
+optional and manages a specific Entity. Apps with a Workspace family select
+`fireux-workspace` in their Nuxt modules. That module owns component and
+composable registration. The Workspace runtime and native layer entries
+remain in Core pending their separate cutover.
+
 ```text
 App → Ecosystem → Extension → Core
 

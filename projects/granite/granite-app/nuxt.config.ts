@@ -13,6 +13,7 @@ export default defineFireuxEcosystem({
   homePath: '/home',
   seo: { staticPaths: ['/home'], noindexPaths: ['/'] },
   workspaces: ['portfolio'],
+  modules: ['fireux-workspace'],
   extends: ['fireux-core/layer', 'fireux-granite/portfolio-layer'],
   subscriptionCapacity: {
     portfolio: { free: 1, pro: 1, business: null },
