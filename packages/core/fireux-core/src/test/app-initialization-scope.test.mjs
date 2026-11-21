@@ -53,9 +53,16 @@ function initializationHarness(options = {}) {
     ref,
     watch,
     useCommandScope,
-    useAuth: () => ({ currentUser }),
+    useAuth: () => ({
+      currentUser,
+      hasAuthState: ref(true),
+      isAuthenticated: computed(() => Boolean(currentUser.value)),
+    }),
     useFireUXConfig: () => config,
-    useUserSession: () => ({ user: user, pending: userPending }),
+    useUserRead: (uid) => ({
+      user: computed(() => (uid.value ? user.value : null)),
+      pending: userPending,
+    }),
     useToastify: () => ({
       success: (message) => notices.push(['success', message]),
       error: (message) => notices.push(['error', message]),
@@ -79,11 +86,16 @@ function initializationHarness(options = {}) {
     },
     console: { error() {} },
   }
+  const useAppInitializationAction = load(
+    '../runtime/app/composables/initialization/internal/useAppInitializationAction.ts',
+    'useAppInitializationAction',
+    dependencies
+  )
   const state = owner.run(() =>
     load(
       '../runtime/app/composables/initialization/useAppInitialization.ts',
       'useAppInitialization',
-      dependencies
+      { ...dependencies, useAppInitializationAction }
     )()
   )
   return {

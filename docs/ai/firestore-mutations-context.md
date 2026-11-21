@@ -354,15 +354,15 @@ records. Public meal-deal projection remains read-only.
   `app/server/identity`. The separate `/api/internal/app/public-settings`
   route delegates featured-content changes to `app/server/settings/update.ts`,
   which writes only the `settings/public` child.
-- App initialization decides when a configured global Main App can provision
-  its Project-linked Ecosystem. The Ecosystem owns root validation and its
-  guarded identity transaction in
+- The developer-only App initialization endpoint can provision a configured
+  global Main App's Project-linked Ecosystem before calling the generic App
+  initializer. Every App initializer call requires an existing Ecosystem in
+  the identity database, regardless of Project linkage. The Ecosystem owns root
+  validation and its guarded identity transaction in
   `packages/core/fireux-core/src/runtime/ecosystem/server/identity/provision.ts`.
   The server contract supports a root with no Apps and no Project link. A
   trusted caller must verify actor and target authority before creation or
-  retry. App membership grants no provisioning authority. Current App
-  initialization requires an existing Ecosystem when configured without a
-  Project.
+  retry. App membership grants no provisioning authority.
 - App media single-image and bulk sync share the same development/developer
   command. Only known image kinds are caller inputs; App and bucket come from
   runtime authority. Missing owner artwork fails instead of borrowing a parent
@@ -711,7 +711,9 @@ or release a newer pending action. Proof lives in Core
 ### App context creation and migration
 
 Core configured-App initialization receives the authored `context` seed through
-private runtime configuration and writes it only when creating the App root.
+private runtime configuration and writes it only when creating the App root
+with non-empty context. Configured creation leaves optional presentation
+fields unset until an App editor or media sync supplies them.
 The FireUX ecosystem Project App command accepts validated `context` alongside
 its creation fields; retries never reseed an existing root. Public App readers
 continue to project their existing allowlist without this internal field.

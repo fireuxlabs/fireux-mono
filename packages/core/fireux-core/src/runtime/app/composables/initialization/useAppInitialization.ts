@@ -1,14 +1,10 @@
-import { computed, ref, watch } from 'vue'
-import type { Ref } from 'vue'
-import { useToastify } from '../../../composables/ui/useToastify'
-import { useUserSession } from '../../../user/composables/session/useUserSession'
+import { computed, type Ref } from 'vue'
+import { useUserRead } from '../../../user/composables/useUserRead'
 import type { User } from '../../../user/models/user.model'
-import { syncAppMediaToStorage } from '../media/sync-app-media'
 import type { EnvCheckResponse } from '../../contracts/environment-check.ts'
-import { initializeConfiguredApp } from './initialize-configured-app'
 import { useAppEnvCheck } from './useAppEnvCheck'
+import { useAppInitializationAction } from './internal/useAppInitializationAction'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import { useFireUXConfig } from '../config/FireUXConfig'
 
 export interface AppInitializationState {
@@ -29,31 +25,13 @@ export interface AppInitializationState {
  * new-App onboarding and must not be mounted on `/apps/create`.
  */
 export function useAppInitialization(): AppInitializationState {
-  const { user: userRef, pending: userPending } = useUserSession()
-  const user = computed(() => userRef.value ?? null)
-  const toast = useToastify()
-  const { currentUser } = useAuth()
-  const config = useFireUXConfig()
-  const context = [
-    () => currentUser.value?.uid,
-    () => config.appId,
-    () => user.value?.id,
-  ]
-  const captureIntent = useCommandScope(context)
-
-  const actionPending = ref(false)
-  const proceedError = ref<string | null>(null)
-  let runSequence = 0
-  watch(
-    context,
-    () => {
-      runSequence += 1
-      actionPending.value = false
-      proceedError.value = null
-    },
-    { flush: 'sync' }
+  const { currentUser, hasAuthState, isAuthenticated } = useAuth()
+  const uid = computed(() =>
+    hasAuthState.value && isAuthenticated.value ? currentUser.value?.uid : ''
   )
-
+  const { user: userRef, pending: userPending } = useUserRead(uid)
+  const user = computed(() => userRef.value ?? null)
+  const config = useFireUXConfig()
   const { data, pending, error, refresh: refreshEnv } = useAppEnvCheck()
 
   const env = computed(() => data.value ?? null)
@@ -66,8 +44,8 @@ export function useAppInitialization(): AppInitializationState {
   const envPending = computed(() => Boolean(pending.value))
   const canProceed = computed(() =>
     Boolean(
-      currentUser.value?.uid &&
-        user.value &&
+      uid.value &&
+        user.value?.id === uid.value &&
         !userPending.value &&
         !envPending.value &&
         !envError.value &&
@@ -79,50 +57,15 @@ export function useAppInitialization(): AppInitializationState {
     void refreshEnv()
   }
 
-  const onProceed = async () => {
-    if (!canProceed.value || actionPending.value) return
-    const isCurrent = captureIntent()
-    const runId = ++runSequence
-    actionPending.value = true
-    proceedError.value = null
-    try {
-      const result = await initializeConfiguredApp()
-      if (!isCurrent()) return
-      const syncResult = await syncAppMediaToStorage()
-      if (!isCurrent()) return
-      if (syncResult.failed.length) {
-        const detail = syncResult.failed
-          .map((entry) => `${entry.kind}: ${entry.message}`)
-          .join(' | ')
-        throw new Error(`App setup is incomplete. ${detail}`)
-      }
-
-      await refreshEnv()
-      if (!isCurrent()) return
-      toast.success(
-        result.ecosystemCreated
-          ? result.appCreated
-            ? 'Ecosystem and App initialized.'
-            : 'Ecosystem setup repaired.'
-          : result.appCreated
-            ? 'App initialized.'
-            : result.membershipCreated || result.membershipUpdated
-              ? 'App access repaired.'
-              : 'App is ready.'
-      )
-    } catch (e) {
-      if (!isCurrent()) return
-      const message =
-        e instanceof Error && e.message.trim()
-          ? e.message.trim()
-          : 'Failed to initialize App.'
-      proceedError.value = message
-      toast.error(message)
-      console.error('[useAppInitialization] failed', e)
-    } finally {
-      if (isCurrent() && runId === runSequence) actionPending.value = false
-    }
-  }
+  const action = useAppInitializationAction({
+    intentSources: [
+      () => currentUser.value?.uid,
+      () => config.appId,
+      () => user.value?.id,
+    ],
+    canProceed,
+    refreshEnv,
+  })
 
   return {
     user,
@@ -130,10 +73,8 @@ export function useAppInitialization(): AppInitializationState {
     env,
     envError,
     pending: envPending,
-    actionPending,
     canProceed,
-    proceedError,
     onRefreshEnv,
-    onProceed,
+    ...action,
   }
 }

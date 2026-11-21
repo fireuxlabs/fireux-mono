@@ -165,11 +165,13 @@ composes those owners without adding an AI dependency to Core.
 - `ecosystem` is the package/Firebase binding key, not an entity relationship.
 - Optional `projectId` names the canonical FireUX Project for Project-scoped
   integrations. Ordinary Apps still require an Ecosystem binding and
-  canonical `ecosystemId`. An App configured without
-  `projectId` initializes under an existing Ecosystem and records local
-  signup events. Main App initialization can provision an Ecosystem when the
-  role is global, the Project and Ecosystem IDs match, and the App ID is
-  `<ecosystemId>-app`. Signup-monitor delivery requires Project scope.
+  canonical `ecosystemId`. App initialization checks for the canonical
+  Ecosystem in the identity database before writing the App or administrator
+  membership, regardless of Project linkage. An App without `projectId`
+  records local signup events. The developer-only initialization endpoint can
+  provision an Ecosystem before App initialization when the role is global,
+  the Project and Ecosystem IDs match, and the App ID is `<ecosystemId>-app`.
+  Signup-monitor delivery requires Project scope.
 - Required `ecosystemId` names the canonical Ecosystem entity that contains the
   App. App role does not change this relationship: global, tenant, and
   standalone Apps all belong to an Ecosystem.
