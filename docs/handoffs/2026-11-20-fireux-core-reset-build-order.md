@@ -105,9 +105,10 @@ handle and membership endpoints against the named `fireux` emulator database.
 Both App orders produced one User and private account and two App memberships.
 The second join preserved the complete User and private account documents,
 including their timestamps. The default database had none of those records.
-The Project-free browser completed first-time setup and sign-out against the
-named database. The portal's named-database browser rerun stopped at a Nuxt
-development SSR IPC error before sign-in.
+Both browsers completed first-time setup and sign-out against the named
+database. The portal passed with client rendering in the isolated fixture,
+after a Nuxt development SSR IPC error blocked the original run. Portal SSR
+with the named emulator database remains unverified.
 
 **Open · Deployed User privacy.** Readback of the `cloud.firestore/fireux`
 release in `fireux-2005` found a public read/write catch-all. Replaying that
