@@ -11,11 +11,13 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { createRequire } from 'node:module'
+import { dirname, join } from 'node:path'
 import { after, before, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { getLayerDirectories } from '@nuxt/kit'
 import { build, loadNuxt } from 'nuxt'
+import { verifyCoreAccountJourney } from './fixtures/core-account-journey.mjs'
 
 const core = fileURLToPath(new URL('../../', import.meta.url))
 const repository = fileURLToPath(new URL('../../../../../', import.meta.url))
@@ -23,6 +25,8 @@ const scratch = mkdtempSync(
   join(realpathSync(tmpdir()), 'fireux-core-installation-')
 )
 const installed = join(scratch, 'node_modules/fireux-core')
+// Opt in while the existing registration baseline and the cutover target differ.
+const verifyCoreOnly = process.env.FIREUX_VERIFY_CORE_ONLY === '1'
 
 before(() => {
   execFileSync('pnpm', ['pack', '--pack-destination', scratch], { cwd: core })
@@ -40,6 +44,22 @@ before(() => {
     join(installed, 'node_modules'),
     'dir'
   )
+  if (verifyCoreOnly) {
+    const { dependencies } = JSON.parse(
+      readFileSync(join(installed, 'package.json'), 'utf8')
+    )
+    for (const name of Object.keys(dependencies)) {
+      assert.ok(!name.startsWith('fireux-'), `Core depends on ${name}`)
+      const target = join(scratch, 'node_modules', name)
+      mkdirSync(dirname(target), { recursive: true })
+      symlinkSync(join(core, 'node_modules', name), target, 'dir')
+    }
+    for (const name of ['nuxt', 'vue', '@nuxt/ui']) {
+      const target = join(scratch, 'node_modules', name)
+      mkdirSync(dirname(target), { recursive: true })
+      symlinkSync(join(repository, 'node_modules', name), target, 'dir')
+    }
+  }
 })
 
 after(() => rmSync(scratch, { recursive: true, force: true }))
@@ -89,9 +109,6 @@ function hasHandler(result, route, method) {
 }
 
 function assertCoreRegistration(result, { module, layer }) {
-  assert.equal(result.pages.includes('/workspace'), layer)
-  assert.equal(result.layouts.includes('workspace'), layer)
-  assert.equal(result.middleware.includes('fireux-workspace-global'), layer)
   assert.equal(result.components.includes('FirePwaStatus'), layer)
   assert.equal(hasHandler(result, '/api/app/status', 'GET'), layer)
   assert.equal(
@@ -99,10 +116,8 @@ function assertCoreRegistration(result, { module, layer }) {
     layer
   )
 
-  for (const name of ['FireuxApp', 'WorkspaceSidebar']) {
-    assert.equal(result.components.includes(name), module, name)
-  }
-  for (const name of ['useAppUserRead', 'useUserRead', 'useWorkspace']) {
+  assert.equal(result.components.includes('FireuxApp'), module)
+  for (const name of ['useAppUserRead', 'useUserRead']) {
     assert.equal(result.imports.includes(name), module, name)
   }
   assert.equal(hasHandler(result, '/manifest.webmanifest', 'GET'), module)
@@ -114,6 +129,14 @@ function assertCoreRegistration(result, { module, layer }) {
     result.handlers.some(({ route }) => route === '/sitemap.xml'),
     module
   )
+}
+
+function assertCurrentWorkspaceRegistration(result, { module, layer }) {
+  assert.equal(result.pages.includes('/workspace'), layer)
+  assert.equal(result.layouts.includes('workspace'), layer)
+  assert.equal(result.middleware.includes('fireux-workspace-global'), layer)
+  assert.equal(result.components.includes('WorkspaceSidebar'), module)
+  assert.equal(result.imports.includes('useWorkspace'), module)
 }
 
 for (const [name, module, layer] of [
@@ -143,6 +166,74 @@ for (const [name, module, layer] of [
       result.layers.join(', ')
     )
     assertCoreRegistration(result, { module, layer })
+    assertCurrentWorkspaceRegistration(result, { module, layer })
+  })
+
+  if (verifyCoreOnly) {
+    test(`Core without Workspace prepares as ${name}`, async () => {
+      const cwd = mkdtempSync(join(scratch, 'core-only-'))
+      const configPath = join(cwd, 'nuxt.config.mjs')
+      writeFileSync(
+        configPath,
+        `export default ${JSON.stringify({
+          extends: layer ? ['fireux-core/layer'] : [],
+          modules: module ? ['fireux-core'] : [],
+          modulesDir: [join(scratch, 'node_modules')],
+          pages: true,
+        })}`
+      )
+      assert.throws(
+        () => createRequire(configPath).resolve('fireux-workspace'),
+        { code: 'MODULE_NOT_FOUND' }
+      )
+      const result = await prepare(cwd, join(cwd, '.nuxt'))
+      assert.equal(
+        result.layers.includes(join(installed, 'src/runtime')),
+        layer
+      )
+      assertCoreRegistration(result, { module, layer })
+      assert.deepEqual(
+        {
+          pages: result.pages.filter((path) =>
+            /^\/(?:dashboard\/)?workspace(?:\/|$)/.test(path)
+          ),
+          layouts: result.layouts.filter((name) => name === 'workspace'),
+          middleware: result.middleware.filter((name) =>
+            name.includes('workspace')
+          ),
+          components: result.components.filter((name) =>
+            /^Workspace(?=[A-Z])/.test(name)
+          ),
+          imports: result.imports
+            .split('\n')
+            .filter((line) =>
+              /runtime\/workspace\/|\buseWorkspace\w*\b/.test(line)
+            )
+            .map((line) => line.split(' from ')[0]),
+          handlers: result.handlers.filter(({ route }) =>
+            route?.startsWith('/api/workspace')
+          ),
+        },
+        {
+          pages: [],
+          layouts: [],
+          middleware: [],
+          components: [],
+          imports: [],
+          handlers: [],
+        }
+      )
+    })
+  }
+}
+
+if (verifyCoreOnly) {
+  test('Core without Workspace completes the authenticated account journey', async () => {
+    await verifyCoreAccountJourney({
+      cwd: mkdtempSync(join(scratch, 'core-account-')),
+      modulesDir: join(scratch, 'node_modules'),
+      nuxtCli: join(repository, 'node_modules/nuxt/bin/nuxt.mjs'),
+    })
   })
 }
 
@@ -189,6 +280,7 @@ for (const [name, workspaces, path] of [
     try {
       const result = await prepare(cwd, join(scratch, name))
       assertCoreRegistration(result, { module: true, layer: true })
+      assertCurrentWorkspaceRegistration(result, { module: true, layer: true })
       assert.deepEqual(result.workspaces, workspaces)
       assert.ok(result.pages.includes(path), path)
       if (!workspaces.length) {
