@@ -6,10 +6,13 @@ import { useAppEnvCheck } from './useAppEnvCheck'
 import { useAppInitializationAction } from './internal/useAppInitializationAction'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from '../config/FireUXConfig'
+import type { ReadOutcome } from '../../../utils/read-outcome'
 
 export interface AppInitializationState {
   user: Ref<User | null>
   userPending: Ref<boolean>
+  userOutcome: Ref<ReadOutcome>
+  userError: Ref<unknown>
   env: Ref<EnvCheckResponse | null>
   envError: Ref<string | null>
   pending: Ref<boolean>
@@ -29,7 +32,12 @@ export function useAppInitialization(): AppInitializationState {
   const uid = computed(() =>
     hasAuthState.value && isAuthenticated.value ? currentUser.value?.uid : ''
   )
-  const { user: userRef, pending: userPending } = useUserRead(uid)
+  const {
+    user: userRef,
+    pending: userPending,
+    outcome: userOutcome,
+    error: userError,
+  } = useUserRead(uid)
   const user = computed(() => userRef.value ?? null)
   const config = useFireUXConfig()
   const { data, pending, error, refresh: refreshEnv } = useAppEnvCheck()
@@ -45,6 +53,7 @@ export function useAppInitialization(): AppInitializationState {
   const canProceed = computed(() =>
     Boolean(
       uid.value &&
+        userOutcome.value === 'ready' &&
         user.value?.id === uid.value &&
         !userPending.value &&
         !envPending.value &&
@@ -70,6 +79,8 @@ export function useAppInitialization(): AppInitializationState {
   return {
     user,
     userPending,
+    userOutcome,
+    userError,
     env,
     envError,
     pending: envPending,

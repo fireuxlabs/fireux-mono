@@ -81,20 +81,6 @@
             </UBadge>
           </div>
         </div>
-        <div v-if="showProceed" class="fx-card-body-stack">
-          <UButton
-            type="button"
-            block
-            :loading="proceedPending"
-            :disabled="proceedDisabled"
-            @click="emit('proceed')"
-          >
-            {{ proceedPending ? 'Initializing...' : 'Continue' }}
-          </UButton>
-          <p v-if="proceedDisabled && !proceedPending">
-            Finish the required checks above to continue.
-          </p>
-        </div>
       </UCard>
 
       <UCard v-if="optionalClientVars.length">
@@ -224,29 +210,17 @@ const props = withDefaults(
     envData?: EnvCheckResponse | null
     pending?: boolean
     error?: string | null
-    showProceed?: boolean
-    proceedPending?: boolean
-    proceedDisabled?: boolean
   }>(),
   {
     envData: null,
     pending: false,
     error: null,
-    showProceed: false,
-    proceedPending: false,
-    proceedDisabled: true,
   }
 )
-const emit = defineEmits<{
-  (event: 'proceed'): void
-}>()
 
 const pending = computed(() => props.pending ?? false)
 const envData = computed(() => props.envData ?? null)
 const error = computed(() => props.error ?? null)
-const showProceed = computed(() => props.showProceed)
-const proceedPending = computed(() => props.proceedPending)
-const proceedDisabled = computed(() => props.proceedDisabled)
 
 const requiredVars = computed(() => envData.value?.required ?? [])
 const optionalClientVars = computed(() => envData.value?.optionalClient ?? [])

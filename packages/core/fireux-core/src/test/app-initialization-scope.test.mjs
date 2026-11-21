@@ -3,6 +3,10 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import * as Vue from 'vue'
+import { compileScript, parse } from 'vue/compiler-sfc'
+import { renderToString } from 'vue/server-renderer'
+import { transpileModule, ModuleKind } from 'typescript'
 import {
   computed,
   ref,
@@ -48,6 +52,7 @@ function initializationHarness(options = {}) {
     pending = ref(false),
     error = ref(null),
     userPending = ref(false)
+  const userError = ref(null)
   const dependencies = {
     computed,
     ref,
@@ -62,6 +67,13 @@ function initializationHarness(options = {}) {
     useUserRead: (uid) => ({
       user: computed(() => (uid.value ? user.value : null)),
       pending: userPending,
+      error: userError,
+      outcome: computed(() => {
+        if (!uid.value) return 'idle'
+        if (userError.value) return 'error'
+        if (userPending.value) return 'pending'
+        return user.value ? 'ready' : 'empty'
+      }),
     }),
     useToastify: () => ({
       success: (message) => notices.push(['success', message]),
@@ -108,10 +120,116 @@ function initializationHarness(options = {}) {
     pending,
     error,
     userPending,
+    userError,
     calls,
     notices,
   }
 }
+
+test('App setup renders canonical User outcomes and only one initialize action', async () => {
+  const h = initializationHarness()
+  let retry
+  let reloads = 0
+  function component(path, imports = {}) {
+    const { descriptor } = parse(
+      readFileSync(new URL(path, import.meta.url), 'utf8')
+    )
+    const { content } = compileScript(descriptor, {
+      id: path,
+      inlineTemplate: true,
+    })
+    const { outputText } = transpileModule(
+      content.replaceAll('import.meta.client', 'false'),
+      { compilerOptions: { module: ModuleKind.CommonJS } }
+    )
+    const exports = {}
+    compileFunction(outputText, ['require', 'exports', 'window'])(
+      (id) => {
+        if (id === 'vue') return Vue
+        assert.ok(Object.hasOwn(imports, id), id)
+        return imports[id]
+      },
+      exports,
+      { location: { reload: () => reloads++ } }
+    )
+    return exports.default
+  }
+  const screen = component('../runtime/app/components/Initialize/System.vue', {
+    '../../composables/initialization/useAppInitialization': {
+      useAppInitialization: () => h.state,
+    },
+    '../../../user/components/Create/System.vue': {
+      default: { render: () => Vue.h('form', 'Create User') },
+    },
+    '../../../composables/fireux/firebase/useAuth': {
+      useAuth: () => ({ hasAuthState: ref(true), isAuthenticated: ref(true) }),
+    },
+  })
+  const diagnostics = component(
+    '../runtime/app/components/Create/OnboardingVariables.vue'
+  )
+  const feedback = component('../runtime/components/molecules/State.vue')
+  const container = {
+    render() {
+      return Vue.h('div', [this.$slots.header?.(), this.$slots.default?.()])
+    },
+  }
+  const render = async () => {
+    const app = Vue.createSSRApp(screen)
+    for (const name of [
+      'ClientOnly',
+      'UContainer',
+      'UBadge',
+      'UCard',
+      'UAlert',
+      'UIcon',
+      'FireCopyError',
+    ])
+      app.component(name, container)
+    app.component('AppCreateOnboardingVariables', diagnostics)
+    app.component('FireState', feedback)
+    app.component('FireAuthSystem', container)
+    app.component('UButton', {
+      props: ['label'],
+      setup(props, { attrs, slots }) {
+        if (props.label === 'Try again') retry = attrs.onClick
+        return () => Vue.h('button', slots.default?.() ?? props.label)
+      },
+    })
+    return renderToString(app)
+  }
+  h.user.value = null
+  h.userPending.value = true
+  assert.match(await render(), /Loading account…/)
+  h.userPending.value = false
+  h.userError.value = new Error('User read failed')
+  const failure = await render()
+  assert.match(failure, /role="alert".*Unable to load account\./s)
+  assert.match(failure, /Try again/)
+  assert.doesNotMatch(failure, /Create User|Initialize App/)
+  retry()
+  assert.equal(reloads, 1)
+
+  h.userError.value = null
+  const empty = await render()
+  assert.match(empty, /<form>Create User<\/form>/)
+  assert.doesNotMatch(empty, /Initialize App/)
+
+  h.user.value = { id: 'a' }
+  h.env.value = {
+    isValid: true,
+    required: [{ key: 'Fixture variable', present: true }],
+    server: { storage: { reachable: true } },
+  }
+  const ready = await render()
+  assert.match(ready, /Environment Check/)
+  assert.equal(
+    (ready.match(/>\s*Initialize App\s*<\/button>/g) ?? []).length,
+    1
+  )
+  assert.doesNotMatch(ready, /Create User|Continue\s*<\/button>/)
+  h.owner.stop()
+})
 test('App initialization composes one initialization, media sync and refresh, with duplicate submission blocked', async () => {
   const reply = deferred(),
     h = initializationHarness({ initialize: () => reply.promise })

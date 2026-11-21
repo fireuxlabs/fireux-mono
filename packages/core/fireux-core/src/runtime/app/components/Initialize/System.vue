@@ -1,20 +1,20 @@
 <template>
   <UContainer>
     <ClientOnly>
+      <FireState v-if="!hasAuthState" outcome="pending" entity="account" />
+
+      <FireAuthSystem v-else-if="!isAuthenticated" />
       <FireState
-        v-if="!hasAuthState || (isAuthenticated && userPending)"
-        outcome="pending"
+        v-else-if="userOutcome === 'error'"
+        outcome="error"
         entity="account"
+        :error="userError"
+        retryable
+        @retry="retryUserRead"
       />
+      <UserCreateSystem v-else-if="userOutcome === 'empty'" />
 
-      <template v-else-if="!user && !isAuthenticated">
-        <FireAuthSystem />
-      </template>
-      <template v-else-if="!user">
-        <UserCreateSystem />
-      </template>
-
-      <template v-else>
+      <template v-else-if="userOutcome === 'ready' && user">
         <div class="fx-card-body-stack">
           <header class="fx-card__header">
             <div class="fx-card__actions">
@@ -35,10 +35,6 @@
             :env-data="env"
             :pending="pending"
             :error="envError"
-            :show-proceed="Boolean(env)"
-            :proceed-pending="actionPending"
-            :proceed-disabled="!canProceed || actionPending"
-            @proceed="onProceed"
           />
 
           <div class="fx-card-body-stack">
@@ -60,6 +56,7 @@
           </div>
         </div>
       </template>
+      <FireState v-else outcome="pending" entity="account" />
 
       <template #fallback>
         <FireState outcome="pending" entity="account" />
@@ -76,7 +73,8 @@ import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 const { hasAuthState, isAuthenticated } = useAuth()
 const {
   user,
-  userPending,
+  userOutcome,
+  userError,
   env,
   envError,
   pending,
@@ -86,4 +84,8 @@ const {
   onRefreshEnv,
   onProceed,
 } = useAppInitialization()
+
+function retryUserRead() {
+  window.location.reload()
+}
 </script>

@@ -89,6 +89,9 @@ presentation, styling or behavior, even with one consumer and no reactive state.
 Separation of concerns is sufficient reason for a component; reuse is not required.
 Small cohesive controls may stay local. Do not add forwarding wrappers, empty
 controllers or universal abstractions to make file trees look symmetrical.
+Before splitting a file, check its responsibilities, consumers, dependencies
+and operations. Remove unused work first. Extract a responsibility when it has
+a distinct owner.
 
 Keep the path from read to screen to action direct. A composable's return is a
 contract with its current callers. Return only the data they render or use and
