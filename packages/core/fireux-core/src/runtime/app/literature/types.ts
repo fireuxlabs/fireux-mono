@@ -3,7 +3,7 @@
  * This is public content, not a persisted Entity or route registry.
  */
 
-import type { WorkspaceCapabilityFamilies } from '../../workspace/models/capability-families'
+import type { WorkspaceCapabilityFamilies } from './capability-families'
 
 export type FireuxMetaCta = {
   label: string

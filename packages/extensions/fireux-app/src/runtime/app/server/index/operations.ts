@@ -8,7 +8,7 @@ import {
   WORKSPACE_CAPABILITY_TOOL_FAMILIES,
   WORKSPACE_CAPABILITY_TOOL_SCOPES,
   type WorkspaceCapabilityFamilies,
-} from 'fireux-core/runtime/workspace/models/capability-families'
+} from 'fireux-core/runtime/app/literature/capability-families'
 import type {
   FireuxMetaContent,
   FireuxMetaOperation,

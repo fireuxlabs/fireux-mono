@@ -243,10 +243,12 @@ composes those owners without adding an AI dependency to Core.
   dependencies; filesystem and Markdown loading belong to Core's config-only
   metadata loader. Shared literature types live in Core
   `runtime/app/literature/types.ts`; the pure `defineFireuxMeta` helper lives
-  in `runtime/app/literature/define-meta.ts`. Workspace capability vocabulary
-  belongs to `runtime/workspace/models/capability-families.ts`. App metadata’s optional `legal.notices` are App-owned additions to
-  `fireux-app`'s shared `/legal` page; `readAppMeta` exposes only the validated public
-  projection. Core platform documents remain shared, and an installed extension
+  in `runtime/app/literature/define-meta.ts`. The descriptive vocabulary for
+  published Workspace operations lives in
+  `runtime/app/literature/capability-families.ts`. App metadata’s optional
+  `legal.notices` are App-owned additions to `fireux-app`'s shared `/legal`
+  page. `readAppMeta` exposes only the validated public projection. Core
+  platform documents remain shared, and an installed extension
   does not add legal content unless the App explicitly composes it.
 - Core `resolveWorkspaceCanCreate` owns the shared explicit-override then
   non-tenant fallback. Workspace UI and trusted entity onboarding use that same

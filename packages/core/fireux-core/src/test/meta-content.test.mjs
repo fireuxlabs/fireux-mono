@@ -34,7 +34,7 @@ test('shared literature contracts and helper have no executable loader imports',
   for (const file of [
     '../runtime/app/literature/types.ts',
     '../runtime/app/literature/define-meta.ts',
-    '../runtime/workspace/models/capability-families.ts',
+    '../runtime/app/literature/capability-families.ts',
   ]) {
     const { outputText } = transpileModule(
       readFileSync(new URL(file, import.meta.url), 'utf8'),
