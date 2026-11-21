@@ -7,7 +7,9 @@
     "build": "nuxi build",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
-    "clean": "rimraf .nuxt app/.nuxt .output dist"
+    "clean": "rimraf .nuxt app/.nuxt .output dist",
+    "pregenerate": "node ./scripts/ensure-placeholder-assets.mjs",
+    "prebuild": "node ./scripts/ensure-placeholder-assets.mjs"
   },
   "dependencies": {
     "@nuxt/icon": "2.5.1",
