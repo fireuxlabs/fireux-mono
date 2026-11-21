@@ -1,6 +1,6 @@
 import { defineFireuxApp } from 'fireux-app/config'
 
-export default defineFireuxApp({
+const app = defineFireuxApp({
   ecosystem: 'fireux',
   projectId: 'fireux',
   ecosystemId: 'fireux',
@@ -15,3 +15,18 @@ export default defineFireuxApp({
     disallowPaths: ['/'],
   },
 })
+
+// The full FireUX App scaffold remains intact. This greeting-only deployment
+// has no SSR endpoints and uses Firebase Hosting's static output, not Functions.
+export default {
+  ...app,
+  nitro: {
+    ...app.nitro,
+    preset: 'static',
+    prerender: {
+      ...app.nitro?.prerender,
+      routes: ['/', '/robots.txt'],
+      failOnError: true,
+    },
+  },
+}
