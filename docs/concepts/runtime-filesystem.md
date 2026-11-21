@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
-Updated: 2026-11-18
-Ref: 2f47a03c2
+Updated: 2026-11-21
+Ref: 7d94f6f53
 Role: map, not canon
 
 ## Purpose
@@ -222,21 +222,18 @@ shared or Entity role. Check declarations against existing source directories
 and generated imports/components to detect phantom targets.
 
 Core App owns identity, runtime configuration, initialization and App composition
-under `runtime/app/{components,composables,models,utils,server}`. The current AppUser implementation
-owns `runtime/app/app-user/{components,composables,contracts,models,utils,server}`;
-AppUser remains a first-class Entity, and this nested source placement is pending
-its own bounded sibling-root cutover rather than a template for new Entities;
-`models` contains only `model.ts`, and bounded reader/presentation projections
-live in the child's `types.ts`. Native AppUser registration uses the `AppUser`
-component prefix and its explicit composable directory. App events remain App-owned;
-User-profile navigation and current-App composition do not move into AppUser.
-The
-Nuxt handlers remain under `runtime/server/api/**/app/` and delegate inward.
+under `runtime/app/{components,composables,models,utils,server}`. AppUser is an
+App-owned membership record. App groups the membership model, readers, UI, and
+commands in `runtime/app/app-user/`. Its bounded reader and presentation
+projections live in `types.ts`. Native registration uses the `AppUser` component
+prefix and the explicit composable directory. App events and current-App
+composition sit with App. User owns profile navigation.
+Native Nuxt handlers under `runtime/server/api/**/app/` delegate to those owners.
 Commercial offers, public landing and legal presentation, and public catalogue
 pages live in the `fireux-app` runtime layer. Main discovery and child-App
 composition live in `fireux-ecosystem`; Core retains neutral shells and controls.
-Capability names avoid redundant prefixes, such as `initialization`; the named
-child Entity retains its product identity as `app-user`.
+Capability names avoid redundant prefixes, such as `initialization`.
+`app-user` names the existing App membership implementation.
 
 ## Ordering inside an entity
 

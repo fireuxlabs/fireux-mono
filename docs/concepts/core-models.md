@@ -1,7 +1,7 @@
 # Core Models
 
-Updated: 2026-11-12
-Ref: 470b97114
+Updated: 2026-11-21
+Ref: 7d94f6f53
 Role: map, not canon
 
 ## Purpose
@@ -21,13 +21,12 @@ App initialization results and membership command inputs/results belong to
 `runtime/app/app-user/contracts/membership.ts`. These shared
 browser/server agreements are not stored records and do not add a command owner.
 
-AppUser's App-scoped Entity spine is `runtime/app/app-user`. Its only model file,
+App owns its membership implementation under `runtime/app/app-user`. The model,
 `models/model.ts`, owns membership fields and allowed-value vocabulary. Reader
 and presentation projections live in `types.ts`; validation and access decisions
 live in `utils`. Composables, membership UI, the trusted commands and the runtime
-membership mutation target remain together under this child. Its database path
-and User identity relationship are unchanged. App initialization and sessions
-compose this owner; App events remain in `app/server/events`.
+membership mutation target live together under App. App initialization and
+sessions compose membership behavior. App events live in `app/server/events`.
 
 App event payload construction and the private deterministic ID helper belong to
 `runtime/app/server/events/publish-joined-event.ts`. The event has no separate
@@ -84,12 +83,14 @@ App descriptive copy uses `name`, optional `short_name`, `tagline`, and
 no separate short/long biography fields; directory consumers select from the
 same App identity rather than maintaining another descriptive record.
 
-`App`, `User`, and `Ecosystem` are root entities. `AppUser` is the App-scoped
-membership Entity connecting one App to one User, not another root. Every App
-references one Ecosystem; neither Ecosystem nor User stores a reverse array
-of App IDs on its root document. A minimal `users/{uid}/apps/{appId}` child
-reference may locate an AppUser stored in another database; it is not a second
-membership record and never grants access.
+`App`, `User`, and `Ecosystem` are root Entities. Firebase Auth authenticates
+the signed-in account and supplies its UID. Core User owns the person's
+canonical identity. AppUser is the App-owned membership record relating that
+User to one App. Its role and subscription inform App access checks. Every
+App references one Ecosystem. User and Ecosystem use child references for
+reverse App lookup. The `users/{uid}/apps/{appId}` reference locates the
+membership. Access checks use the authoritative membership at
+`apps/{appId}/users/{uid}` in the owning App database.
 
 An Ecosystem likewise stores minimal `ecosystems/{ecosystemId}/apps/{appId}`
 children so deletion can prove which Apps still point at it. `App.ecosystem_id`
@@ -632,8 +633,9 @@ preserves existence even when presentation fields are invalid, so pending or
 failed reads never trigger initialization. Account/App changes hide old results
 immediately. App identity edits and media synchronization refresh the exact
 snapshot through native `refreshNuxtData`; other-browser changes require refresh.
-User setup provisions User identity and ensures a basic AppUser membership;
-App admins control elevated roles and subscriptions.
+User setup provisions canonical identity and private-account consent. Explicit
+Join creates the basic AppUser membership. App admins control elevated roles
+and subscriptions.
 Proof lives in `app-native-auth-scope.test.mjs` and `app-identity.test.mjs`.
 
 `useAppDetail` owns the live public HTTP detail result,
