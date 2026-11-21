@@ -26,6 +26,7 @@ export default {
     prerender: {
       ...app.nitro?.prerender,
       routes: ['/', '/robots.txt'],
+      crawlLinks: false,
       failOnError: true,
     },
   },
