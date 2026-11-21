@@ -3,8 +3,8 @@ import {
   resolveFireuxEntityManagementAppId,
 } from 'fireux-core/runtime/app/utils/entity-management'
 import type { H3Event } from 'h3'
-import { readMembershipAccessIds } from 'fireux-core/runtime/app/app-user/utils/membership-access'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
+import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership/membership-access'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/membership/mutation-targets'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { createError } from 'h3'
 import { readBusinessMutationActor } from './team/authority'

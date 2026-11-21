@@ -1,5 +1,5 @@
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { readAppUserSubscription } from 'fireux-core/runtime/app/app-user/utils/validation'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/utils/membership/validation'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
@@ -9,7 +9,7 @@ import {
   serverMarketplaceStoresTarget,
   serverMarketplaceStoreTeamMembersTarget,
 } from '../mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/membership/mutation-targets'
 import type { MarketplaceStore } from '../../models/marketplace.model.ts'
 import type {
   MarketplaceAdminStoresResponse,

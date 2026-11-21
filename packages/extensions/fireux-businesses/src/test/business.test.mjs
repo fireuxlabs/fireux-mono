@@ -158,7 +158,7 @@ test('Free creation atomically creates Business, Team and membership grant, and 
     ['members/u', { role: 'user', subscription: 'free', created: { at } }],
   ])
   const accessHelpers = load(
-    '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
+    '../../../../core/fireux-core/src/runtime/app/utils/membership/membership-access.ts',
     'readMembershipAccessIds, createMembershipAccess'
   )
   const { completeBusinessOnboarding } = load(

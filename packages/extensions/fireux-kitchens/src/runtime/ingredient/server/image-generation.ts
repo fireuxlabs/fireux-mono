@@ -4,7 +4,7 @@ import { generateFireuxImage } from 'fireux-ai/runtime/server/utils/image-genera
 import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { INGREDIENT_MUTATION_TARGETS } from './mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/membership/mutation-targets'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { assertCurator, curatorContext } from './curation-authority'

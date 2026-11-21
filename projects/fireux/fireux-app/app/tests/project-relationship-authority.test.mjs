@@ -1,4 +1,4 @@
-import { resolveAppUserAccess } from '../../../../../packages/core/fireux-core/src/runtime/app/app-user/utils/access.ts'
+import { resolveAppUserAccess } from '../../../../../packages/core/fireux-core/src/runtime/app/utils/membership/access.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -9,7 +9,7 @@ import {
   isAppUserSubscription,
   isAppUserRole,
   readAppUserSubscription,
-} from '../../../../../packages/core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
+} from '../../../../../packages/core/fireux-core/src/runtime/app/utils/membership/validation.ts'
 const root = new URL('../../../../../', import.meta.url)
 const core = 'packages/core/fireux-core/src/runtime/'
 const app = 'projects/fireux/fireux-app/server/project/'
@@ -26,7 +26,7 @@ function load(path, result, deps = {}) {
 const createError = (value) =>
   Object.assign(new Error(value.statusMessage), value)
 const readMembershipAccessIds = load(
-  core + 'app/app-user/utils/membership-access.ts',
+  core + 'app/utils/membership/membership-access.ts',
   'readMembershipAccessIds'
 )
 const capacity = load(
@@ -438,7 +438,7 @@ test('Owning Ecosystem reads admit inactive management records without making th
 test('Project ownership and administration in another App cannot administer an existing App', async () => {
   const targets = { runtimeUsers: target('users'), runtimeApps: apps }
   const contract = load(
-    core + 'app/app-user/server/command-contract.ts',
+    core + 'app/server/membership/command-contract.ts',
     '{forbidden,initialMembership,isAdminMembership,requireCanonicalMembership,roleFrom,stamp,countTransactionAdmins,requireAdmin}',
     {
       createError,
@@ -464,7 +464,7 @@ test('Project ownership and administration in another App cannot administer an e
     }
   )
   const settings = load(
-    core + 'app/app-user/server/settings.ts',
+    core + 'app/server/membership/settings.ts',
     'handleMembershipSettings',
     {
       ...contract,
@@ -493,7 +493,7 @@ test('Project ownership and administration in another App cannot administer an e
         subscription: 'free',
       })
     const mutate = load(
-      core + 'app/app-user/server/command.ts',
+      core + 'app/server/membership/command.ts',
       'mutateInTransaction',
       {
         ...contract,

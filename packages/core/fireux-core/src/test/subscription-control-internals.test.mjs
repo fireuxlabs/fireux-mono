@@ -17,19 +17,19 @@ import {
   captureCommandScope,
   useCommandScope,
 } from '../runtime/composables/fireux/commands/useCommandScope.ts'
-import { resolveAppUserAccess } from '../runtime/app/app-user/utils/access.ts'
+import { resolveAppUserAccess } from '../runtime/app/utils/membership/access.ts'
 import {
   isAppUserRole,
   isAppUserSubscription,
   readAppUserSubscription,
-} from '../runtime/app/app-user/utils/validation.ts'
+} from '../runtime/app/utils/membership/validation.ts'
 
 const require = createRequire(import.meta.url)
 const vueRequire = createRequire(require.resolve('vue'))
 const { parse, compileScript } = vueRequire('@vue/compiler-sfc')
 const { renderToString } = vueRequire('@vue/server-renderer')
 const componentPath =
-  '../runtime/app/app-user/components/SubscriptionControl.vue'
+  '../runtime/app/components/User/SubscriptionControl.vue'
 const appSubscriptionCapacity = load(
   '../runtime/app/utils/app-subscription-capacity.ts',
   'appSubscriptionCapacity',
@@ -130,7 +130,7 @@ function fixture({ role = 'dev', subscription = 'free', guest = false } = {}) {
   const notices = [],
     calls = []
   const runAppUserCommand = load(
-    '../runtime/app/app-user/composables/run-app-user-command.ts',
+    '../runtime/app/composables/membership/run-app-user-command.ts',
     'runAppUserCommand',
     {
       useAuth: () => auth,
@@ -154,7 +154,7 @@ function fixture({ role = 'dev', subscription = 'free', guest = false } = {}) {
     }
   )
   const useAppUserSubscriptions = load(
-    '../runtime/app/app-user/composables/useAppUserSubscriptions.ts',
+    '../runtime/app/composables/membership/useAppUserSubscriptions.ts',
     'useAppUserSubscriptions',
     { computed, toValue, runAppUserCommand, readAppUserSubscription }
   )
@@ -237,7 +237,7 @@ async function renderBadge(f) {
         return {
           useAppUserSubscriptions: f.dependencies.useAppUserSubscriptions,
         }
-      if (id.endsWith('/utils/access')) return { resolveAppUserAccess }
+      if (id.endsWith('/utils/membership/access')) return { resolveAppUserAccess }
       if (id.endsWith('/useCommandScope')) return { useCommandScope }
       return require(id)
     },
@@ -425,12 +425,12 @@ test('busy belongs to the single actual in-flight command and blocks repeat clic
 })
 
 const authority = load(
-  '../runtime/app/app-user/server/subscription.ts',
+  '../runtime/app/server/membership/subscription.ts',
   'resolveSubscriptionMutationAuthority',
   {}
 )
 const contract = load(
-  '../runtime/app/app-user/server/command-contract.ts',
+  '../runtime/app/server/membership/command-contract.ts',
   '{roleFrom,forbidden,stamp}',
   {
     isAppUserRole,
@@ -443,7 +443,7 @@ const contract = load(
   }
 )
 const handleSettings = load(
-  '../runtime/app/app-user/server/settings.ts',
+  '../runtime/app/server/membership/settings.ts',
   'handleMembershipSettings',
   {
     ...contract,

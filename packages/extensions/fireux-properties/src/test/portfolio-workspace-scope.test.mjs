@@ -1,4 +1,4 @@
-import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/access.ts'
+import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/utils/membership/access.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -15,7 +15,7 @@ function load(file, deps, name) {
   )(...Object.values(deps))
 }
 const readMembershipAccessIds = load(
-  '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
+  '../../../../core/fireux-core/src/runtime/app/utils/membership/membership-access.ts',
   {},
   'readMembershipAccessIds'
 )
@@ -42,7 +42,7 @@ function harness() {
   })
   let rootId
   const useMembershipAccess = load(
-    '../../../../core/fireux-core/src/runtime/app/app-user/composables/useMembershipAccess.ts',
+    '../../../../core/fireux-core/src/runtime/app/composables/membership/useMembershipAccess.ts',
     {
       computed,
       toValue,

@@ -1,11 +1,11 @@
-import { readMembershipAccessIds } from 'fireux-core/runtime/app/app-user/utils/membership-access'
+import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership/membership-access'
 // Concurrent edit — 2026-07-20 16:00 CEST — FireUX dev recovery: resolve cross-package server imports explicitly.
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { createError, type H3Event } from 'h3'
 import { type Project } from '../../models/project.model'
 import { readProjectDocument } from '../../utils/readProject'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/membership/access'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { serverProjectAccessTarget } from '../access'
 

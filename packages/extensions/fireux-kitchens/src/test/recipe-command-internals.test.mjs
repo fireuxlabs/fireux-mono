@@ -1,5 +1,5 @@
 import { readRecipeChanges } from '../runtime/recipe/utils/changes.ts'
-import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/utils/membership/validation.ts'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -31,7 +31,7 @@ const input = load(
   { createError, defineFirestoreMutationTarget: (x) => x.collectionPath }
 )
 const membership = load(
-  '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
+  '../../../../core/fireux-core/src/runtime/app/utils/membership/membership-access.ts',
   ['readMembershipAccessIds']
 )
 const access = load(

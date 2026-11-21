@@ -1,4 +1,4 @@
-import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/utils/membership/validation.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -22,7 +22,7 @@ const requireFirestoreDocumentId = (id) => {
   return id
 }
 const readMembershipAccessIds = load(
-  '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
+  '../../../../core/fireux-core/src/runtime/app/utils/membership/membership-access.ts',
   'readMembershipAccessIds'
 )
 const managementDeps = {

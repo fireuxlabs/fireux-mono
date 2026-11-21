@@ -1,10 +1,10 @@
 import {
   createMembershipAccess,
   readMembershipAccessIds,
-} from 'fireux-core/runtime/app/app-user/utils/membership-access'
+} from 'fireux-core/runtime/app/utils/membership/membership-access'
 import { serverPropertyAccessTarget } from '../../utils/access'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/membership/access'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { createError, type H3Event } from 'h3'
 import {
@@ -24,7 +24,7 @@ import {
   PROPERTY_MUTATION_TARGETS,
   serverPropertyTeamMembersTarget,
 } from '../mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/membership/mutation-targets'
 import { canonicalPropertyRoot } from '../../utils/normalize-property.ts'
 import type { PropertyOnboardingCompleteResult } from '../../models/property-onboarding.model.ts'
 import type {

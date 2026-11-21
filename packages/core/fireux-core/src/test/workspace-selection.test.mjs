@@ -6,7 +6,7 @@ import {
   isAppUserRole,
   isAppUserSubscription,
   readAppUserSubscription,
-} from '../runtime/app/app-user/utils/validation.ts'
+} from '../runtime/app/utils/membership/validation.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -145,7 +145,7 @@ for (const family of [
         appUser: ref({ subscription: 'free' }),
       }),
       resolveAppUserAccess: load(
-        '../runtime/app/app-user/utils/access.ts',
+        '../runtime/app/utils/membership/access.ts',
         'resolveAppUserAccess',
         { isAppUserRole, isAppUserSubscription, readAppUserSubscription }
       ),
@@ -339,7 +339,7 @@ test('Kitchen root handoff waits for ready access and preserves unrelated query 
         appUser: ref({ subscription: 'free' }),
       }),
       resolveAppUserAccess: load(
-        '../runtime/app/app-user/utils/access.ts',
+        '../runtime/app/utils/membership/access.ts',
         'resolveAppUserAccess',
         { isAppUserRole, isAppUserSubscription, readAppUserSubscription }
       ),

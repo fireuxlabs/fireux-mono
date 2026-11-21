@@ -8,7 +8,7 @@ const accessHelpers = compileFunction(
   `${stripTypeScriptTypes(
     readFileSync(
       new URL(
-        '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
+        '../../../../core/fireux-core/src/runtime/app/utils/membership/membership-access.ts',
         import.meta.url
       ),
       'utf8'

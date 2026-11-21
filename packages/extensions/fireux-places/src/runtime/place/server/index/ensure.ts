@@ -8,7 +8,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { PLACE_MUTATION_TARGETS } from '../mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/membership/mutation-targets'
 import { fetchVerifiedGooglePlacePayload } from '../integration/google/details'
 
 type PlaceEnsureRequest = {

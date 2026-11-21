@@ -1,4 +1,4 @@
-import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/access.ts'
+import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/utils/membership/access.ts'
 import { workspaceSwitchPath } from '../../../../core/fireux-core/src/runtime/workspace/utils/switch-route.ts'
 import { isNavigationFailure } from 'vue-router'
 import { useWorkspaceRecord } from '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts'
@@ -263,7 +263,7 @@ test('Reselecting the current Property through another index cancels a pending d
 })
 
 const readMembershipAccessIds = load(
-  '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
+  '../../../../core/fireux-core/src/runtime/app/utils/membership/membership-access.ts',
   'readMembershipAccessIds'
 )
 for (const entity of ['portfolio', 'property']) {
@@ -289,7 +289,7 @@ for (const entity of ['portfolio', 'property']) {
     )
     let bindings = 0
     const useMembershipAccess = load(
-      '../../../../core/fireux-core/src/runtime/app/app-user/composables/useMembershipAccess.ts',
+      '../../../../core/fireux-core/src/runtime/app/composables/membership/useMembershipAccess.ts',
       'useMembershipAccess',
       {
         computed,

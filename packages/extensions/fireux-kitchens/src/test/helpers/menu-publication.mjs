@@ -1,4 +1,4 @@
-import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
+import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/utils/membership/validation.ts'
 import { itemPricingHelpers } from './item-pricing.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -228,7 +228,7 @@ export function harness({ document = false, status = 'draft' } = {}) {
     {
       KITCHEN_USER_LIMIT: 50,
       readMembershipAccessIds: load(
-        '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
+        '../../../../core/fireux-core/src/runtime/app/utils/membership/membership-access.ts',
         'readMembershipAccessIds',
         {}
       ),

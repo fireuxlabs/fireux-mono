@@ -1,4 +1,4 @@
-import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/access.ts'
+import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/utils/membership/access.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -6,7 +6,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { effectScope, onScopeDispose, ref, watch } from 'vue'
 import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestore-document-id.ts'
-import { readMembershipAccessIds } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts'
+import { readMembershipAccessIds } from '../../../../core/fireux-core/src/runtime/app/utils/membership/membership-access.ts'
 
 function load(path, result, dependencies) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')

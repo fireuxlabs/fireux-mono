@@ -1,7 +1,7 @@
 import type {
   AppUserRole,
   AppUserSubscription,
-} from 'fireux-core/runtime/app/app-user/models/model'
+} from 'fireux-core/runtime/app/records/app-user'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { KitchenPublicSummary } from '../types/public'
 import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/workspace/models/team-member.model'

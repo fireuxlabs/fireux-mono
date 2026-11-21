@@ -2,10 +2,10 @@ import { normalizePortfolio } from '../../../utils/normalize-portfolio'
 import {
   createMembershipAccess,
   readMembershipAccessIds,
-} from 'fireux-core/runtime/app/app-user/utils/membership-access'
+} from 'fireux-core/runtime/app/utils/membership/membership-access'
 import { serverPortfolioAccessTarget } from '../../../utils/access'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/membership/access'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import type { H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -16,7 +16,7 @@ import {
   PORTFOLIO_MUTATION_TARGETS,
   serverPortfolioTeamMembersTarget,
 } from '../../mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/membership/mutation-targets'
 import {
   assertManagement,
   requireMemberRole,

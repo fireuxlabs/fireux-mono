@@ -93,7 +93,7 @@ function fixture() {
     commands = []
   const source = readFileSync(
     new URL(
-      '../runtime/app/app-user/components/Administration/Index.vue',
+      '../runtime/app/components/User/Administration/Index.vue',
       import.meta.url
     ),
     'utf8'

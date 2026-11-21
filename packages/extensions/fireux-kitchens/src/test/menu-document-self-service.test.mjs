@@ -3,7 +3,7 @@ import test from 'node:test'
 import { createHash, timingSafeEqual } from 'node:crypto'
 import QRCode from 'qrcode'
 import { starterMenu } from '../runtime/menu/content/starter-menu.ts'
-import { readMembershipAccessIds } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts'
+import { readMembershipAccessIds } from '../../../../core/fireux-core/src/runtime/app/utils/membership/membership-access.ts'
 import { loadOfferingSource as load } from './offering-test-helpers.mjs'
 
 const target = (collectionPath) => ({ collectionPath })

@@ -1,4 +1,4 @@
-import { resolveAppUserAccess } from '../runtime/app/app-user/utils/access.ts'
+import { resolveAppUserAccess } from '../runtime/app/utils/membership/access.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -8,9 +8,9 @@ import { computed, ref, unref } from 'vue'
 
 // App uses the server projection covered by app-native-auth-scope.test.mjs.
 // Ecosystem no longer has a separate Core reader.
-for (const [name, owner, database, collection] of [
-  ['AppUser', 'app/app-user', undefined, 'apps/app-a/users'],
-  ['User', 'user', 'identity', 'users'],
+for (const [name, directory, database, collection] of [
+  ['AppUser', 'app/composables/membership', undefined, 'apps/app-a/users'],
+  ['User', 'user/composables', 'identity', 'users'],
 ]) {
   test(`${name}: reactive identity, database authority and read states`, () => {
     let calls = 0
@@ -50,7 +50,7 @@ for (const [name, owner, database, collection] of [
     }
     const code = readFileSync(
       new URL(
-        `../runtime/${owner}/composables/use${name}Read.ts`,
+        `../runtime/${directory}/use${name}Read.ts`,
         import.meta.url
       ),
       'utf8'
@@ -124,6 +124,10 @@ test('Dashboard sections keep their reads and outcomes separate without another 
   const forbidden = () => assert.fail('Overview acquired an unrelated reader')
   const dependencies = {
     computed,
+    ref,
+    watch: () => {},
+    useRoute: () => ({ fullPath: '/dashboard' }),
+    useCommandScope: () => () => () => true,
     useAuth: () => ({ uid }),
     useFireUXConfig: () => ({ appId: 'app' }),
     useUserRead: (target) => {

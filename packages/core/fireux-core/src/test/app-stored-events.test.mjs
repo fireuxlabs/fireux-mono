@@ -8,7 +8,7 @@ import { createJiti } from 'jiti'
 const load = createJiti(import.meta.url)
 const targets = await load.import('../runtime/app/server/mutation-targets.ts')
 const memberships = await load.import(
-  '../runtime/app/app-user/server/mutation-targets.ts'
+  '../runtime/app/server/membership/mutation-targets.ts'
 )
 const notifications = await load.import(
   '../runtime/user/server/mutation-targets.ts'

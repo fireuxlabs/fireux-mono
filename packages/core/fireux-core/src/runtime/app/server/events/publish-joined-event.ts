@@ -1,12 +1,12 @@
 import { FieldValue } from 'firebase-admin/firestore'
 
-import type { AppUser } from '../../app-user/models/model.ts'
+import type { AppUser } from '../../records/app-user.ts'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
 import {
   APP_MUTATION_TARGETS,
   serverAppEventsTarget,
 } from '../mutation-targets'
-import { serverAppUsersTarget } from '../../app-user/server/mutation-targets'
+import { serverAppUsersTarget } from '../membership/mutation-targets'
 import { serverUserNotificationsTarget } from '../../../user/server/mutation-targets'
 export type PublishAppUserJoinedEventInput = {
   appId: string

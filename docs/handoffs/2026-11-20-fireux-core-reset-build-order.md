@@ -126,11 +126,15 @@ documents were read or changed during this check.
 
 **Agreed product concept:** **User is the person. App membership describes that User's relationship with one App.** Role, subscription and membership lifecycle vary per App, not per person.
 
-- [ ] Inspect `runtime/app/app-user/` models, consumers, access checks, identity/profile uses, commands, routes and registration.
-- [ ] Treat `AppUser` as the *existing App-scoped membership record/contract*, not another top-level person or independent root Entity. Keep its necessary authoritative lifecycle, access and subscription data.
-- [ ] Where the existing nested `app-user` directory represents an entire second technical Entity spine, collapse/reposition it under **App-owned records and App technical roles**, without creating a sibling top-level `app-user` Entity root merely to preserve historical terminology.
-- [ ] Preserve the precise App/User pair identity, existing membership data paths, account session behavior, role/subscription decisions, security checks, public/private projections and trusted server commands unless a separate migration has been explicitly agreed.
-- [ ] Delete old wrappers, duplicate AppUser facade paths and stale names only when their real consumers have moved. Update Core docs and tests that currently describe AppUser as a first-class nested Entity.
+- [x] Inspect AppUser models, consumers, access checks, identity/profile uses, commands, routes and registration.
+- [x] Treat `AppUser` as the existing App-scoped membership record and preserve its authoritative lifecycle, access and subscription data.
+- [x] Place the AppUser definition under App records and membership behavior under App's technical roles.
+- [x] Preserve App/User pair identity, existing membership data paths, account session behavior, role and subscription decisions, security checks, projections and trusted commands.
+- [x] Update imports, registration and active Core documentation. Remove the retired nested source directory.
+
+The membership definition lives at `runtime/app/records/app-user.ts`. Misebox
+Nuxt preparation resolved the existing `AppUser` component names and membership
+composables from App's technical directories. The 75 focused checks passed.
 
 **Exit:** one canonical User identity plus App-owned membership records; no competing User identity, no duplicate grant owner, no second Entity spine nested in App. An App may have members without Core needing Workspace.
 
@@ -183,7 +187,7 @@ The following are **observations on committed source, not claims of verified tes
 | `packages/core/fireux-core/src/runtime/app/models/model.ts` | Canonical App root includes `ecosystem_id`. | Keep as App's upstream relationship; App must not depend on Project UI. |
 | `packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts` | Canonical Ecosystem root has `project_id`. | Review how optional Project references can be kept outside Core's required foundation without losing data or authority. |
 | `packages/core/fireux-core/src/runtime/user/models/user.model.ts` | Canonical User public identity and stored audit record. | Keep one person identity; do not duplicate in AppUser. |
-| `packages/core/fireux-core/src/runtime/app/app-user/models/model.ts` | AppUser currently owns role/subscription/stamps. | Preserve record but reclassify as App membership support; avoid second Entity spine. |
+| `packages/core/fireux-core/src/runtime/app/records/app-user.ts` | AppUser currently owns role/subscription/stamps. | Preserve record but reclassify as App membership support; avoid second Entity spine. |
 | `packages/core/fireux-core/src/config/module/components-config.ts` | Core directly registers Workspace components and AppUser components. | Review and cut over registration with the corresponding source. |
 | `packages/core/fireux-core/src/module.ts` | Core module directly registers Workspace composables. | Make optional Workspace registration truly opt-in. |
 | `packages/core/fireux-core/src/runtime/layouts/workspace.vue` | Native Workspace layout currently resides in Core. | Move with Workspace package and verify route/layout behavior. |

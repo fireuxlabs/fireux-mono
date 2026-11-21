@@ -3,7 +3,7 @@ import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
 import type { FireUXConfig } from '../../composables/config/FireUXConfig'
 import type { AppInitializationResult } from '../../contracts/initialization'
 import { APP_MUTATION_TARGETS } from '../mutation-targets'
-import { serverAppUsersTarget } from '../../app-user/server/mutation-targets'
+import { serverAppUsersTarget } from '../membership/mutation-targets'
 import { USER_MUTATION_TARGETS } from '../../../user/server/mutation-targets'
 import {
   getRuntimeFirestore,
@@ -16,8 +16,8 @@ import {
   isAdminMembership,
   requireCanonicalMembership,
   stamp,
-} from '../../app-user/server/command-contract'
-import { reconcileUserAppReference } from '../../app-user/server/user-reference'
+} from '../membership/command-contract'
+import { reconcileUserAppReference } from '../membership/user-reference'
 import { reconcileAppEcosystemReference } from '../relationships/ecosystem-reference'
 import { provisionEcosystem } from '../../../ecosystem/server/identity/provision'
 

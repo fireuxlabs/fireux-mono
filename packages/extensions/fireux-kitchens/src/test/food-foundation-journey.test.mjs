@@ -1,4 +1,4 @@
-import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/utils/membership/validation.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { harness } from './helpers/menu-publication.mjs'
@@ -280,7 +280,7 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
     },
   }
   const membership = load(
-    '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access',
+    '../../../../core/fireux-core/src/runtime/app/utils/membership/membership-access',
     'readMembershipAccessIds'
   )
   const access = load('kitchen/utils/kitchen-access', 'readKitchenAccessIds', {

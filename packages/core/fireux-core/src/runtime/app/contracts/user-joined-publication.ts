@@ -1,4 +1,4 @@
-import type { AppUserRole } from '../app-user/models/model'
+import type { AppUserRole } from '../records/app-user'
 
 export type AppUserJoinedSource = {
   firebase_project_id: string

@@ -10,7 +10,7 @@ import {
 } from 'fireux-core/runtime/server/utils/ids/path'
 import { deleteStorageFileIfExists } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { PLACE_MUTATION_TARGETS } from '../mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/membership/mutation-targets'
 const text = (value: unknown) => String(value ?? '').trim()
 
 const dependencyLabel = (family: string) => {

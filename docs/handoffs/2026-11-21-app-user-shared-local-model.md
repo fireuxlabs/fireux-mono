@@ -22,8 +22,8 @@ Core defines stable defaults; each app owns and validates its local extension. `
 
 - `packages/core/fireux-core/src/runtime/user/models/user.model.ts`: canonical User with id, handle, display_name, bio and avatar; stored document adds stamps.
 - `packages/core/fireux-core/src/runtime/user/models/user-account.model.ts`: separate private account.
-- `packages/core/fireux-core/src/runtime/app/app-user/models/model.ts`: shared role (`user`, `admin`, `dev`), subscription (`free`, `pro`, `business`), and stamps. Review how the canonical User/App relationship is represented by existing document paths and operations before changing the shape.
-- `packages/core/fireux-core/src/runtime/app/app-user/types.ts`: presentation types and path-owned IDs.
+- `packages/core/fireux-core/src/runtime/app/records/app-user.ts`: shared role (`user`, `admin`, `dev`), subscription (`free`, `pro`, `business`), and stamps. Review how the canonical User/App relationship is represented by existing document paths and operations before changing the shape.
+- `packages/core/fireux-core/src/runtime/app/contracts/membership-read.ts`: presentation types and path-owned IDs.
 
 ## Acceptance for future implementation
 

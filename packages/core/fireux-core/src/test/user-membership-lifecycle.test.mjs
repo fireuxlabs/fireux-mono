@@ -2,9 +2,9 @@ import {
   isAppUserRole,
   isAppUserSubscription,
   readAppUserSubscription,
-} from '../runtime/app/app-user/utils/validation.ts'
+} from '../runtime/app/utils/membership/validation.ts'
 import { userDisplayNameSeed } from '../runtime/user/utils/display-name-seed.ts'
-import { resolveAppUserAccess } from '../runtime/app/app-user/utils/access.ts'
+import { resolveAppUserAccess } from '../runtime/app/utils/membership/access.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -46,7 +46,7 @@ function deferred() {
 
 const memberships = (appId) => `apps/${appId}/users`
 const contract = load(
-  '../runtime/app/app-user/server/command-contract.ts',
+  '../runtime/app/server/membership/command-contract.ts',
   '{ appGovernancePatch, countTransactionAdmins, forbidden, initialMembership, isAdminMembership, requireAdmin, requireCanonicalMembership, requiredIdentityUserId, roleFrom, stamp }',
   {
     createError: ({ statusCode, statusMessage }) =>
@@ -85,7 +85,7 @@ test('explicit Join creates one membership and locator and repeat Join preserves
     set: async (data) => write(path, data),
   })
   const reconcileUserAppReference = load(
-    '../runtime/app/app-user/server/user-reference.ts',
+    '../runtime/app/server/membership/user-reference.ts',
     'reconcileUserAppReference',
     {
       getRuntimeFirestore: () => ref(),
@@ -94,7 +94,7 @@ test('explicit Join creates one membership and locator and repeat Join preserves
     }
   )
   const join = load(
-    '../runtime/app/app-user/server/command.ts',
+    '../runtime/app/server/membership/command.ts',
     'mutateRuntimeAppMembership',
     {
       ...contract,
@@ -234,7 +234,7 @@ for (const action of ['ensure-self', 'bootstrap-admin', 'remove-member']) {
     }
     const actor = currentUser
     const run = load(
-      '../runtime/app/app-user/composables/run-app-user-command.ts',
+      '../runtime/app/composables/membership/run-app-user-command.ts',
       'runAppUserCommand',
       {
         useAuth: () => ({
@@ -281,11 +281,11 @@ test('removing a disposable member revokes live domain access and a new membersh
     [`${memberships('app')}/administrator`, admin],
   ])
   const accessContract = load(
-    '../runtime/app/app-user/utils/membership-access.ts',
+    '../runtime/app/utils/membership/membership-access.ts',
     'readMembershipAccessIds'
   )
   const useAccess = load(
-    '../runtime/app/app-user/composables/useMembershipAccess.ts',
+    '../runtime/app/composables/membership/useMembershipAccess.ts',
     'useMembershipAccess',
     {
       computed,
@@ -306,7 +306,7 @@ test('removing a disposable member revokes live domain access and a new membersh
   assert.deepEqual(kitchen.ids.value, ['workspace'])
   assert.deepEqual(project.ids.value, ['workspace'])
   const handler = load(
-    '../runtime/app/app-user/server/remove.ts',
+    '../runtime/app/server/membership/remove.ts',
     'handleRemoveMember',
     {
       ...contract,

@@ -1,4 +1,4 @@
-import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/validation.ts'
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/utils/membership/validation.ts'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -16,7 +16,7 @@ function load(path, names, deps = {}) {
   )(...Object.values(deps))
 }
 const { readMembershipAccessIds } = load(
-  '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
+  '../../../../core/fireux-core/src/runtime/app/utils/membership/membership-access.ts',
   'readMembershipAccessIds'
 )
 const { readKitchenAccessIds } = load(

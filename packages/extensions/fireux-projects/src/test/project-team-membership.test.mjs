@@ -1,4 +1,4 @@
-import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/access.ts'
+import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/utils/membership/access.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -16,7 +16,7 @@ function load(path, bindings, result) {
 }
 const createError = (x) => Object.assign(new Error(x.statusMessage), x)
 const { readMembershipAccessIds } = load(
-  '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
+  '../../../../core/fireux-core/src/runtime/app/utils/membership/membership-access.ts',
   {},
   '({readMembershipAccessIds})'
 )

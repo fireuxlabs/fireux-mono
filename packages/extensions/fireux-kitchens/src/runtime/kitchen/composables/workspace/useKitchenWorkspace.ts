@@ -2,7 +2,7 @@ import { useWorkspaceRecord } from 'fireux-core/runtime/workspace/composables/us
 import { useWorkspaceSwitch } from 'fireux-core/runtime/workspace/composables/useWorkspaceSwitch'
 import { computed, watch } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
-import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/membership/access'
 import { useState, useRoute, navigateTo } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {

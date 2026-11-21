@@ -1,5 +1,5 @@
-import { readAppUserSubscription } from 'fireux-core/runtime/app/app-user/utils/validation'
-import { readMembershipAccessIds } from 'fireux-core/runtime/app/app-user/utils/membership-access'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/utils/membership/validation'
+import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership/membership-access'
 import { defineFirestoreReadTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 
 // Existing Kitchen → Place integration: read the domain grant without importing Kitchens.

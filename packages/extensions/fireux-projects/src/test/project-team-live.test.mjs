@@ -9,7 +9,7 @@ import {
   getRouterParam,
   setResponseHeaders,
 } from 'h3'
-import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/app-user/utils/access.ts'
+import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/utils/membership/access.ts'
 import { requireFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/server/utils/ids/path.ts'
 import { normalizeUser } from '../../../../core/fireux-core/src/runtime/user/utils/normalize-user.ts'
 import {
@@ -30,7 +30,7 @@ function load(path, name, bindings) {
   )(...Object.values(bindings))
 }
 const { readMembershipAccessIds } = load(
-  '../../../../core/fireux-core/src/runtime/app/app-user/utils/membership-access.ts',
+  '../../../../core/fireux-core/src/runtime/app/utils/membership/membership-access.ts',
   '({readMembershipAccessIds})',
   {}
 )

@@ -320,7 +320,7 @@ Every Workspace Entity must share these rules:
   an isolated tightening of its stored model.
 
 - Browser membership validity comes from Core's
-  [`resolveAppUserAccess`](../../packages/core/fireux-core/src/runtime/app/app-user/utils/access.ts):
+  [`resolveAppUserAccess`](../../packages/core/fireux-core/src/runtime/app/utils/membership/access.ts):
   recognized role and readable subscription are both required, including the
   intentional legacy subscription read. `useMembershipAccess` applies that
   decision before reading a grant; its lower timestamp/ID utility retains only

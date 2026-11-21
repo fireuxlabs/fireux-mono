@@ -78,9 +78,9 @@ primitives remain under `user/components/Profile` for specialist profile
 compositions. They are not alternate User Overview cards. There is no old
 `UserCardsSummary` or `UserProfile` compatibility registration.
 
-[`AppUser`](../../packages/core/fireux-core/src/runtime/app/app-user/models/model.ts)
+[`AppUser`](../../packages/core/fireux-core/src/runtime/app/records/app-user.ts)
 is the App-owned membership of a User; person identity remains with User.
-AppUser presentation reuses User Cards: [App user administration](../../packages/core/fireux-core/src/runtime/app/app-user/components/Administration/Members.vue)
+AppUser presentation reuses User Cards: [App user administration](../../packages/core/fireux-core/src/runtime/app/components/User/Administration/Members.vue)
 composes `UserCardsPill` with separate membership controls, and
 [`UserDetail`](../../packages/core/fireux-core/src/runtime/user/components/Public/Detail/Index.vue)
 composes `UserCardsOverview` beside `AppUserMembership`. Role and subscription

@@ -5,11 +5,11 @@ import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutat
 import {
   createMembershipAccess,
   readMembershipAccessIds,
-} from 'fireux-core/runtime/app/app-user/utils/membership-access'
+} from 'fireux-core/runtime/app/utils/membership/membership-access'
 import { serverBusinessAccessTarget } from './mutation-targets'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { readAppUserSubscription } from 'fireux-core/runtime/app/app-user/utils/validation'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/utils/membership/validation'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import {
   resolveFireuxEntityManagementForApp,
@@ -19,7 +19,7 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/membership/mutation-targets'
 import {
   BUSINESS_MUTATION_TARGETS,
   serverBusinessTeamTarget,

@@ -387,7 +387,7 @@ Consumed responsibilities use meaningful groups:
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `identity`             | `useAppIdentityUpdate` edits the configured App's status, name, copy and social links through its authenticated identity command |
 | `featured`             | `useAppFeaturedContent` reads and curates featured slugs in `settings/public`; it does not edit App identity                     |
-| `app-user/composables` | Child Entity reads, subject membership controls, access projections, subscriptions and admin lists                               |
+| `app/composables/membership` | App membership reads, controls, access projections, subscriptions and admin lists |
 | `initialization`       | Developer environment diagnostics and the configured App's initialization/media workflow                                         |
 | `media`                | Explicit client command for synchronizing App-owned media through the trusted media endpoint                                     |
 | `brand`                | Reactive browser checks for required local App artwork                                                                           |
@@ -409,7 +409,7 @@ stay beside their owning capability:
 - `app/media/utils.ts` owns pure validation and image-source resolution.
 - `app/composables/initialization/initialize-configured-app.ts`,
   `app/composables/media/sync-app-media.ts` and
-  `app/app-user/composables/run-app-user-command.ts` are explicit client
+  `app/composables/membership/run-app-user-command.ts` are explicit client
   commands. They capture Auth/App scope, credentials and response identity;
   their watchers are released after each command. Trusted implementations
   remain under `app/server`.
@@ -445,7 +445,7 @@ normalization; `identity/update.ts` owns authenticated transaction execution.
 `app/server/settings/update.ts` owns featured-content changes in the
 `settings/public` child. Inherited JavaScript property names are not editable
 App fields. Role validation
-uses `isAppUserRole` from `app/app-user/utils/validation.ts`; this narrow primitive
+uses `isAppUserRole` from `app/utils/membership/validation.ts`; this narrow primitive
 does not replace the distinct full-membership and subscription authority checks.
 
 App environment diagnostics and media sync share the server-only

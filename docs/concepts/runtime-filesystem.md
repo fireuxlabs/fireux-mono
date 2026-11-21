@@ -223,17 +223,17 @@ and generated imports/components to detect phantom targets.
 
 Core App owns identity, runtime configuration, initialization and App composition
 under `runtime/app/{components,composables,models,utils,server}`. AppUser is an
-App-owned membership record. App groups the membership model, readers, UI, and
-commands in `runtime/app/app-user/`. Its bounded reader and presentation
-projections live in `types.ts`. Native registration uses the `AppUser` component
-prefix and the explicit composable directory. App events and current-App
+App-owned membership record defined in `runtime/app/records/app-user.ts`.
+Membership UI lives in `app/components/User/`. App's component registration
+gives it the existing `AppUser` prefix. Composables, server operations, and
+utilities live in the `membership/` subdirectory of each App technical role.
+Shared read and command contracts live in `app/contracts/`. App events and current-App
 composition sit with App. User owns profile navigation.
 Native Nuxt handlers under `runtime/server/api/**/app/` delegate to those owners.
 Commercial offers, public landing and legal presentation, and public catalogue
 pages live in the `fireux-app` runtime layer. Main discovery and child-App
 composition live in `fireux-ecosystem`; Core retains neutral shells and controls.
 Capability names avoid redundant prefixes, such as `initialization`.
-`app-user` names the existing App membership implementation.
 
 ## Ordering inside an entity
 

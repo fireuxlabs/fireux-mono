@@ -3,12 +3,12 @@ import { normalizeSupplier } from '../../utils/normalize-supplier'
 import {
   createMembershipAccess,
   readMembershipAccessIds,
-} from 'fireux-core/runtime/app/app-user/utils/membership-access'
+} from 'fireux-core/runtime/app/utils/membership/membership-access'
 import { serverSupplierAccessTarget } from '../../utils/access'
 // Supplier atomic onboarding binds the root Supplier and its exact Team member.
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { resolveAppUserAccess } from 'fireux-core/runtime/app/app-user/utils/access'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/membership/access'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import {
   readFireuxEntityManagement,
@@ -28,7 +28,7 @@ import {
   serverSupplierTeamMembersTarget,
 } from '../mutation-targets'
 import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/membership/mutation-targets'
 import { buildSupplierTeamMemberRecord } from '../team/member-record'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { normalizeBusiness } from 'fireux-businesses/runtime/business/utils/normalize-business'

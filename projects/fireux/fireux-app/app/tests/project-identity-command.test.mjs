@@ -1,4 +1,4 @@
-import { resolveAppUserAccess } from '../../../../../packages/core/fireux-core/src/runtime/app/app-user/utils/access.ts'
+import { resolveAppUserAccess } from '../../../../../packages/core/fireux-core/src/runtime/app/utils/membership/access.ts'
 import { isFirestoreDocumentId } from '../../../../../packages/core/fireux-core/src/runtime/utils/firestore-document-id.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -19,7 +19,7 @@ function load(path, dependencies, name) {
 const createError = (x) => Object.assign(new Error(x.statusMessage), x)
 const core = 'packages/core/fireux-core/src/runtime/'
 const readMembershipAccessIds = load(
-  core + 'app/app-user/utils/membership-access.ts',
+  core + 'app/utils/membership/membership-access.ts',
   {},
   'readMembershipAccessIds'
 )

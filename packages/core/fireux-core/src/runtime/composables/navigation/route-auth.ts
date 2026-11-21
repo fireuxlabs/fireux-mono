@@ -13,7 +13,7 @@ import { watch } from 'vue'
 import { getApp, getApps, type FirebaseApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { doc, getDoc, getFirestore } from 'firebase/firestore'
-import type { AppUserWithId } from '../../app/app-user/types.ts'
+import type { AppUserWithId } from '../../app/contracts/membership-read.ts'
 
 type AuthGuardState = {
   uid: string | null

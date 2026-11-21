@@ -5,8 +5,8 @@ import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from './app-targets'
 import {
   stamp,
   initialMembership,
-} from 'fireux-core/runtime/app/app-user/server/command-contract'
-import { reconcileUserAppReference } from 'fireux-core/runtime/app/app-user/server/user-reference'
+} from 'fireux-core/runtime/app/server/membership/command-contract'
+import { reconcileUserAppReference } from 'fireux-core/runtime/app/server/membership/user-reference'
 import { reconcileAppEcosystemReference } from 'fireux-core/runtime/app/server/relationships/ecosystem-reference'
 import {
   requireProjectOperator,

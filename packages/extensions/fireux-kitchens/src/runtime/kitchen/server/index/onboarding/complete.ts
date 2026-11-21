@@ -9,7 +9,7 @@ import {
   serverKitchenMenusTarget,
   serverKitchenTeamMembersTarget,
 } from '../../mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/membership/mutation-targets'
 import type { KitchenOnboardingCompleteResult } from './kitchen-onboarding.ts'
 import {
   assertKitchenOnboardingPlaceDefaults,
@@ -36,7 +36,7 @@ import {
   readKitchenAccessIds,
   withKitchenAppAccess,
 } from '../../../utils/kitchen-access'
-import { createMembershipAccess } from 'fireux-core/runtime/app/app-user/utils/membership-access'
+import { createMembershipAccess } from 'fireux-core/runtime/app/utils/membership/membership-access'
 import {
   readKitchenManagementMenus,
   createKitchenSystemMenus,

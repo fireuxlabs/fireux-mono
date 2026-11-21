@@ -1,9 +1,9 @@
 import { computed } from 'vue'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
-import { useAppUserRead } from '../../../app/app-user/composables/useAppUserRead'
-import type { AppUser } from '../../../app/app-user/models/model'
-import type { AppUserWithId } from '../../../app/app-user/types'
+import { useAppUserRead } from '../../../app/composables/membership/useAppUserRead'
+import type { AppUser } from '../../../app/records/app-user'
+import type { AppUserWithId } from '../../../app/contracts/membership-read'
 import { useUserRead } from '../useUserRead'
 import { useUserSessionState } from './useUserSessionState'
 

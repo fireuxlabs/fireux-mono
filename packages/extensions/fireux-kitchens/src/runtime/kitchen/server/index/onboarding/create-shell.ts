@@ -11,7 +11,7 @@ import {
   serverKitchenMenusTarget,
   serverKitchenTeamMembersTarget,
 } from '../../mutation-targets'
-import { serverAppUsersTarget } from 'fireux-core/runtime/app/app-user/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/membership/mutation-targets'
 import {
   onboardingText as text,
   requireOnboardingMemberRole,
@@ -34,7 +34,7 @@ import {
   readKitchenAccessIds,
   withKitchenAppAccess,
 } from '../../../utils/kitchen-access'
-import { createMembershipAccess } from 'fireux-core/runtime/app/app-user/utils/membership-access'
+import { createMembershipAccess } from 'fireux-core/runtime/app/utils/membership/membership-access'
 import { createKitchenSystemMenus } from './system-menus.ts'
 import { fail, readKitchenOnboardingRequest as request } from './request.ts'
 

@@ -18,15 +18,14 @@ stored fields nor database ownership.
 
 App initialization results and membership command inputs/results belong to
 `runtime/app/contracts/initialization.ts` and
-`runtime/app/app-user/contracts/membership.ts`. These shared
+`runtime/app/contracts/membership.ts`. These shared
 browser/server agreements are not stored records and do not add a command owner.
 
-App owns its membership implementation under `runtime/app/app-user`. The model,
-`models/model.ts`, owns membership fields and allowed-value vocabulary. Reader
-and presentation projections live in `types.ts`; validation and access decisions
-live in `utils`. Composables, membership UI, the trusted commands and the runtime
-membership mutation target live together under App. App initialization and
-sessions compose membership behavior. App events live in `app/server/events`.
+App owns the membership record definition and allowed values in
+`runtime/app/records/app-user.ts`. Reader and presentation projections live in
+`runtime/app/contracts/membership-read.ts`. Membership behavior lives in App's
+technical directories. App initialization and sessions compose that behavior.
+App events live in `runtime/app/server/events`.
 
 App event payload construction and the private deterministic ID helper belong to
 `runtime/app/server/events/publish-joined-event.ts`. The event has no separate
@@ -59,7 +58,7 @@ Current source is authoritative:
 - `packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts`
 - `packages/core/fireux-core/src/runtime/user/models/user.model.ts`
 - `packages/extensions/fireux-projects/src/runtime/project/models/project.model.ts`
-- `packages/core/fireux-core/src/runtime/app/app-user/models/model.ts`
+- `packages/core/fireux-core/src/runtime/app/records/app-user.ts`
 - `packages/core/fireux-core/src/test/app-collection.test.mjs`
 - `projects/fireux/fireux-app/app/tests/platform-apps-read.test.mjs`
 
@@ -192,7 +191,7 @@ Read APIs are not evidence of complete UX CRUD. User editing uses
 fields. Avatar upload and attachment have a separate User-owned command at
 `user/server/avatar/update.ts`. AppUser owns no separate avatar; its displays
 hydrate the canonical User. AppUser administration (`useAppUsers`), guarded commands
-(`app/app-user/composables/run-app-user-command.ts`), and membership controls are App-owned;
+(`app/composables/membership/run-app-user-command.ts`), and membership controls are App-owned;
 User may compose them but never stores their implementation. Unconsumed browser and server AppUser Create, Update, Delete helpers and command
 wrappers are retired. Named App-owned membership commands remain the authority;
 there is no separate generic creation input model.
@@ -319,7 +318,7 @@ created/updated stamps; it does not repeat `app_id` or `id`, store domain
 Entity arrays, or own Workspace selection. Domains own App-scoped access
 records containing retained ids and the exact AppUser creation timestamp.
 Core supplies strict lifetime validation and a live binding through
-`app/app-user/utils/membership-access.ts` and `app/app-user/composables/useMembershipAccess.ts`;
+`app/utils/membership/membership-access.ts` and `app/composables/membership/useMembershipAccess.ts`;
 paths, grants and policies stay domain-owned. A removed/recreated membership
 cannot inherit its predecessor's grants. The stored-data migration boundary is
 in `docs/ai/firestore-mutations-context.md`; there is no legacy runtime fallback.
@@ -329,7 +328,7 @@ hydrates only their loaded User ids. An admin outside the member
 page remains discoverable in the admin query. `useAppUserMembership` uses the
 existing exact document reader for another person's membership and reuses the
 session for the current person's membership. Shared presentation rows live in
-`app/app-user/types.ts`: membership fields plus one nested, nullable
+`app/contracts/membership-read.ts`: membership fields plus one nested, nullable
 User summary. Missing identities retain their membership rows. There is no
 second administrative users HTTP endpoint or envelope. This live reader relies
 on Firestore Rules for data access; signed-in client gating is not administrator
