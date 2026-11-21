@@ -1,0 +1,14 @@
+{
+  "status": "completed",
+  "summary": "Created docs/reviews/walking-bridge-smoke-test.md and verified that it matches the approved handoff byte for byte. The Walking Bridge controller owns Git validation and publication.",
+  "tests": [
+    "cmp docs/reviews/walking-bridge-smoke-test.md - <<'EXPECTED' with the approved Markdown as input exited 1 because the shell could not create its temporary file. The comparison did not run.",
+    "With set -o pipefail, printf '%s\\n' '# Walking Bridge smoke test' '' 'Walking Bridge smoke test completed.' '' 'This file was created by Codex from the approved documentation-only GitHub handoff.' '' 'No application code, Firebase rules, or production resources were changed.' | cmp docs/reviews/walking-bridge-smoke-test.md - exited 0. The contents ",
+    "Bridge: git diff --check passed"
+  ],
+  "blockers": [],
+  "commitSha": "5a9c04cf4c1f444819e6cd720874763fe28262da",
+  "handoff": "docs/handoffs/2026-11-21-walking-bridge-end-to-end-smoke-test.md",
+  "base": "7ed3c1543bde080f4e7123eb3351911b0acf27f8",
+  "approvalComment": 211197153
+}
