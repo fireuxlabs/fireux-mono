@@ -8,8 +8,11 @@ import {
   changePaths,
   claimJob,
   commitResult,
+  consumeSession,
   parseApproval,
+  readSession,
   readWorkerResult,
+  sessionAllows,
   workerArguments,
 } from './bridge.mjs'
 
@@ -132,6 +135,58 @@ test('the smoke test may create only its review file outside the handoff tree', 
     () => changePaths('?? docs/reviews/other.md\0', [file]),
     /approved/
   )
+  assert.throws(
+    () => changePaths('?? ' + file + '/other.md\0', [file]),
+    /approved/
+  )
+})
+
+test('walking session permits only one newly approved review file', () => {
+  const file = 'docs/reviews/walking-bridge-smoke-test.md'
+  const openedAt = Date.parse(approved.created_at)
+  const fresh = {
+    ...approved,
+    created_at: '2026-11-21T00:01:00Z',
+    updated_at: '2026-11-21T00:01:00Z',
+    body: ['/fireux-walk', base, handoff, file].join(' '),
+  }
+  assert.equal(parseApproval(approved, base, config, openedAt), null)
+  assert.equal(
+    parseApproval(
+      { ...fresh, user: { id: 56, type: 'User' } },
+      base,
+      config,
+      openedAt
+    ),
+    null
+  )
+  assert.equal(
+    sessionAllows(parseApproval(fresh, base, config, openedAt)),
+    true
+  )
+  for (const scopes of [
+    [file, 'docs/reviews/other.md'],
+    ['docs/reviews'],
+    ['docs/ai/gpt-context.md'],
+    ['docs/reviews/tool.mjs'],
+  ])
+    assert.equal(sessionAllows({ scopes }), false)
+})
+
+test('walking session expires and can be consumed only once', (t) => {
+  const state = mkdtempSync(join(tmpdir(), 'fireux-walking-session-'))
+  t.after(() => rmSync(state, { recursive: true, force: true }))
+  const path = join(state, 'session.json')
+  const openedAt = Date.now()
+  assert.equal(readSession(path), null)
+  writeFileSync(path, '{')
+  assert.equal(readSession(path), null)
+  writeFileSync(path, JSON.stringify({ openedAt }))
+  assert.equal(readSession(path, openedAt - 1), null)
+  assert.equal(readSession(path, openedAt + 2 * 60 * 60 * 1000), null)
+  assert.equal(consumeSession(path, openedAt - 1), false)
+  assert.equal(consumeSession(path, openedAt), true)
+  assert.equal(consumeSession(path, openedAt), false)
 })
 
 test('a SHA can be claimed once and a crash does not authorize replay', (t) => {

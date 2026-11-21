@@ -21,12 +21,14 @@ import { fileURLToPath } from 'node:url'
 const repo = 'fireuxlabs/fireux-mono'
 const url = 'https://github.com/' + repo + '.git'
 const root =
-  ['once', 'poll'].includes(process.argv[2]) && process.argv[3]
+  ['once', 'poll', 'session'].includes(process.argv[2]) && process.argv[3]
     ? realpathSync(process.argv[3])
     : fileURLToPath(new URL('../../', import.meta.url))
 const home = homedir()
 const state = join(home, 'Library/Application Support/FireUX Walking Bridge')
 const settings = join(state, 'settings.json')
+const sessionPath = join(state, 'session.json')
+const sessionDuration = 2 * 60 * 60 * 1000
 const label = 'com.fireux.walking-bridge'
 const agent = join(home, 'Library/LaunchAgents', label + '.plist')
 const domain = () => 'gui/' + process.getuid()
@@ -71,7 +73,7 @@ function remoteHead() {
   return sha
 }
 
-export function parseApproval(comment, base, config) {
+export function parseApproval(comment, base, config, openedAt = -Infinity) {
   if (
     !shaPattern.test(base) ||
     comment.commit_id !== base ||
@@ -80,7 +82,10 @@ export function parseApproval(comment, base, config) {
     comment.path != null ||
     !Number.isSafeInteger(comment.id) ||
     comment.created_at !== comment.updated_at ||
-    !(Date.parse(comment.created_at) > Date.parse(config.activatedAt))
+    !(
+      Date.parse(comment.created_at) >
+      Math.max(Date.parse(config.activatedAt), openedAt)
+    )
   )
     return null
 
@@ -101,7 +106,9 @@ export function changePaths(entries, scopes) {
     .map((entry) => {
       const path = entry.slice(3)
       const inside = scopes.some(
-        (scope) => path === scope || path.startsWith(scope + '/')
+        (scope) =>
+          path === scope ||
+          (!scope.endsWith('.md') && path.startsWith(scope + '/'))
       )
       if (
         ![' M', '??'].includes(entry.slice(0, 2)) ||
@@ -133,6 +140,34 @@ export function claimJob(directory, base) {
     if (error.code === 'EEXIST') return false
     throw error
   }
+}
+
+export function readSession(path, now = Date.now()) {
+  try {
+    const openedAt = JSON.parse(readFileSync(path, 'utf8'))?.openedAt
+    if (
+      Number.isSafeInteger(openedAt) &&
+      openedAt <= now &&
+      now < openedAt + sessionDuration
+    )
+      return openedAt
+  } catch (error) {
+    if (error.code !== 'ENOENT' && !(error instanceof SyntaxError)) throw error
+  }
+  return null
+}
+
+export function sessionAllows(job) {
+  return (
+    job.scopes.length === 1 &&
+    /^docs\/reviews\/[a-z0-9][a-z0-9-]*\.md$/.test(job.scopes[0])
+  )
+}
+
+export function consumeSession(path, openedAt) {
+  if (openedAt === null || readSession(path) !== openedAt) return false
+  unlinkSync(path)
+  return true
 }
 
 const schema = {
@@ -454,7 +489,7 @@ export function commitResult(cwd, job, result, identity) {
   return { ...report, reportCommit: git(cwd, 'rev-parse', 'HEAD') }
 }
 
-function approvedJobs(config, base) {
+function approvedJobs(config, base, openedAt) {
   const comments = JSON.parse(
     api(
       config,
@@ -464,7 +499,7 @@ function approvedJobs(config, base) {
     )
   ).flat()
   return comments
-    .map((comment) => parseApproval(comment, base, config))
+    .map((comment) => parseApproval(comment, base, config, openedAt))
     .filter(Boolean)
 }
 
@@ -476,7 +511,9 @@ function poll(config) {
   )
 }
 
-function tick(config) {
+function tick(config, walking = false) {
+  const openedAt = walking ? readSession(sessionPath) : null
+  if (walking && openedAt === null) return poll(config)
   const lock = join(state, 'running')
   try {
     mkdirSync(lock)
@@ -488,9 +525,16 @@ function tick(config) {
     requireCleanMain()
     const base = remoteHead()
     if (existsSync(join(state, base + '.json'))) return
-    const jobs = approvedJobs(config, base)
-    if (jobs.length !== 1 || !claimJob(state, base)) return
+    const jobs = approvedJobs(config, base, openedAt ?? undefined)
+    if (jobs.length !== 1) return
     const job = jobs[0]
+    // A crash or blocked job uses the session too. Consume it under the run lock.
+    if (
+      walking &&
+      (!sessionAllows(job) || !consumeSession(sessionPath, openedAt))
+    )
+      return
+    if (!claimJob(state, base)) return
     console.log('Claimed approval ' + job.id + ' at ' + base)
     const dir = mkdtempSync(join(state, 'job-'))
     let result
@@ -574,13 +618,14 @@ function initialize() {
 }
 const xml = (value) =>
   value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
-function start(armed) {
+function start(mode) {
   requireCleanMain()
+  if (existsSync(agent)) throw Error('Stop the existing bridge first.')
   const installed = join(state, 'bridge.mjs')
   writeFileSync(installed, readFileSync(fileURLToPath(import.meta.url)), {
     mode: 0o600,
   })
-  const elements = [process.execPath, installed, armed ? 'once' : 'poll', root]
+  const elements = [process.execPath, installed, mode, root]
     .map((item) => '<string>' + xml(item) + '</string>')
     .join('')
   const plist =
@@ -606,21 +651,50 @@ function start(armed) {
     '</string>' +
     '</dict></plist>\n'
   mkdirSync(dirname(agent), { recursive: true })
-  writeFileSync(agent, plist, { mode: 0o600 })
-  command('/usr/bin/plutil', ['-lint', agent])
-  command('/bin/launchctl', ['bootstrap', domain(), agent])
+  writeFileSync(agent, plist, { flag: 'wx', mode: 0o600 })
+  try {
+    command('/usr/bin/plutil', ['-lint', agent])
+    if (mode === 'session') {
+      writeFileSync(sessionPath, JSON.stringify({ openedAt: Date.now() }), {
+        flag: 'wx',
+        mode: 0o600,
+      })
+    }
+    command('/bin/launchctl', ['bootstrap', domain(), agent])
+  } catch (error) {
+    if (mode === 'session') rmSession()
+    unlinkSync(agent)
+    throw error
+  }
   console.log(
-    armed
-      ? 'FireUX Walking Bridge armed.'
-      : 'FireUX Walking Bridge monitoring only.'
+    mode === 'session'
+      ? 'FireUX Walking Bridge waiting for one approved review for up to two hours.'
+      : mode === 'once'
+        ? 'FireUX Walking Bridge armed.'
+        : 'FireUX Walking Bridge monitoring only.'
   )
+}
+function rmSession() {
+  try {
+    unlinkSync(sessionPath)
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error
+  }
 }
 function status() {
   try {
     command('/bin/launchctl', ['print', domain() + '/' + label])
-    const mode = readFileSync(agent, 'utf8').includes('<string>once</string>')
-      ? 'armed'
-      : 'monitoring only'
+    const plist = readFileSync(agent, 'utf8')
+    const openedAt = plist.includes('<string>session</string>')
+      ? readSession(sessionPath)
+      : null
+    const mode =
+      openedAt !== null
+        ? 'waiting for one approved review until ' +
+          new Date(openedAt + sessionDuration).toISOString()
+        : plist.includes('<string>once</string>')
+          ? 'armed'
+          : 'monitoring only'
     console.log('LaunchAgent loaded, ' + mode + '.')
   } catch {
     console.log('LaunchAgent not loaded.')
@@ -644,20 +718,27 @@ function main(action) {
   if (action === 'status') return status()
   if (action === 'stop') {
     command('/bin/launchctl', ['bootout', domain() + '/' + label])
+    rmSession()
     unlinkSync(agent)
     console.log('FireUX Walking Bridge stopped.')
     return
   }
-  if (!['start', 'once', 'poll'].includes(action)) {
+  if (!['start', 'once', 'poll', 'session'].includes(action)) {
     throw Error(
-      'Usage: node tools/walking-bridge/bridge.mjs init|start [--armed]|stop|status|poll'
+      'Usage: node tools/walking-bridge/bridge.mjs init|start [--armed|--session]|stop|status|poll'
     )
   }
   if (!existsSync(settings)) throw Error('Initialize the bridge first.')
-  if (action === 'start') return start(process.argv[3] === '--armed')
+  if (action === 'start') {
+    const option = process.argv[3]
+    if (option === undefined) return start('poll')
+    if (option === '--armed') return start('once')
+    if (option === '--session') return start('session')
+    throw Error('Use start, start --armed, or start --session.')
+  }
   const config = JSON.parse(readFileSync(settings, 'utf8'))
   if (action === 'poll') poll(config)
-  else tick(config)
+  else tick(config, action === 'session')
 }
 if (
   process.argv[1] &&

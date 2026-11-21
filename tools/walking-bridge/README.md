@@ -19,8 +19,27 @@ will author approvals. Anyone or anything acting as that account can approve.
 
 The macOS LaunchAgent polls every 60 seconds while Big Mac is awake and the
 user is logged in. It needs no incoming port. The default start is read-only.
-Use poll for an immediate read-only check. To enable execution, stop the
-monitor and explicitly start the executor.
+Use poll for an immediate read-only check.
+
+## Open a walking session
+
+Before leaving Big Mac, explicitly open a two-hour session from a clean
+checkout. Big Mac must remain awake and logged in.
+
+    node tools/walking-bridge/bridge.mjs stop
+    node tools/walking-bridge/bridge.mjs start --session
+    node tools/walking-bridge/bridge.mjs status
+
+From your phone, approve one handoff using the commit-comment workflow below.
+Use one exact Markdown file under `docs/reviews/` as the scope. The approval
+must be posted after the session opens. All existing approval and publication
+checks apply. The bridge consumes the session before launching Codex and
+resumes read-only polling after that job, including if it fails. An unused
+session expires after two hours. A job already claimed at expiry can finish
+within the usual execution limit.
+
+For an individually supervised run, the existing armed mode remains available.
+Return it to monitoring after the run.
 
     node tools/walking-bridge/bridge.mjs stop
     node tools/walking-bridge/bridge.mjs start --armed
@@ -124,4 +143,5 @@ Run the local approvals, file scope, deduplication, Git result and report tests:
 The local sandbox smoke test used the installed Codex CLI in a synthetic
 checkout. It verified a permitted edit and denied reads of external files
 and Git metadata, writes outside the checkout, and outbound GitHub access.
-A real approved GitHub handoff is the remaining end-to-end check after setup.
+The supervised smoke test verified a real GitHub handoff and completion report.
+A phone-approved run inside a walking session needs its own end-to-end check.
