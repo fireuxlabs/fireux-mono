@@ -31,7 +31,8 @@ Core defines stable defaults; each app owns and validates its local extension. `
 2. Each app can add local AppUser fields without changing another application's shared contract.
 3. Shared subscription tiers remain consistent, independently from roles or workspace permission.
 4. Existing memberships are preserved or explicitly migrated with tested backwards compatibility.
-5. Cross-app sign-in uses the same canonical User while creating distinct app memberships.
+5. Cross-app sign-in uses the same canonical User. Explicit Join creates an
+   AppUser and its locator for the current App. Repeating Join preserves both.
 6. Named-database and restrictive-rule safety checks are resolved before relying on production behavior.
 
 ## Next action

@@ -165,15 +165,17 @@ User is canonical identity. UserAccount is private support owned by the Core
 User domain, not a third Entity or capability. AppUser is separately App-owned
 membership, role and subscription.
 
-User setup is owned by Core `user/composables/account/useUserSetup.ts`.
-It derives identity, private-account consent and current-App membership needs
-from their separate readers. `/auth` uses that decision to choose the return
-route; only the explicit setup action invokes the trusted account, identity and
-App membership commands. A ready but incomplete User still needs explicit setup:
-`isUserIdentityComplete` reuses canonical handle and display-name validation.
-An existing User can join another App without
-recreating identity or repeating current consent. Guest Workspace access stays
-available without membership.
+Sign-in identifies the User. Core `user/composables/account/useUserSetup.ts`
+derives account completion from canonical identity and private-account consent.
+`/auth` uses that decision to choose the return route. The explicit setup action
+can provision those User records. A ready but incomplete User still needs
+explicit setup. `isUserIdentityComplete` reuses canonical handle and display-name
+validation.
+
+Joining creates AppUser membership. Dashboard Overview exposes an explicit
+Join action backed by the App-owned `ensure-self` command. That command also owns
+the User-to-App locator. The same User can join another App with their existing
+identity and consent. Public and guest surfaces follow their own access policy.
 
 `User` is the public identity projection; `UserDocument` describes stored
 identity with audit stamps and no stored id. `UserAccount` describes private

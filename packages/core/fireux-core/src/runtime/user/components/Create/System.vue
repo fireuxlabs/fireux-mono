@@ -29,9 +29,6 @@
               :avatar="{ src: authAvatar || undefined, alt: displayName }"
               size="lg"
             />
-            <p v-if="setupStatus.requiresMembership">
-              Continue to join {{ appLabel }}.
-            </p>
             <UCheckbox
               v-if="setupStatus.requiresConsent"
               v-model="onboardingConsentAcknowledged"
@@ -164,34 +161,19 @@ function reloadPage() {
 }
 
 async function handleCompleteSetup() {
-  if (
-    isCompletingSetup.value ||
-    setupStatus.value.pending ||
-    setupStatus.value.failed ||
-    !isAuthenticated.value
-  )
-    return
+  if (isCompletingSetup.value) return
   const isCurrent = captureIntent()
   const destination = returnTarget.value
   error.value = null
   isCompletingSetup.value = true
   try {
-    if (setupStatus.value.needsSetup) {
-      if (
-        setupStatus.value.requiresConsent &&
-        !onboardingConsentAcknowledged.value
-      )
-        throw new Error(
-          'Accept the Terms of Service and acknowledge the Privacy Policy to continue.'
-        )
-      const provisioned = await complete(
-        setupStatus.value.requiresConsent
-          ? FIREUX_ACCOUNT_TERMS_VERSION
-          : undefined
-      )
-      if (!provisioned)
-        throw new Error('Setup could not be completed. Please try again.')
-    }
+    const provisioned = await complete(
+      setupStatus.value.requiresConsent && onboardingConsentAcknowledged.value
+        ? FIREUX_ACCOUNT_TERMS_VERSION
+        : undefined
+    )
+    if (!provisioned)
+      throw new Error('Setup could not be completed. Please try again.')
     if (isCurrent()) await router.replace(destination)
   } catch (cause) {
     if (!isCurrent()) return

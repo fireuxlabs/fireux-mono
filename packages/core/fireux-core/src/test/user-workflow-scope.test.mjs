@@ -40,13 +40,7 @@ function deferred() {
   })
   return { promise, resolve }
 }
-const stages = [
-  'credentials',
-  'identity',
-  'membership-command',
-  'event-token',
-  'event',
-]
+const stages = ['credentials', 'identity']
 function bootstrapHarness(boundary, outsideScope = false) {
   const reached = deferred(),
     release = deferred(),
@@ -62,10 +56,6 @@ function bootstrapHarness(boundary, outsideScope = false) {
   const actor = {
     uid: 'A',
     displayName: 'Account A',
-    getIdToken: async () => {
-      await pause('event-token')
-      return 'token-A'
-    },
   }
   const currentUser = ref(actor),
     config = reactive({ appId: 'app' })
@@ -97,17 +87,6 @@ function bootstrapHarness(boundary, outsideScope = false) {
         assert.equal(uid, 'A')
         await pause('identity')
         return { created: true }
-      },
-      runAppUserCommand: async (input, supplied) => {
-        assert.deepEqual(input, { action: 'ensure-self' })
-        assert.equal(supplied.uid, 'A')
-        await pause('membership-command')
-        return { created: true }
-      },
-      fetch: async (url) => {
-        assert.equal(url, '/api/internal/events/user-joined')
-        await pause('event')
-        return { ok: true, json: async () => ({ event: { created: true } }) }
       },
     }
   )
@@ -150,7 +129,7 @@ for (const boundary of stages) {
     })
   }
 }
-test('A stable bootstrap provisions User identity, App membership, and its event', async () => {
+test('A stable bootstrap provisions only canonical User identity', async () => {
   const h = bootstrapHarness('none')
   await h.controller.bootstrapUser()
   assert.deepEqual(h.calls, stages)

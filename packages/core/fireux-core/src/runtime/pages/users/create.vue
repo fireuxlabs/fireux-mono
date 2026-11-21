@@ -14,7 +14,7 @@ definePageMeta({
   layout: 'auth',
   requiresAuth: true,
   title: 'Create Your User',
-  description: 'Create your public FireUX identity and connect it to this App.',
+  description: 'Set up your FireUX identity and account.',
   nav: {
     key: 'users-create',
     label: 'Create user',

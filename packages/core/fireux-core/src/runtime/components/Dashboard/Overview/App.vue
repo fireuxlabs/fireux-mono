@@ -14,12 +14,14 @@
     />
     <UButton
       v-else-if="outcome === 'empty'"
-      to="/users/create?redirect=%2Fdashboard"
-      label="Join App"
+      :label="`Join ${config.appName}`"
+      :loading="joining"
+      @click="join"
     />
     <p v-else-if="appUser">
       {{ roleLabels[appUser.role] }} · {{ planLabels[appUser.subscription] }}
     </p>
+    <UAlert v-if="joinError" color="error" :title="joinError" />
     <div class="fx-card__actions">
       <UButton
         v-if="hasWorkspaceEntry"
@@ -40,13 +42,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { useRoute } from '#imports'
+import { computed, ref, watch } from 'vue'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAppUserRead } from '../../../app/app-user/composables/useAppUserRead'
+import { runAppUserCommand } from '../../../app/app-user/composables/run-app-user-command'
+import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import { useWorkspaceEntryCta } from '../../../workspace/composables/useWorkspaceEntryCta'
 
 const config = useFireUXConfig()
+const route = useRoute()
 const { uid } = useAuth()
 const { appUser, outcome } = useAppUserRead(config.appId, uid)
 const { hasWorkspaceEntry, workspaceEntryHref } = useWorkspaceEntryCta()
@@ -57,6 +63,35 @@ const canManageApp = computed(
 )
 const roleLabels = { user: 'Member', admin: 'Administrator', dev: 'Developer' }
 const planLabels = { free: 'Free', pro: 'Pro', business: 'Business' }
+const joining = ref(false)
+const joinError = ref('')
+const joinScope = [() => uid.value, () => config.appId, () => route.fullPath]
+const captureJoin = useCommandScope(joinScope)
+watch(
+  joinScope,
+  () => {
+    joining.value = false
+    joinError.value = ''
+  },
+  { flush: 'sync' }
+)
+
+async function join() {
+  if (!uid.value || joining.value || outcome.value !== 'empty') return
+  const isCurrent = captureJoin()
+  joining.value = true
+  joinError.value = ''
+  try {
+    await runAppUserCommand({ action: 'ensure-self' }, undefined, isCurrent)
+  } catch (error) {
+    if (isCurrent())
+      joinError.value =
+        error instanceof Error ? error.message : 'Please try joining again.'
+  } finally {
+    if (isCurrent()) joining.value = false
+  }
+}
+
 function reload() {
   window.location.reload()
 }

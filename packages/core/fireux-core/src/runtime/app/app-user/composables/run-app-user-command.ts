@@ -92,6 +92,25 @@ export async function runAppUserCommand(
         'App membership response did not match the requested action.'
       )
     }
+    if (submitted.action === 'ensure-self') {
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          assertCurrent()
+          const event = await fetch('/api/internal/events/user-joined', {
+            method: 'POST',
+            headers: { authorization: `Bearer ${token}` },
+          })
+          if (event.ok) break
+          throw new Error(`Event endpoint returned ${event.status}`)
+        } catch (error) {
+          if (attempt === 1)
+            console.warn(
+              '[App membership] Joined event was not delivered',
+              error
+            )
+        }
+      }
+    }
     return payload as AppMembershipMutationResult
   } finally {
     scope.stop()

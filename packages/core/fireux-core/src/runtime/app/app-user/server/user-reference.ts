@@ -32,13 +32,22 @@ export async function reconcileUserAppReference(input: {
   }
 
   const previous = await reference.get()
+  const recorded = previous.data()
+  if (
+    recorded?.app_id === input.appId &&
+    recorded.database_id === input.appDatabaseId &&
+    recorded.created?.at &&
+    recorded.updated?.at
+  ) {
+    return { exists: true }
+  }
   const now = FieldValue.serverTimestamp()
   await reference.set(
     {
       app_id: input.appId,
       database_id: input.appDatabaseId,
       created: previous.exists
-        ? (previous.data()?.created ?? { at: now })
+        ? (recorded?.created ?? { at: now })
         : { at: now },
       updated: { at: now },
     },

@@ -12,12 +12,9 @@ import {
   watch,
 } from 'vue'
 import { createJiti } from 'jiti'
-const { resolveUserSetup } = await createJiti(import.meta.url).import(
-  '../runtime/user/utils/user-setup.ts'
-)
-const { normalizeUser } = await createJiti(import.meta.url).import(
-  '../runtime/user/utils/normalize-user.ts'
-)
+const { isUserIdentityComplete, normalizeUser } = await createJiti(
+  import.meta.url
+).import('../runtime/user/utils/normalize-user.ts')
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../runtime/user/models/user-account-provisioning.ts'
 
 const ready = {
@@ -32,7 +29,6 @@ const ready = {
     avatar: '/img/ecosystem/avatar.png',
   },
   account: 'ready',
-  membership: 'ready',
   accountData: {
     terms: {
       version: FIREUX_ACCOUNT_TERMS_VERSION,
@@ -55,84 +51,137 @@ function load(path, name, dependencies) {
   )(...Object.values(dependencies))
 }
 
+const setupPath = 'user/composables/account/useUserSetup.ts'
+const resolveUserSetup = load(setupPath, 'resolveUserSetup', {
+  isUserIdentityComplete,
+  FIREUX_ACCOUNT_TERMS_VERSION,
+})
+const useCommandScope = load(
+  'composables/fireux/commands/useCommandScope.ts',
+  'useCommandScope',
+  { watch, onScopeDispose }
+)
+
+function setupHarness({ accountData = ready.accountData } = {}) {
+  const owner = effectScope()
+  const currentUser = ref({ uid: 'person', isAnonymous: false })
+  const config = reactive({ appId: 'app' })
+  const route = reactive({ fullPath: '/users/create?redirect=%2Fdashboard' })
+  const accounts = []
+  const identities = []
+  const useUserSetup = load(setupPath, 'useUserSetup', {
+    computed,
+    useCommandScope,
+    useRoute: () => route,
+    useFireUXConfig: () => config,
+    useAuth: () => ({
+      currentUser,
+      uid: computed(() => currentUser.value?.uid),
+      hasAuthState: ref(true),
+      isAuthenticated: ref(true),
+      isReady: ref(true),
+    }),
+    useUserRead: () => ({
+      user: ref(null),
+      outcome: ref('empty'),
+      error: ref(null),
+    }),
+    useUserAccount: () => ({
+      account: ref(accountData),
+      outcome: ref(accountData ? 'ready' : 'empty'),
+      error: ref(null),
+    }),
+    provisionSignedInUserAccount: (user, termsVersion) =>
+      new Promise((resolve, reject) => {
+        accounts.push({ uid: user.uid, termsVersion, resolve, reject })
+      }),
+    useUserBootstrap: () => ({
+      bootstrapUser: async (user) => identities.push(user.uid),
+    }),
+    isUserIdentityComplete,
+    FIREUX_ACCOUNT_TERMS_VERSION,
+  })
+  const setup = owner.run(useUserSetup)
+  return { owner, currentUser, config, route, accounts, identities, setup }
+}
+
+test('account setup rejects missing consent before starting any writes', async (t) => {
+  const h = setupHarness({ accountData: null })
+  t.after(() => h.owner.stop())
+  await assert.rejects(h.setup.complete(), /Accept the Terms/)
+  assert.deepEqual(h.accounts, [])
+  assert.deepEqual(h.identities, [])
+
+  const completion = h.setup.complete(FIREUX_ACCOUNT_TERMS_VERSION)
+  assert.equal(h.accounts[0].termsVersion, FIREUX_ACCOUNT_TERMS_VERSION)
+  h.accounts[0].resolve()
+  assert.equal(await completion, true)
+  assert.deepEqual(h.identities, ['person'])
+})
+
 for (const change of ['none', 'account', 'app', 'route', 'disposal']) {
   test(`explicit setup owns its ${change} lifecycle and starts no writes on read`, async () => {
-    const owner = effectScope()
-    const currentUser = ref({ uid: 'person', isAnonymous: false })
-    const config = reactive({ appId: 'app' })
-    const route = reactive({ fullPath: '/users/create?redirect=%2Fworkspace' })
-    const calls = []
-    let finishAccount
-    const createUserSetupCoordinator = load(
-      'user/composables/account/user-setup-coordinator.ts',
-      'createUserSetupCoordinator',
-      {
-        computed,
-        provisionSignedInUserAccount: (_user, termsVersion) => {
-          calls.push(['account', termsVersion])
-          return new Promise((resolve) => {
-            finishAccount = resolve
-          })
-        },
-      }
-    )
-    const useUserSetup = load(
-      'user/composables/account/useUserSetup.ts',
-      'useUserSetup',
-      {
-        computed,
-        ref,
-        watch,
-        onScopeDispose,
-        useRoute: () => route,
-        useFireUXConfig: () => config,
-        useAuth: () => ({
-          currentUser,
-          hasAuthState: ref(true),
-          isAuthenticated: ref(true),
-          isReady: ref(true),
-        }),
-        useUserSession: () => ({
-          user: ref(ready.identityData),
-          userOutcome: ref('ready'),
-          appUserOutcome: ref('empty'),
-          userError: ref(null),
-          appUserError: ref(null),
-        }),
-        useUserAccount: () => ({
-          account: ref(ready.accountData),
-          outcome: ref('ready'),
-          error: ref(null),
-        }),
-        useUserBootstrap: () => ({
-          bootstrapUser: async () => {
-            calls.push(['bootstrap'])
-          },
-        }),
-        createUserSetupCoordinator,
-        resolveUserSetup,
-      }
-    )
-    const setup = owner.run(useUserSetup)
-    assert.deepEqual(calls, [])
-    assert.equal(setup.status.value.requiresMembership, true)
-    const pending = setup.complete()
-    assert.deepEqual(calls, [['account', undefined]])
-    if (change === 'account') currentUser.value = null
-    if (change === 'app') config.appId = 'other'
-    if (change === 'route') route.fullPath = '/home'
-    if (change === 'disposal') owner.stop()
-    finishAccount()
+    const h = setupHarness()
+    assert.deepEqual(h.accounts, [])
+    assert.equal(h.setup.status.value.needsSetup, true)
+    const pending = h.setup.complete()
+    assert.equal(h.accounts.length, 1)
+    assert.equal(h.accounts[0].termsVersion, undefined)
+    if (change === 'account') h.currentUser.value = null
+    if (change === 'app') h.config.appId = 'other'
+    if (change === 'route') h.route.fullPath = '/home'
+    if (change === 'disposal') h.owner.stop()
+    h.accounts[0].resolve()
     assert.equal(await pending, change === 'none')
-    assert.deepEqual(
-      calls,
-      change === 'none'
-        ? [['account', undefined], ['bootstrap']]
-        : [['account', undefined]]
-    )
-    owner.stop()
+    assert.deepEqual(h.identities, change === 'none' ? ['person'] : [])
+    h.owner.stop()
   })
 }
+
+test('overlapping setup clicks share one operation, including before reads catch up', async (t) => {
+  const h = setupHarness()
+  t.after(() => h.owner.stop())
+  const first = h.setup.complete()
+  const duplicate = h.setup.complete()
+  assert.equal(h.accounts.length, 1)
+  h.accounts[0].resolve()
+  assert.deepEqual(await Promise.all([first, duplicate]), [true, true])
+  assert.equal(await h.setup.complete(), true)
+  assert.equal(h.accounts.length, 1)
+  assert.deepEqual(h.identities, ['person'])
+})
+
+for (const staleFailure of [false, true]) {
+  test(`same-account sign-out and sign-in invalidate old setup ${staleFailure ? 'failure' : 'success'}`, async (t) => {
+    const h = setupHarness()
+    t.after(() => h.owner.stop())
+    const actor = h.currentUser.value
+    const old = h.setup.complete()
+    h.currentUser.value = null
+    h.currentUser.value = actor
+    const current = h.setup.complete()
+    if (staleFailure) h.accounts[0].reject(new Error('Old request failed'))
+    else h.accounts[0].resolve()
+    assert.equal(await old, false)
+    assert.deepEqual(h.identities, [])
+    h.accounts[1].resolve()
+    assert.equal(await current, true)
+    assert.deepEqual(h.identities, ['person'])
+  })
+}
+
+test('a current setup error is returned and an explicit retry can finish', async (t) => {
+  const h = setupHarness()
+  t.after(() => h.owner.stop())
+  const initial = h.setup.complete()
+  const failure = new Error('Account unavailable')
+  h.accounts[0].reject(failure)
+  await assert.rejects(initial, failure)
+  const retry = h.setup.complete()
+  h.accounts[1].resolve()
+  assert.equal(await retry, true)
+  assert.deepEqual(h.identities, ['person'])
+})
 
 test('private-account creation stores only real account facts and preserves recorded consent', async () => {
   const writes = []
@@ -190,12 +239,14 @@ test('private-account creation stores only real account facts and preserves reco
   assert.equal(writes.length, 1)
 })
 
-test('an existing User joins another App without another identity or consent step', () => {
-  const status = resolveUserSetup({ ...ready, membership: 'empty' })
-  assert.equal(status.needsSetup, true)
-  assert.equal(status.requiresMembership, true)
-  assert.equal(status.requiresIdentity, false)
-  assert.equal(status.requiresConsent, false)
+test('App membership never affects completed User setup', () => {
+  for (const membership of ['empty', 'pending', 'error', 'ready']) {
+    const status = resolveUserSetup({ ...ready, membership })
+    assert.equal(status.needsSetup, false)
+    assert.equal(status.requiresConsent, false)
+    assert.equal(status.pending, false)
+    assert.equal(status.failed, false)
+  }
 })
 
 test('a ready but incomplete User still requires identity completion', () => {
@@ -209,9 +260,7 @@ test('a ready but incomplete User still requires identity completion', () => {
     { ...ready.identityData, display_name: 'x'.repeat(121) },
   ]) {
     const status = resolveUserSetup({ ...ready, identityData })
-    assert.equal(status.requiresIdentity, true)
     assert.equal(status.requiresConsent, false)
-    assert.equal(status.requiresMembership, false)
     assert.equal(status.needsSetup, true)
   }
 })
@@ -228,24 +277,22 @@ test('malformed stored identity fields remain editable and cannot finish setup',
       assert.equal(identityData[key], '')
       assert.equal(identityData.bio, '')
       assert.equal(
-        resolveUserSetup({ ...ready, identityData }).requiresIdentity,
+        resolveUserSetup({ ...ready, identityData }).needsSetup,
         true
       )
     }
   }
 })
 
-test('new Users need identity, consent and membership; completed Users need none', () => {
+test('new Users need identity and consent', () => {
   const status = resolveUserSetup({
     ...ready,
     identity: 'empty',
     account: 'empty',
-    membership: 'empty',
     accountData: null,
   })
   assert.equal(status.requiresConsent, true)
-  assert.equal(status.requiresIdentity, true)
-  assert.equal(status.requiresMembership, true)
+  assert.equal(status.needsSetup, true)
   assert.equal(resolveUserSetup(ready).needsSetup, false)
 })
 
@@ -268,7 +315,6 @@ test('guest Workspace access does not require User setup', () => {
     signedIn: false,
     identity: 'idle',
     account: 'idle',
-    membership: 'idle',
     accountData: null,
   })
   assert.equal(status.pending, false)
@@ -280,7 +326,7 @@ test('unresolved and failed reads never become completed setup or a missing-reco
     resolveUserSetup({ ...ready, authResolved: false }).pending,
     true
   )
-  for (const key of ['identity', 'account', 'membership']) {
+  for (const key of ['identity', 'account']) {
     for (const outcome of ['idle', 'pending', 'error']) {
       const status = resolveUserSetup({ ...ready, [key]: outcome })
       assert.equal(status.pending, outcome !== 'error')

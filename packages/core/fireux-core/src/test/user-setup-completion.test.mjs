@@ -125,16 +125,18 @@ for (const change of ['stable', 'account', 'app', 'route', 'disposal'])
         assert.equal(h.control.onboardingConsentAcknowledged.value, false)
       h.owner.stop()
     })
-test('Setup cannot start without explicit terms consent', async () => {
+test('Setup form forwards no consent until checked and shows the command error', async () => {
   const h = setupHarness()
   h.control.onboardingConsentAcknowledged.value = false
-  await h.control.handleCompleteSetup()
-  assert.equal(h.calls.length, 0)
+  const pending = h.control.handleCompleteSetup()
+  assert.deepEqual(h.calls, [undefined])
+  h.gate.reject(new Error('Accept the Terms of Service to continue.'))
+  await pending
   assert.equal(h.navigations.length, 0)
   assert.match(h.control.error.value, /Terms/)
   h.owner.stop()
 })
-test('an existing User can join another App without accepting current terms again', async () => {
+test('identity repair can finish without accepting current terms again', async () => {
   const h = setupHarness({ requiresConsent: false })
   h.control.onboardingConsentAcknowledged.value = false
   const pending = h.control.handleCompleteSetup()

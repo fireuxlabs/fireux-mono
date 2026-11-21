@@ -47,7 +47,7 @@ function deferred() {
 const memberships = (appId) => `apps/${appId}/users`
 const contract = load(
   '../runtime/app/app-user/server/command-contract.ts',
-  '{ appGovernancePatch, countTransactionAdmins, forbidden, initialMembership, isAdminMembership, requireAdmin, requireCanonicalMembership, roleFrom, stamp }',
+  '{ appGovernancePatch, countTransactionAdmins, forbidden, initialMembership, isAdminMembership, requireAdmin, requireCanonicalMembership, requiredIdentityUserId, roleFrom, stamp }',
   {
     createError: ({ statusCode, statusMessage }) =>
       Object.assign(new Error(statusMessage), { statusCode }),
@@ -59,6 +59,86 @@ const contract = load(
     serverAppUsersTarget: memberships,
   }
 )
+
+test('explicit Join creates one membership and locator and repeat Join preserves both', async () => {
+  const stamp = { at: { seconds: 123, nanoseconds: 0 } }
+  const original = new Map([
+    ['apps/second', { status: 'active' }],
+    ['users/person', { handle: 'person' }],
+    ['users/person/private/account', { email: 'person@example.test' }],
+    ['apps/first/users/person', { role: 'admin', subscription: 'pro' }],
+  ])
+  const stored = new Map(original)
+  const writes = []
+  const read = (path) => ({ exists: stored.has(path), data: stored.get(path) })
+  const write = (path, data) => {
+    stored.set(path, data)
+    writes.push(path)
+  }
+  const ref = (path = '') => ({
+    collection: (name) => ref(path ? path + '/' + name : name),
+    doc: (id) => ref(path + '/' + id),
+    get: async () => ({
+      exists: read(path).exists,
+      data: () => read(path).data,
+    }),
+    set: async (data) => write(path, data),
+  })
+  const reconcileUserAppReference = load(
+    '../runtime/app/app-user/server/user-reference.ts',
+    'reconcileUserAppReference',
+    {
+      getRuntimeFirestore: () => ref(),
+      getRuntimeIdentityFirestore: () => ref(),
+      FieldValue: { serverTimestamp: () => stamp.at },
+    }
+  )
+  const join = load(
+    '../runtime/app/app-user/server/command.ts',
+    'mutateRuntimeAppMembership',
+    {
+      ...contract,
+      APP_MUTATION_TARGETS: { runtimeApps: 'apps' },
+      USER_MUTATION_TARGETS: { runtimeUsers: 'users' },
+      serverAppUsersTarget: memberships,
+      reconcileUserAppReference,
+      runGuardedServerTransaction: async (_database, run) =>
+        run({
+          read: async (collection, id) => read(collection + '/' + id),
+          create: (collection, id, data) => write(collection + '/' + id, data),
+          update: (collection, id, data) =>
+            write(collection + '/' + id, {
+              ...read(collection + '/' + id).data,
+              ...data,
+            }),
+        }),
+    }
+  )
+  const input = {
+    actorUid: 'person',
+    appId: 'second',
+    appDatabaseId: 'fireux',
+    identityDatabaseId: 'fireux',
+    input: { action: 'ensure-self' },
+  }
+  assert.equal((await join(input)).created, true)
+  assert.equal(stored.get('apps/second/users/person').role, 'user')
+  assert.equal(stored.get('apps/second/users/person').subscription, 'free')
+  assert.equal(stored.get('users/person/apps/second').app_id, 'second')
+  assert.deepEqual(writes, [
+    'apps/second/users/person',
+    'apps/second',
+    'users/person/apps/second',
+  ])
+  assert.equal((await join(input)).created, false)
+  assert.equal(writes.length, 3)
+  for (const path of [
+    'users/person',
+    'users/person/private/account',
+    'apps/first/users/person',
+  ])
+    assert.deepEqual(stored.get(path), original.get(path))
+})
 
 test('App membership retains only its role, subscription and timestamps', () => {
   const membership = contract.initialMembership('person', 'user')
@@ -93,179 +173,36 @@ test('App membership retains only its role, subscription and timestamps', () => 
   )
 })
 
-function provisioner() {
-  const currentUser = ref({ uid: 'A', isAnonymous: false })
-  const state = ref({ uid: null, status: 'idle', generation: 0 })
-  const lastError = ref(null)
-  const accounts = []
-  const bootstrapped = []
-  const make = load(
-    '../runtime/user/composables/account/user-setup-coordinator.ts',
-    'createUserSetupCoordinator',
-    {
-      computed,
-      provisionSignedInUserAccount: (user, termsVersion) => {
-        const gate = deferred()
-        accounts.push({ uid: user.uid, termsVersion, ...gate })
-        return gate.promise
-      },
-    }
-  )
-  const actions = make({
-    currentUser,
-    state,
-    lastError,
-    isReady: ref(true),
-    userCreate: {
-      bootstrapUser: async (user) => bootstrapped.push(user.uid),
-    },
-  })
-  return {
-    ...actions,
-    currentUser,
-    state,
-    lastError,
-    accounts,
-    bootstrapped,
-  }
-}
-
-test('successful provisioning shares its in-flight request and bootstraps the captured account once', async () => {
-  const subject = provisioner()
-  const first = subject.createOnce('A', { termsVersion: 'current-terms' })
-  assert.equal(subject.accounts[0].termsVersion, 'current-terms')
-  const duplicate = subject.createOnce('A')
-  assert.equal(subject.accounts.length, 1)
-  subject.accounts[0].resolve()
-  await Promise.all([first, duplicate])
-  assert.deepEqual(subject.bootstrapped, ['A'])
-  assert.equal(subject.state.value.status, 'success')
-})
-
-for (const fail of [false, true]) {
-  test(`a stale account ${fail ? 'failure' : 'success'} cannot affect the next signed-in account`, async () => {
-    const subject = provisioner()
-    const old = subject.createOnce('A')
-    subject.reset('A')
-    subject.currentUser.value = { uid: 'B', isAnonymous: false }
-    const current = subject.createOnce('B')
-    const expectedState = { ...subject.state.value }
-    if (fail)
-      subject.accounts[0].reject(new Error('Old account request failed'))
-    else subject.accounts[0].resolve()
-    await old
-    assert.deepEqual(subject.state.value, expectedState)
-    assert.equal(subject.lastError.value, null)
-    assert.deepEqual(subject.bootstrapped, [])
-    subject.accounts[1].resolve()
-    await current
-    assert.deepEqual(subject.bootstrapped, ['B'])
-  })
-}
-
-test('reset invalidates an older provisioning generation even when the same account signs back in', async () => {
-  const subject = provisioner()
-  const old = subject.createOnce('A')
-  subject.reset('A')
-  const current = subject.createOnce('A')
-  subject.accounts[0].resolve()
-  await old
-  assert.deepEqual(subject.bootstrapped, [])
-  subject.accounts[1].resolve()
-  await current
-  assert.deepEqual(subject.bootstrapped, ['A'])
-})
-
-test('current provisioning errors remain visible and an explicit retry can succeed', async () => {
-  const subject = provisioner()
-  const first = subject.createOnce('A')
-  const failure = new Error('Account unavailable')
-  subject.accounts[0].reject(failure)
-  await assert.rejects(first, failure)
-  assert.equal(subject.state.value.status, 'failed')
-  assert.equal(subject.lastError.value, failure)
-  const retry = subject.retry()
-  subject.accounts[1].resolve()
-  assert.equal(await retry, true)
-  assert.deepEqual(subject.bootstrapped, ['A'])
-})
-
-test('joining another App forwards no new consent and still completes membership setup', async () => {
-  const subject = provisioner()
-  const pending = subject.retry()
-  assert.equal(subject.accounts[0].termsVersion, undefined)
-  subject.accounts[0].resolve()
-  assert.equal(await pending, true)
-  assert.deepEqual(subject.bootstrapped, ['A'])
-})
-
-for (const boundary of [
-  'identity',
-  'membership-command',
-  'event-token',
-  'event',
-]) {
-  for (const change of ['account', 'setup'])
-    test(`${change} changes during bootstrap ${boundary} cannot start its next stage`, async () => {
-      let ownerCurrent = true
-      const gate = deferred()
-      const reached = deferred()
-      const calls = []
-      const pause = async (stage) => {
-        calls.push(stage)
-        if (boundary === stage) {
+for (const change of ['account', 'setup']) {
+  test(`${change} changes during identity provisioning stop bootstrap`, async () => {
+    let ownerCurrent = true
+    const gate = deferred()
+    const reached = deferred()
+    const user = { uid: 'A', displayName: 'Account A' }
+    const auth = { currentUser: user }
+    const make = load(
+      '../runtime/user/composables/identity/useUserBootstrap.ts',
+      'useUserBootstrap',
+      {
+        getAuth: () => auth,
+        useFireUXConfig: () => ({ appId: 'app' }),
+        requireUid: async () => {
+          assert.fail('Bootstrap must retain its supplied Auth identity')
+        },
+        provisionUserIdentity: async (uid) => {
+          assert.equal(uid, 'A')
           reached.resolve()
           await gate.promise
-        }
-      }
-      const user = {
-        uid: 'A',
-        displayName: 'Account A',
-        getIdToken: async () => {
-          await pause('event-token')
-          return 'token-A'
         },
       }
-      const auth = { currentUser: user }
-      const make = load(
-        '../runtime/user/composables/identity/useUserBootstrap.ts',
-        'useUserBootstrap',
-        {
-          runAppUserCommand: async (input, supplied) => {
-            assert.deepEqual(input, { action: 'ensure-self' })
-            assert.equal(supplied.uid, 'A')
-            await pause('membership-command')
-            return { created: true }
-          },
-          getAuth: () => auth,
-          useFireUXConfig: () => ({ appId: 'app' }),
-          requireUid: async () => {
-            throw new Error('Bootstrap must retain its supplied Auth identity')
-          },
-          provisionUserIdentity: async (uid) => {
-            assert.equal(uid, 'A')
-            await pause('identity')
-            return { created: true }
-          },
-          fetch: async (url) => {
-            assert.equal(url, '/api/internal/events/user-joined')
-            await pause('event')
-            return {
-              ok: true,
-              json: async () => ({ event: { created: true } }),
-            }
-          },
-        }
-      )
-      const flight = make().bootstrapUser(user, () => ownerCurrent)
-      await reached.promise
-      const before = [...calls]
-      if (change === 'account') auth.currentUser = { uid: 'B' }
-      else ownerCurrent = false
-      gate.resolve()
-      await assert.rejects(flight, /signed-in account changed/)
-      assert.deepEqual(calls, before)
-    })
+    )
+    const flight = make().bootstrapUser(user, () => ownerCurrent)
+    await reached.promise
+    if (change === 'account') auth.currentUser = { uid: 'B' }
+    else ownerCurrent = false
+    gate.resolve()
+    await assert.rejects(flight, /signed-in account changed/)
+  })
 }
 
 test('bootstrap rejects an intended account that is no longer signed in before creating identity', async () => {
