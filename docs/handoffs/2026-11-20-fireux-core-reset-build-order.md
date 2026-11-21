@@ -95,6 +95,30 @@ standalone provisioning, deployed behavior and named-database verification
 remain open. Keep Ecosystem acceptance open until a trusted operator workflow
 is identified and verified. No live data or App locators were changed.
 
+**User checkpoint, 2026-11-21.** The trusted handle provisioner now preserves
+the canonical default avatar on retry. The regression test provisions a User
+twice and verifies that the second call performs no write. The 209 focused tests
+and Core typecheck passed.
+
+The FireUX portal and Project-free fixture exercised the trusted account,
+handle and membership endpoints against the named `fireux` emulator database.
+Both App orders produced one User and private account and two App memberships.
+The second join preserved the complete User and private account documents,
+including their timestamps. The default database had none of those records.
+The Project-free browser completed first-time setup and sign-out against the
+named database. The portal's named-database browser rerun stopped at a Nuxt
+development SSR IPC error before sign-in.
+
+**Open · Deployed User privacy.** Readback of the `cloud.firestore/fireux`
+release in `fireux-2005` found a public read/write catch-all. Replaying that
+exact policy against synthetic data in the emulator allowed anonymous and
+cross-user reads of the private account document. A separate, restrictive
+emulator policy allowed owner reads and denied anonymous and cross-user reads
+of User, private account and App membership documents. It also denied direct
+client writes to those records. Keep User acceptance open until a reviewed
+deployed policy enforces the required boundaries and is verified. No live
+documents were read or changed during this check.
+
 **Exit:** App, Ecosystem and User each stand on their own root and shared Core infrastructure. No Project import/authority is necessary for a normal Core App.
 
 ### 3 — Simplify AppUser into App-owned membership support

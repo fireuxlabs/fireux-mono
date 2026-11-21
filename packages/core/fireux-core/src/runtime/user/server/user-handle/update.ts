@@ -3,14 +3,16 @@
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { USER_ECOSYSTEM_AVATAR_SRC } from '../../utils/user-avatar.ts'
+import {
+  resolveUserAvatarSource,
+  USER_ECOSYSTEM_AVATAR_SRC,
+} from '../../utils/user-avatar.ts'
 import { UserAccountStorage } from '../../models/user-account.model.ts'
 import {
   type UserHandleInput,
   type UserHandleResult,
 } from '../../models/user-handle'
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/user-account-provisioning'
-import { resolveUserAvatarSource } from '../../utils/user-avatar.ts'
 import { readHttpsUrl } from '../../../utils/https-url'
 import { validatePublicSlug } from '../../../utils/slug/validate-public-slug'
 import { readUserDisplayName } from '../../utils/profile-validation'
@@ -165,7 +167,12 @@ export async function updateUserHandle(input: {
         patch.display_name = creation.displayName
       }
       if (typeof data.bio !== 'string') patch.bio = ''
-      if (!readHttpsUrl(data.avatar)) patch.avatar = creation.avatar
+      if (
+        data.avatar !== USER_ECOSYSTEM_AVATAR_SRC &&
+        !readHttpsUrl(data.avatar)
+      ) {
+        patch.avatar = creation.avatar
+      }
       if ('displayName' in data) patch.displayName = FieldValue.delete()
       if ('id' in data) patch.id = FieldValue.delete()
     }

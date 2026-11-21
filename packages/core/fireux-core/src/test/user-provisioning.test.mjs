@@ -252,6 +252,20 @@ test('repeated bootstrap retains an existing canonical handle and selected avata
   assert.deepEqual(h.uploads, [])
 })
 
+test('repeated bootstrap preserves the default avatar and the original User audit stamp', async () => {
+  const h = harness()
+  const uid = h.actor.uid
+  const first = await h.provision(uid, { displayName: 'Saved name' })
+  const original = h.records.get(uid)
+  assert.equal(original.avatar, '/img/ecosystem/avatar.png')
+
+  const second = await h.provision(uid, { displayName: 'Changed Auth name' })
+  assert.equal(second.created, false)
+  assert.equal(second.handle, first.handle)
+  assert.equal(h.records.get(uid), original)
+  assert.equal(h.writes.length, 1)
+})
+
 test('explicit bootstrap repairs invalid saved names without renaming their canonical handle', async () => {
   const uid = 'alice111111111111'
   for (const display_name of ['N'.repeat(121), 42]) {
