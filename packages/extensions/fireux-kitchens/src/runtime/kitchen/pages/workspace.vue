@@ -47,11 +47,14 @@ definePageMeta({
 const { currentUser, isAuthenticated } = useAuth()
 const config = useFireUXConfig()
 const access = useKitchenAccess()
-const selection = useWorkspace('kitchen')
-const selectedId = computed(() => {
-  const saved = selection.selectedId.value
-  return access.ids.value.includes(saved) ? saved : access.ids.value[0] || ''
-})
+const { selectedId, reconcile } = useWorkspace('kitchen')
+watch(
+  [access.ids, access.outcome, selectedId],
+  ([ids, state]) => reconcile(ids, state),
+  {
+    immediate: true,
+  }
+)
 const {
   data: kitchen,
   outcome,
@@ -119,8 +122,6 @@ async function save() {
         result.owner_user_id !== user.uid
       )
         throw new Error('Kitchen creation returned an unexpected result.')
-      if (isCurrent() && !selection.selectedId.value)
-        selection.select(result.kitchen_id)
     }
   } catch (error) {
     if (isCurrent() && (!current || current.id === selectedId.value))

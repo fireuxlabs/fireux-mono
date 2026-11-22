@@ -72,8 +72,7 @@ starter Menus through its own [guest workflow](../../packages/extensions/fireux-
 1. **Close Kitchen-only acceptance.** Use normal Core sign-in to create, open,
    rename and refresh a name-only Kitchen. Verify no Place document, child
    collections or downstream registration. Retest access revocation and the
-   existing Place-backed flow. The name-only command and rename already passed
-   locally, but the signed-in reopen/refresh check is open.
+   existing Place-backed flow. See the [local checkpoint](#kitchen-only-local-checkpoint).
 2. **Enable Items on their own.** Prove create, list, detail and edit with Menu
    and Services absent. Keep the full App's existing route and contextual preview.
    Move source placement only where it clarifies Kitchen ownership. Preserve
@@ -145,13 +144,11 @@ how the narrow installation is documented.
   preview directly. Prove the baseline with that preview absent and compose
   it above the Item surface in the full App. The deletion reference check
   protects existing downstream data and should remain intact while this is done.
-- **The narrow Workspace hides inaccessible records but leaves saved selection
-  unreconciled.** [The page](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/pages/workspace.vue)
-  renders an allowed fallback when the saved ID is excluded. It does not call
-  the shared reconciliation that clears or replaces the persisted ID after
-  access settles. The [full Kitchen controller](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspace.ts)
-  does. Verify the narrow browser path through Core sign-in, refresh and
-  revocation before calling the Workspace contract complete.
+- **The narrow Workspace previously left saved selection unreconciled.**
+  [The page](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/pages/workspace.vue)
+  now reuses settled-grant reconciliation, matching the
+  [full Kitchen controller](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspace.ts).
+  See the [local checkpoint](#kitchen-only-local-checkpoint).
 - **Currency ownership is already established.** The earlier audit treated
   ownership as open. [Finance](../../packages/extensions/fireux-finance/README.md#operational-default-currency)
   assigns the optional default to the operating Entity and lets Place suggest
@@ -163,11 +160,10 @@ how the narrow installation is documented.
 
 ### What the docs leave unresolved
 
-- The [Kitchens README](../../packages/extensions/fireux-kitchens/README.md#entity-spine)
-  points to `models/kitchen.model.ts`, while the model is `models/model.ts`.
-  It has no Kitchen-only installation entry. The [Misebox onboarding guide](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md#kitchen-onboarding)
-  describes the Place-writing full path. That remains accurate for full
-  Misebox and needs an explicit distinction from the new opt-in mode.
+- The [Kitchens README](../../packages/extensions/fireux-kitchens/README.md#kitchen-only-workspace)
+  now explains the opt-in mode and points to `models/model.ts`. The
+  [Misebox onboarding guide](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md#kitchen-onboarding)
+  describes the Place-writing path used by full Misebox.
 - The [package contract](../concepts/runtime-package.md#registration-steps)
   distinguishes native discovery from explicit module registration. It does
   not explain how to graduate the present Kitchen-only module route into a
@@ -184,5 +180,17 @@ how the narrow installation is documented.
   Menu preview. The existing Menus grouping may remain. Decide how Items-only
   installation handles deletion while enforcing every saved reference.
 - Approve a currency adoption plan before any write or change to publication
-  requirements. The first implementation gate remains the Kitchen-only browser
-  journey. Items-only follows it. Keep existing document paths and IDs in both.
+  requirements. Items-only follows the Kitchen-only checkpoint. Keep existing
+  document paths and IDs in both.
+
+### Kitchen-only local checkpoint
+
+The browser signed in through the standard Core email form using a prepared
+local account. The Kitchen-only App created a Kitchen from a name, opened it,
+renamed it and reopened the same selection after a full refresh. Removing its
+grant cleared the selection cookie and hid the name and rename action both
+immediately and after reload. The named emulator database confirmed no Place
+or child collections. The Rules candidate denied the revoked account's read,
+and the trusted rename command rejected it. Generated Nuxt registration
+contained the Kitchen operations without Items, Menus, Services or Orders.
+All 91 focused tests passed, including existing Place-backed command coverage.

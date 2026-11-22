@@ -30,7 +30,7 @@ Kitchen implementation lives in `src/runtime/kitchen/` beneath technical roles:
 and `tools` roles. Conventional Nuxt entrypoints remain at the runtime root.
 There is no aggregate `useKitchen` CRUD facade or supported root Delete action.
 
-- `models/kitchen.model.ts`: the stored Kitchen root, composing capability
+- `models/model.ts`: the stored Kitchen root, composing capability
   configuration once, with creation and optional update stamps.
 - `utils/read-kitchen-document.ts`: strict stored-root validation, independently
   of stamp-free public summaries and Place-derived presentation.
@@ -51,6 +51,19 @@ There is no aggregate `useKitchen` CRUD facade or supported root Delete action.
   and server audit stamps. `archived` remains supported.
 - `server/index/onboarding/`: directory, account, guest and adoption workflows.
 - `tools/`: consumed Tool definitions; protected executors live under `server/`.
+
+## Kitchen-only Workspace
+
+Install `['fireux-kitchens', { workspaceOnly: true }]` with the
+[Workspace module and layer](../fireux-workspace/README.md#registration), and
+declare `kitchen` in the App's `workspaces`. This mode adds the Kitchen
+Workspace route and its create and update endpoints. It omits the full
+Kitchens layer and ordering options. Core owns sign-in.
+
+The [Kitchen page](src/runtime/kitchen/pages/workspace.vue) reads the selected
+Kitchen without Place hydration and reconciles the saved selection against
+settled grants. The name lives on `Kitchen.identity.name`. The standard
+Misebox installation retains its Place-backed onboarding path.
 
 ## Ownership and execution
 
