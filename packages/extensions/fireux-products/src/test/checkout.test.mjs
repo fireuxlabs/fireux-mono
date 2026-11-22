@@ -201,7 +201,7 @@ function checkoutFixture({
       }),
       ProductStorage: { collection: 'products' },
       ProductPriceStorage: { collection: 'prices' },
-      getProductsFirestore: () => ({
+      getRuntimeFirestore: () => ({
         doc: (path) => ({
           get: async () => ({
             exists: true,

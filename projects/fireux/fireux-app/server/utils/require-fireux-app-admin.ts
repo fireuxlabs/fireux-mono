@@ -2,7 +2,7 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { getFirestoreDb } from './firebase-admin'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -17,7 +17,7 @@ export async function requireFireuxAppAdmin(event: H3Event) {
     })
   }
 
-  const db = await getFirestoreDb()
+  const db = getRuntimeFirestore()
   const appRef = db.collection('apps').doc(appId)
   const [appSnapshot, membershipSnapshot] = await Promise.all([
     appRef.get(),

@@ -81,6 +81,12 @@ discovered host. Nitro requires its SDK emulator hosts to match that discovery.
 Missing discovery stops startup. Production uses the configured Firebase
 services and rejects SDK emulator hosts.
 
+Core's `getAdminApp()` selects the configured Ecosystem Firebase project and
+shares the Firebase SDK's named `vuefire-admin` instance between Nitro handlers
+and the SSR plugin. The SSR plugin initializes it before VueFire injects it.
+Server code that deliberately reads another Firebase project owns that
+explicit selection, as in the FireUX portal directory.
+
 Current hosted Stripe Checkout uses the existing server credentials; generated
 Ignition examples do not advertise `NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` without
 a browser Stripe consumer. Server secret and webhook settings remain unchanged.

@@ -7,7 +7,7 @@ import {
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAppConversationsTarget, serverConversationMessagesTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import { serverIdentityUserNotificationsTarget } from 'fireux-core/runtime/user/server/mutation-targets'
-import { getFirestoreDb } from '../../utils/firebase-admin'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   emptyIgnitionChecklist,
   parseIgnitionConversationInput,
@@ -51,7 +51,7 @@ async function publishOwnerNotifications(input: {
   requestId: string
   timestamp: Timestamp
 }) {
-  const db = await getFirestoreDb()
+  const db = getRuntimeFirestore()
   const memberships = await db
     .collection('apps')
     .doc(input.appId)

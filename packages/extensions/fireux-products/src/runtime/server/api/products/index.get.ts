@@ -1,6 +1,6 @@
 import { defineEventHandler, setResponseHeader } from 'h3'
 import { useRuntimeConfig } from '#imports'
-import { getProductsFirestore } from '../../../product/server/core/getAdmin'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   publicProduct,
   serializeFirestoreValue,
@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     role: String(fireux?.role || ''),
     appId: String(fireux?.id || ''),
   }
-  let query = getProductsFirestore()
+  let query = getRuntimeFirestore()
     .collection('products')
     .where('visibility', '==', 'public')
     .where('active', '==', true)

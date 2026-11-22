@@ -3,6 +3,8 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import { deleteApp, getApps, initializeApp } from 'firebase-admin/app'
+import { getFirestore } from 'firebase-admin/firestore'
 
 function load(path, name, dependencies) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -13,6 +15,51 @@ function load(path, name, dependencies) {
     Object.keys(dependencies)
   )(...Object.values(dependencies))
 }
+
+test('the directory uses Core locally and explicit named Admin targets for other projects', async (t) => {
+  const owner = initializeApp(
+    { projectId: 'demo-fireux-directory' },
+    'vuefire-admin'
+  )
+  const unrelated = initializeApp({ projectId: 'demo-foreign-default' })
+  const wrong = initializeApp(
+    { projectId: 'demo-unexpected' },
+    'platform-directory-demo-directory-conflict'
+  )
+  t.after(() => Promise.all(getApps().map((app) => deleteApp(app))))
+  const read = load(
+    '../../server/utils/firebase-admin.ts',
+    'getFirestoreProjectDb',
+    {
+      getAdminApp: () => owner,
+      getApps,
+      initializeApp,
+      getFirestore,
+    }
+  )
+
+  assert.notEqual(owner, unrelated)
+  assert.equal(
+    await read('demo-fireux-directory', 'identity'),
+    getFirestore(owner, 'identity')
+  )
+
+  const foreign = await read('demo-directory-remote', 'tenant')
+  assert.equal(foreign.projectId, 'demo-directory-remote')
+  assert.equal(foreign.databaseId, 'tenant')
+  assert.equal(await read('demo-directory-remote', 'tenant'), foreign)
+  assert.equal(
+    getApps().filter(
+      (app) => app.name === 'platform-directory-demo-directory-remote'
+    ).length,
+    1
+  )
+  await assert.rejects(
+    read('demo-directory-conflict', 'tenant'),
+    /does not match its Firebase project/
+  )
+  assert.equal(wrong.options.projectId, 'demo-unexpected')
+})
 
 function harness({ failedSource = '', standalone = false } = {}) {
   const queries = []

@@ -11,7 +11,7 @@ import {
   ProductPriceStorage,
   ProductStorage,
 } from '../../../product/utils/product.ts'
-import { getProductsFirestore } from '../../../product/server/core/getAdmin'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { joinProductRead } from '../../../product/utils/normalize-product.ts'
 
 import {
@@ -35,7 +35,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const id = String(getRouterParam(event, 'id') || '').trim()
   assertSafeDocumentSegment(id)
 
-  const db = getProductsFirestore()
+  const db = getRuntimeFirestore()
   const productRef = db.collection(ProductStorage.collection).doc(id)
   const productSnap = await productRef.get()
 

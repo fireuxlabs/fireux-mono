@@ -9,11 +9,61 @@ function load(file, dependencies, result) {
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export default /m, 'const handler = ')
     .replace(/^export /gm, '')
+    .replaceAll('import.meta.dev', 'false')
   return compileFunction(
     `${stripTypeScriptTypes(source)};return ${result}`,
     Object.keys(dependencies)
   )(...Object.values(dependencies))
 }
+
+test('Products verifies the token on Core Admin and checks membership in the App database', async () => {
+  const admin = {
+    name: 'vuefire-admin',
+    options: { projectId: 'demo-products' },
+  }
+  let role = 'admin'
+  const assertAccess = load(
+    '../runtime/product/server/core/assertProductsServiceAccess.ts',
+    {
+      process: { env: {} },
+      getHeader: () => undefined,
+      bearerToken: () => undefined,
+      bearerTokenFromEvent: () => 'fixture-token',
+      useRuntimeConfig: () => ({
+        public: {
+          fireux: { id: 'fixture-app' },
+          firebaseEcosystem: { firebase: { databaseId: 'app-data' } },
+        },
+      }),
+      createError: (input) =>
+        Object.assign(new Error(input.statusMessage), input),
+      getAdminApp: () => admin,
+      getAuth: (selected) => {
+        assert.equal(selected, admin)
+        return {
+          async verifyIdToken(token) {
+            assert.equal(token, 'fixture-token')
+            return { uid: 'fixture-user' }
+          },
+        }
+      },
+      getRuntimeFirestore(databaseId) {
+        assert.equal(databaseId, 'app-data')
+        return {
+          doc(path) {
+            assert.equal(path, 'apps/fixture-app/users/fixture-user')
+            return { get: async () => ({ data: () => ({ role }) }) }
+          },
+        }
+      },
+    },
+    'assertProductsServiceAccess'
+  )
+  await assertAccess({})
+  role = 'member'
+  await assert.rejects(assertAccess({}), { statusCode: 404 })
+})
+
 const normalizeProduct = load(
   '../runtime/product/utils/normalize-product.ts',
   {},
@@ -114,7 +164,7 @@ test('public collection endpoint applies runtime scope and projects every return
         defineEventHandler: (value) => value,
         setResponseHeader: (...args) => headers.push(args),
         useRuntimeConfig: () => ({ public: { fireux: { role, id: 'app-a' } } }),
-        getProductsFirestore: () => ({
+        getRuntimeFirestore: () => ({
           collection: (name) => {
             assert.equal(name, 'products')
             return query

@@ -1,15 +1,14 @@
-import * as admin from 'firebase-admin'
 import { readFileSync } from 'node:fs'
 import { isAbsolute, resolve } from 'node:path'
 import {
   applicationDefault,
   cert,
-  type App,
-  getApp,
   getApps,
   initializeApp,
 } from 'firebase-admin/app'
 import { useRuntimeConfig } from '#imports'
+
+const ADMIN_APP_NAME = 'vuefire-admin'
 
 type ExplicitServiceAccount = {
   projectId: string
@@ -20,12 +19,6 @@ type ExplicitServiceAccount = {
 function readEnv(k: string) {
   const v = process.env[k]
   return v?.trim()?.length ? v : undefined
-}
-
-function normalizeStorageBucket(bucket?: string) {
-  if (!bucket) return undefined
-  const trimmed = bucket.trim()
-  return trimmed.length ? trimmed : undefined
 }
 
 function parseServiceAccount(
@@ -114,91 +107,53 @@ function getServiceAccountFromEnv(): ExplicitServiceAccount | undefined {
   }
 }
 
-function getRuntimeFirebaseProjectId() {
-  try {
-    const runtime = useRuntimeConfig()
-    const projectId = String(
-      runtime.public?.firebaseEcosystem?.firebase?.projectId ||
-        readEnv('FIREBASE_PROJECT_ID') ||
-        readEnv('GOOGLE_CLOUD_PROJECT') ||
-        ''
-    ).trim()
-    return projectId || undefined
-  } catch {
-    return (
-      readEnv('FIREBASE_PROJECT_ID')?.trim() ||
-      readEnv('GOOGLE_CLOUD_PROJECT')?.trim()
-    )
-  }
-}
-
-function hasInitializedAdminApp(): boolean {
-  try {
-    return getApps().length > 0
-  } catch {
-    return false
-  }
-}
-
-function getInitializedAdminApp(): App | undefined {
-  try {
-    // Prefer the default app when it exists.
-    return getApp()
-  } catch {
-    // Some runtimes may initialize a named admin app first.
-    // In that case, any initialized app instance is sufficient.
-    const apps = getApps()
-    return apps[0]
-  }
-}
-
-// Guarded singleton accessor for firebase-admin
+/** Share the Ecosystem-bound Admin app between Nitro and VueFire SSR. */
 export function getAdminApp() {
-  let app = getInitializedAdminApp()
-
-  if (!app) {
-    try {
-      const sa = getServiceAccountFromEnv()
-      const storageBucket = normalizeStorageBucket(
-        readEnv('FIREBASE_STORAGE_BUCKET')
-      )
-      const projectId = getRuntimeFirebaseProjectId()
-      const serviceAccountId = readEnv('FIREBASE_SERVICE_ACCOUNT_ID')?.trim()
-      if (sa) {
-        initializeApp({
-          credential: cert({
-            projectId: sa.projectId,
-            clientEmail: sa.clientEmail,
-            privateKey: sa.privateKey,
-          }),
-          ...(storageBucket ? { storageBucket } : {}),
-        })
-      } else {
-        initializeApp({
-          credential: applicationDefault(),
-          ...(projectId ? { projectId } : {}),
-          ...(serviceAccountId ? { serviceAccountId } : {}),
-          ...(storageBucket ? { storageBucket } : {}),
-        })
-      }
-    } catch (error) {
-      // Ignore duplicate init races, but do not hide real initialization failures.
-      if (!hasInitializedAdminApp()) throw error
-    }
-    app = getInitializedAdminApp()
-  }
-
-  if (!app) {
+  const runtime = useRuntimeConfig()
+  const projectId =
+    runtime.public.firebaseEcosystem?.firebase?.projectId?.trim()
+  if (!projectId) {
     throw new Error(
-      '[getAdminApp] firebase-admin initialization did not produce an app instance'
+      '[fireux-core/firebase] An Ecosystem Firebase project is required for Admin access.'
     )
   }
 
-  return app
-}
+  const options = runtime.vuefire?.admin?.options
+  const vuefireProjects = [
+    options?.projectId?.trim(),
+    runtime.public.vuefire?.config?.projectId?.trim(),
+  ]
+  if (vuefireProjects.some((value) => value && value !== projectId)) {
+    throw new Error(
+      '[fireux-core/firebase] VueFire project configuration conflicts with the Ecosystem Firebase project.'
+    )
+  }
 
-// Guarded singleton accessor for firebase-admin compat namespace
-export function getAdmin() {
-  getAdminApp()
-  return admin
+  const existing = getApps().find((app) => app.name === ADMIN_APP_NAME)
+  if (existing) {
+    if (existing.options.projectId !== projectId) {
+      throw new Error(
+        '[fireux-core/firebase] Existing vuefire-admin app targets a different project than the Ecosystem Firebase binding.'
+      )
+    }
+    return existing
+  }
+
+  // Keep lookup, credential selection and native initialization synchronous.
+  const serviceAccount = getServiceAccountFromEnv()
+  const serviceAccountId =
+    options?.serviceAccountId?.trim() ||
+    readEnv('FIREBASE_SERVICE_ACCOUNT_ID')?.trim()
+  const storageBucket =
+    options?.storageBucket?.trim() || readEnv('FIREBASE_STORAGE_BUCKET')?.trim()
+  return initializeApp(
+    {
+      ...options,
+      projectId,
+      credential: serviceAccount ? cert(serviceAccount) : applicationDefault(),
+      ...(serviceAccountId ? { serviceAccountId } : {}),
+      ...(storageBucket ? { storageBucket } : {}),
+    },
+    ADMIN_APP_NAME
+  )
 }

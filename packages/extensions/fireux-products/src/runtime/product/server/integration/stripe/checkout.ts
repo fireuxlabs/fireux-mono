@@ -3,7 +3,7 @@ import { useRuntimeConfig } from '#imports'
 import { createError, getRequestURL, type H3Event } from 'h3'
 import { ProductPriceStorage, ProductStorage } from '../../../utils/product'
 import { STRIPE_API_VERSION } from './version'
-import { getProductsFirestore } from '../../core/getAdmin'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { checkoutBuyerSession } from './buyer-session'
 import { publicProduct } from '../../read'
 
@@ -122,7 +122,7 @@ async function assertCheckoutProductAndPrice(input: {
     })
   }
 
-  const db = getProductsFirestore()
+  const db = getRuntimeFirestore()
   const productSnap = await db
     .doc(`${ProductStorage.collection}/${input.productId}`)
     .get()
