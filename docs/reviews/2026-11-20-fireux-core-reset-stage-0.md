@@ -374,3 +374,39 @@ were reproduced by name against `394b3fc2d`, before extraction. The failures
 cover Property scope and retained read outcomes, Team and Notifications
 composition, and the Portfolio scope used by Documents, Tasks and Compliance.
 They are separate from the 14 failures listed in the Slice 3 checkpoint.
+
+### Workspace extraction acceptance
+
+Stage 5 is complete for the optional package boundary. Commits `336c1aafc`
+and `affe4ee47` moved selection, route guards, the management frame, shared
+Team controls and optional manifest into `fireux-workspace`, then migrated
+their extension and App consumers. The optional module and layer supply the
+runtime, native registration and styles. Core keeps the app shell, Dashboard,
+identity and membership. Domain records and trusted commands retain their
+existing authority. Default AI and the Core documentation inventory have no
+Workspace dependency. No executable references to the retired Core Workspace
+paths remain.
+
+The packed Core gate, guest-only packed Workspace render, all 12 Workspace App
+preparations and the representative rendered routes in the checkpoints above
+establish installation and composition. They leave signed-in operator
+journeys across all downstream Apps, deployed policy and release compatibility
+outside this acceptance. The 14 Core and 23 overview baseline failures remain
+open.
+
+#### Chef Dashboard save
+
+The actual Chef editor saved a title change through Core Dashboard in a
+standalone, signed-in browser fixture without Workspace or App membership.
+Firestore readback found the change and the actor's updated stamp only at
+`users/{uid}/profiles/chef` in the named identity database. The creation
+stamp, canonical User, private account and App membership remained unchanged,
+and a refreshed editor displayed the saved title.
+
+This passed with the authored development policy loaded explicitly into
+the named emulator databases. That policy allows public writes. In a separate
+named emulator database, the unmodified [Misebox production candidate](../../packages/ecosystem/fireux-misebox/src/config/firebase/firestore.production.rules)
+denied both reading and saving the seeded Chef profile for its owner and for
+another signed-in User. The candidate lacks a Chef profile rule. Restricted
+owner saving remains an open release requirement. No live rules or data were
+touched.

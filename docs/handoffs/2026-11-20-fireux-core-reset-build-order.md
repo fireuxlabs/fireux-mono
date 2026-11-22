@@ -151,14 +151,14 @@ composables from App's technical directories. The 75 focused checks passed.
 
 This is a **separate explicitly selected implementation slice**, not a reason to keep Workspace in Core indefinitely. The proposed name is `fireux-workspace`; choose its lane and module registration using existing package conventions (likely an extension), not a second hidden Core runtime.
 
-- [ ] Move Workspace-specific selection, selected-record scope guarding, safe switching, management shell/layout, sidebar/nav/breadcrumbs, page framing, optional Team UI/selection and Workspace-owned capability presentation together with their real consumers.
-- [ ] Move/register native Workspace layout, components, composables, routes and associated CSS at the new package's actual Nuxt module/layer boundary. Core-only Apps must not import those implementation paths or automatically register Workspace components.
-- [ ] Audit Core files that currently call Workspace directly, including `app/composables/useAppManifest.ts` and module wiring/configuration: retain any neutral **App-level contract** required to compose an optional Workspace without a reverse import. Do not subtly break manifests, SEO or regular app navigation.
-- [ ] Preserve the **distinction between Workspace Team UI and authority**: Workspace can present a generic Team roster; AppUser membership, User identity and each domain's role/grant/command authority remain owned by their real records and trusted commands.
-- [ ] Keep a Workspace a **management surface over an existing Entity**, not another stored `WorkspaceEntity` or general-purpose CRUD super-entity.
-- [ ] Verify an existing Core-only App remains functional without Workspace installed; verify a Workspace-enabled reference (Project or Kitchen) with it installed. Check registration, SSR, exact selection/access, navigation, refresh and error states.
+- [x] Move Workspace-specific selection, selected-record scope guarding, safe switching, management shell/layout, sidebar/nav/breadcrumbs, page framing, optional Team UI/selection and Workspace-owned capability presentation together with their real consumers.
+- [x] Move/register native Workspace layout, components, composables, routes and associated CSS at the new package's actual Nuxt module/layer boundary. Core-only Apps must not import those implementation paths or automatically register Workspace components.
+- [x] Audit Core files that currently call Workspace directly, including `app/composables/useAppManifest.ts` and module wiring/configuration: retain any neutral **App-level contract** required to compose an optional Workspace without a reverse import. Do not subtly break manifests, SEO or regular app navigation.
+- [x] Preserve the **distinction between Workspace Team UI and authority**: Workspace can present a generic Team roster; AppUser membership, User identity and each domain's role/grant/command authority remain owned by their real records and trusted commands.
+- [x] Keep a Workspace a **management surface over an existing Entity**, not another stored `WorkspaceEntity` or general-purpose CRUD super-entity.
+- [x] Verify Core-only installation and account flows, explicit Workspace opt-in, and SSR in the reference Apps. Evidence and remaining operator-journey checks are recorded in the [Workspace extraction review](../reviews/2026-11-20-fireux-core-reset-stage-0.md#workspace-extraction-acceptance).
 
-**Exit:** `Core → optional Workspace → Workspace-owning domain` is the *dependency direction* (arrows mean “is depended on by”), while Core can genuinely run alone. Moving source without moving Nuxt registration/import boundaries is **not** an extraction.
+**Stage 5 complete for the package boundary.** Apps opt into Workspace. The optional package owns its implementation, registration, and dependencies. Identity, membership, and trusted domain commands retain their owners. Stage 6 tracks the remaining integration and release evidence.
 
 ### 6 — Clean cutover and evidence
 
