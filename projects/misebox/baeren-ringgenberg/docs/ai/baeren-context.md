@@ -42,6 +42,12 @@ previously conflicted with the development setup. Refresh it as evidence rather
 than treating it as owner approval. Recording an owner decision in context does not update hours;
 apply an approved decision through the existing hours editors separately.
 
+If Collection ordering is selected again, confirm the chosen hours with the
+venue owner and obtain staff acceptance. The October pilot predates retirement
+of the public checkout. Follow the current
+[Menu and Orders boundary](../../../../../docs/concepts/menu-ordering.md) when
+scoping a new proof.
+
 ## Refresh, verification and maintenance
 
 Before Bären work, read the inherited context and current owning source and saved

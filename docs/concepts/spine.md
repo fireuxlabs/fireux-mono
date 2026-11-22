@@ -1,7 +1,7 @@
 # Spine
 
-Updated: 2026-11-14
-Ref: d570b2ff4
+Updated: 2026-11-22
+Ref: eb57620fa
 Role: map, not canon
 
 ## Purpose
@@ -285,36 +285,3 @@ experience-based rationale unless measured.
 - A project app starts owning reusable domain behavior.
 - A family difference is described but not classified.
 - Documentation calls current drift an accepted pattern without evidence.
-
-## Current recommendations
-
-### Now
-
-- Preserve verified Workspace index and Menu route behavior through their current tests.
-- Use explicit delta registers in family maps.
-- Keep current source and executable checks above prose in the authority order.
-- Preserve root `Menu` versus scoped `KitchenMenu` as separate entity and
-  create contracts.
-- Remove no-op parity files and new pass-through helpers instead of treating
-  file-count symmetry as architecture.
-
-### Next
-
-- Align Entity Collection Page presentation where no product reason explains the current
-  split.
-- Resolve route identity per Entity Detail instead of changing all
-  `[id]` and `[slug]` routes mechanically.
-- Keep Kitchen root, required Place, and root-owned Team composition
-  strict; do not reintroduce pre-release compatibility identity.
-- Reconcile descriptive Entities with current identity, authority and consumers
-  before adding root or scoped ceremony.
-- Consolidate the duplicate Go QR wrappers and dogfood payloads behind the
-  existing provider contract.
-- Keep the rebuilt Kitchen Ordering boundary aligned with the Menu-owned customer flow; see `order-processing-kitchen-fulfilment.md`.
-
-### Later
-
-- Promote repeated, proven family contracts into guards.
-- Do not guard unresolved product choices or cosmetic prose.
-- Prove a second AI document domain before generalizing review persistence.
-- Test the two layout renderer lanes before choosing or guarding one syntax.

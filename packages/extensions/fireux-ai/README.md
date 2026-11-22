@@ -6,4 +6,4 @@ Role: guard-required placeholder, not canon
 
 TODO: Rebuild this README only after the concept maps and package contracts are settled.
 
-Start at `AGENTS.md`, `docs/ai/gpt-context.md`, and the relevant `docs/concepts/*.md`.
+Follow the [repo working rules](../../../AGENTS.md) and see the [research context](docs/ai/research-context.md) for the public industry research guide.

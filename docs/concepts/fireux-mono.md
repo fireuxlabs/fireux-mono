@@ -14,7 +14,7 @@ upstream docs linked there and the focused FireUX maps.
 - [Repository ownership](lasagne.md)
 - [Runtime filesystem](runtime-filesystem.md)
 - [Package contracts](runtime-package.md)
-- [Workspace commands](pnpm.md)
+- [Workspace commands](../../tools/ide/README.md)
 - [App configuration](app-config.md)
 - [Documentation roles](documentation.md)
 
@@ -63,8 +63,8 @@ Workspace when no owned product surface proves one.
 
 ## Cold-reading path
 
-1. Read AGENTS.md, global context and every context or map required by the
-   applicable AGENTS.md routing rows.
+1. Follow [AGENTS.md](../../AGENTS.md) through the [README spine](../../README.md)
+   to the owning App or package. Consult concept maps relevant to the task.
 2. Read the owning package manifest and Nuxt module entrypoint to establish
    dependencies and registration.
 3. Start at the App route, layout, middleware or server adapter.
@@ -103,8 +103,8 @@ brand or folder name alone.
   Misebox retains its stricter App-owned Rules gates. See [release tooling](../../tools/firebase-release/README.md).
 - Generated Nuxt output, dist and node_modules are not authored source.
 
-Use [pnpm](pnpm.md) for current commands and workspace checks. Root scripts and
-package-specific commands are source; do not duplicate their inventory here.
+Use the [IDE workflow](../../tools/ide/README.md) for focused checks and the
+[root manifest](../../package.json) for shared commands.
 
 ## Adding an App
 

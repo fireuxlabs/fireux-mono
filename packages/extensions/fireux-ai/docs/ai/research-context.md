@@ -118,4 +118,4 @@ consumption boundaries; do not copy the runtime instruction into it. Improve the
 method when new industries expose missing distinctions, weak evidence or
 unnecessary ceremony. Keep temporary task progress and speculative plans out
 of this file. Update global context only for changes that also affect repo-wide
-rules, and keep the scope router solely in root `AGENTS.md`.
+rules, and keep the package README as the entrance to local guidance.

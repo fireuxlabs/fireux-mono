@@ -73,6 +73,6 @@ Please report briefly:
 
 - [Kitchen Core source audit](../reviews/2026-11-20-kitchen-core-independence.md)
 - [Kitchen real-world build order](2026-11-20-kitchen-real-world-build-order.md)
-- [Workspace/File/Firestore structure study](workspace-spine-firestore-canon-alignment.md)
+- [Workspace ownership and composition](../concepts/family-workspace-entity.md)
 - [Entity Core and dependency-ordered Ignite](2026-11-20-entity-core-dependency-ordered-ignite.md)
 - [Walking Bridge contract](../../tools/walking-bridge/README.md)

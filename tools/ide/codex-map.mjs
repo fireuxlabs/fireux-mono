@@ -28,11 +28,7 @@ const roles = new Set([
   'types',
   'utils',
 ])
-const requiredContext = [
-  'AGENTS.md',
-  'docs/ai/gpt-context.md',
-  'docs/concepts/fireux-mono.md',
-]
+const requiredContext = ['AGENTS.md', 'README.md']
 const slash = (value) => value.split(path.sep).join('/')
 const readJson = (file) => JSON.parse(readFileSync(file, 'utf8'))
 const directories = (directory) =>
@@ -626,7 +622,7 @@ export function buildCodexMap(root = repoRoot, { threads } = {}) {
     notes: [
       'Manifests and current source define this inventory; task titles do not grant edit or data authority.',
       'Spines are observed source directories and existing technical roles, not certification that every directory is an Entity.',
-      'AGENTS.md remains the sole scope router. Related contexts are candidates to inspect for the actual task, not mandatory duplicate routing.',
+      'Follow AGENTS.md and the README spine to the owner. Consult listed contexts and concepts when relevant to the task.',
       'No active task means no assignment in the supplied export; without an export, live task state is unknown.',
       'Concept nodes come from docs/concepts maps and headings; task links appear only when exact conceptPaths are present in supplied thread metadata.',
       'The static embed harness and parked tooling are listed explicitly; neither is a reusable FireUX library.',

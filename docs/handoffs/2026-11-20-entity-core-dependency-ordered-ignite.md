@@ -23,7 +23,9 @@ A feature may only be treated as ready to build when its prerequisites are ident
 
 ## Clarification from the Stable example — structure is not build order
 
-The 2026-11-19 [Workspace Spine & Firestore Canon Alignment](workspace-spine-firestore-canon-alignment.md) used a **hypothetical horse Stable** to illustrate predictable navigation, source-file/composable placement and Firestore paths. Its list of Overview, Identity, Horses, Health, Stalls, Feeding, Staff, Bookings and Invoices is a **structural catalogue**, **not a justified construction sequence**. Do not turn that table's row order or folder nesting into an implementation plan.
+The hypothetical horse Stable illustrates the difference: Overview, Identity,
+Horses, Health, Stalls, Feeding, Staff, Bookings and Invoices describe how
+operators find things. Build order follows demonstrated prerequisites.
 
 **Ignite must show two separate views of the same domain:**
 - **Structural map:** UI navigation → route → component/composable → owned source/Firestore path; identifies ownership and namespace consistency. It describes *where something belongs*.

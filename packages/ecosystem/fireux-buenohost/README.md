@@ -3,5 +3,4 @@
 BuenoHost owns the Firebase binding, ecosystem identity, and shared brand
 runtime for property-hosting apps such as Book with Nats.
 
-Start at `AGENTS.md`, `docs/ai/gpt-context.md`, and
-`packages/ecosystem/fireux-buenohost/docs/ai/buenohost-context.md`.
+See the [BuenoHost context](docs/ai/buenohost-context.md) for ecosystem and App ownership.

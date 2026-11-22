@@ -65,7 +65,7 @@ Demo fulfilment also stays outside root configuration. See Kitchen's
 `src/test/kitchen-child-attachment.test.mjs`; this does not prove provider readiness,
 live data conversion or a complete translation editing capability.
 
-Saved Kitchen service setups ([Offering records](menu-service-glossary.md#kitchen-services)) retain parent-scoped identities
+Saved Kitchen service setups ([Offering records](../../packages/extensions/fireux-kitchens/docs/menu-service-glossary.md#kitchen-services)) retain parent-scoped identities
 at `kitchens/{kitchenId}/offerings/{offeringId}`. Their live private reader is
 membership-bound; canonical saved validation and commands share interaction
 constraints. Public Menu/Kitchen readers use supported child projections, and the rebuilt Menu submission command validates those projections transactionally.

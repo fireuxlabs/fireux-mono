@@ -61,4 +61,4 @@ implied by source changes.
 
 Update this context with stable owner, source or verification changes in the same
 patch. Keep transient task state and chat history out. Global context changes
-only for repo-wide rules; AGENTS.md remains the sole scope router.
+only for repo-wide rules. The package README introduces local guidance.

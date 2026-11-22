@@ -210,8 +210,8 @@ grant edit authority.
 live task state is unknown. Concept maps and headings are navigable context, not
 an additional ownership registry; task links are only as complete as the
 metadata supplied by the thread export. Keep exported task IDs, statuses and
-generated reports outside durable repository context. `AGENTS.md` remains the
-scope router; discovered related context files are navigation candidates for
-the actual task, not an additional mandatory routing table. Inspect current
+generated reports outside durable repository context. The map starts with
+`AGENTS.md` and the root `README.md`. Related context files help readers find
+guidance for the task. Inspect current
 source before treating an observed folder as an Entity or choosing a task's
 edit scope.

@@ -10,7 +10,10 @@ Finish the **small, clear Item Detail** journey first, then grow it by composing
 
 **Guiding principle:** *The Item describes the dish; capabilities own its related truth; Workspace reveals the result.* Keep pages simple, reactive data ownership explicit, and presentation reusable.
 
-This handoff follows [Workspace Spine & Firestore Canon Alignment](workspace-spine-firestore-canon-alignment.md). Consult `AGENTS.md`, `docs/ai/gpt-context.md`, `docs/concepts/entities.md`, `docs/concepts/workspace.md`, `docs/concepts/family-menu.md` and the applicable Kitchen/Misebox context before implementation.
+Follow [AGENTS.md](../../AGENTS.md) to Kitchen's owners. Use the
+[Workspace Entity family](../concepts/family-workspace-entity.md) and
+[Menu family](../concepts/family-menu.md) when checking where facts and
+relationships belong.
 
 ## Why we stopped building the Collection Manager
 
@@ -102,6 +105,14 @@ The reusable FireUX *pattern* is **Model → Derived → Relationships → Prese
 A new developer should be able to answer without searching through a controller maze: **Where is the Item model? Which exact Firestore document does this page read? Which component is public presentation? Which capability owns this relationship? What is computed rather than stored? What changes when the selected Kitchen changes?**
 
 If answering those questions requires duplicated readers or hidden routing behavior, simplify the seam first.
+
+## Open availability decision
+
+Item edits stay live. Decide separately whether an emergency operator stop
+should override every Menu placement. Any approved stop must be enforced by
+the public and ordering owners without deleting the Item or its placements.
+Stock and service-time availability retain their own authorities. Keep
+operator-only costs, personnel and diagnostics out of the public projection.
 
 ## Authority / guardrails
 

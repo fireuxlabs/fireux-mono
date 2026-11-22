@@ -1,7 +1,7 @@
 # Documentation system
 
-Updated: 2026-11-16
-Ref: a068b6eaa
+Updated: 2026-11-22
+Ref: eb57620fa
 Role: map, not canon
 
 ## Purpose
@@ -18,24 +18,30 @@ The authority order is:
 
 1. Current source code.
 2. Executable guards and tests.
-3. Living context under central or owning-package `docs/ai` locations routed by `AGENTS.md`.
+3. Living context under central or owning-package `docs/ai` locations.
 4. Concept and family maps under `docs/concepts`.
-5. README placeholders and historical text are not authority.
+
+The source owner's README is the current explanation of that implementation.
+Current source and executable evidence settle behavioural claims. Handoffs record outstanding work. Reviews preserve evidence needed for open
+acceptance or release decisions.
 
 When a map disagrees with source or a guard, follow the source or guard and
 update the map in the same change when the corrected rule is durable.
 
 ## Document roles
 
-| Document                                                                  | Job                                                | Must not become                                 |
-| ------------------------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------- |
-| `AGENTS.md`                                                               | Short operating router                             | The whole repository rulebook                   |
-| `docs/ai/gpt-context.md`                                                  | Durable repo-wide agent context                    | A copy of every concept map                     |
-| Owning package/App `docs/ai/*-context.md`, or central cross-owner context | Durable scope-specific agent context               | Task status, chat history, or speculative plans |
-| `docs/concepts/*.md`                                                      | Navigable concept and family maps                  | An implementation substitute                    |
-| `docs/roadmaps/fireux-priorities.md`                                      | One current priority queue with promotion criteria | A competing architecture or release authority   |
-| `docs/archive/`                                                           | Parked plans, dated audits and recovered drafts    | An automatically active task queue              |
-| README files                                                              | Package landing map or concise placeholder         | Architectural authority                         |
+| Document                                                                  | Job                                                             | Must not become                                 |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------- | ----------------------------------------------- |
+| `AGENTS.md`                                                               | Short operating router                                          | The whole repository rulebook                   |
+| `docs/ai/gpt-context.md`                                                  | Durable repo-wide agent context                                 | A copy of every concept map                     |
+| Owning package/App `docs/ai/*-context.md`, or central cross-owner context | Durable scope-specific agent context                            | Task status, chat history, or speculative plans |
+| `docs/concepts/*.md`                                                      | Navigable concept and family maps                               | An implementation substitute                    |
+| `docs/roadmaps/fireux-priorities.md`                                      | One current priority queue with promotion criteria              | A competing architecture or release authority   |
+| Source READMEs                                                            | The owning scope, immediate children and current implementation | A second copy of shared rules or child detail   |
+
+Link to the immediate source owners from the parent README. Where a single
+package already owns the lane's responsibility, link straight to that package.
+Use central concept maps to explain relationships shared across owners.
 
 ## Metadata
 
@@ -58,8 +64,8 @@ Role: living context | map, not canon
 
 ## Links
 
-- Start at `AGENTS.md`, then `docs/ai/gpt-context.md`.
-- Follow the smallest relevant scoped context and concept map.
+- Follow [AGENTS.md](../../AGENTS.md) through the [README spine](../../README.md)
+  to the owning package or App. Consult relevant scoped guidance and concept maps.
 - A concept map should name its parent, children, and closest horizontal maps.
 - Prefer repository-relative paths that can be opened directly.
 - Link to current source and guards instead of copying large implementation
@@ -115,9 +121,9 @@ speculative alternatives do not belong in living documentation.
 | People and tools reading published context | `/context` and `/context/research`                                                                                               | Reviewed summaries of FireUX and its research.       |
 
 Keep contributor guidance in the repository. FireUX App hosts the public
-guides and the `fireux-docs` reference. Give each API one reference, based on
-its owning package's source, and link to it from examples and patterns.
-Reviews and handoffs stay with the repository evidence.
+guides and the `fireux-docs` reference. Give each API one explanation with its
+source owner. The public reference can present source-owned explanations and
+working examples. Reviews and handoffs stay with the repository evidence.
 
 Ecosystem Main Apps own shared public guides for their products and libraries.
 Tenant Apps, such as La Tap Berne, and standalone Apps add documentation only
@@ -202,20 +208,11 @@ provenance only; it cannot be cited as evidence that a contract is shared.
 ## Roadmaps
 
 Use [FireUX priorities](../roadmaps/fireux-priorities.md) as the single current
-queue. Park superseded plans and dated execution boards under `docs/archive/`,
-preserving useful detail, provenance and incoming links. Refresh archived
-claims against current source before promoting work; an unchecked historical
-item does not establish a current defect or priority. Task state stays out of
-living context files.
-
-Roadmaps are bounded recommendations, not promises. Use this order:
-
-- `Now`: protect or clarify behavior already proved by source.
-- `Next`: remove known drift or migration debt.
-- `Later`: product decisions that need evidence before implementation.
-
-Each item should name the family seam it changes. Avoid dates unless there is a
-real external deadline.
+queue. Give each entry a bounded outcome and a finish condition. Record any
+decision that still needs an owner. Keep release gates with the releasing App
+and durable decisions with their source owner. Retire superseded plans once
+useful current decisions and relevant evidence have an owner. Git retains the
+old plans and unchecked items.
 
 ## Quality check
 
@@ -240,9 +237,9 @@ Before finishing a documentation change:
 
 Keep global and genuinely cross-owner guides central. Put durable domain guidance
 under the owning package’s `docs/ai`, ecosystem composition under its ecosystem
-package, and genuinely App-specific guidance under that App. Root `AGENTS.md`
-remains the sole scope router. Do not create folders or guides without a recurring
-owned responsibility; mixed-owner guides stay central until a single owner is proved.
+package, and App-specific guidance under that App. `AGENTS.md` owns shared
+operating requirements, and owner READMEs lead to local guidance and source.
+Create a guide only when it has a recurring responsibility.
 
 The public context pages and APIs read authored platform and research
 summaries. Command authority stays with the owning tools and server checks.

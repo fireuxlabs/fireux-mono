@@ -8,6 +8,9 @@ Tools and trusted server behaviour. Apps install and compose the package.
 Read root `AGENTS.md`, `docs/ai/gpt-context.md` and the routed family/context maps
 before changing it. Current source and source-owned tests establish behaviour.
 
+See the [Menu and service glossary](docs/menu-service-glossary.md) for Kitchen
+terminology and the current customer/staff boundary.
+
 ## App ordering configuration
 
 Apps opt into supported ordering channels through the native module tuple:

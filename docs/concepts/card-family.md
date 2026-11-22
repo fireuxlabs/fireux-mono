@@ -82,7 +82,7 @@ compositions. They are not alternate User Overview cards. There is no old
 is the App-owned membership of a User; person identity remains with User.
 AppUser presentation reuses User Cards: [App user administration](../../packages/core/fireux-core/src/runtime/app/components/User/Administration/Members.vue)
 composes `UserCardsPill` with separate membership controls, and
-[`UserDetail`](../../packages/core/fireux-core/src/runtime/user/components/Public/Detail/Index.vue)
+[`UserDetail`](../../packages/core/fireux-core/src/runtime/user/components/Detail/Index.vue)
 composes `UserCardsOverview` beside `AppUserMembership`. Role and subscription
 commands remain App-owned; consuming surfaces retain their reads, states and
 management controls. This relationship does not need a parallel AppUser Cards family.

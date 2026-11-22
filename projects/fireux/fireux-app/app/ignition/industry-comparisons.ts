@@ -1,11 +1,11 @@
-// Ordering references identify the draft foundation only; they do not prove submission, payment or fulfilment.
+// Source references cover staff Orders. The customer checkout journey remains unproved.
 import {
   sharedArchitectureContracts,
   type ComparisonObservation,
   type IgnitionIndustryCase,
   type IgnitionIndustryComparison,
 } from 'fireux-ignite/runtime/models/industry-comparison'
-const core = 'packages/core/fireux-core/src/runtime/'
+const workspace = 'packages/extensions/fireux-workspace/src/runtime/'
 const kitchens = 'packages/extensions/fireux-kitchens/src/runtime/'
 const properties = 'packages/extensions/fireux-properties/src/runtime/'
 const reservations = 'packages/extensions/fireux-reservations/src/runtime/'
@@ -31,8 +31,8 @@ export const miseboxIndustry: IgnitionIndustryCase = {
       'source-reviewed',
       [
         'projects/misebox/misebox-app/nuxt.config.ts',
-        core + 'layouts/workspace.vue',
-        kitchens + 'kitchen/models/kitchen.model.ts',
+        workspace + 'layouts/workspace.vue',
+        kitchens + 'kitchen/models/model.ts',
       ],
       'Architecture mapped from the current App and domain source; this is not complete journey acceptance.'
     ),
@@ -47,10 +47,10 @@ export const miseboxIndustry: IgnitionIndustryCase = {
     services: {
       level: 'partial',
       references: [
-        kitchens + 'kitchen/utils/ordering.ts',
-        kitchens + 'kitchen/records/order.ts',
+        kitchens + 'kitchen/server/orders/save-draft.ts',
+        kitchens + 'kitchen/server/orders/submission.ts',
       ],
-      note: 'Ordering execution was removed. Only the draft Order/channel/ticket foundation exists; fulfilment and payment are unimplemented.',
+      note: 'Staff can save, submit and progress Orders through protected commands. Public Menu browsing has no customer checkout or payment flow.',
     },
   },
   domain: {
@@ -214,7 +214,7 @@ export const industryComparisons: readonly IgnitionIndustryComparison[] = [
           'The structural responsibilities match, while the business objects and service composition differ. New grooming components must be supplied where no current owner exists.',
         reuse: 'partial-source',
         references: [
-          core + 'layouts/workspace.vue',
+          workspace + 'layouts/workspace.vue',
           kitchens + 'kitchen/components/Workspace/Navigation/Index.vue',
           properties + 'property/models/property.model.ts',
         ],

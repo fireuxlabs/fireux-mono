@@ -39,6 +39,14 @@ test('one deterministic source result retains reviewed purpose, framework owners
       `${artifact.ecosystem.sourcePath}/docs/infrastructure.md`
     )
   )
+  assert.match(
+    artifact.codexTask.prompt,
+    /Read AGENTS\.md and follow the root README\.md/
+  )
+  assert.match(
+    artifact.codexTask.prompt,
+    /inspect current source and relevant local guidance/
+  )
   const infrastructure = artifact.ecosystem.files['docs/infrastructure.md']
   assert.match(infrastructure, /Status: unverified/)
   assert.match(infrastructure, /Edition.*Mode.*Location/)

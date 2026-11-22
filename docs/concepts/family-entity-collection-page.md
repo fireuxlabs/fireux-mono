@@ -75,7 +75,7 @@ Public Kitchen and Menu discovery retain the existing default chrome and use
 named domain introductions over native `UPageHeader`; their links connect the
 two discovery surfaces. The Collection retains search and filters. Creation
 remains with its owning authenticated route. See [Menu family](family-menu.md)
-for the content difference and [layout ownership](layouts.md#other-route-composition-lanes).
+for the content difference and [layout ownership](layouts.md#other-route-families).
 The introduction precedes `UPageBody`. Native Nuxt UI components and the existing
 layout provide framing; the default layout supplies `UContainer`, while the
 FireUX full-width framework route supplies its own container. Do not add another

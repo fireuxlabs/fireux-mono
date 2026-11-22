@@ -116,6 +116,14 @@ Run `pnpm test:bookings` for the local booking/Calendar boundary checks. The
 tests use an in-memory booking store and mocked Google responses; they do not
 write the App's Firebase database or Ben's Calendar.
 
+## Client and launch scope
+
+Interlaken Bike Tours is the private guided-tour business. Yellow Velo is a
+separate business with its own App. Confirm the launch scope with the Bike Tours
+client before adding payments or booking channels. The reported need to
+coordinate GetYourGuide, Booking.com and Viator remains unverified as an
+integration requirement.
+
 ## Local booking test
 
 Set `BOOKINGS_LOCAL_TEST=true` in the ignored App `.env` and restart `pnpm dev`

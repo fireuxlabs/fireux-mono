@@ -15,8 +15,8 @@ inherits `AGENTS.md` and `docs/ai/gpt-context.md`.
 
 Before each Misebox task:
 
-1. Read `AGENTS.md`, `docs/ai/gpt-context.md`, and this file completely.
-2. Read `docs/concepts/fireux-mono.md` and the smallest routed concept map.
+1. Follow `AGENTS.md` through the owning App or package README.
+2. Read the sections of this context and the concept maps that apply to the task.
 3. Inspect `packages/ecosystem/fireux-misebox`, the relevant
    `projects/misebox/<app>`, installed extensions, real consumers, generated
    Nuxt registration, relevant source-owned tests, and `git status`.
@@ -1108,7 +1108,7 @@ retain the existing default chrome. Kitchen owns named content such as
 Core retains the shared navigation, account/Workspace and footer controls.
 Creation remains at its existing authenticated route. See the
 [Menu family](../../../../../docs/concepts/family-menu.md#shared-spine) and
-[layout ownership](../../../../../docs/concepts/layouts.md#other-route-composition-lanes).
+[layout ownership](../../../../../docs/concepts/layouts.md#other-route-families).
 Customer content focuses on food discovery; product-demo and publishing controls
 stay outside that content.
 Customer accounts, vouchers and order links require proved customer routes
@@ -1829,10 +1829,9 @@ not required for every Kitchen and gain no Free entitlement here.
 
 The shared [starter definition](../../../../../packages/extensions/fireux-kitchens/src/runtime/menu/content/starter-menu.ts)
 names one Food & Drinks Menu with initial slug `main`.
-[New-Kitchen initialization](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/system-menus.ts)
-creates it as an ordinary draft interactive Menu with a generated record ID.
-Onboarding creation/resume uses this default; management initialization of an
-existing root preserves its Menus and never recreates missing starters.
+Guest onboarding and document preparation call the [Menu starter writer](../../../../../packages/extensions/fireux-kitchens/src/runtime/menu/server/document/starter.ts).
+It creates a draft interactive Menu with a generated record ID. Independent
+Kitchen creation can start empty; existing Menus keep their own identity.
 The [Free creation form](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Menus/Create/Form.vue)
 presents Food & Drinks. The [creation command](../../../../../packages/extensions/fireux-kitchens/src/runtime/menu/server/records/create.ts)
 admits only normalized `food-drinks` for Free and stores the exact Food & Drinks
@@ -2226,16 +2225,9 @@ responsibilities rather than following arbitrary sidebar labels. Menu, ordering
 and command ownership are unchanged. App-specific entry presentation stays in
 `misebox-app/app/components/Workspace/Kitchen/Home` with distinct generated names.
 [Items/Index.vue](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Items/Index.vue)
-consumes the route-provided all-Item context and gates collection rendering. Its
-[Collection/Index.vue](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Items/Collection/Index.vue)
-provides `useItemCatalogue` and composes Controls, Results and dialogs.
-The catalogue defaults to a compact list with visible search,
-All/Food/Drinks and list/grid controls; cards open the Item detail. Completion
-filtering remains URL/controller state without a visible completeness control.
-Items AI is an inline coming-soon Focus. Food/Drink is Item type; there is no Item category feature or
-paid category count. The [catalogue controller](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/menu/items/useItemCatalogue.ts)
-and [row projection](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/item.ts) do not expose legacy
-category values, and the [Item update command](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/items/update.ts)
+owns the operator's alphabetical list, the Add Item control and the exact detail
+link. It reads through `useKitchenWorkspaceItems`; scope changes close the
+create dialog. Food/Drink is Item type. The [Item update command](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/items/update.ts)
 rejects category changes while preserving stored values during unrelated updates.
 The [Menu Item picker](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Menus/Items/Add/Repertoire.vue)
 searches reusable Items and excludes Items already placed in that Section; it
@@ -2856,10 +2848,9 @@ remains separate. The pure `kitchen/utils/promotions/pricing.ts` matches `dishId
 across Menu placements, applies base/required-variant prices, and retains extras.
 Browse resolves today's local price; service surfaces resolve now when open or
 the day of their next serving window. Existing Menu publication and service
-eligibility still determine where dishes appear; a promotion alone does not
-publish an unplaced dish or enable a service. `menu/server/ordering.ts` applies
-current promotional terms in the submitting transaction and snapshots prices
-separately from Order facts; payment and delivery charges remain separate.
+eligibility still determine where dishes appear. A promotion cannot publish an
+unplaced dish or enable a service. See the current
+[Menu and Orders boundary](../../../../../docs/concepts/menu-ordering.md).
 
 The Sunday pizzas data cutover preserves the prior promotion as audit data and
 replaces Menu/section targeting with the explicit existing pizza Dish IDs at
@@ -2985,7 +2976,7 @@ Public `/menus` is the Collection/Delivery portal, collating eligible menus per
 venue with matching schedules and a quiet link to other menus. Full venue service
 discovery belongs to Place and `/kitchens`, not this food portal.
 
-Use the [Menu and service glossary](../../../../../docs/concepts/menu-service-glossary.md)
+Use the [Menu and service glossary](../../../../extensions/fireux-kitchens/docs/menu-service-glossary.md)
 for product labels, saved record names and ordering vocabulary.
 
 Kitchen navigation groups Items, Menus, Promotions and Services beneath the

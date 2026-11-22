@@ -14,6 +14,9 @@ inventing a second marketing vocabulary.
 Source remains authority. This map explains how to derive literature from
 source; it is not a catalogue of permanent strings.
 
+For changes shared across Main Apps, see [identity and product literature
+ownership](../ai/identity-literature-context.md).
+
 ## FireUX glossary
 
 These terms have repository-specific meanings. Do not substitute a generic
@@ -147,7 +150,7 @@ Human and AI surfaces use the same supported Tools and authority boundaries.
 Use the owning domain's glossary for overloaded words. In Misebox, **Services**
 is the Kitchen capability and `Offering` names its saved setup. In architecture
 writing, use **server orchestration** for trusted workflow sequencing. Follow
-the [Menu and service glossary](menu-service-glossary.md#kitchen-services) for
+the [Menu and service glossary](../../packages/extensions/fireux-kitchens/docs/menu-service-glossary.md#kitchen-services) for
 Misebox vocabulary and the [Entity map](entities.md#working-vocabulary) for
 Entity, Record and Shape.
 

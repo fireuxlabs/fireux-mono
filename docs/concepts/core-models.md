@@ -696,11 +696,8 @@ identity records; its joined membership and User reads refresh through Nuxt. Pro
 factories use the same ordinary API boundary. Current evidence is Core's
 `user-directory-collection.test.mjs` and `user-directory-detail.test.mjs`.
 
-Current work is tracked in [FireUX priorities](../roadmaps/fireux-priorities.md).
-Earlier reconciliation evidence and deferred optional profiles remain in the
-[archived Identity and Workspace roadmap](../archive/2026-10-workspace-cleanup/roadmaps/identity-and-workspaces.md).
-Profiles are not a prerequisite for ordinary Workspace access; domain-specific
-capabilities retain their own explicit requirements.
+Profiles are not a prerequisite for ordinary Workspace access. Domain capabilities
+retain their own explicit requirements.
 
 AppUser-derived UI authority requires a `ready` membership read. Pending,
 missing, idle and failed reads provide no elevated authority even if a binding
@@ -717,5 +714,3 @@ and an entry action. For the configured App, entry uses its runtime home path.
 Other Apps require their stored HTTP(S) website address; missing addresses do
 not justify deriving a hostname from the App id. Management and creation use
 their own existing routes and authorities, not duplicate App identities.
-See [FireUX priorities](../roadmaps/fireux-priorities.md) for the current acceptance
-scope; the archived roadmap retains dated journey evidence.

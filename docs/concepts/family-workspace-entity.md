@@ -95,8 +95,8 @@ required merely to configure an Entity's money settings.
   reinterpreting them. Any repricing, currency adoption or stored-data cutover
   requires its own reviewed scope and authority; no migration is implied here.
 
-Current Kitchen [ordering](../../packages/extensions/fireux-kitchens/src/runtime/menu/server/ordering.ts)
-and presentation still read the same-ID Place through
+Current [Menu creation](../../packages/extensions/fireux-kitchens/src/runtime/menu/server/records/create.ts)
+and Kitchen presentation still read the same-ID Place through
 [`readPlaceCurrencyCode`](../../packages/extensions/fireux-places/src/runtime/place/utils/place-spine.ts).
 That is an implementation conflict to reconcile across Kitchen and Place, not
 the shared ownership rule. Preserve existing denomination during that alignment;

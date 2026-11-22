@@ -9,7 +9,10 @@ Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex s
 
 This context inherits the root `AGENTS.md` and `docs/ai/gpt-context.md`. It owns
 the durable mutation authority boundary; entity models, Security Rules, and
-read projections retain their existing owners.
+read projections retain their existing owners. Start with [Authority](#authority)
+and [ownership and verification](#ownership-boundaries-and-verification), then
+read the passages for the target operation. For Rules or live work, also consult
+the [development and release boundary](#explicit-open-development-rules).
 
 The top-level relationship and client entrances are mapped in
 `docs/concepts/core-models.md`. Root CRUD changes one root document only.
@@ -70,33 +73,10 @@ atomic document changes or explicit external-effect recovery. Do not require an
 initial direct-browser write path or duplicate CRUD implementation before using
 an evidenced trusted command. Primitive CRUD and named workflows remain distinct.
 
-The previous Kitchen Order execution, numbering allocator, customer links and
-completion writer are deleted. The new explicit Save draft command is
-`kitchen/server/orders/save-draft.ts`; it uses the existing Kitchen record
-mutation authority inside its transaction and a local create/update target at
-`kitchens/{kitchenId}/order-drafts/{id}`. Revision-zero creation and exact-revision
-updates prevent implicit recreation or stale overwrite. The browser captures its
-account/App/membership/Kitchen scope before credentials; the live draft reader
-admits only membership-granted Kitchen IDs. This does not restore submitted Order,
-customer, payment or fulfilment authority. Existing immutable Kitchen
-Sales retain their own reporting contract; no live stored records were converted
-by the source reset. The connected order exchange now uses Kitchen-owned
-`server/orders/submission.ts`, explicit submitted-orders and numbering targets,
-tenant-bound customer submission, caller-scoped response reads, and current
-Kitchen authority for operator transitions. Exact revisions prevent stale
-responses; caller-owned idempotency prevents duplicate submissions. See the
-Ordering map and `order-submission.test.mjs` for the bounded contract. This
-does not restore payment authority. The Menu submit adapter resolves the exact
-published Kitchen/Menu target, and `menu/server/ordering.ts` re-reads selected
-Menu/Section/Item/Dish/Sellable records inside the guarded writing transaction.
-The transaction also re-reads Kitchen offerings and requires the selected public
-service to be enabled, unpaused and linked to that Menu with configured hours
-(and table QR for table orders). Kiosk Menu submissions require the App-declared
-kiosk channel and the exact enabled Eat in/Takeaway mode with that Menu selected.
-They reuse the same canonical transaction, pricing, numbering and caller-owned
-retry contract; they gain no operator or payment authority. The server supplies item-name and pricing snapshots; changed catalogue totals
-fail for review. The generic basic Order remains separate from Menu selections
-and commercial snapshots.
+The [Menu and Orders boundary](../concepts/menu-ordering.md) owns the current
+public Menu and staff Orders split. See the [staff Orders map](../concepts/order-processing-kitchen-fulfilment.md)
+for draft, staff submission and fulfilment contracts. Kitchen retains the trusted
+command and transaction authority for those writes.
 
 Active Server mutation targets own database placement, collection path,
 allowed verbs, and access lane. Client CRUD instead consumes a domain-owned

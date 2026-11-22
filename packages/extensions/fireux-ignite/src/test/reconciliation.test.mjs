@@ -140,9 +140,11 @@ test('Misebox reference sources exist and its business brief is implementation-i
     null,
     data.miseboxReference
   )
-  assert.ok(
-    report.coverage.every(
-      (item) => item.observed.length && !item.referenceJourneyProved
-    )
+  assert.deepEqual(
+    report.coverage
+      .filter((item) => !item.observed.length)
+      .map((item) => item.id),
+    ['place-order']
   )
+  assert.ok(report.coverage.every((item) => !item.referenceJourneyProved))
 })

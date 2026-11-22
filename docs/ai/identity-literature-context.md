@@ -16,27 +16,12 @@ Compare FireUX with the global Ecosystem Main Apps. Tenant Apps provide evidence
 for supported journeys and own their customer-facing copy. Include standalone
 Apps where they use the shared presentation or language.
 
-## Ownership boundaries
+## Ownership and language
 
-| Owner | Responsibility |
-| --- | --- |
-| FireUX Core | Canonical User, App and Ecosystem foundations, membership and capacity checks, neutral UI, and public metadata projection. |
-| `fireux-app` | Shared Main App landing and Product presentation, pricing and legal presentation, and public Operations, Solutions and Tools pages. |
-| `fireux-ecosystem` | Shared child-App discovery and Main App composition. |
-| `fireux-workspace` | Optional operational presentation, navigation and Entity selection. Dashboard remains available through Core. |
-| Domain packages | Domain identity, records, capabilities, readers, commands and authorization. |
-| Individual Apps | Audience, copy, offers and pricing policy, imagery, routes and working actions. |
-
-## Shared language
-
-- Describe operational scope as Workspace → Capability → Tool → authorized
-  command. Derive summaries from current domain routes and actions.
-- Tools are bounded utilities or provider entrances. Solutions explain
-  supported situations. Public Product listings describe offers, while the
-  owning commands and access checks determine what someone can do.
-- Use the [terminology and commercial rules](../concepts/product-language.md)
-  for surface names, legacy Operations vocabulary, access, capacity, Managed
-  service, branded deployment, new development and external costs.
+Use the [product language map](../concepts/product-language.md) for commercial
+terms and the [repository map](../concepts/fireux-mono.md) to find package owners.
+The App owns its claims and offers. Confirm those claims against the domain
+routes, readers, commands and access policy that implement them.
 
 ## Public presentation
 
@@ -55,7 +40,8 @@ Apps where they use the shared presentation or language.
 - [FireUX platform literature](../concepts/fireux.md#fireux-app-public-literature)
   owns the framework, source guide and ecosystem-creation path. A Main App
   may advertise a branded App within its existing ecosystem when a supported
-  workflow exists. [App initialization](../onboarding.md) is internal setup.
+  workflow exists. [Core App initialization](../../packages/core/fireux-core/src/runtime/server/api/internal/app/initialize.post.ts)
+  is internal setup.
 - The [entrance map](../concepts/family-workspace-entity.md#public-and-workspace-entry-points)
   owns public Home and Workspace arrival differences. The
   [artwork map](../concepts/brand-assets.md#photographic-media) owns shared image

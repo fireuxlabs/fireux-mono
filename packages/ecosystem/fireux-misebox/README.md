@@ -1,9 +1,6 @@
-# TODO
+# Misebox ecosystem
 
-Updated: 2026-06-17
-Ref: 37fb262f0
-Role: guard-required placeholder, not canon
-
-TODO: Rebuild this README only after the concept maps and package contracts are settled.
-
-Start at `AGENTS.md`, `docs/ai/gpt-context.md`, and the relevant `docs/concepts/*.md`.
+This package owns shared Misebox App composition and ecosystem configuration.
+Start at the [Nuxt module](src/module.ts) for registration and the
+[Misebox context](docs/ai/misebox-context.md) for ecosystem and App ownership.
+Use the [Template One context](docs/ai/templates-context.md) for storefront work.

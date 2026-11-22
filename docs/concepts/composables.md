@@ -524,9 +524,6 @@ obtains the mutation actor for operator listing and responses; named submission
 operations retain domain authorization and transition rules. UI placement grants
 no authority.
 
-The customer [Menu Kiosk](../../packages/extensions/fireux-kitchens/src/runtime/menu/components/Kiosk/Index.vue)
-composes the service Menu with local eat-in/takeaway choice and guest-browser
-guidance. It does not establish a device activation/revocation management runtime.
 The [Board template check](../../packages/extensions/fireux-kitchens/src/test/kitchen/order-board-template.test.mjs)
 proves template compilation only, not signed-in browser behavior, device printing
 or provider acceptance.

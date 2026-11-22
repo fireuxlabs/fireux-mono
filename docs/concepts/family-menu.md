@@ -305,9 +305,10 @@ Menu utilities contain pure calculations grouped under `calendar`, `catalogue`,
 `navigation`, `ordering` and `records`; publication readiness remains a named
 standalone calculation. Item, Section and source-upload storage definitions live
 with their existing models. Menu storage owns its creation-capacity definition.
-Kitchen onboarding owns new-Kitchen initialization in
-[system-menus.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/system-menus.ts),
-using the shared [starter definition](../../packages/extensions/fireux-kitchens/src/runtime/menu/content/starter-menu.ts).
+Guest onboarding and document preparation call the Menu-owned
+[starter writer](../../packages/extensions/fireux-kitchens/src/runtime/menu/server/document/starter.ts)
+with the shared [starter definition](../../packages/extensions/fireux-kitchens/src/runtime/menu/content/starter-menu.ts).
+The independent Kitchen shell can start empty.
 The [Misebox allowance and starter contract](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md#menu-operator-entitlements)
 maps creation-only capacity and preservation of existing Menus; initialization
 of an existing Kitchen does not recreate missing starters.
@@ -797,7 +798,7 @@ The read scans past private published records in bounded pages; empty service
 settings add no filler message. Labels do not claim current opening hours
 or kiosk availability. Verify `kitchen-service-summary.test.mjs`.
 
-Menu and service terms are defined in [the service glossary](menu-service-glossary.md). Keep fulfilment, ordering channel and timing distinct; vocabulary alignment does not change stored interaction types.
+Menu and service terms are defined in [the service glossary](../../packages/extensions/fireux-kitchens/docs/menu-service-glossary.md). Keep fulfilment, ordering channel and timing distinct; vocabulary alignment does not change stored interaction types.
 
 The Workspace service overview presents the existing Collection, Delivery,
 Pre-order, Table service, QR table ordering and Kiosk options directly. It does
@@ -858,7 +859,7 @@ Production. The Menu Entity owns what customers can choose. Services owns how
 and when a Kitchen serves its Menus. Orders owns the placed-order
 lifecycle and Prep & Production owns production. Menu may show service
 availability and link to its configuration. Use the
-[glossary](menu-service-glossary.md#kitchen-services) for Services, service setup
+[glossary](../../packages/extensions/fireux-kitchens/docs/menu-service-glossary.md#kitchen-services) for Services, service setup
 and `Offering` terminology.
 
 This is the accepted grouping target. Current navigation still places Services

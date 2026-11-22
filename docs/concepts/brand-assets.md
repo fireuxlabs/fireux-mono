@@ -1,7 +1,7 @@
 # Brand asset authority map
 
-Updated: 2026-11-07
-Ref: 614700fd9
+Updated: 2026-11-22
+Ref: eb57620fa
 Role: map, not canon
 
 ## Purpose
@@ -14,7 +14,6 @@ Map App artwork ownership, local delivery, stored media, and User avatars.
 - Family: `spine.md`
 - Configuration: `app-config.md`
 - Composition: `components.md`
-- Designer handoff: `../assets.md`
 
 ## Current source
 
@@ -49,11 +48,11 @@ declare artwork ownership or approval state. Core and ecosystem source families
 retain their design authority; branded Apps own their artwork. Never borrow
 another App's export to fill a missing asset.
 
-The [asset brief](../assets.md) lists the eight required runtime exports. Their
-executable constraints remain in `app/media/requirements.ts`. Retain original
-masters outside `public`, such as an App-owned `brand` directory. Correcting an
-export's size or surface colour preserves its approved geometry and wording;
-it does not authorize a replacement identity.
+Identify the approved visual master before producing variants. Preserve its
+letterforms, spacing, proportions, placement and visible bounds. Check the
+variants at the same size and leave enough transparent padding to avoid
+clipping. Retain editable masters and alternate concepts outside `public`,
+such as in the App's own `brand` directory.
 
 The runtime wordmark roles are raster: `wordmark-light.png` and
 `wordmark-dark.png`. Additional SVG wordmarks must preserve approved geometry
@@ -70,6 +69,28 @@ The former FireUX and BuenoHost rendering/projection scripts and guards were
 removed. There is no supported automated projection command; retained render
 manifests do not prove current files match. Compare source and exports when
 editing artwork.
+
+## Required runtime exports
+
+Place these files in the App's `public/img/app/`. The
+[Core media requirements](../../packages/core/fireux-core/src/runtime/app/media/requirements.ts)
+define the executable contract.
+
+| File                 | Requirement                             |
+| -------------------- | --------------------------------------- |
+| `logo.png`           | PNG, exactly 512 × 512                  |
+| `wordmark-light.png` | PNG, at least 256 × 64 and at least 3:1 |
+| `wordmark-dark.png`  | PNG, at least 256 × 64 and at least 3:1 |
+| `cover.png`          | PNG, 16:9 and at least 1280 × 720       |
+| `thumbnail.png`      | PNG, exactly 1200 × 630                 |
+| `favicon.ico`        | PNG frames at 16, 32, 48 and 64 px      |
+| `pwa/icon-192.png`   | PNG, exactly 192 × 192                  |
+| `pwa/icon-512.png`   | PNG, exactly 512 × 512                  |
+
+Compose the square logo, wide cover and sharing thumbnail for their intended
+surfaces. Keep source and optional vector artwork separate from the runtime
+exports when handing over the files, and identify the approved master and any
+locked geometry in the handover.
 
 ## Enforcement
 
@@ -89,8 +110,9 @@ dimensions and byte ranges must match the embedded images.
 - `src/test/app-brand-assets.test.mjs` covers the validator and build hook;
   IDE tooling and release tests cover discovery and packaged-file rejection.
 
-These checks do not approve an identity, prove faithful letterforms or certify
-contrast. Review actual light/dark previews and the named master for those.
+Review the exports against the approved master in the App's `/assets` page,
+using both light and dark backgrounds. Check overlay alignment, visible bounds
+and contrast alongside the automated format and dimension checks.
 
 ## Surface variants
 

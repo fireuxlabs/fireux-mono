@@ -3,7 +3,7 @@
 **Date:** 2026-11-20  
 **Status:** Agreed architecture direction and Codex audit/checklist handoff; **not** an implemented migration or completed workflow.  
 **Scope:** Kitchen lifecycle from an empty Kitchen to an operational kitchen. Establish a proven FireUX Entity Core and Workspace slice before downstream capabilities.  
-**Related:** [Item Detail & Capability Relationships](2026-11-20-item-detail-capability-relationships.md), [Workspace Spine](../concepts/family-workspace-entity.md), [Entities](../concepts/entities.md), [Menu & Service terminology](../concepts/menu-service-glossary.md), [Ignite context](../../packages/extensions/fireux-ignite/docs/ai/ignite-context.md).
+**Related:** [Item Detail & Capability Relationships](2026-11-20-item-detail-capability-relationships.md), [Workspace Spine](../concepts/family-workspace-entity.md), [Entities](../concepts/entities.md), [Menu & Service terminology](../../packages/extensions/fireux-kitchens/docs/menu-service-glossary.md), [Ignite context](../../packages/extensions/fireux-ignite/docs/ai/ignite-context.md).
 
 ## North star
 
@@ -19,11 +19,11 @@ Each checkbox describes a human/operator action; the **done when** line is the a
 
 ### Phase A — Establish the business (independent Kitchen Core)
 
-- [ ] **01. Create the Kitchen.** The owner names a kitchen and establishes its identity. Choose an existing Google Place where useful, or create a Kitchen from a name when no listing exists. A Place is the shared venue identity in the current FireUX model; *Google registration is not mandatory*. **Done when:** a canonical Kitchen can be created, retrieved, selected, reopened, and edited with no child capabilities present.
-- [ ] **02. Set up the Kitchen's basic identity and operating context.** Confirm owner/access, the associated venue identity, contact/presentation where relevant, current lifecycle status, operational defaults and basic working preferences. Reuse Place-owned name/location/media instead of copying them into Kitchen. **Done when:** the owner can inspect and update supported core facts, access is correct, and reload/switching Kitchens stays correctly scoped.
-- [ ] **03. Establish the Workspace entrance.** Open the Kitchen's management space, select/switch Kitchens, and find Identity and Settings. It should be useful when empty and show honest empty states rather than forcing an Item or Menu to be created. **Done when:** a Kitchen Workspace works with **zero** Items, Menus, Suppliers, Team members, Services or Orders.
+- [x] **01. Create the Kitchen.** The owner names a kitchen and establishes its identity. Choose an existing Google Place where useful, or create a Kitchen from a name when no listing exists. A Place is the shared venue identity in the current FireUX model; *Google registration is not mandatory*. **Done when:** a canonical Kitchen can be created, retrieved, selected, reopened, and edited with no child capabilities present.
+- [x] **02. Set up the Kitchen's basic identity and operating context.** Confirm owner/access, the associated venue identity, contact/presentation where relevant, current lifecycle status, operational defaults and basic working preferences. Reuse Place-owned name/location/media instead of copying them into Kitchen. **Done when:** the owner can inspect and update supported core facts, access is correct, and reload/switching Kitchens stays correctly scoped.
+- [x] **03. Establish the Workspace entrance.** Open the Kitchen's management space, select/switch Kitchens, and find Identity and Settings. It should be useful when empty and show honest empty states rather than forcing an Item or Menu to be created. **Done when:** a Kitchen Workspace works with **zero** Items, Menus, Suppliers, Team members, Services or Orders.
 
-**Hard boundary:** Freeze and verify the independent Kitchen Core here before building anything downstream. The entity root, its validated reader, trusted mutations, Workspace selection and native view must be understandable without walking into Menu or Orders code.
+Keep the Kitchen root, reader, trusted mutations and Workspace selection usable independently of downstream capabilities.
 
 **Slice 01 local checkpoint (2026-11-22).** The two creation paths, empty
 Kitchen, selected listing edit, switching, refresh and access revocation are
@@ -88,20 +88,9 @@ This is a **Kitchen audit checklist** and reusable development method, not permi
 - **The dependency direction:** Which upstream inputs are genuinely required? Are imports, data loading or controllers improperly reaching into downstream Menus, Services or Orders?
 - **The acceptance:** Can we create/read/edit/reload with correct scope, empty/pending/error states, switching and permission checks? Can we prove it with the relevant source-owned tests and actual App consumer?
 
-**Start by auditing Kitchen creation and opening an empty Kitchen.** Draw its concrete route/component/composable/model/reader/command/storage map, identify each unnecessary downstream import, and propose a **smallest safe removal/simplification**. Verify the resulting journey before touching Item or Menu. Do not reorganise the whole repository just to make its folders look symmetrical.
-
-Then repeat the same review for a single Item, a Menu placing that Item, a Service presenting the Menu, and ultimately an Order. Maintain a short table after each slice: **source path → responsibility → owner → upstream dependencies → evidence → unneeded coupling**. Reuse proven FireUX patterns; no generic mega-controller, alias/barrel maze, speculative folders, capability registry or graph engine.
-
-### What current source already tells us (as inspected 2026-11-20)
-
-- Kitchen's root model is at `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/model.ts`; it owns the Kitchen's identity and optional operational configuration, not a complete bundled kitchen-management world.
-- Creation at `kitchen/composables/useKitchenCreate.ts` has an existing Place-based onboarding path **and** a name-only `createKitchenShell` path. In the current canonical relationship Kitchen and Place can have the same ID; name-only does **not** mean Google Places is mandatory. Inspect current Place/shell creation carefully before changing it.
-- Kitchen selection/read is already coordinated by `kitchen/composables/workspace/useKitchenWorkspace.ts` and the optional FireUX Workspace package. Workspace is a **management surface over the existing Kitchen**, not a second persisted Workspace Entity.
-- Kitchen Items are Kitchen-owned records; the simple catalogue uses `kitchen/components/Workspace/Menu/Items/Index.vue` and `useKitchenWorkspaceItems`. Keep the existing simple alphabetical list until the Item Detail vertical slice is verified.
-- The current service glossary distinguishes a **channel** (how the order is taken) from **fulfilment** (how the customer receives it). Preserve this distinction in planning.
-- Ignite currently checks structural assembly dependencies and circularity in `fireux-ignite/src/runtime/utils/reconcile-ignition.ts`; the method in `ignition-method.ts` does not yet supply an actual dependency-ordered implementation plan. Do not describe this as a built feature.
-
-These are *source observations*, not a guarantee that all journeys are complete or clean. Read `AGENTS.md`, global context and the relevant owner maps before implementation; current code and exercised checks remain authoritative.
+For each subsequent slice, trace the actual route, stored owner, trusted
+commands and consumers. Record the verified behavior and any remaining
+coupling before going downstream.
 
 ## What changes in FireUX Ignite — later, not now
 
@@ -109,12 +98,8 @@ The long-term goal is that a future developer could describe a real-world busine
 
 **Current priority is manual development with the operator and Codex.** Capture this method as durable context but **do not launch an Ignite rewrite, new engine, or generalized generator in this task**. Use the Kitchen as the first worked example; only generalise after a second genuinely different Workspace Entity succeeds.
 
-## Guardrails and requested Codex next action
+## Next slice
 
-1. Treat this as a planning/audit handoff. Start with **Kitchen Core only**. Report the exact current creation → root → trusted command → reader → Workspace → management view chain and its imports.
-2. Identify where Kitchen Core depends on Items, Menus, Services, Orders or unnecessary utility folders. Distinguish source coupling from intentional optional presentation.
-3. Propose one bounded cutover and tests; clean up obsolete code where a proven slice justifies it. The operator is willing to **delete obsolete application wiring** instead of preserving chaotic compatibility layers. Agree the actual deletion scope before taking irreversible action.
-4. **No Firestore data deletion, schema migration, blanket Order removal, deployment or production changes are authorised by this handoff.** Git can restore source but not lost production data.
-5. Do not attempt every phase concurrently. Stop after the first independent Kitchen Core slice is proven, report its actual file map and tests, and then move to Items.
-
-**Success:** Someone can open the Kitchen folder and immediately understand how a Kitchen is created, stored, selected and edited — *without knowing anything about Orders*. The same principle then becomes a predictable, tested reference for every future Workspace Entity.
+Prove a private draft Menu built from existing Items. Keep the Kitchen and Item
+checkpoints closed unless a regression is reproduced. Live data changes, policy
+rollout and deployment still require separate authority.

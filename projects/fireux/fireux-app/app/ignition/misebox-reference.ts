@@ -1,4 +1,4 @@
-// Ordering references identify the draft foundation only; they do not prove submission, payment or fulfilment.
+// Source references cover staff Orders. The customer checkout journey remains unproved.
 import type {
   IgnitionAssembly,
   IgnitionBrief,
@@ -51,7 +51,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['venue'],
       uses: [],
-      sourcePaths: [source + 'kitchen/models/kitchen.model.ts'],
+      sourcePaths: [source + 'kitchen/models/model.ts'],
     },
     {
       id: 'workspace',

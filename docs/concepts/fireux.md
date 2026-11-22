@@ -121,8 +121,11 @@ evidence before they become offers.
 The [Ignition intake context](../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md)
 owns the industry brief and priced branded-App intake. The FireUX Project Apps
 capability creates and previews an App record. Hosting and infrastructure are
-separate delivery operations. See the [onboarding boundary](../onboarding.md)
-for the shared unavailable state and internal initialization.
+separate delivery operations. The
+[Ecosystem create page](../../packages/extensions/fireux-ecosystem/src/runtime/pages/apps/create.vue)
+shows the shared unavailable state. Core's
+[App initialization command](../../packages/core/fireux-core/src/runtime/server/api/internal/app/initialize.post.ts)
+sets up an already configured runtime.
 
 The [Capabilities library](../../projects/fireux/fireux-app/app/pages/capabilities.vue)
 describes shared primitives, presentation, read-only surfaces and

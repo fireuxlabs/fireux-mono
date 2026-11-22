@@ -417,7 +417,7 @@ sources exist.
 
 When template anatomy, injection fields, seller routes, purchase semantics,
 theme storage or brand ownership changes, update this map and
-`docs/ai/templates-context.md`. Verify both storefront routes, every injection
+the [Misebox template context](../../packages/ecosystem/fireux-misebox/docs/ai/templates-context.md). Verify both storefront routes, every injection
 at desktop and phone sizes, media provenance, and the absence of copied
 anatomy. Inspect and run the relevant focused tests and package/App checks for
 the changed slice. The former landing-template guard and `pnpm guard` no longer

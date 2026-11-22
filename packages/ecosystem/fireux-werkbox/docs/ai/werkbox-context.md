@@ -7,7 +7,7 @@ Scope: Werkbox ecosystem and Apps
 
 This is the scoped context entrypoint for work on Werkbox inside
 `fireuxlabs/fireux-mono`. It inherits the root `AGENTS.md` and
-`docs/ai/gpt-context.md`; read both completely before using this file.
+`docs/ai/gpt-context.md`.
 
 ## Purpose and scope
 
@@ -24,12 +24,11 @@ ecosystem package.
 
 Before each Werkbox task:
 
-1. Read the current root `AGENTS.md` and `docs/ai/gpt-context.md` completely.
+1. Follow `AGENTS.md` through the owning App or package README.
 2. Inspect `packages/ecosystem/fireux-werkbox`, the relevant app under
    `projects/werkbox/*`, and the owning extension packages for any shared
    domains in scope.
-3. Use the context router in `AGENTS.md`, starting with the smallest relevant
-   maps under `docs/concepts/*`.
+3. Consult the sections of this context and the concept maps that apply.
 4. Use the nearest working sibling in the same family before proposing a
    Werkbox-specific shape. Misebox is the nearest global ecosystem/app sibling;
    tenant siblings depend on the surface being changed.

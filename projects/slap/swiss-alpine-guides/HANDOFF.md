@@ -55,7 +55,7 @@ Contacts displayed on the website (confirm operational address and preferred enq
 
 Repo: https://github.com/fireuxlabs/fireux-mono
 
-- `AGENTS.md` requires reading `docs/ai/gpt-context.md`, ownership and scoped maps; inspect status/source/nearest sibling and perform the mandatory composition checks before editing implementation code.
+- Follow the [repo working rules](../../../AGENTS.md) through the README spine. Inspect Git status, owning source and the nearest working reference before editing implementation.
 - `docs/concepts/apps-that-slap.md` — SLAP eligibility, ownership, app-local presentation and source guards. The stable ecosystem key is `slap`.
 - `packages/ecosystem/fireux-slap/README.md` — SLAP owns ecosystem identity/config, not page presentation.
 - `packages/extensions/fireux-bookings/src/runtime/server/booking.ts` — existing bookings capability.

@@ -1,7 +1,7 @@
 # App config spine map
 
-Updated: 2026-11-17
-Ref: e20047a13
+Updated: 2026-11-22
+Ref: eb57620fa
 Role: map, not canon
 
 ## Purpose
@@ -17,21 +17,19 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
 ## Horizontal links
 
 - runtime-package.md
-- pnpm.md
+- [Workspace commands](../../tools/ide/README.md)
 
 ## Current sources
 
-- `packages/extensions/fireux-app/package.json` (`fireux-app/config`)
-- `packages/extensions/fireux-ecosystem/package.json` (`fireux-ecosystem/config`)
-- `packages/core/fireux-core/src/config/app/nuxt-defaults.ts`
-- `packages/core/fireux-core/src/runtime/app/composables/config/FireUXConfig.ts`
+- [Standard App assembly](../../packages/extensions/fireux-app/src/config.ts)
+  and [Main App assembly](../../packages/extensions/fireux-ecosystem/src/config.ts)
+- [Core App configuration](../../packages/core/fireux-core/src/config/app/README.md)
+  and [Core module configuration](../../packages/core/fireux-core/src/config/module/README.md)
 
 ## Configuration boundaries
 
-`FireuxAppConfig` is the authored assembly input. The App bundle validates it
-and publishes the normalized `RuntimeApp` projection; Core `useFireUXConfig`
-reads that projection for browser and server consumers. Build-only context,
-Auth installation settings and secret bindings are not public runtime fields.
+An App's `nuxt.config.ts` declares identity, bindings, capabilities and assembly
+choices through `FireuxAppConfig`.
 `app.config.ts` owns Nuxt UI, navigation and the optional `theme` palette and
 typography. Core `useAppHead` and the server manifest read that same native App
 config through `useAppConfig`; `resolveAppTheme` validates the palette. Theme is
@@ -73,19 +71,8 @@ inputs. Developer access uses authenticated UID checks, not `DEVELOPER_PIN`.
 The current Firebase integration does not configure Analytics or consume
 `NUXT_FIREBASE_MEASUREMENT_ID`.
 
-Normal development uses the configured Firebase project. For a local test,
-start the Firebase Emulator Hub with Firestore and, when App Auth is enabled,
-Authentication, then start Nuxt with `VUEFIRE_EMULATORS=true`. VueFire connects
-the default client database and Core connects named databases to the same
-discovered host. Nitro requires its SDK emulator hosts to match that discovery.
-Missing discovery stops startup. Production uses the configured Firebase
-services and rejects SDK emulator hosts.
-
-Core's `getAdminApp()` selects the configured Ecosystem Firebase project and
-shares the Firebase SDK's named `vuefire-admin` instance between Nitro handlers
-and the SSR plugin. The SSR plugin initializes it before VueFire injects it.
-Server code that deliberately reads another Firebase project owns that
-explicit selection, as in the FireUX portal directory.
+For database selection, local emulator opt-in and the shared Admin instance,
+see [Core Firebase configuration](../../packages/core/fireux-core/src/config/app/README.md#firebase).
 
 Current hosted Stripe Checkout uses the existing server credentials; generated
 Ignition examples do not advertise `NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` without
@@ -96,18 +83,6 @@ App-owned environment. `OPENAI_API_KEY` is not a fallback. Renaming the key must
 not change its value, enable AI or change provider/mode. The local Codex transport
 strips both credential names from its child process and leaves the parent
 environment intact; see AI's `src/test/codex-environment.test.mjs`.
-
-## Configuration source names
-
-- `nuxt-defaults.ts` applies shared Nuxt defaults.
-- `seo-config.ts` resolves indexing policy and extension sitemap contributions.
-- `seo-routes.ts` normalizes route inputs and discovers static sitemap routes.
-- `seo-content.ts` derives public routes and descriptions from App literature,
-  reusing `seo-routes.ts` normalization. Sitemap document lists are filtered once
-  after App and extension contributions are merged.
-
-These are FireUX integration files, not Nuxt-reserved filenames. Nuxt's native
-`nuxt.config.ts` and `app.config.ts` remain the App entrypoints.
 
 ## Ecosystem Workspace layers
 
@@ -157,7 +132,7 @@ execution as described above.
 Workspace's [Workspace composer](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/AI/Composer.vue)
 remains a passive control with a `model` slot; it does not read AI configuration
 or choose provider/model labels. The
-[Kitchen Test consumer](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Test/AI.vue)
+[Kitchen Workspace Home consumer](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Home/AI.vue)
 composes those owners without adding an AI dependency to Core.
 
 ## App pattern
@@ -187,14 +162,11 @@ composes those owners without adding an AI dependency to Core.
 - Required `ecosystemId` names the canonical Ecosystem entity that contains the
   App. App role does not change this relationship: global, tenant, and
   standalone Apps all belong to an Ecosystem.
-- Optional `databaseId` selects the App runtime database. The canonical App
-  record lives there; without an override it lives in the Ecosystem binding
-  database. The canonical Ecosystem record always stays in the binding's
-  identity database and must be read through an explicit identity seam. Do not
-  repeat the Ecosystem database id in project config; declare `databaseId` only
-  for a genuine App override, including a standalone App-owned database.
-  An App override preserves the Ecosystem's original identity scope, including
-  `(default)` when the binding has no named database.
+- Declare `databaseId` for a genuine App runtime database override. The
+  canonical App record uses that runtime scope. Canonical Ecosystem and User
+  records use the binding's identity scope. The
+  [Core database configuration](../../packages/core/fireux-core/src/config/app/README.md#firebase)
+  owns resolution of the two scopes.
 - Every production `standalone` App declares its own named `databaseId`; the
   database is created in each Firebase project where that App owns local
   outputs. A standalone App never falls back to the FireUX ecosystem database.
@@ -228,35 +200,22 @@ composes those owners without adding an AI dependency to Core.
   Supplier-directory configuration, `fireux-places` owns Google Maps and
   Places provider configuration, and `fireux-go-qr` owns its provider origin.
   Project Apps do not repeat those runtime values.
-- Firebase SSR region and execution identity belong to the selected
-  ecosystem's required `ssr` configuration. Shared ecosystem setup applies that
-  region to both Nitro Firebase region fields; Core has no named-ecosystem
-  fallback or environment override for it. Apps inherit them and do not
-  repeat deployment identity in the bundle configuration.
+- Apps inherit the selected Ecosystem's Firebase SSR region and execution
+  identity through [Core's module wiring](../../packages/core/fireux-core/src/config/module/README.md).
 - `workspaceConfig.<family>.origin` optionally declares an App-owned Workspace
-  origin. The registered route with `nav.key: workspace-<family>` still owns Home.
-  Core exposes an internal path for return/selection and an origin-aware URL for
-  public entry actions; the App owns root rendering and obsolete-route removal.
-- The authored `FireuxAppConfig` owns identity, role, capability, Workspace declarations. App navigation presentation lives in
-  the existing `app/app.config.ts`, under `navigation.hiddenKeys` and
-  `navigation.overrides`; Core `useNav` reads it directly through `useAppConfig`.
-  It is not deployment runtime configuration. Authentication stays Core-owned; entry routes carry
-  mode and redirect intent. Pricing is App-owned product literature: each Main App keeps a
-  thin `useXPricing` wrapper over `fireux-app` `usePricing`; commercial copy does not
-  enter the bundle configuration or public runtime config. `RuntimeApp` derives from
-  App config and makes normalized
-  arrays/defaults explicit; `useFireUXConfig` maps that runtime shape to the
-  consumer names once. Browser and trusted-server consumers use the same
-  event-aware reader; Workspace consumers do not parse `runtimeConfig` again.
+  origin. The route with `nav.key: workspace-<family>` owns the Home path.
+  [Workspace entry links](../../packages/extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspaceEntryCta.ts)
+  resolve the internal path and the origin-aware public URL.
+- App navigation presentation lives in `app/app.config.ts`. Pricing is
+  App-owned product literature, presented through each Main App's wrapper
+  over `fireux-app`'s `usePricing`.
 - Keep `nuxt.config.ts` as a declarative composition root. Content, pricing,
   onboarding, stored relationships, and executable behavior belong in their
   domain composable, stored authority, or owning package—not a top-level helper
   or imported App-config profile.
 - Authored `app/meta.ts` is pure data and may be consumed by browser or server
   presentation. Its `defineFireuxMeta` helper and types stay free of Node-only
-  dependencies. Core's config-only metadata loader uses explicit `app.meta`
-  when supplied and otherwise reads `app/meta.ts`. The App builder passes that
-  metadata to SEO and private runtime configuration. Shared literature types live in Core
+  dependencies. Shared literature types live in Core
   `runtime/app/literature/types.ts`; the pure `defineFireuxMeta` helper lives
   in `runtime/app/literature/define-meta.ts`. The descriptive vocabulary for
   published Workspace operations lives in
@@ -265,12 +224,9 @@ composes those owners without adding an AI dependency to Core.
   page. `readAppMeta` exposes only the validated public projection. Core
   platform documents remain shared, and an installed extension
   does not add legal content unless the App explicitly composes it.
-- Core `resolveWorkspaceCanCreate` owns the shared explicit-override then
-  non-tenant fallback. Workspace UI and trusted entity onboarding use that same
-  policy instead of repeating it inside each domain.
-- `useFireUXConfig` reads and freezes the current runtime config. It has no
-  process-global cache or unused Nuxt injection provider, so HMR and multi-App
-  processes cannot reuse a partially compared App shape.
+- [Workspace creation policy](../../packages/extensions/fireux-workspace/src/runtime/workspace/utils/policy.ts)
+  applies the explicit App override before the role-based default. Workspace
+  UI and trusted Entity onboarding share this policy.
 - App initialization has no cosmetic client PIN. Authentication opens the
   environment check, while the trusted bootstrap endpoint verifies the
   configured developer UID and existing App-admin state before writing.
@@ -306,25 +262,14 @@ query/result behavior. This is a publication query seam, not mutation authority.
 
 ## Important fields
 
-- `ecosystem`
-- `projectId`, optional
-- `ecosystemId`
-- `databaseId`, optional
-- `id`
-- `name`
-- `shortName`
-- `role`
-- `modules`
-- `workspaces`
-- `workspaceConfig`
-- `domains`
-- `profiles`
+- [`FireuxAppConfig`](../../packages/core/fireux-core/src/config/app/types.ts)
+  defines the authored fields.
 - Navigation belongs in `app/app.config.ts`, alongside App presentation.
   Its optional `navigation.hiddenKeys` and `navigation.overrides` affect only
   inherited route presentation, never route existence or authorization.
 
-Completing User setup creates a basic AppUser. App admins can change its role
-or subscription.
+User setup establishes canonical identity and consent. An explicit Join creates
+App membership. App admins can change its role or subscription.
 
 ## Mode differences
 
@@ -362,7 +307,7 @@ entrance configuration or role-specific root component.
 
 Misebox uses the same host for Home, Workspace, sign-in and public tools. Its
 former host-switching middleware and declared Kitchen Workspace origin are
-removed. Optional cross-origin entry support remains a generic Core capability
+removed. Optional cross-origin entry remains a Workspace capability
 for a separately justified App; it is not the default.
 
 ## Working rule

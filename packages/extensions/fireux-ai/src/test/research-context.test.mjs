@@ -72,7 +72,11 @@ test('public research endpoint serves the same source and stable content revisio
 test('owning guide is routed and its current-source links resolve', () => {
   const path = 'packages/extensions/fireux-ai/docs/ai/research-context.md'
   const guide = source(path)
-  assert.ok(source('AGENTS.md').includes(path))
+  assert.ok(
+    source('packages/extensions/fireux-ai/README.md').includes(
+      '(docs/ai/research-context.md)'
+    )
+  )
   for (const field of [
     'Purpose and inheritance',
     'Scope and ownership',

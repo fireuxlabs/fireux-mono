@@ -29,7 +29,7 @@ Core, Ecosystem, and Extension packages legitimately differ.
 - Parent: `fireux.md`
 - Children: `runtime-filesystem.md`, `components.md`, `composables.md`,
   `pages.md`, `server-api.md`
-- Horizontal: `pnpm.md`, `app-config.md`, `spine.md`
+- Horizontal: [Workspace commands](../../tools/ide/README.md), `app-config.md`, `spine.md`
 - Source references: package manifests, `src/module.ts`, real config hooks,
   `src/runtime/nuxt.config.ts` where present, and App `nuxt.config.ts` layer
   declarations; verify their effects through generated Nuxt output and

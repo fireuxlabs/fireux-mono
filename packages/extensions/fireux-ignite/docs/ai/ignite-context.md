@@ -53,9 +53,8 @@ not automatic claim expiry/takeover. The website never connects to a personal
 Codex daemon. Prepared source/task handoff, operational product readiness and
 visibility in a particular desktop project remain distinct evidence.
 Prove each supported path through its actual commands and preview before
-claiming it is shared. The
-[priority list](../../../../../docs/roadmaps/fireux-priorities.md) gates this work
-after acceptance of the current foundation slice.
+claiming it is shared. The [priority list](../../../../../docs/roadmaps/fireux-priorities.md)
+records which outcomes are selected and which still need a decision.
 
 ## Shared structure first, explicit deltas second
 
@@ -71,7 +70,12 @@ The App-owned first comparison is Misebox versus the proposed dog-grooming ecosy
 
 The ordered working loop is owned by [ignition-method.ts](../../src/runtime/utils/ignition-method.ts); this context explains its boundaries rather than maintaining a second lifecycle. Start with business outcomes and operator roles, investigate demand, then map owned Entities, Workspaces, capabilities, Tools, product services and surfaces. Refine capabilities recursively when the evidence requires it. Do not start with a compulsory page list, storage schema or a copy of the reference app.
 
-**Delivery order is not the UI/filesystem order.** The proposed Stable Workspace capability tree in [Workspace Spine & Firestore Canon Alignment](../../../../../docs/handoffs/workspace-spine-firestore-canon-alignment.md) illustrates names and owners, not implementation prerequisites. For dependency-first delivery, follow the [Entity Core & Dependency-Ordered Ignite handoff](../../../../../docs/handoffs/2026-11-20-entity-core-dependency-ordered-ignite.md): start with an independently usable Entity Core and Workspace, use reviewed hard dependencies to identify buildable slices, and let operator priority choose among them. Never infer a dependency from sidebar/folder order. The Stable is a hypothetical cross-industry test, not an App to generate.
+**Delivery order follows demonstrated prerequisites.** Start with an
+independently usable Entity Core and Workspace. Identify which slices are
+buildable from actual dependencies, then let the operator choose among them.
+Navigation and folder order describe how someone finds a capability. The
+[dependency-ordered Ignite proposal](../../../../../docs/handoffs/2026-11-20-entity-core-dependency-ordered-ignite.md)
+holds the unimplemented scheduling work.
 
 Use the [FireUX AI research context](../../../fireux-ai/docs/ai/research-context.md) and its [runtime method](../../../fireux-ai/src/runtime/utils/industry-research-context.ts) for research within Ignition or a selected capability. That research responsibility is reusable outside Ignition and remains FireUX AI-owned. Ignition coordinates its place in the build process; neither a link nor a method instruction proves automated research execution or context injection.
 
@@ -83,14 +87,12 @@ Sandbox comparisons may evaluate page grouping, meaningful index configuration, 
 
 A FireUX App assembled through Ignition uses the actual framework: `defineFireuxApp` or `defineFireuxEcosystem` for a Main App, its owning native runtime layers, and Core `FireuxApp`, with Workspace pages selecting native `layout: 'workspace'`. Prototype scope limits delivered domain journeys; it does not replace FireUX with standalone Nuxt. A brief, assembly type or unused package dependency alone is not runtime integration. Verify registered owners and the running shell before describing the result as built on FireUX. The baseline includes visible shared platform attribution and legal/account entrances, Core SEO metadata with coherent canonical/robots/sitemap policy, and the Core manifest populated from App identity and assets. A branded layout composes these owners; it does not silently omit them. A noindex preview can still prove the complete technical SEO contract. See Core `layouts/shared/PlatformFooter.vue`, `composables/fireux/seo/useSeo.ts`, and `server/manifest.webmanifest.get.ts` beneath `src/runtime`.
 
-The runtime composition references are the native Apps index routes using
-`useAppCollectionPage`, Core `layouts/workspace.vue` and `workspace/components/Page.vue`,
-and Kitchen `components/Workspace/Menu/Index.vue`. Public collections visibly
-compose native page structure and shared feedback; Workspace capabilities use
-the existing persistent Core frame. Domain contexts own reads and commands.
-Do not generate FirePage/FireCollectionPage wrappers or clone a domain's page
-shell. These references establish source structure, not automatic generation
-or independent generated-App acceptance.
+Use the native Apps index routes and the optional
+[Workspace layout](../../../fireux-workspace/src/runtime/layouts/workspace.vue)
+as composition references. Public collections use native page structure and
+shared feedback. Workspace supplies the persistent operational frame. The
+domain owns its reads and commands. These references establish source
+structure, not independent generated-App acceptance.
 
 Build and reconcile bounded journeys. The method’s build and verify steps apply the global mandatory composition checks: named responsibilities, readable parent composition, explicit state/lifecycle ownership, reused controls and commands, and no duplicate reads or authority. Composition is required from the first implementation; shorter files alone do not prove it. Record where a reusable mechanism was sufficient, where a domain decision was needed, and which service revealed a missing capability. Put the correction with its lowest owning package. A reference implementation is evidence for a decision, not a universal industry blueprint. Publication and release remain explicit App-owned work with their own accepted authority and checks.
 

@@ -31,6 +31,7 @@ function fixture(t) {
     "packages:\n  - 'packages/core/*'\n  - 'packages/ecosystem/*'\n  - 'packages/extensions/*'\n  - 'projects/*/*'\n  - 'tools/*'\n"
   )
   put('AGENTS.md')
+  put('README.md')
   put('docs/ai/gpt-context.md')
   put('docs/concepts/fireux-mono.md')
   put('packages/core/fireux-core/package.json', { name: 'fireux-core' })
@@ -87,6 +88,7 @@ function fixture(t) {
 test('map covers every manifest, no-port/template Apps, tools without manifests and the static harness', (t) => {
   const { root } = fixture(t)
   const map = buildCodexMap(root)
+  assert.deepEqual(map.requiredContext, ['AGENTS.md', 'README.md'])
   assert.deepEqual(map.counts, {
     repository: 1,
     library: 3,

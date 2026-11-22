@@ -20,14 +20,10 @@ Package identity and metadata live in `package.json`.
 
 ## Entry points
 
-- `src/module.ts`, exported as `fireux-core`: Nuxt module registration.
-- `src/runtime/nuxt.config.ts`, exported as `fireux-core/layer`: native runtime layer.
-- `src/config/app/`: App configuration exports; see `package.json` for public paths.
-- `src/config/module/`: module configuration exports.
-- `src/runtime/`: Nuxt entrypoints plus the Core-owned `app/`, `ecosystem/`,
-  `user/` and `workspace/` implementations. Each named owner contains its own
-  technical roles; root components/composables serve genuinely shared mechanisms.
-- `src/types/`: public package types.
+- [Source map](src/README.md) leads to Core's configuration, runtime and tests.
+- [Nuxt module](src/module.ts) is exported as `fireux-core`.
+- [Native Nuxt layer](src/runtime/nuxt.config.ts) is exported as `fireux-core/layer`.
+- [Package manifest](package.json) defines the public exports and dependencies.
 
 Production configuration exports resolve to compiled files under `dist/`.
 `build/config.mjs` compiles those files and their required local dependencies.
@@ -42,6 +38,6 @@ Run from this package directory:
 - `pnpm exec tsc --noEmit`: check package types.
 - `pnpm clean`: remove generated `dist/` output.
 
-For ownership and working conventions, start with the repository
-[AGENTS.md](../../../AGENTS.md), [global context](../../../docs/ai/gpt-context.md)
-and [runtime package map](../../../docs/concepts/runtime-package.md).
+Follow the [repo working rules](../../../AGENTS.md). Use the
+[runtime package map](../../../docs/concepts/runtime-package.md) for questions
+about package installation and registration.

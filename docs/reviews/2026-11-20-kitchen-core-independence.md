@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-20
 **Status:** Phase A Slice 01 verified in local Misebox. Production rollout remains separate.
-**Depends on:** [FireUX Core reset](../handoffs/2026-11-20-fireux-core-reset-build-order.md) and [Kitchen real-world build order](../handoffs/2026-11-20-kitchen-real-world-build-order.md).
+**Depends on:** [Core local cutover evidence](2026-11-20-fireux-core-reset-stage-0.md#stage-6-clean-cutover-evidence) and [Kitchen real-world build order](../handoffs/2026-11-20-kitchen-real-world-build-order.md).
 **Decision:** Verify one independently usable managed Kitchen, then clean the proven filesystem and model slice, **before** Items and Menus.
 
 ## Initial source audit (2026-11-20)

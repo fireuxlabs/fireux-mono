@@ -448,8 +448,11 @@ and [Kitchen command authority](../../packages/extensions/fireux-kitchens/src/ru
 remain Kitchen-bound. Before a data/authority cutover, confirm each existing
 Recipe's User owner explicitly; do not infer it from `created.by`, an import actor
 or the containing Kitchen. Resolve version storage/read policy, portable input
-references and legacy associations in the bounded migration. Publication,
-collaboration and transfer mechanisms still need their own concrete contracts;
+references and legacy associations before switching authority. Verify update
+acceptance, departure, unpublishing, unlinking and cross-Kitchen isolation
+through the actual Kitchen and Recipe owners. A stored-data transition requires
+its own reviewed plan, preimages, readback and authority for copy and retirement.
+Publication, collaboration and transfer mechanisms still need their own concrete contracts;
 these decisions do not implement or expose a public Recipe service.
 
 ## Storage and route implications

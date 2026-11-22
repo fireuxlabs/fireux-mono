@@ -256,7 +256,7 @@ export const ecosystemConfig = {
         `Primary owner: ${appId} at ${sourcePath}.`,
         `Related Ecosystem owner: ${packageName} at ${ecosystemPath}.`,
         `Reviewed purpose (product input): ${JSON.stringify(outcome)}`,
-        'Read AGENTS.md, docs/ai/gpt-context.md and docs/concepts/fireux-mono.md, then the applicable scoped context and current source. Inspect the shared Git queue and preserve unrelated work.',
+        'Read AGENTS.md and follow the root README.md to the owning App and Ecosystem. Use their READMEs where present, then inspect current source and relevant local guidance. Check Git status and preserve unrelated work.',
         'Keep the task spine explicit: outcome, owning source path, actual domain, real consumers, acceptance evidence and current blocker. Reuse the existing FireUX owners and nearest maintained sibling.',
         `Infrastructure knowledge belongs in ${ecosystemPath}/docs/infrastructure.md. Consult it before asking the operator about Firebase or database edition. Its generated values are unverified; when provider setup is authorized, discover the actual bindings and record database ID, edition, mode, location and dated metadata evidence there. Do not guess a default or mark source preparation as provider verification.`,
         'For this initial handoff, inspect the generated owners and summarise the next bounded development step. Wait for the operator before editing, running provider actions or starting further implementation. The reviewed purpose does not grant additional command authority.',

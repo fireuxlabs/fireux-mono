@@ -1,13 +1,15 @@
 # Menu and service glossary
 
-Updated: 2026-11-20
-Ref: 193e5adc3
-Role: map, not canon
+Updated: 2026-11-22
+Ref: eb57620fa
+Role: Kitchen terminology
 
-Parent: [Menu family](family-menu.md). Related: [Product language](product-language.md).
+Parent: [Menu family](../../../../docs/concepts/family-menu.md). Related: [Product language](../../../../docs/concepts/product-language.md).
 
-Use these terms in Menu discovery and Kitchen Services setup. This is a vocabulary
-map, not a new storage model. Current source and tests establish behaviour.
+Use these terms in Menu discovery and Kitchen Services setup. Channel examples
+describe business options. Check the current
+[Menu and Orders boundary](../../../../docs/concepts/menu-ordering.md)
+for available customer and staff surfaces.
 
 ## Food and venue
 
@@ -42,7 +44,7 @@ Picnic is a named Collection setup with its own menus, collection hours and
 next-day timing. Its saved identity and customer link survive changes to that
 timing. “From tomorrow” uses the venue's local calendar. The Services chooser
 currently creates one setup per type/channel.
-See the [Services Workspace boundary](family-menu.md#services-workspace-boundary)
+See the [Services Workspace boundary](../../../../docs/concepts/family-menu.md#services-workspace-boundary)
 for ownership and current navigation.
 
 ## How food is received
@@ -92,8 +94,8 @@ these records or change their behaviour. Pre-order is not another delivery metho
 
 ## Source and verification
 
-- Kitchen setup choices in [`offering-options.ts`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/offering-options.ts) and the saved [`KitchenOffering` contract](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/offering-policy.ts).
-- Item and selling-term contracts in [`item.ts`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/menus/items/item.ts) and [`item-offer.ts`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/menus/items/item-offer.ts).
+- Kitchen setup choices in [`offering-options.ts`](../src/runtime/kitchen/utils/offering-options.ts) and the saved [`KitchenOffering` contract](../src/runtime/kitchen/utils/offering-policy.ts).
+- Item and selling-term contracts in [`item.ts`](../src/runtime/kitchen/records/menus/items/item.ts) and [`item-offer.ts`](../src/runtime/kitchen/records/menus/items/item-offer.ts).
 - Service type labels: `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-order-label.ts`.
 - Public directory labels: `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/service-summary.ts`.
 - Menu entrances: `packages/extensions/fireux-kitchens/src/runtime/menu/utils/navigation/context.ts`.

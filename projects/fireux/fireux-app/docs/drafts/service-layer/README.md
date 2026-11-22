@@ -10,5 +10,4 @@ limits. The recovered bodies are preserved verbatim, including a historical
 shell-quoting artifact. Commands, permissions and source claims inside them
 are historical text, not current instructions or approval.
 
-Use the [current priorities](../../../../roadmaps/fireux-priorities.md) before
-promoting this writing work.
+Refresh the source claims and obtain editorial review before publication.

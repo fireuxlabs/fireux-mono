@@ -7,10 +7,10 @@ Role: reviewed source inventory and proposed cutover
 Stage 0 traces the repository spine from pnpm discovery through App assembly,
 package exports and Nuxt registration into Core. It maps the ownership and
 cutover dependencies for the reset and optional Workspace extraction.
-The [Core reset handoff](../handoffs/2026-11-20-fireux-core-reset-build-order.md)
-sets the implementation order. The [runtime map](../concepts/runtime-filesystem.md)
-and [Core model map](../concepts/core-models.md) continue to describe the current
-checkout until the relevant slice lands.
+See the [Stage 6 evidence](#stage-6-clean-cutover-evidence) for the local
+checkpoint and outstanding release gates. The [Core README](../../packages/core/fireux-core/README.md),
+[runtime map](../concepts/runtime-filesystem.md) and
+[Core model map](../concepts/core-models.md) point to current owners.
 
 ## Repository spine from root to runtime
 
@@ -247,6 +247,37 @@ The [Core installation tests](../../packages/core/fireux-core/src/test/installat
 exercise steps 1–4. Reconcile the Project relationship in Stage 2, App
 membership in Stage 3 and Workspace in Stage 5 as separate cutovers.
 
+## Stages 2–3 identity and provisioning checkpoints
+
+The Project-free Core fixture exercised signed-in App settings, administrator
+save and readback, denied basic-member editing, and sign-out using the default
+emulator database. The focused App checks and Core installation gate passed.
+Live App settings and named-database browser editing were outside that proof.
+
+Core's [trusted Ecosystem provisioner](../../packages/core/fireux-core/src/runtime/ecosystem/server/identity/provision.ts)
+was verified with focused fakes for creation with zero Apps, canonical readback,
+retry, conflicting Project links and denied prerequisites. The developer Main
+App bootstrap remains the supported caller. Independent signed-in provisioning
+still needs a trusted operator entrypoint and named-database verification.
+The FireUX management portal still requires an exact stored Project match.
+
+The FireUX portal and Project-free fixture exercised identity, private account
+and membership in the named `fireux` emulator database. Both App orders
+produced one User, one private account and two App memberships without rewriting
+canonical identity on the second join. Both browsers completed setup and
+sign-out. Portal SSR in that named emulator remains unverified. Later AppUser
+checks verified explicit Join and the App-owned membership boundary locally.
+
+**Open · Deployed User privacy.** A 21 November readback of
+`fireux-2005`'s named `cloud.firestore/fireux` release found a public
+read/write catch-all. Replaying the observed Rules locally against synthetic
+data allowed anonymous and cross-user reads of the private account. A separate
+restrictive emulator fixture enforced owner access and denied direct client
+writes. That historical readback does not describe today's deployed policy.
+Review the exact current policy, compatibility and post-release authorization
+before accepting deployed User privacy. This is separate from Misebox's
+production-candidate rollout.
+
 ## Stages 4–5 ownership review
 
 Source snapshot: `c457e5ea2`. This section updates the cutover proposal and
@@ -268,9 +299,9 @@ outside this extraction.
 | Current edge | Actual consumer and proposed disposition |
 | --- | --- |
 | [Core module](../../packages/core/fireux-core/src/module.ts) and [component registration](../../packages/core/fireux-core/src/config/module/components-config.ts) register Workspace imports and `Workspace*` components. [Core stylesheet](../../packages/core/fireux-core/src/runtime/assets/styles/main.css) scans Workspace components. | Transfer discovery to the optional package. Separate Workspace styles from styles that the neutral Dashboard currently shares. Verify both layouts before removing or relocating selectors. |
-| The Core layer discovers [the Workspace layout](../../packages/core/fireux-core/src/runtime/layouts/workspace.vue), [entry page](../../packages/core/fireux-core/src/runtime/pages/workspace/index.vue), [Dashboard bridge](../../packages/core/fireux-core/src/runtime/pages/dashboard/workspace.vue) and [global Workspace middleware](../../packages/core/fireux-core/src/runtime/middleware/fireux-workspace.global.ts). Core [auth middleware](../../packages/core/fireux-core/src/runtime/middleware/fireux-auth.global.ts) currently skips this route family. | Move these native entries together. Preserve availability checks, auth ordering and the Kitchen Dashboard redirect. Replace the Core auth exception with a neutral route mechanism only if required by the opt-in integration. |
+| The Core layer discovers `runtime/layouts/workspace.vue`, `runtime/pages/workspace/index.vue`, `runtime/pages/dashboard/workspace.vue` and `runtime/middleware/fireux-workspace.global.ts`. Core [auth middleware](../../packages/core/fireux-core/src/runtime/middleware/fireux-auth.global.ts) currently skips this route family. | Move these native entries together. Preserve availability checks, auth ordering and the Kitchen Dashboard redirect. Replace the Core auth exception with a neutral route mechanism only if required by the opt-in integration. |
 | [Header](../../packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue), [Dashboard navigation](../../packages/core/fireux-core/src/runtime/composables/navigation/useDashboardNav.ts) and [Dashboard App overview](../../packages/core/fireux-core/src/runtime/components/Dashboard/Overview/App.vue) call Workspace entry directly. | Core keeps the shells and App controls. Workspace supplies its entry links and visibility. Review existing navigation and layout composition seams before adding one. |
-| [App manifest composable](../../packages/core/fireux-core/src/runtime/app/composables/useAppManifest.ts) imports Workspace route and entry code. The [manifest handler](../../packages/core/fireux-core/src/runtime/server/manifest.webmanifest.get.ts) separately validates family, origin and start URL. [App config](../../packages/core/fireux-core/src/runtime/app/composables/config/FireUXConfig.ts) normalizes Workspace policy. | Preserve the default App manifest. Place Workspace install and family policy with the optional owner and verify the client and server agree. Keep unsafe URL rejection and the documented tenant origin behaviour. |
+| `runtime/app/composables/useAppManifest.ts` imports Workspace route and entry code. The [manifest handler](../../packages/core/fireux-core/src/runtime/server/manifest.webmanifest.get.ts) separately validates family, origin and start URL. [App config](../../packages/core/fireux-core/src/runtime/app/composables/config/FireUXConfig.ts) normalizes Workspace policy. | Preserve the default App manifest. Place Workspace install and family policy with the optional owner and verify the client and server agree. Keep unsafe URL rejection and the documented tenant origin behaviour. |
 | [Tool catalogue](../../packages/core/fireux-core/src/runtime/tools/catalogue.ts) imports the Workspace Team primitive. [App literature](../../packages/core/fireux-core/src/runtime/app/literature/types.ts) and the default [App Operations endpoint](../../packages/extensions/fireux-app/src/runtime/app/server/index/operations.ts) use Workspace capability vocabulary. | Keep neutral discovery in Core. Workspace contributes its tools and operations. Decide ownership of descriptive vocabulary separately from executable capability registration so default App builds stay independent. |
 | Default [AI Test intent](../../packages/extensions/fireux-ai/src/runtime/server/utils/test-intent.ts) consumes a Workspace type and serves Project and Kitchen Test routes. [Marketplace moderation](../../packages/extensions/fireux-marketplace/src/runtime/marketplace-store/server/moderation/commands.ts) imports the Team member resolver for identity lookup. | Resolve these two consumers before repointing imports. Test-specific behaviour should live with the optional feature and consume neutral AI generation. Marketplace needs scoped User lookup, not a dependency on the Workspace Team runtime. Preserve the existing directory eligibility check. |
 
@@ -368,12 +399,12 @@ checks while the remaining work proceeds.
 | [Default Header](../../packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue) | Keep branding, sign-in, membership and the Dashboard avatar in Core. Workspace should supply its guest-visible entry through authored navigation. Preserve access to the guest entrance on mobile and desktop. |
 | [Dashboard App overview](../../packages/core/fireux-core/src/runtime/components/Dashboard/Overview/App.vue) | Keep Join, membership and App administration. Remove the card's duplicate Workspace shortcut once the opted-in Dashboard navigation supplies it. |
 | [Dashboard navigation](../../packages/core/fireux-core/src/runtime/composables/navigation/useDashboardNav.ts) | Keep role filtering and profile navigation. Use the optional route's existing `nav` metadata and visibility rules for its shortcut. Remove Core's special `dashboard-workspace` branch. |
-| [App manifest composable](../../packages/core/fireux-core/src/runtime/app/composables/useAppManifest.ts) | Core keeps the default App manifest and head behaviour. Workspace chooses its manifest from its own layout using the existing keyed head link, as the [Kitchen menu layout](../../packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue) already does for the kiosk. Move Workspace URL, family and origin policy with the opt-in surface, preserving its install identity and Home destination. Keep the general same-origin start URL support for the kiosk. |
+| `runtime/app/composables/useAppManifest.ts` | Core keeps the default App manifest and head behaviour. Workspace chooses its manifest from its own layout using the existing keyed head link, as the [Kitchen menu layout](../../packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue) already does for the kiosk. Move Workspace URL, family and origin policy with the opt-in surface, preserving its install identity and Home destination. Keep the general same-origin start URL support for the kiosk. |
 | [App literature types](../../packages/core/fireux-core/src/runtime/app/literature/types.ts) | Place the descriptive family vocabulary alongside the App operation metadata that publishes it. The [default App Operations endpoint](../../packages/extensions/fireux-app/src/runtime/app/server/index/operations.ts) validates that vocabulary and several domain capability declarations consume it. Move that existing contract and repoint its consumers. Workspace route execution and authority remain separate. |
 | [Core tool catalogue](../../packages/core/fireux-core/src/runtime/tools/catalogue.ts) | Remove the Workspace Team entry from the universal list. Keep the definition with Workspace and its domain bindings. Publish it through an owning tools page where needed using the [existing route metadata discovery](../../packages/extensions/fireux-app/src/runtime/pages/tools/index.vue). |
-| [Workspace entrance](../../packages/core/fireux-core/src/runtime/pages/workspace/index.vue) | Move the entry page and its Workspace import together. Preserve the configured guest and tenant landing behaviour. |
-| [Dashboard Workspace shortcut](../../packages/core/fireux-core/src/runtime/pages/dashboard/workspace.vue) | Move the shortcut and its metadata with Workspace. Keep the Core Dashboard layout and preserve the [Kitchen Dashboard redirect](../../packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchens.vue) while Workspace is enabled. |
-| [Workspace route middleware](../../packages/core/fireux-core/src/runtime/middleware/fireux-workspace.global.ts) | Move with the native routes and layout. Preserve availability checks, developer route rejection and delegation to neutral Core auth. Review [Core's global auth exception](../../packages/core/fireux-core/src/runtime/middleware/fireux-auth.global.ts) in the same cutover so route guards still run in their intended order. |
+| `runtime/pages/workspace/index.vue` | Move the entry page and its Workspace import together. Preserve the configured guest and tenant landing behaviour. |
+| `runtime/pages/dashboard/workspace.vue` | Move the shortcut and its metadata with Workspace. Keep the Core Dashboard layout and preserve the [Kitchen Dashboard redirect](../../packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchens.vue) while Workspace is enabled. |
+| `runtime/middleware/fireux-workspace.global.ts` | Move with the native routes and layout. Preserve availability checks, developer route rejection and delegation to neutral Core auth. Review [Core's global auth exception](../../packages/core/fireux-core/src/runtime/middleware/fireux-auth.global.ts) in the same cutover so route guards still run in their intended order. |
 
 Start with the tool catalogue and the publication-only metadata contract.
 Then use the existing navigation and head seams to remove the shell

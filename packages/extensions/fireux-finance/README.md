@@ -15,6 +15,5 @@ transactions, report queries, labels, and adapters. This package does not own a
 generic Finance workspace and its presentation does not load data or infer
 financial meaning.
 
-Start at `AGENTS.md`, `docs/ai/gpt-context.md`, and
-`docs/concepts/finance.md`. Import runtime contracts explicitly from
+See the [Finance concept map](../../../docs/concepts/finance.md) for relationships with producing domains. Import runtime contracts explicitly from
 `fireux-finance/runtime/*`.
