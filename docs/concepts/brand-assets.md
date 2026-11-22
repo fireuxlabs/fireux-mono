@@ -13,7 +13,7 @@ Map App artwork ownership, local delivery, stored media, and User avatars.
 - Parent: `fireux-mono.md`
 - Family: `spine.md`
 - Configuration: `app-config.md`
-- Composition: `components.md`
+- Composition: `../../packages/core/fireux-core/src/runtime/components/README.md`
 
 ## Current source
 

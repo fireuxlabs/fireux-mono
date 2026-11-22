@@ -5,8 +5,8 @@ Role: package landing map, not canon
 
 `fireux-kitchens` owns reusable Kitchen domain contracts, Workspace surfaces,
 Tools and trusted server behaviour. Apps install and compose the package.
-Read root `AGENTS.md`, `docs/ai/gpt-context.md` and the routed family/context maps
-before changing it. Current source and source-owned tests establish behaviour.
+Follow the [repo working rules](../../../AGENTS.md). Start with the source owner
+for the relevant Kitchen capability.
 
 See the [Menu and service glossary](docs/menu-service-glossary.md) for Kitchen
 terminology and the current customer/staff boundary.
@@ -82,5 +82,33 @@ extensionless; Node-only tests may use an extension resolver. `pnpm --dir packag
 runs the focused Entity/Workspace checks with Core's existing TypeScript resolver.
 Finish with `git diff --check`. The old `scripts/` guards and `pnpm guard` are retired.
 
-See `docs/concepts/family-workspace-entity.md` for the current foundation boundary.
+See `docs/concepts/workspace.md` for the current foundation boundary.
 Capability internals are a separate stage, not certified by this landing map.
+
+## Menu document review
+
+The Kitchen keeps source uploads, the Menu review draft, and the confirmation
+command. The [AI extension](../fireux-ai/README.md#document-processing)
+processes selected sources. Keep failures per source visible. Interpreted
+prices, language copies, and media candidates require the domain's review and
+confirmation. Processing does not silently update a published Menu.
+
+The canonical Menu owns Default content. Aligned extracted language copies
+use Sproochli's host-local translation storage after confirmation. Optional
+extras and required variants remain distinct. See the [Menu family](../../../docs/concepts/family-menu.md).
+
+## Items collection
+
+The [Items route](src/runtime/pages/workspace/kitchen/menu/items/index.vue)
+renders a [simple list](src/runtime/kitchen/components/Workspace/Menu/Items/Index.vue).
+Its [collection reader](src/runtime/kitchen/composables/workspace/menu/items/useKitchenWorkspaceItems.ts)
+waits for the selected Kitchen to be ready. The
+[detail route](src/runtime/pages/workspace/kitchen/menu/items/%5BdishId%5D.vue)
+uses the [exact Item reader](src/runtime/kitchen/composables/items/useKitchenItemRead.ts)
+and the current Kitchen grant. Start verification with the
+[Item reader tests](src/test/item-reader-internals.test.mjs).
+
+Keep empty, failed, and pending reads distinct. Decide any further filtering,
+card presentation, or related-record hydration from an actual Kitchen
+workflow. A join needs its own authorized domain reader or projection.
+A matching ID alone does not justify fetching another record.

@@ -12,9 +12,9 @@ domain capability, and intentionally App-owned branded presentation.
 
 ## Links
 
-- Parent: `pages.md`
+- Parent: `../../packages/core/fireux-core/src/runtime/pages/README.md`
 - Children: `family-entity-detail.md`, `family-menu.md`
-- Horizontal: `collection-manager.md`, `components.md`, `composables.md`,
+- Horizontal: `../../packages/core/fireux-core/src/runtime/components/README.md`, `../../packages/core/fireux-core/src/runtime/composables/README.md`,
   `entities.md`, `runtime-filesystem.md`
 
 ## Shared collection-page hierarchy
@@ -75,14 +75,14 @@ Public Kitchen and Menu discovery retain the existing default chrome and use
 named domain introductions over native `UPageHeader`; their links connect the
 two discovery surfaces. The Collection retains search and filters. Creation
 remains with its owning authenticated route. See [Menu family](family-menu.md)
-for the content difference and [layout ownership](layouts.md#other-route-families).
+for the content difference and [layout ownership](../../packages/core/fireux-core/src/runtime/layouts/README.md#other-route-families).
 The introduction precedes `UPageBody`. Native Nuxt UI components and the existing
 layout provide framing; the default layout supplies `UContainer`, while the
 FireUX full-width framework route supplies its own container. Do not add another
 page engine or repeat spacing utility shells.
 
 The route composes Entity-owned Public components under the
-[approved surface convention](components.md#domain-component-surfaces). Collection,
+[approved surface convention](runtime-filesystem.md#domain-component-surfaces). Collection,
 List and their single-surface children stay with that public capability. Concrete
 `EntityCollection` names retained in source examples are pending alignment where
 not yet migrated; registration and consumers move together. Hero remains the

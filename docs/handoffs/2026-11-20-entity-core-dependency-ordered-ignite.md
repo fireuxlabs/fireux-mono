@@ -80,7 +80,7 @@ Reviewed on `main` at handoff time:
 
 ### Codex task: design and prove the smallest scheduling extension
 
-1. Read `AGENTS.md`, `docs/ai/gpt-context.md`, `docs/concepts/spine.md`, `docs/concepts/entities.md`, `docs/concepts/workspace.md`, `docs/concepts/family-workspace-entity.md`, Ignite context, Kitchen and Misebox owning context, and the actual current consumers/tests. Inspect real source before changing contracts.
+1. Read `AGENTS.md`, `docs/ai/gpt-context.md`, `docs/concepts/spine.md`, `docs/concepts/entities.md`, `docs/concepts/workspace.md`, Ignite context, Kitchen and Misebox owning context, and the actual current consumers/tests. Inspect real source before changing contracts.
 2. Audit the **Entity Core → Workspace** journey in Kitchen and one independent Workspace family member. Separate shared fundamentals from Kitchen-specific Place, data and authority rules. Report confirmed behavior, design gaps and accepted deltas. Do not generalize a Kitchen-specific model into Core.
 3. Introduce a small **dependency-ordered delivery plan** in Ignite's existing method, positioned after assembly/review and before bounded implementation. Reuse `elements[].uses` for explicit dependency edges; do not add another graph engine, duplicate registry, or orchestration layer.
 4. For each planned slice, make the output understandable to an operator: **responsibility; prerequisites; owner; minimal user journey; acceptance evidence; essential/optional classification; blocked/unblocked status; next buildable slice**. Do not infer unrecorded dependencies silently. Highlight unresolved decisions for review.
@@ -109,7 +109,7 @@ Keep progress incremental: **inspect → choose one slice → build → verify �
 ## Reference anchors
 
 - [Item Detail and Capability Relationships](2026-11-20-item-detail-capability-relationships.md) — small Item Detail and smart capability principles.
-- [Workspace Entity family](../../docs/concepts/family-workspace-entity.md) — current cross-domain composition and accepted differences.
+- [Workspace Entity family](../concepts/workspace.md) — current cross-domain composition and accepted differences.
 - [Entities](../../docs/concepts/entities.md) — Entity versus parent-owned Record.
 - [Workspace](../../docs/concepts/workspace.md) — shared management surface, not stored Workspace Entity.
 - [Ignite context](../../packages/extensions/fireux-ignite/docs/ai/ignite-context.md) — shared implementation method and evidence limitations.

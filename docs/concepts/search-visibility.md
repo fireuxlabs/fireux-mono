@@ -22,10 +22,10 @@ Entity's `composables` role, not inside its Firestore adapter.
 ## Links
 
 - Parent: `spine.md`
-- Route families: `pages.md`, `family-entity-collection-page.md`,
+- Route families: `../../packages/core/fireux-core/src/runtime/pages/README.md`, `family-entity-collection-page.md`,
   `family-entity-detail.md`, `family-tenant-global.md`, `family-menu.md`
 - Factual language: `product-language.md`
-- Locale and reviewed copy: `translation.md`
+- Locale and reviewed copy: `../../packages/extensions/fireux-sproochli/README.md`
 - Privacy: `privacy-measurement.md`, `server-api.md`
 - App identity and origin: `app-config.md`, `brand-assets.md`
 

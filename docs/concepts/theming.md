@@ -19,9 +19,9 @@ template/brand contracts below do not establish a second global chrome theme.
 
 - Parent and family registry: `fireux-mono.md`, `spine.md`
 - Runtime App assets: `brand-assets.md`
-- Light and dark mode: `color-mode.md`
+- Light and dark mode: `../../packages/core/fireux-core/src/runtime/layouts/README.md#appearance`
 - Place and Kitchen media: `place-kitchen-media.md`
-- Template family: `landing-templates.md`
+- Template family: `../../packages/ecosystem/fireux-misebox/docs/ai/templates-context.md`
 - Product language and pricing: `product-language.md`
 
 ## Vocabulary and ownership
@@ -32,7 +32,7 @@ light/dark preference, persistence and root-class lifecycle. Core's
 [Logo](../../packages/core/fireux-core/src/runtime/app/components/Brand/Logo.vue) and
 [Wordmark](../../packages/core/fireux-core/src/runtime/app/components/Brand/Wordmark.vue)
 consume native `useColorMode()`; there is no parallel Core appearance writer.
-See [colour-mode ownership](color-mode.md#ownership). Core does not own tenant
+See [colour-mode ownership](../../packages/core/fireux-core/src/runtime/layouts/README.md#appearance). Core does not own tenant
 artwork, typography, photography or presentation-specific scene chrome.
 
 An App brand belongs to a genuine tenant App and uses the canonical

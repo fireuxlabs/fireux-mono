@@ -155,7 +155,7 @@ or storage changes begin.
 - `packages/extensions/fireux-blogs/src/runtime/blog/utils/blog-editor.ts`
 - `packages/extensions/fireux-blogs/tests/blog-editor.test.mjs`
 - `docs/concepts/product-language.md`
-- `docs/concepts/translation.md`
+- `packages/extensions/fireux-sproochli/README.md`
 - Published Interlaken Essen posts under `/blog`
 
 ## Refresh and verification

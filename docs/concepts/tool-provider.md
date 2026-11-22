@@ -16,7 +16,7 @@ shared transport from provider behavior and consumer meaning.
 - App configuration: `docs/concepts/app-config.md`
 - Tenant/global behavior: `docs/concepts/family-tenant-global.md`
 - Menu consumer example: `docs/concepts/family-menu.md`
-- AI provider boundary: `docs/concepts/ai-document-processing.md`
+- AI provider boundary: `packages/extensions/fireux-ai/README.md#document-processing`
 
 ## Ownership rule
 
@@ -167,3 +167,10 @@ Examples:
 - Never patch one consumer with tenant-specific origins.
 - Never call duplicated wrappers alignment merely because their templates look
   similar; move shared behavior to one seam.
+
+## Document processing
+
+AI interprets source material and proposes results. The consuming domain
+supplies authorized inputs, checks the result, and owns review and writes.
+See [FireUX AI](../../packages/extensions/fireux-ai/README.md#document-processing)
+for execution and usage controls.

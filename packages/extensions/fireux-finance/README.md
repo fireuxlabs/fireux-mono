@@ -17,3 +17,16 @@ financial meaning.
 
 See the [Finance concept map](../../../docs/concepts/finance.md) for relationships with producing domains. Import runtime contracts explicitly from
 `fireux-finance/runtime/*`.
+
+## Operational default currency
+
+The operating Entity owns its optional default currency. Place can suggest an
+initial value for confirmation. Changing the default neither converts nor
+redenominates existing records. Where a record stores a bare price, preserve
+its denomination before changing the default. Prices, reservations, valuations,
+and financial facts retain their own money contracts.
+
+Kitchen Menu creation and presentation still read currency from the linked
+Place. See the [Menu creation command](../fireux-kitchens/src/runtime/menu/server/records/create.ts).
+Changing that dependency or existing records needs its own migration and
+verification.

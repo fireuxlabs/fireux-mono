@@ -19,11 +19,10 @@ ensure/upsert flows.
 
 ## Horizontal links
 
-- composables.md
-- components.md
-- pages.md
+- ../../packages/core/fireux-core/src/runtime/composables/README.md
+- ../../packages/core/fireux-core/src/runtime/components/README.md
+- ../../packages/core/fireux-core/src/runtime/pages/README.md
 - tool-provider.md
-- collection-manager.md
 
 ## Component entrypoints and sections
 

@@ -16,7 +16,7 @@ members are Menu entities or inherit Menu data authority.
 ## Links and authority
 
 - Parent: `workspace.md`
-- Horizontal: `components.md`, `pages.md`, `collection-manager.md`
+- Horizontal: `../../packages/core/fireux-core/src/runtime/components/README.md`, `../../packages/core/fireux-core/src/runtime/pages/README.md`, `../../packages/extensions/fireux-kitchens/README.md#items-collection`
 - Reference member:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Menus`
 - Source checks: `fireux-kitchens/src/test/menu-record-controller.test.mjs`,

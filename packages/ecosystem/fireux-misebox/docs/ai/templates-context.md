@@ -135,8 +135,7 @@ injected owner data.
 3. `packages/ecosystem/fireux-misebox/src/runtime/components/TemplateOne/*`
 4. `projects/misebox/misebox-app/app/pages/templates/*`
 5. `projects/fireux/fireux-app/app/pages/templates/*`
-6. `docs/concepts/landing-templates.md`
-7. `docs/concepts/templates.md`
+6. `docs/concepts/templates.md`
 8. `docs/concepts/theming.md`
 
 Brand copy and assets must point back to current owner source. Missing assets
@@ -155,3 +154,13 @@ repository guard suite are removed.
 
 Update this file only when the stable scope, authority, or ownership boundary
 changes. Keep temporary asset requests, campaign drafts, and task status out.
+
+## Catalogue and detail
+
+The [Misebox catalogue](../../../../../projects/misebox/misebox-app/app/pages/templates/index.vue)
+selects a Kitchen and describes compatible presentations. The
+[detail route](../../../../../projects/misebox/misebox-app/app/pages/templates/%5Bslug%5D.vue)
+resolves the requested Kitchen and presentation. Template One requires
+fulfilled inputs from the Kitchen and uses the same package-owned page and
+bounded projection in catalogue detail and tenant use. The route owns
+admission. The template owns the scenes and consumes supplied content and assets.

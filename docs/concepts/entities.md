@@ -14,12 +14,12 @@ registry.
 ## Related maps
 
 - Firestore stack: `docs/concepts/firestore-entity.md`
-- Workspace family: `docs/concepts/family-workspace-entity.md`
+- Workspace family: `docs/concepts/workspace.md`
 - Entity Collection Page: `docs/concepts/family-entity-collection-page.md`
 - Entity detail: `docs/concepts/family-entity-detail.md`
 - Menu family: `docs/concepts/family-menu.md`
 - Finance records: `docs/concepts/finance.md`
-- Pages and routes: `docs/concepts/pages.md`
+- Pages and routes: `packages/core/fireux-core/src/runtime/pages/README.md`
 
 ## Working vocabulary
 

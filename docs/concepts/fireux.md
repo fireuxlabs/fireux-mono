@@ -102,7 +102,7 @@ The accepted open-development Rules policy is explicitly scoped in the
 [Firestore mutation context](../ai/firestore-mutations-context.md). It is not
 shipping authorization. See [Entity storage](firestore-entity.md),
 [Rules composition](firestore-rules.md), and
-[Workspace ownership](family-workspace-entity.md) for FireUX-specific details.
+[Workspace ownership](workspace.md) for FireUX-specific details.
 
 ## FireUX App public literature
 
@@ -158,7 +158,7 @@ and use working consumers for release claims.
 ## Navigation and maintenance
 
 - [Repository map](fireux-mono.md) explains package lanes and reading order.
-- [Nuxt integration](nuxt4.md) covers FireUX's module and layer choices.
+- [Nuxt integration](runtime-package.md) covers FireUX's module and layer choices.
 - [Nuxt UI integration](nuxt-ui.md) covers the shared design-system boundary.
 - [Firestore ownership](firestore-entity.md) and [Rules](firestore-rules.md)
   map the domain data and security boundaries.

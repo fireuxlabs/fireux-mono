@@ -3,7 +3,7 @@
 **Date:** 2026-11-20  
 **Status:** Agreed architecture direction and Codex audit/checklist handoff; **not** an implemented migration or completed workflow.  
 **Scope:** Kitchen lifecycle from an empty Kitchen to an operational kitchen. Establish a proven FireUX Entity Core and Workspace slice before downstream capabilities.  
-**Related:** [Item Detail & Capability Relationships](2026-11-20-item-detail-capability-relationships.md), [Workspace Spine](../concepts/family-workspace-entity.md), [Entities](../concepts/entities.md), [Menu & Service terminology](../../packages/extensions/fireux-kitchens/docs/menu-service-glossary.md), [Ignite context](../../packages/extensions/fireux-ignite/docs/ai/ignite-context.md).
+**Related:** [Item Detail & Capability Relationships](2026-11-20-item-detail-capability-relationships.md), [Workspace Spine](../concepts/workspace.md), [Entities](../concepts/entities.md), [Menu & Service terminology](../../packages/extensions/fireux-kitchens/docs/menu-service-glossary.md), [Ignite context](../../packages/extensions/fireux-ignite/docs/ai/ignite-context.md).
 
 ## North star
 

@@ -509,7 +509,7 @@ public presentation does not enable ordering or change publication.
 Route `nav` metadata under `fireux-kitchens/src/runtime/pages/workspace/kitchen`
 is the current navigation source. the optional Workspace layout renders it, and
 `Workspace/Overview/Capabilities.vue` reuses it for capability doorways.
-Follow `docs/concepts/components.md#workspace-navigation-contract`; these groups
+Follow `packages/extensions/fireux-workspace/README.md#layout`; these groups
 can evolve with operator feedback and are not a fixed Workspace taxonomy.
 
 Group indexes compose short summaries, supported lightweight Tools/configuration and links to substantial children. They are navigation composition, not new configuration owners. Do not add a stored setting merely to fill an index; report filters are local view state, and unfinished capabilities remain explicit. Venue opening hours belong to linked Place identity; serving schedules belong to Offerings. The Orders index distinguishes those two responsibilities.
@@ -1003,7 +1003,7 @@ requested identity grants no access.
   not authority.
 
 Read current Kitchen and Place models plus
-`docs/concepts/family-workspace-entity.md`,
+`docs/concepts/workspace.md`,
 `docs/concepts/place-kitchen-media.md`, `docs/concepts/menu-ordering.md`, and
 the current Kitchen source and relevant source-owned tests.
 
@@ -1108,7 +1108,7 @@ retain the existing default chrome. Kitchen owns named content such as
 Core retains the shared navigation, account/Workspace and footer controls.
 Creation remains at its existing authenticated route. See the
 [Menu family](../../../../../docs/concepts/family-menu.md#shared-spine) and
-[layout ownership](../../../../../docs/concepts/layouts.md#other-route-families).
+[layout ownership](../../../../core/fireux-core/src/runtime/layouts/README.md#other-route-families).
 Customer content focuses on food discovery; product-demo and publishing controls
 stay outside that content.
 Customer accounts, vouchers and order links require proved customer routes
@@ -1137,7 +1137,7 @@ applies only while the page-canvas Menu surface exists. Brand `--ui-*` tokens
 stay on the surface and must not persist on the host body after returning to
 the Menu chooser. `menu-theme-surface.test.mjs` covers that boundary.
 
-The [shared operational currency rule](../../../../../docs/concepts/family-workspace-entity.md#operational-default-currency)
+The [shared operational currency rule](../../../../extensions/fireux-finance/README.md#operational-default-currency)
 assigns optional root `default_currency_code` to the selected Workspace Entity.
 Place geography may suggest an initial value for confirmation; it is not ongoing
 currency authority. Current Kitchen readers/editors are **not yet aligned**:
@@ -1520,7 +1520,7 @@ to their existing shared App composition without injecting CSS through JavaScrip
 These values do not grant Kitchen or Menu access.
 
 Main App page, tool and Provider composition follows the canonical
-[component and forwarding-adapter admission rule](../../../../../docs/concepts/components.md#component-apis-and-extension-points).
+[component and forwarding-adapter admission rule](../../../../core/fireux-core/src/runtime/components/README.md).
 
 Derive copy from current capability source. App Tools/Operations/Discovery
 components are literature and doorways; execution stays with its owning capability.
@@ -1553,7 +1553,7 @@ runtime prerequisites, consumer evidence and limits of each published entry.
 Use supplied sample data and local callbacks for safe examples; do not
 auto-mount connected operator/account screens or expose live commands through
 previews. Keep internal inventory and contributor guidance separate. The
-[canonical library admission rule](../../../../../docs/concepts/components.md#library-admission-and-maturity)
+[canonical library admission rule](../../../../core/fireux-core/src/runtime/components/README.md)
 and [documentation ownership map](../../../../../docs/concepts/documentation.md#contributor-and-public-docs)
 apply; a listed component does not gain shared or production maturity.
 
@@ -1664,9 +1664,8 @@ this record contains only non-sensitive product background.
 
 ### Workspace and AI seams
 
-Kitchen presentation and shared Workspace mechanics are mapped in
-`docs/concepts/family-workspace-entity.md` (Landing/Test/Team comparison,
-Team construction, Collection/Single presentation and KitchenAI handoff).
+The [Workspace package](../../../../extensions/fireux-workspace/README.md)
+owns shared selection and framing. Kitchen owns the domain presentation and AI context.
 Keep these boundaries when changing the UI:
 
 - Published UI context is bounded presentation data, not command authority or
@@ -1784,7 +1783,7 @@ counts measure selected catalogue entries. Prep Plan and Batches remain local to
 the browser, scoped by App, operator and Kitchen.
 The shared Navigation Child keeps whole-card linking by default; Services selects
 native title-only linking so its individual service links need no stacking overrides.
-Follow `docs/concepts/composables.md#component-private-presentation-composables`
+Follow `docs/concepts/lasagne.md#local-component-namespaces`
 for admission; placeholder cards do not need empty hooks. Separate
 library routes mount `useKitchenWorkspacePrepLibrary` with their explicit view,
 sharing one Preparation/Recipe read graph and enabling Ingredient catalogue and
@@ -1801,7 +1800,7 @@ Standalone source preparation still explicitly mounts its Menus workflow with
 upload prefers its existing record owner. One upload/URL/blank creation flow
 serves both the modal and standalone source page; lower command authority and
 individual record editors remain separate. The shared contract is
-`docs/concepts/family-workspace-entity.md#workspace-group-overview-composition`.
+`packages/extensions/fireux-workspace/README.md#workspace-group-overview-composition`.
 It reuses `serviceOverviewSnapshot` for setup facts; AI receives the same page
 context rather than acquiring another catalogue. Home, Menus and Food & drink
 inherit the Kitchen-owned `kitchen/server/ai/role.ts` instruction: one KitchenAI
@@ -2160,7 +2159,7 @@ and `tools/misebox-migrations/test_ingredient_catalogue.py`, plus the representa
 ## Workspace component placement
 
 Kitchen Public/customer and Workspace/operator components follow the
-[canonical surface and library convention](../../../../../docs/concepts/components.md#domain-component-surfaces).
+[canonical surface and library convention](../../../../../docs/concepts/runtime-filesystem.md#domain-component-surfaces).
 Operator grouping includes complete capability screens; current paths are not
 proof that every capability has completed alignment.
 
@@ -2237,7 +2236,7 @@ Creation visibility uses selected-Kitchen membership; command authorization
 remains authoritative. Ingredient taxonomy, discovery categories and external
 FoodBooking category-to-Section mapping retain their separate contracts.
 
-The all-Workspace contract is `docs/concepts/components.md`; verify moved
+The all-Workspace contract is `packages/core/fireux-core/src/runtime/components/README.md`; verify moved
 consumers against Nuxt registration, Vue compilation and App typechecking.
 
 ## Item identity and selling defaults
@@ -2605,7 +2604,7 @@ Workspace route metadata and indexing headers remain covered by the App-owned
 
 ## Capability read-state and Overview boundaries
 
-Kitchen working collection pages distinguish target readiness, loading, failure and settled empty results. Orders draft reads mask obsolete scope results; Sales invalidates obsolete account, App membership, Kitchen and range reads and closes transaction details when the report is unavailable. An unavailable or empty parent Kitchen masks retained reports. A settled Sales query with zero results remains a readable empty report. Supplier association reads retain their binding and projection failures. Overview Activity consumes read-only owned sources for its counts. Ingredient and Supplier counts measure associations; completed-Sales counts do not establish payment receipts or profit. The family contract and optional-extension composition live in `docs/concepts/family-workspace-entity.md`. Verify these boundaries through `fireux-kitchens/src/test/kitchen/capability-read-state.test.mjs` and consuming App checks; signed-in browser evidence remains separate.
+Kitchen working collection pages distinguish target readiness, loading, failure and settled empty results. Orders draft reads mask obsolete scope results; Sales invalidates obsolete account, App membership, Kitchen and range reads and closes transaction details when the report is unavailable. An unavailable or empty parent Kitchen masks retained reports. A settled Sales query with zero results remains a readable empty report. Supplier association reads retain their binding and projection failures. Overview Activity consumes read-only owned sources for its counts. Ingredient and Supplier counts measure associations; completed-Sales counts do not establish payment receipts or profit. The family contract and optional-extension composition live in `docs/concepts/workspace.md`. Verify these boundaries through `fireux-kitchens/src/test/kitchen/capability-read-state.test.mjs` and consuming App checks; signed-in browser evidence remains separate.
 
 Misebox's pricing wrapper derives its Menu allowance and supported actions from current commands: the [Menu allowance and starter contract](#menu-operator-entitlements) governs Free creation; paid custom regular Menus and existing domain tools retain their own gates. Team roster/invitation support does not claim fine-grained permissions; preparation execution, tables, costing and outgoing finance must not appear in pricing without connected source. Existing Jobs and Engagement claims have their own owners and require separate verification. No local copy or controlled test establishes an accepted commercial price, live provider readiness or shipping authorization.
 
@@ -2631,7 +2630,7 @@ Kitchen’s inner capability entries now name Collection, Detail, Create, Add an
 Edit responsibilities where consumed. Ingredient Add remains a Kitchen
 association workflow; Menu source-upload records remain separate from Menu
 creation. Surface admission and naming follow the
-[component convention](../../../../../docs/concepts/components.md#domain-component-surfaces);
+[component convention](../../../../../docs/concepts/runtime-filesystem.md#domain-component-surfaces);
 current registration and source-owned reader/scope tests establish each slice.
 Existing context providers, Kitchen
 selection, serving checks, commands and authority remain the same owners.
@@ -3043,7 +3042,7 @@ Preparation uses the definition in `kitchen/records/prep/preparations/preparatio
 ## Kitchen component organisation
 
 Kitchen component organisation follows the canonical
-[Public/Workspace/lower-domain convention](../../../../../docs/concepts/components.md#domain-component-surfaces).
+[Public/Workspace/lower-domain convention](../../../../../docs/concepts/runtime-filesystem.md#domain-component-surfaces).
 Complete operator capability compositions belong to Workspace; customer
 compositions, including protected customer journeys, belong to Public. Existing
 unconverted direct-root groups remain pending alignment, not a second convention.

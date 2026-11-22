@@ -15,7 +15,7 @@ Kitchen-scoped structured content, directory route responses, or ordering.
   `server-api.md`, `tool-provider.md`
 - Child: `menu-ordering.md`
 - Horizontal: `entities.md`, `firestore-entity.md`, `workspace.md`,
-  `family-tenant-global.md`, `ai-document-processing.md`,
+  `family-tenant-global.md`, `../../packages/extensions/fireux-ai/README.md#document-processing`,
   `runtime-filesystem.md`
 - Route tests: `packages/extensions/fireux-kitchens/src/test/menu-public-slug.test.mjs`
 
@@ -86,7 +86,7 @@ Public Kitchen and Menu discovery, venue profiles, Menu choosers and
 Collection/Delivery entrances retain the host's existing default chrome.
 Kitchen owns named content and presentation children; Core retains its shared
 navigation, account/Workspace controls, footer and root lifecycle. Follow
-[layout admission](layouts.md#layout-admission) for a genuinely different
+[layout admission](../../packages/core/fireux-core/src/runtime/layouts/README.md#layout-admission) for a genuinely different
 route-family responsibility, not for ordinary content differences.
 Presentation inherits Nuxt UI, then FireUX shared conventions, then the host
 App/Ecosystem theme (Misebox in its Main App). A saved Kitchen palette is the
@@ -419,7 +419,7 @@ Misebox context and `menu-record-controller.test.mjs` for this boundary.
 
 ## Item offer denomination
 
-The [Workspace operational currency rule](family-workspace-entity.md#operational-default-currency)
+The [Workspace operational currency rule](../../packages/extensions/fireux-finance/README.md#operational-default-currency)
 assigns the optional default to the selected Kitchen root. Retained selling
 terms belong to the existing
 [`ItemOffer`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/menus/items/item-offer.ts),
@@ -752,7 +752,7 @@ reusing the existing confirmation and preserving catalogue Items.
 Menu items, their column header and editable section rows reuse Core
 `FireCollectionRow` for the plain content/value/actions layout. Their actions,
 permissions and commands remain Menu-owned; the shared primitive adds no reads.
-See the plain collection-row contract in `docs/concepts/components.md`.
+See the plain collection-row contract in `packages/core/fireux-core/src/runtime/components/README.md`.
 
 Kitchen discovery cards link directly to each venue’s singular `/menu` entrance;
 the individual published Menu destinations remain plural `/menus/<slug>`.
@@ -974,7 +974,7 @@ one explicit namespace import, `import * as Menu from './index'`, consumed as
 namespace changes no component registration, data owner or runtime authority.
 Adopt this composition style during substantive work on a parent and its children;
 do not bulk-migrate components or add namespace files for incidental touches.
-The shared component convention is maintained in `components.md`.
+The shared component convention is maintained in `../../packages/core/fireux-core/src/runtime/components/README.md`.
 `Workspace/Menu/Overview/Index.vue` calls `useKitchenWorkspaceMenuOverview` once
 and passes each child its presentation inputs. Controls composes Actions and
 Filters and reuses
@@ -996,7 +996,7 @@ preparation-source route separately mounts its standalone Menus workflow;
 One existing creation flow serves its group/collection modal and standalone
 source page. Lower reads, permission checks, command targets and record editors
 retain their existing owners. This follows the
-[Workspace group overview convention](family-workspace-entity.md#workspace-group-overview-composition).
+[Workspace group overview convention](../../packages/extensions/fireux-workspace/README.md#workspace-group-overview-composition).
 The record builder
 mounts one inline section editor at a time through `Sections/Inline.vue`, reusing
 its existing Menu record context and lower Section provider. Shared Item edits

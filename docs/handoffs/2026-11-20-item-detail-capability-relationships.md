@@ -11,7 +11,7 @@ Finish the **small, clear Item Detail** journey first, then grow it by composing
 **Guiding principle:** *The Item describes the dish; capabilities own its related truth; Workspace reveals the result.* Keep pages simple, reactive data ownership explicit, and presentation reusable.
 
 Follow [AGENTS.md](../../AGENTS.md) to Kitchen's owners. Use the
-[Workspace Entity family](../concepts/family-workspace-entity.md) and
+[Workspace Entity family](../concepts/workspace.md) and
 [Menu family](../concepts/family-menu.md) when checking where facts and
 relationships belong.
 

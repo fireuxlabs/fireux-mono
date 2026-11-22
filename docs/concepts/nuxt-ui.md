@@ -34,8 +34,8 @@ Use the current stable Nuxt UI API supported by the consuming manifests and
 inspect real consumers before retiring a FireUX mechanism. Native controls and
 their supported props, slots and events are the foundation, not evidence that a
 new FireUX shell or layout has the right responsibility. Apply the canonical
-[component API rule](components.md#component-apis-and-extension-points) and
-[layout admission](layouts.md#layout-admission) criteria. Domains retain their
+[component API rule](../../packages/core/fireux-core/src/runtime/components/README.md) and
+[layout admission](../../packages/core/fireux-core/src/runtime/layouts/README.md#layout-admission) criteria. Domains retain their
 meaning, readers, permissions and commands; Apps retain product framing and
 route policy.
 
@@ -44,7 +44,7 @@ The repository-wide authored-Tailwind rule lives in
 Tailwind internally; that implementation does not grant FireUX source permission
 to add utility strings. The global rule distinguishes exact approved adjustments
 from migration debt.
-See [component ownership and reuse](components.md) for the consumption rule,
+See [component ownership and reuse](../../packages/core/fireux-core/src/runtime/components/README.md) for the consumption rule,
 shared component admission and current component evidence.
 
 ## Current shared frame
@@ -62,7 +62,7 @@ Navbar retains its existing `ui` forwarding, which does not permit authored
 utility overrides. The shared frame does not establish that every
 header, domain component or App has completed styling migration. Route and
 domain ownership remain as described in [Workspace](workspace.md) and
-[Workspace Entity composition](family-workspace-entity.md).
+[Workspace Entity composition](workspace.md).
 
 ## Refresh
 

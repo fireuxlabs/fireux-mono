@@ -1,216 +1,47 @@
 # Lasagne architecture
 
-Updated: 2026-11-15
-Ref: a068b6eaa
+Updated: 2026-11-22
+Ref: 0d8d59ce8
 Role: map, not canon
 
-## Purpose
-
-Describe FireUX's preferred shape for reusable entity and workflow code:
-clear horizontal layers, one-way dependencies, and domain-owned composition.
-
-Lasagne is not a new framework. It is the test used before extracting another
-shared helper. The goal is to keep each layer understandable in isolation
-while allowing the layer above it to compose a useful product surface.
-
-## Links
-
-- Parent: [spine.md](spine.md)
-- Entity capabilities: [composables.md](composables.md)
-- Stored authority: [firestore-entity.md](firestore-entity.md)
-- Component ownership: [components.md](components.md)
-- Runtime filesystem: [runtime-filesystem.md](runtime-filesystem.md)
-- Creation commands: [create.md](create.md)
-
-## Layer direction
-
-Dependencies point toward lower owners. Read the following diagram from stored
-authority toward its consumers; its arrows show composition order, not import
-direction:
-
-```text
-stored authority and trusted commands
-                ↓
-       X storage adapters
-                ↓
-  X capabilities and presentation
-                ↓
-     Y's named use of X
-                ↓
-   Y controller or provided context
-                ↓
-      Y components and stages
-                ↓
-        structural framing
-                ↓
-              route
-```
-
-The lower layer must remain ignorant of the layer consuming it. Place does not
-know about Kitchen. A Kitchen capability may consume the supported Place
-capability it needs.
-
-These are dependency layers, not a demand for root technical folders. Physical
-package ownership follows `runtime-filesystem.md`: shared layers remain in the
-root spine, while entity-specific components, composables, models, and server
-behaviour live beneath the entity root.
-
-## Entity capabilities
-
-An entity exposes named capabilities rather than one compulsory umbrella:
-
-- `useXFetch` and `useXCollection` adapt authorized reads.
-- `useXCreate`, `useXUpdate`, and `useXDelete` invoke named commands.
-- `useXInterface` maps X into X-owned presentation shapes.
-- `useXDetail` controls X's routable detail outcome.
-- `useXOnboarding` controls X's creation journey.
-- `useX` exists only when X has a genuine active read/view aggregate. It must
-  not be invented merely to make every entity look symmetrical.
-
-A higher capability should consume the narrow supported X capability that
-owns the required result. It should not reach through it to X's Firestore
-paths, reproduce X normalization, or import X's internal stage state.
-
-## Cross-domain composition
-
-Name Y's use of X from Y's perspective when that adaptation has a real job:
-
-- `useKitchenIdentity` composes Kitchen and linked Place reads.
-- `useKitchenOnboarding` may compose the completed Place onboarding result.
-- `usePlace` must not import Kitchen or expose Kitchen-specific fields.
-
-`useYX` does not always need to call an unqualified `useX`. It uses the
-narrowest supported X capability. The dependency rule matters more than
-surface naming.
-
-Do not create `useYX` as a pass-through alias. It should add a Y-owned decision,
-projection, policy, or lifecycle relationship.
+Compose a page so its named children explain the work. Dependencies point
+downward. Core supplies neutral mechanisms, domains own their facts and
+commands, and Apps compose what their product needs. A lower owner stays
+independent of its consumers.
 
 ## Controllers and context
 
-A workflow root owns its domain controller. Prefer passing one cohesive
-controller or providing one domain context over relaying the same group of
-refs and callbacks through several component layers.
+Give each stateful workflow one owner for acquisition, scope, and disposal.
+Use props and events for focused presentation. Use a bounded domain context
+when several children share the same workflow and relaying values hides its
+lifetime. Mount it once per actual host. Sibling routes can mount separate
+hosts, and missing context never creates a second reader.
 
-Use provided context when:
+A reader or command exposes what its actual consumer uses. Keep view
+derivations and local actions near the screen that owns them. Clear stale
+results at scope changes. Authority remains with the domain's trusted
+command and access checks.
 
-- several sibling or nested stages share the same live workflow;
-- stages need both state and named commands;
-- prop relaying obscures which component owns the lifecycle; and
-- the provider and consumers share one visible domain boundary.
+### Local component namespaces
 
-Keep props when a child is a reusable presentation component with a small,
-explicit input. Do not replace ordinary component APIs with global or
-unbounded injection.
+A component group may statically re-export nearby Vue children from its local
+`index.ts`. The parent imports the namespace and visibly names its children.
+See [Kitchen Menu](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Index.vue)
+and [FireUX Framework](../../projects/fireux/fireux-app/app/components/Framework/Home.vue).
 
-The provider remains domain-owned: `provideKitchenOnboarding`, not a generic
-provider containing every entity's possible fields.
+A useful single-use child or explicitly imported private presentation
+composable can earn its own file. Shared library admission is a separate
+decision. Keep local re-exports out of global discovery.
 
 ## Structural shells
 
-Apply the canonical [component API admission rule](components.md#component-apis-and-extension-points)
-before introducing a shared shell. Consuming a native slot and creating a new
-shared extension point are different decisions. A Nuxt layout additionally needs
-[layout admission](layouts.md#layout-admission).
+Use native Nuxt entrypoints and Nuxt UI controls. A page can render one named
+component, several, or straightforward inline markup. A shared frame or custom
+slot needs a real shared structural responsibility and known consumers. Domain
+content, state, and actions retain their owners. See
+[layout admission](../../packages/core/fireux-core/src/runtime/layouts/README.md#layout-admission).
 
-An admitted shared shell owns structure only:
-
-- layout;
-- slot placement;
-- progress and error placement when their shape is truly common; and
-- ordinary Nuxt UI chrome.
-
-The domain root owns:
-
-- nouns and copy;
-- stage definitions;
-- drafts and validation;
-- provider and persistence calls;
-- button meaning and completion behavior; and
-- the components rendered in each stage.
-
-For current onboarding, `FireOnboardingShell` receives one small stage
-object and exposes `intro`, default, and `footer` slots. `PlaceOnboarding` and
-`KitchenOnboarding` own what those slots mean.
-
-## Deliberate repetition
-
-FireUX does not optimize for the fewest lines. Small domain-owned repetition
-is accepted when it keeps meaning and authority local.
-
-The controlled sibling lifecycle in `spine.md` also permits a bounded proving
-sibling to begin structurally aligned with a complete baseline. Preserve
-separately named entrypoints such as `useKitchens` and
-`useCompanyCollection`, reuse established lower mechanics and outcome
-vocabulary immediately, and let each domain's authority, query, projection,
-and lifecycle differentiate honestly. The initial copy establishes an
-independent comparison surface; it does not prove an abstraction.
-
-Repeat a thin edge when sharing it would require:
-
-- a large optional prop contract;
-- entity-name branches;
-- callbacks whose owner is unclear;
-- a generic controller that unions unrelated states; or
-- a lower layer importing knowledge from a higher layer.
-
-Extract only after two or more real domains have materially differentiated and
-still prove the same input, output, lifecycle, authority boundary, ownership,
-and dependency direction. Similar appearance or common ancestry alone is not
-sufficient.
-
-## Reference shapes
-
-### Staged funnel
-
-The Menu ordering funnel demonstrates one controller, one active screen, and
-one action footer. Its domain owns readiness and progression; child screens own
-their decision UI.
-
-### Workspace operation
-
-Workspace operation roots compose named `Read`, `Write`, `Tools`, or workflow
-children. A provided domain workspace allows those children to consume one
-selected operational context without a long prop chain.
-
-### Index page
-
-An index route supplies framing and composes its CTA and collection manager.
-The route does not absorb collection fetching, filtering, card mapping, and
-creation behavior merely because it displays them together.
-
-## Workspace capability composition
-
-Universal, optional shared, and domain capabilities follow the same composition
-discipline. Availability is not a separate UI architecture. The route supplies
-framing; Index assembles named Collection, Individual, and tool surfaces. Each
-child owns a meaningful interaction, using Nuxt UI directly. Compact dialogs and
-open surfaces reuse forms and commands. A shared shell owns placement only.
-
-Kitchen and Project Landing, Test, and Team are the bounded reference under
-`family-workspace-entity.md#landing-test-team-comparison`. This does not establish
-that every capability needs a collection, or that every domain needs a shared
-composable. Optional shared capabilities reuse their capability owner; domain
-capabilities retain domain meaning and reuse lower presentation where proved.
-
-## Stop signals
-
-- A shared component gains domain nouns or entity-specific conditions.
-- A component accepts many optional props used by only one consumer.
-- `useX` becomes a bag of reads, writes, SEO, interface mapping, and page state.
-- `useYX` reconstructs X from raw storage.
-- A child receives the same controller fields through multiple ancestors.
-- A generic abstraction is justified by visual similarity rather than common
-  authority and lifecycle.
-- Removing three repeated lines creates a new package-wide dependency.
-
-When these appear, move responsibility back to the nearest named owner before
-adding another helper.
-
-## Verification
-
-- Inspect the nearest working sibling and dependency direction.
-- Confirm stored authority against current models and trusted commands.
-- Run focused type checks for every touched package.
-- Run relevant source-owned tests and `git diff --check` before handoff; the
-  former repository guard suite is removed.
+Repeat small domain-specific compositions deliberately while the differences
+matter. Share lower, proven mechanics early. Extract a common contract only
+when actual consumers share the same responsibility. Verify the result in
+the actual consuming route and mode. See the [spine](spine.md) for family growth.

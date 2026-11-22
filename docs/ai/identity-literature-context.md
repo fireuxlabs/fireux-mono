@@ -42,7 +42,7 @@ routes, readers, commands and access policy that implement them.
   may advertise a branded App within its existing ecosystem when a supported
   workflow exists. [Core App initialization](../../packages/core/fireux-core/src/runtime/server/api/internal/app/initialize.post.ts)
   is internal setup.
-- The [entrance map](../concepts/family-workspace-entity.md#public-and-workspace-entry-points)
+- The [entrance map](../concepts/workspace.md#public-and-workspace-entry-points)
   owns public Home and Workspace arrival differences. The
   [artwork map](../concepts/brand-assets.md#photographic-media) owns shared image
   guidance.

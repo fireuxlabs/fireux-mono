@@ -127,7 +127,7 @@ Use current source and available tests above this document:
   `rules/reservation-authority.rules` is retained inactive policy, not deployed
   privacy protection.
 - Relevant maps: `docs/concepts/app-config.md`,
-  `docs/concepts/runtime-package.md`, and `docs/concepts/layouts.md`
+  `docs/concepts/runtime-package.md`, and `packages/core/fireux-core/src/runtime/layouts/README.md`
 
 ## Industry research
 

@@ -22,7 +22,7 @@ proposals and separate need/readiness assessments. Proposals do not change
 runtime ownership, navigation or command authority. Refresh findings and source
 assessments against their current inputs; FireUX AI's `src/test/research/review.test.mjs`
 checks reference integrity and research rendering. Live operator acceptance is
-separate. Follow `docs/concepts/family-workspace-entity.md` for runtime boundaries.
+separate. Follow `docs/concepts/workspace.md` for runtime boundaries.
 
 ## App entrances
 

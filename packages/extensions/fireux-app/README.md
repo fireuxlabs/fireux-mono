@@ -29,3 +29,18 @@ route adapters, one acquisition, escaping, social differences and read outcomes.
 
 See [App configuration](../../../docs/concepts/app-config.md) and the
 [identity and literature context](../../../docs/ai/identity-literature-context.md).
+
+## App assembly
+
+[`defineFireuxApp`](src/config.ts) validates the App recipe and returns native
+Nuxt configuration. [Defaults](src/defaults.ts) supply standard modules and
+layers. The App declares the Ecosystem binding and adds the capabilities and
+options it uses. Module options register behaviour, layer selection exposes
+native surfaces, and Workspace families name the App's enabled management
+areas. These are distinct from resource grants.
+
+Keep environment inputs in the [App template](../../../templates/.env.app.template)
+and App identity in the authored recipe. Core owns
+[Firebase and SEO configuration](../../core/fireux-core/src/config/app/README.md).
+Native `app.config.ts` remains the App's presentation owner. The App owns its
+Hosting target, public origin and release approval.

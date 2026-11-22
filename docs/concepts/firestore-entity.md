@@ -93,7 +93,7 @@ Firestore operation.
 ## Related owners
 
 - [Entity families](entities.md) and [core models](core-models.md)
-- [Workspace and Entity composition](family-workspace-entity.md)
+- [Workspace and Entity composition](workspace.md)
 - [Firestore Rules](firestore-rules.md)
 - [Server APIs](server-api.md)
 - [Mutation authority](../ai/firestore-mutations-context.md)

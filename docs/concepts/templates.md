@@ -75,7 +75,7 @@ second template.
 
 Template One is the first Misebox Kitchen landing template. Its detailed
 catalogue, eligibility, anatomy, and verification map remain in
-`docs/concepts/landing-templates.md`. That document inherits this definition
+`packages/ecosystem/fireux-misebox/docs/ai/templates-context.md`. That document inherits this definition
 and cannot broaden template ownership.
 
 ## Verification questions

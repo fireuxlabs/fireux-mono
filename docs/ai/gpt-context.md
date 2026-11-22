@@ -34,8 +34,8 @@ require explicit approval for the exact adjustment, including utilities in
 templates, generated strings, `ui` overrides, styles and `@apply`. Nuxt UI may
 use Tailwind internally. Existing utility use grants no further exception.
 
-Follow the [component convention](../concepts/components.md#vue-file-convention)
-and [layout admission rules](../concepts/layouts.md#layout-admission). Review UI
+Follow the [component convention](../../packages/core/fireux-core/src/runtime/components/README.md#vue-file-convention)
+and [layout admission rules](../../packages/core/fireux-core/src/runtime/layouts/README.md#layout-admission). Review UI
 changes in the actual consumer at the affected viewport sizes and exercise the
 changed interactions.
 

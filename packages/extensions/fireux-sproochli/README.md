@@ -71,10 +71,23 @@ and authorization do not.
 
 ## Current authority
 
-- [Product and storage map](../../../docs/concepts/translation.md)
 - [Provider-family boundary](../../../docs/concepts/tool-provider.md)
 - Localized-field preparation: `src/runtime/utils/translation-seed.ts`
 - Host identity: `src/runtime/host.ts`
 - Host persistence: `src/runtime/server/menu/`
 - Provider client: `src/runtime/server/menu/provider-client.ts`
 - Localized-field checks: `src/test/translation-seed.test.mjs`
+
+## Reviewed and generated copy
+
+Apps choose where translation is enabled. Apps and domains own canonical
+source copy and reviewed publication. Generated translation stays separate
+from approval. Kitchen Menus retain canonical Default content regardless of
+language selection. The host serves complete cached variants or uses its
+authorized server generation path on a cache miss. A failed or incomplete
+read does not establish availability. Interlaken Essen owns its reviewed
+locale pack and localized site-shell copy.
+
+A standalone server-side API-key offering remains a proposal. It would
+need its own authentication, usage limits, billing and scope. Existing host
+registration retains the server principal and host-owned storage rules above.

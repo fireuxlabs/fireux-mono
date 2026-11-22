@@ -12,8 +12,8 @@ Apps without forking the package-owned domain system.
 ## Links
 
 - Parents: `app-config.md`, `workspace.md`
-- Horizontal: `family-workspace-entity.md`, `family-menu.md`,
-  `tool-provider.md`, `pages.md`
+- Horizontal: `workspace.md`, `family-menu.md`,
+  `tool-provider.md`, `../../packages/core/fireux-core/src/runtime/pages/README.md`
 - Runtime sources: `FireUXConfig.ts`, `useWorkspace.ts`, and each App's
   `nuxt.config.ts`
 

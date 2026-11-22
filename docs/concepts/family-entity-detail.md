@@ -11,13 +11,13 @@ entity-level reasons that route identity and page composition differ.
 
 ## Links
 
-- Parent: `pages.md`
+- Parent: `../../packages/core/fireux-core/src/runtime/pages/README.md`
 - Child: `family-menu.md`
-- Horizontal: `entities.md`, `components.md`, `composables.md`, `debug.md`
+- Horizontal: `entities.md`, `../../packages/core/fireux-core/src/runtime/components/README.md`, `../../packages/core/fireux-core/src/runtime/composables/README.md`, `../../packages/core/fireux-core/src/runtime/components/Diagnostics/README.md`
 
 ## Reader ownership and evidence
 
-Use the [Entity file contract](composables.md#entity-file-contract). A route
+Use the [Entity file contract](runtime-filesystem.md#native-entrypoints-and-domain-owners). A route
 uses its Entity reader directly; `Platform` or another consumer name requires
 an actual scope, policy or projection delta. Project and Ecosystem use their
 entity-owned detail readers. Project retains its FireUX server scope. Ecosystem uses its exact endpoint

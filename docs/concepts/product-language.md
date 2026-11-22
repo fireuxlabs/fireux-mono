@@ -278,7 +278,7 @@ language is stable.
 - Landing composition belongs with the App or shared landing adapter, but its
   vocabulary is inherited from the lower owners.
 - Translation changes language, not product meaning. Reviewed translation
-  follows `translation.md` after the source literature is approved.
+  follows `../../packages/extensions/fireux-sproochli/README.md` after the source literature is approved.
 
 Do not centralise every string in this document. Centralise the derivation
 method and keep source literature beside its owner.
