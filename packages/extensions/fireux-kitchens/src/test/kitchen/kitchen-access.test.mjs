@@ -246,8 +246,9 @@ test('native Kitchen access clears on live removal, failed read and App membersh
       }),
     }
   )
-  const session = {
-    uid: ref('user'),
+  const uid = ref('user')
+  const hasAuthState = ref(false)
+  const membership = {
     appUser: ref(member()),
     pending: ref(false),
     error: ref(),
@@ -257,7 +258,14 @@ test('native Kitchen access clears on live removal, failed read and App membersh
     'useKitchenAccess',
     {
       computed,
-      useAppSession: () => session,
+      useAppSession: () =>
+        assert.fail('Kitchen access must not wait for App status'),
+      useAuth: () => ({ uid, hasAuthState }),
+      useAppUserRead: (appId, userId) => {
+        assert.equal(appId, 'misebox-app')
+        assert.equal(userId, uid)
+        return membership
+      },
       useFireUXConfig: () => ({ appId: 'misebox-app' }),
       useMembershipAccess,
       KITCHEN_ACCESS_COLLECTION_PATH,
@@ -266,6 +274,9 @@ test('native Kitchen access clears on live removal, failed read and App membersh
     }
   )
   const access = useKitchenAccess()
+  assert.equal(access.outcome.value, 'pending')
+  assert.equal(locator.id.value, null)
+  hasAuthState.value = true
   assert.equal(locator.path.value, 'kitchen_access')
   assert.equal(locator.id.value, 'user')
   assert.deepEqual(access.ids.value, ['one'])
@@ -280,19 +291,23 @@ test('native Kitchen access clears on live removal, failed read and App membersh
   assert.deepEqual(access.ids.value, [])
   assert.equal(access.outcome.value, 'error')
   source.error.value = undefined
-  session.appUser.value = {
+  membership.appUser.value = {
     ...member(),
     created: { at: { seconds: 10, nanoseconds: 21 } },
   }
   assert.deepEqual(access.ids.value, [])
   assert.equal(access.outcome.value, 'empty')
-  session.appUser.value = null
+  membership.appUser.value = null
   assert.equal(locator.id.value, null)
   assert.deepEqual(access.ids.value, [])
-  session.appUser.value = member()
-  session.pending.value = true
+  membership.appUser.value = member()
+  membership.pending.value = true
   assert.deepEqual(access.ids.value, [])
   assert.equal(access.outcome.value, 'pending')
+  membership.pending.value = false
+  membership.error.value = new Error('Membership read failed')
+  assert.equal(access.outcome.value, 'error')
+  assert.equal(locator.id.value, null)
 })
 
 function shellHarness({

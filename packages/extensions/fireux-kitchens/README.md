@@ -59,6 +59,10 @@ Place owns venue identity. AppUser owns App membership; it carries no Kitchen
 index or primary selection. Team is a roster and does not grant access by inference.
 Workspace selection is local App/family state.
 
+[Kitchen access](src/runtime/kitchen/composables/useKitchenAccess.ts) waits for
+Firebase Auth, the current AppUser membership and its Kitchen grants. It resolves
+independently of `/api/app/status`.
+
 Protected writes use named trusted server commands, including single-record
 updates. Browser adapters capture the submitted values and original scope before
 credentials; the server validates authority and invariants. Compound workflows

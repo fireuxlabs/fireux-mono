@@ -73,6 +73,8 @@ for (const [family, path] of Object.entries(paths))
       readKitchenAppAccess,
       computed,
       useAppSession: () => app,
+      useAuth: () => ({ uid: app.uid, hasAuthState: ref(true) }),
+      useAppUserRead: () => app,
       useFireUXConfig: () => ({ appId: 'app' }),
       useMembershipAccess,
       projectAccessCollectionPath: () => 'access',

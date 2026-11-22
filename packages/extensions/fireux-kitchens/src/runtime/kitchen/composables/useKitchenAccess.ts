@@ -1,7 +1,8 @@
 import { computed } from 'vue'
-import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useAppUserRead } from 'fireux-core/runtime/app/composables/membership/useAppUserRead'
 import { useMembershipAccess } from 'fireux-core/runtime/app/composables/membership/useMembershipAccess'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   KITCHEN_ACCESS_COLLECTION_PATH,
   readKitchenAppAccess,
@@ -10,26 +11,34 @@ import { KITCHEN_USER_LIMIT } from '../utils/kitchen-capacity'
 
 /** Kitchen associations are live and belong to this App membership lifetime. */
 export function useKitchenAccess() {
-  const session = useAppSession()
+  const { uid, hasAuthState } = useAuth()
   const { appId } = useFireUXConfig()
+  const appUser = useAppUserRead(appId, uid)
+  const membershipPending = computed(
+    () => !hasAuthState.value || (Boolean(uid.value) && appUser.pending.value)
+  )
   const membership = computed(() =>
-    session.pending.value || session.error.value ? null : session.appUser.value
+    membershipPending.value || appUser.error.value
+      ? null
+      : appUser.appUser.value
   )
   const source = useMembershipAccess(
     KITCHEN_ACCESS_COLLECTION_PATH,
-    session.uid,
+    uid,
     membership,
     (value) => readKitchenAppAccess(value, appId)
   )
   const error = computed(
     () =>
-      session.error.value ||
+      appUser.error.value ||
       source.error.value ||
       (source.ids.value.length > KITCHEN_USER_LIMIT
         ? new Error('User Kitchens exceed the supported limit.')
         : undefined)
   )
-  const pending = computed(() => session.pending.value || source.pending.value)
+  const pending = computed(
+    () => membershipPending.value || source.pending.value
+  )
   return {
     ids: computed(() => (pending.value || error.value ? [] : source.ids.value)),
     pending,
