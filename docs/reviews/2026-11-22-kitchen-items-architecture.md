@@ -194,3 +194,16 @@ or child collections. The Rules candidate denied the revoked account's read,
 and the trusted rename command rejected it. Generated Nuxt registration
 contained the Kitchen operations without Items, Menus, Services or Orders.
 All 91 focused tests passed, including existing Place-backed command coverage.
+
+### Independent Items local checkpoint
+
+With `workspaceOnly: true` and `workspaceItems: true`, normal Core email
+sign-in opened the Kitchen's direct Items list. A name-only create appeared in
+the alphabetical list. Opening its exact detail and renaming it persisted
+across refresh at the same URL. Readback in the named emulator database
+confirmed `kitchens/{kitchenId}/dishes/{dishId}` was the only child storage used
+and the Item had no price. Generated Nuxt routes and handlers confirmed that
+Menus, Services and Orders were unregistered. An unrelated App member and the
+revoked Kitchen owner both received `403` on update. Opening the detail after
+revocation showed no Item. The in-app browser stalled during the live
+revocation check, so that transition remains unverified.

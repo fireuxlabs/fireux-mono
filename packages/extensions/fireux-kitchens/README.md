@@ -65,6 +65,13 @@ Kitchen without Place hydration and reconciles the saved selection against
 settled grants. The name lives on `Kitchen.identity.name`. The standard
 Misebox installation retains its Place-backed onboarding path.
 
+Add `workspaceItems: true` alongside `workspaceOnly: true` to opt into
+the [Items route](src/runtime/kitchen/pages/items.vue). It lists Items from the
+selected Kitchen, supports name-only creation and editing, and opens each Item
+at `/workspace/kitchen/items/:dishId`. Items use the existing protected commands
+and stay at `kitchens/{kitchenId}/dishes/{dishId}`. Menus, Services and Orders
+are outside this installation.
+
 ## Ownership and execution
 
 Kitchen owns its root and its domain access record bound to current App membership.

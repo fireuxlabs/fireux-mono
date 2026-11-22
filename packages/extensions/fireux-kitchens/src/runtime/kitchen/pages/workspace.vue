@@ -21,6 +21,9 @@
   </form>
   <p v-else-if="kitchen">{{ kitchen.identity.slug }}</p>
   <p v-else>No Kitchen is available to this account.</p>
+  <UButton v-if="kitchen && itemsRoute" :to="{ name: itemsRoute.name }">
+    Items
+  </UButton>
 </template>
 
 <script setup lang="ts">
@@ -28,11 +31,9 @@ import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
-import { useWorkspaceRecord } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceRecord'
+import { useRouter } from '#imports'
 import { resolveWorkspaceCanCreate } from 'fireux-workspace/runtime/workspace/utils/policy'
-import { useKitchenAccess } from '../composables/useKitchenAccess'
-import { useKitchenRead } from '../composables/useKitchenRead'
+import { useKitchenOnlyWorkspace } from '../composables/workspace/useKitchenOnlyWorkspace'
 import { useKitchenUpdate } from '../composables/useKitchenUpdate'
 import type { KitchenShellCreateResult } from '../server/index/onboarding/kitchen-onboarding'
 
@@ -46,25 +47,16 @@ definePageMeta({
 
 const { currentUser, isAuthenticated } = useAuth()
 const config = useFireUXConfig()
-const access = useKitchenAccess()
-const { selectedId, reconcile } = useWorkspace('kitchen')
-watch(
-  [access.ids, access.outcome, selectedId],
-  ([ids, state]) => reconcile(ids, state),
-  {
-    immediate: true,
-  }
-)
+const itemsRoute = useRouter()
+  .getRoutes()
+  .find((route) => route.name === 'workspace-kitchen-items')
 const {
   data: kitchen,
   outcome,
   source,
-} = useWorkspaceRecord(
   selectedId,
   access,
-  (id) => useKitchenRead(id, { hydrate: false }),
-  (state) => state.kitchen
-)
+} = useKitchenOnlyWorkspace()
 const canCreate = computed(
   () =>
     isAuthenticated.value &&
