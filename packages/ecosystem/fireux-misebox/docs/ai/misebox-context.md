@@ -1186,6 +1186,15 @@ progression mechanics; there is no separate completion composable.
 - `KitchenOnboarding` owns the shared search-first flow. Workspace, menu entry,
   and admin provision use the trusted association/creation commands. Existing
   records are resolved before any optional identity or branding changes.
+- Managed Kitchen creation in `kitchen/server/index/onboarding/create-shell.ts`
+  and `complete.ts` writes the Kitchen and current App membership's Kitchen grant
+  together. The name-only command creates a same-ID non-physical Place. The
+  existing-Place command preserves the Place. Both start with zero Team or
+  capability records. Name-only retries require their existing grant; an
+  existing roster link is still considered by the explicit association flow.
+- Menu Hosting prepares its starter draft through the Menu-owned
+  `menu/server/document/prepare.ts` when a signed-in operator publishes from an
+  empty Kitchen. Guest Menu Hosting retains its claim-scoped starter workflow.
 - The directory route passes explicit `directory` intent and invokes
   `kitchen/server/index/onboarding/directory.ts`. Contribution records creator
   attribution and preserves the selected location identity or existing first-shell

@@ -195,11 +195,7 @@ function fixture() {
   }
   Object.assign(
     deps,
-    load(
-      'kitchen/server/index/onboarding/system-menus',
-      'createKitchenSystemMenus',
-      deps
-    )
+    load('menu/server/document/starter', 'createKitchenSystemMenus', deps)
   )
   Object.assign(
     deps,

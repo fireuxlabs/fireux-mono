@@ -2,8 +2,8 @@ import { randomUUID } from 'node:crypto'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import type { FirestoreMutationTarget } from 'fireux-core/runtime/types/firestore-mutations'
 import type { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import type { Menu } from '../../../../menu/models/menu.model'
-import { starterMenu } from '../../../../menu/content/starter-menu'
+import type { Menu } from '../../models/menu.model'
+import { starterMenu } from '../../content/starter-menu'
 
 export const KitchenSystemMenuKinds = [starterMenu.slug] as const
 
@@ -52,20 +52,5 @@ export function createKitchenSystemMenus(input: {
         updated: input.updated ?? input.created,
       })
     )
-  }
-}
-
-/** Management initialization preserves every existing Menu, including archived defaults. */
-export async function readKitchenManagementMenus(
-  mutations: GuardedServerTransaction,
-  target: FirestoreMutationTarget<string, 'server'>
-) {
-  const records: Array<{ id: string; data: Record<string, unknown> }> = []
-  let afterId: string | undefined
-  while (true) {
-    const page = await mutations.readAll(target, 1000, afterId)
-    records.push(...page)
-    if (page.length < 1000) return records
-    afterId = page.at(-1)!.id
   }
 }

@@ -43,7 +43,7 @@ const build = load(
   }
 )
 const defaultMenu = load(
-  '../runtime/kitchen/server/index/onboarding/system-menus.ts',
+  '../runtime/menu/server/document/starter.ts',
   'buildKitchenSystemMenu',
   { starterMenu }
 )

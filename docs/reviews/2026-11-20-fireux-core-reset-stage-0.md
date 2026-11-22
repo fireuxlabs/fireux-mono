@@ -356,6 +356,41 @@ from this checkpoint. Migrate shared extensions before their dependent Apps,
 then run the integration gate and verify the retired Core Workspace path
 has no callers.
 
+### Remaining Core imports after the registration cutover
+
+Source snapshot: `c76b77c5d`. The nine files contain eleven direct imports.
+The [strict installation gate](../../packages/core/fireux-core/src/test/installation.test.mjs)
+also checks the packed runtime and generated Nuxt surfaces. Keep all three
+checks while the remaining work proceeds.
+
+| Core importer | Decision |
+| --- | --- |
+| [Default Header](../../packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue) | Keep branding, sign-in, membership and the Dashboard avatar in Core. Workspace should supply its guest-visible entry through authored navigation. Preserve access to the guest entrance on mobile and desktop. |
+| [Dashboard App overview](../../packages/core/fireux-core/src/runtime/components/Dashboard/Overview/App.vue) | Keep Join, membership and App administration. Remove the card's duplicate Workspace shortcut once the opted-in Dashboard navigation supplies it. |
+| [Dashboard navigation](../../packages/core/fireux-core/src/runtime/composables/navigation/useDashboardNav.ts) | Keep role filtering and profile navigation. Use the optional route's existing `nav` metadata and visibility rules for its shortcut. Remove Core's special `dashboard-workspace` branch. |
+| [App manifest composable](../../packages/core/fireux-core/src/runtime/app/composables/useAppManifest.ts) | Core keeps the default App manifest and head behaviour. Workspace chooses its manifest from its own layout using the existing keyed head link, as the [Kitchen menu layout](../../packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue) already does for the kiosk. Move Workspace URL, family and origin policy with the opt-in surface, preserving its install identity and Home destination. Keep the general same-origin start URL support for the kiosk. |
+| [App literature types](../../packages/core/fireux-core/src/runtime/app/literature/types.ts) | Place the descriptive family vocabulary alongside the App operation metadata that publishes it. The [default App Operations endpoint](../../packages/extensions/fireux-app/src/runtime/app/server/index/operations.ts) validates that vocabulary and several domain capability declarations consume it. Move that existing contract and repoint its consumers. Workspace route execution and authority remain separate. |
+| [Core tool catalogue](../../packages/core/fireux-core/src/runtime/tools/catalogue.ts) | Remove the Workspace Team entry from the universal list. Keep the definition with Workspace and its domain bindings. Publish it through an owning tools page where needed using the [existing route metadata discovery](../../packages/extensions/fireux-app/src/runtime/pages/tools/index.vue). |
+| [Workspace entrance](../../packages/core/fireux-core/src/runtime/pages/workspace/index.vue) | Move the entry page and its Workspace import together. Preserve the configured guest and tenant landing behaviour. |
+| [Dashboard Workspace shortcut](../../packages/core/fireux-core/src/runtime/pages/dashboard/workspace.vue) | Move the shortcut and its metadata with Workspace. Keep the Core Dashboard layout and preserve the [Kitchen Dashboard redirect](../../packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchens.vue) while Workspace is enabled. |
+| [Workspace route middleware](../../packages/core/fireux-core/src/runtime/middleware/fireux-workspace.global.ts) | Move with the native routes and layout. Preserve availability checks, developer route rejection and delegation to neutral Core auth. Review [Core's global auth exception](../../packages/core/fireux-core/src/runtime/middleware/fireux-auth.global.ts) in the same cutover so route guards still run in their intended order. |
+
+Start with the tool catalogue and the publication-only metadata contract.
+Then use the existing navigation and head seams to remove the shell
+dependencies. The three native adapters above are Workspace consumers by
+design. Removing their imports before moving their entrypoints would create
+duplicate adapters or leave broken routes. Their imports leave Core in the
+native-layer cutover.
+
+Preserve Dashboard independently of Workspace. Core supplies User, account and
+App access surfaces. Domain packages supply their profile editors, such as the
+[Chef profile](../../packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/chef/profile.vue),
+which already declares the Dashboard layout and has its own module and profile
+visibility rules. Verify a signed-in Chef can reach and edit that profile in
+an App with the profile capability and without Workspace selected. Verify a
+Kitchen operator can still reach management from the opted-in Dashboard and
+guest Header, and that disabled Workspace routes stay unavailable.
+
 ### External Workspace consumer verification
 
 The consumer cutover uses explicit `fireux-workspace` dependencies for

@@ -8,7 +8,6 @@ import {
   requireUnambiguousKitchenTeamLink,
 } from '../../runtime/kitchen/server/team/account-link.ts'
 import { resolveKitchenAllowance } from '../../runtime/kitchen/utils/kitchen-capacity.ts'
-import { starterMenu } from '../../runtime/menu/content/starter-menu.ts'
 const load = (path, names, deps = {}) =>
   compileFunction(
     `${stripTypeScriptTypes(
@@ -25,20 +24,8 @@ const { kitchenOnboardingAccessDecision } = load(
   'kitchenOnboardingAccessDecision',
   { resolveKitchenAllowance }
 )
-const defaults = load(
-  `${base}index/onboarding/system-menus.ts`,
-  'readKitchenManagementMenus, createKitchenSystemMenus',
-  {
-    starterMenu,
-    randomUUID: (() => {
-      let n = 0
-      return () => `new-${++n}`
-    })(),
-  }
-)
 function harness({
   exists = true,
-  menus = [],
   grants = ['venue'],
   role = 'user',
   team = exists ? [{ id: 'actor', data: { user_id: 'actor' } }] : [],
@@ -53,7 +40,6 @@ function harness({
         const row = team.find((member) => member.id === id)
         return { exists: Boolean(row), data: row?.data }
       }
-      if (target === 'menus') throw Error('query expected')
       assert.ok(
         !target.endsWith('/stations'),
         'Onboarding does not read Stations'
@@ -71,7 +57,8 @@ function harness({
         },
       }
     },
-    readAll: async () => menus,
+    readAll: async () =>
+      assert.fail('Kitchen Core must not list capability records'),
     query: async (target, { field, op, value, limit }) => {
       assert.equal(target, 'team')
       assert.equal(writing, false)
@@ -88,7 +75,6 @@ function harness({
     },
   }
   const dependencies = {
-    ...defaults,
     readKitchenTeamAccountLinkInTransaction,
     requireUnambiguousKitchenTeamLink,
     runGuardedServerTransaction: async (_, fn) => fn(tx),
@@ -103,7 +89,6 @@ function harness({
     serverAppUsersTarget: () => 'members',
     serverKitchenAccessTarget: () => 'access',
     serverKitchenTeamMembersTarget: () => 'team',
-    serverKitchenMenusTarget: () => 'menus',
     USER_MUTATION_TARGETS: { runtimeUsers: 'users' },
     PLACE_MUTATION_TARGETS: { places: 'places' },
     KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
@@ -122,7 +107,6 @@ function harness({
       by,
       ...(appId ? { app_id: appId } : {}),
     }),
-    buildKitchenTeamMemberRecord: (x) => x,
     fail: (_, message) => {
       throw Error(message || 'denied')
     },
@@ -137,69 +121,42 @@ function harness({
     run: () => completeKitchenOnboarding({}, { place_id: 'venue' }),
   }
 }
-test('existing Kitchen gains no Menu defaults, even when its Menu collection is empty', async () => {
-  const h = harness()
-  await h.run()
+test('creating from an existing Place writes only a Kitchen and owner grant', async () => {
+  const h = harness({ exists: false, grants: [] })
+  const result = await h.run()
+  assert.equal(result.created_root, true)
+  assert.equal(result.created_team_member, false)
   assert.deepEqual(
-    h.writes.filter((x) => x.target === 'menus').map((x) => x.data.slug),
-    []
+    h.writes.map((write) => write.target),
+    ['kitchens', 'access']
   )
-  assert.equal(
-    h.writes.some((x) => x.target === 'kitchens'),
-    false
-  )
-  assert.ok(!h.writes.some((x) => x.target.endsWith('/stations')))
-})
-test('new management root gets the same defaults', async () => {
-  const h = harness({ exists: false })
-  await h.run()
-  assert.equal(h.writes.filter((x) => x.target === 'kitchens').length, 1)
-  const root = h.writes.find((x) => x.target === 'kitchens').data
+  const root = h.writes[0].data
+  assert.deepEqual(root.identity, {
+    source: 'place',
+    slug: 'Venue',
+    status: 'active',
+    visibility: true,
+  })
   assert.deepEqual(root.created, {
     at: { seconds: 10, nanoseconds: 20 },
     by: 'actor',
     app_id: 'app',
   })
-  assert.deepEqual(root.updated, {
-    at: root.created.at,
-    by: 'actor',
-  })
-  assert.equal(h.writes.filter((x) => x.target === 'menus').length, 1)
-  assert.ok(!h.writes.some((x) => x.target.endsWith('/stations')))
+  assert.deepEqual(root.updated, { at: root.created.at, by: 'actor' })
 })
-test('existing customized and archived Menus are preserved without adding missing starters', async () => {
-  const menus = [
-    {
-      id: 'food-id',
-      data: { slug: 'food', status: 'archived', name: 'Custom' },
-    },
-  ]
-  const before = structuredClone(menus)
-  const h = harness({ menus })
-  await h.run()
-  assert.deepEqual(menus, before)
+
+test('an existing empty Kitchen opens with a current grant and no roster row', async () => {
+  const h = harness({ team: [] })
+  const result = await h.run()
+  assert.equal(result.action, 'open')
+  assert.equal(result.created_root, false)
+  assert.equal(result.created_team_member, false)
   assert.deepEqual(
-    h.writes.filter((x) => x.target === 'menus').map((x) => x.data.slug),
-    []
-  )
-  assert.equal(
-    h.writes.some((x) => x.target.endsWith('/stations')),
-    false
-  )
-})
-test('repeated management completion adds no duplicate defaults', async () => {
-  const h = harness({
-    menus: [
-      { id: 'f', data: { slug: 'food' } },
-      { id: 'd', data: { slug: 'drinks' } },
-    ],
-  })
-  await h.run()
-  assert.deepEqual(
-    h.writes.map((x) => x.target),
+    h.writes.map((write) => write.target),
     ['access']
   )
 })
+
 test('denied association writes no defaults or authority', async () => {
   const h = harness({ grants: [], team: [] })
   await assert.rejects(h.run())
@@ -241,26 +198,4 @@ test('an ambiguous or mismatched link cannot create a roster record or grant', a
   })
   await assert.rejects(h.run(), /plan includes one kitchen/)
   assert.deepEqual(h.writes, [])
-})
-
-test('management Menu read includes later pages before deciding missing defaults', async () => {
-  const first = Array.from({ length: 1000 }, (_, i) => ({
-    id: `m${i}`,
-    data: { slug: `custom-${i}` },
-  }))
-  const calls = []
-  const result = await defaults.readKitchenManagementMenus(
-    {
-      readAll: async (_target, limit, after) => {
-        calls.push({ limit, after })
-        return after ? [{ id: 'last', data: { slug: 'food' } }] : first
-      },
-    },
-    'menus'
-  )
-  assert.equal(result.length, 1001)
-  assert.deepEqual(calls, [
-    { limit: 1000, after: undefined },
-    { limit: 1000, after: 'm999' },
-  ])
 })

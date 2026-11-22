@@ -25,6 +25,10 @@ Each checkbox describes a human/operator action; the **done when** line is the a
 
 **Hard boundary:** Freeze and verify the independent Kitchen Core here before building anything downstream. The entity root, its validated reader, trusted mutations, Workspace selection and native view must be understandable without walking into Menu or Orders code.
 
+**Slice 01 local checkpoint (2026-11-22).** The two creation paths, empty
+Kitchen, selected listing edit, switching, refresh and access revocation are
+verified in local Misebox. [Source map and evidence](../reviews/2026-11-20-kitchen-core-independence.md#slice-01-local-evidence-2026-11-22).
+
 ### Phase B — Decide what is sold
 
 - [ ] **04. Define Items.** Enter the dishes, drinks, or products the kitchen intends to offer. The Item is a Kitchen-owned record and should have a simple create/list/detail/edit journey. A dish name can exist before a complete recipe or price. **Done when:** one Item can be created, read, updated and listed alphabetically with no Menu or Order required.
@@ -78,7 +82,7 @@ Then repeat the same review for a single Item, a Menu placing that Item, a Servi
 
 - Kitchen's root model is at `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/model.ts`; it owns the Kitchen's identity and optional operational configuration, not a complete bundled kitchen-management world.
 - Creation at `kitchen/composables/useKitchenCreate.ts` has an existing Place-based onboarding path **and** a name-only `createKitchenShell` path. In the current canonical relationship Kitchen and Place can have the same ID; name-only does **not** mean Google Places is mandatory. Inspect current Place/shell creation carefully before changing it.
-- Kitchen selection/read is already coordinated by `kitchen/composables/workspace/useKitchenWorkspace.ts` and FireUX Core Workspace primitives. Workspace is a **management surface over the existing Kitchen**, not a second persisted Workspace Entity.
+- Kitchen selection/read is already coordinated by `kitchen/composables/workspace/useKitchenWorkspace.ts` and the optional FireUX Workspace package. Workspace is a **management surface over the existing Kitchen**, not a second persisted Workspace Entity.
 - Kitchen Items are Kitchen-owned records; the simple catalogue uses `kitchen/components/Workspace/Menu/Items/Index.vue` and `useKitchenWorkspaceItems`. Keep the existing simple alphabetical list until the Item Detail vertical slice is verified.
 - The current service glossary distinguishes a **channel** (how the order is taken) from **fulfilment** (how the customer receives it). Preserve this distinction in planning.
 - Ignite currently checks structural assembly dependencies and circularity in `fireux-ignite/src/runtime/utils/reconcile-ignition.ts`; the method in `ignition-method.ts` does not yet supply an actual dependency-ordered implementation plan. Do not describe this as a built feature.

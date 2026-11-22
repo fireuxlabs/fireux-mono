@@ -159,7 +159,7 @@ HTTP handler rather than hiding it in another generic layer.
 | Directory list/detail     | Bounded projection for directory pages                        | Pagination, joins, and publication filters differ by entity authority      |
 | Internal                  | Authenticated owner/member/admin work                         | Required role and fixed domain scope differ                                |
 | Workspace                 | Selected-target commands and projections                      | Target family and operation differ; selection alone never grants authority |
-| Onboarding                | Idempotent root/Team creation or attachment                   | Domain seed and validation differ; transaction shape remains fixed-runtime |
+| Onboarding                | Idempotent root creation or attachment                        | Domain seed and validation differ; transaction shape remains fixed-runtime |
 | Upload                    | Multipart validation, Storage write, and metadata transaction | Accepted files and storage owner differ                                    |
 | Tool provider             | Return or execute a reusable provider contract                | Tool payload differs; provider never steals consumer data ownership        |
 | Webhook/callback          | Verify provider signature and advance trusted state           | Signature and event vocabulary are provider-specific                       |
@@ -179,8 +179,9 @@ These are server endpoint families, not new Entity kinds.
   authority.
 - Directory routes return bounded responses and related canonical records;
   they never manufacture replacement Entity types.
-- Workspace onboarding writes the root, its Team authority, and required
-  relationships in one trusted transaction or not at all.
+- Workspace onboarding writes the root and its required authority and parent
+  relationships in one trusted transaction. Each Entity defines its authority.
+  Kitchen uses a membership-bound grant and creates Team records separately.
 - Named lifecycle commands are preferred over generic document patches.
 - Destructive operations require explicit authority and dependency checks.
 - Cross-project publishers use verifiable service identity, fixed audience,

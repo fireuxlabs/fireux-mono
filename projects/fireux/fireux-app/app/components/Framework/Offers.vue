@@ -21,10 +21,12 @@
         </template>
       </UPageCard>
     </UPageGrid>
-    <UPageFeature
-      title="Guided by Ignition"
-      description="Ignition is our guided scoping and delivery process. We agree the capabilities and work before delivery begins."
-      icon="i-lucide-rocket"
+    <UButton
+      to="/pricing/your-app"
+      label="See branded app pricing"
+      color="neutral"
+      variant="link"
+      trailing-icon="i-lucide-arrow-right"
     />
   </UPageSection>
 </template>

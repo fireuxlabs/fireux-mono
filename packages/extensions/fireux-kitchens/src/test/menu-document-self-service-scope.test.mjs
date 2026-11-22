@@ -48,6 +48,7 @@ function fixture({ guest = false, claimLock, fileRead } = {}) {
   const calls = [],
     fileCalls = [],
     starts = [],
+    preparations = [],
     revoked = [],
     storage = new Map()
   const route = reactive({
@@ -120,6 +121,10 @@ function fixture({ guest = false, claimLock, fileRead } = {}) {
         starts.push({ path, options })
         return { kitchen_id: currentUser.value.uid }
       }
+      if (path === '/api/kitchens/menus/document/prepare') {
+        preparations.push({ path, options })
+        return { ok: true }
+      }
       calls.push({ path, options })
       ;(path.endsWith('/read') ? readCalled : writeCalled).resolve()
       return path.endsWith('/read') ? read.promise : write.promise
@@ -152,6 +157,7 @@ function fixture({ guest = false, claimLock, fileRead } = {}) {
     flow,
     route,
     starts,
+    preparations,
     currentUser,
     appUser,
     config,
@@ -178,6 +184,10 @@ test(
     h.read.resolve(menu(false))
     await h.writeCalled.promise
     assert.equal(h.calls.length, 2)
+    assert.deepEqual(
+      h.preparations.map((call) => call.options.body),
+      [{ kitchenId: 'guest' }]
+    )
     const body = h.calls[1].options.body
     assert.equal(body.get('menuId'), 'main-id')
     assert.equal(body.get('revision'), '')
@@ -274,6 +284,7 @@ test('a newer saved revision is never silently overwritten by an old preview', a
   await pending
   assert.equal(h.calls.length, 2)
   assert.ok(h.calls.every((call) => call.path.endsWith('/read')))
+  assert.deepEqual(h.preparations, [])
   assert.match(h.flow.error.value, /Menu changed/)
   assert.ok(h.flow.file.value)
   h.scope.stop()

@@ -1,8 +1,8 @@
 export const fireuxOffer = {
   category: 'Industry SaaS framework',
-  headline: 'Build your industry SaaS ecosystem.',
+  headline: 'Build SaaS for your industry',
   heroDescription:
-    'Identity · Team · Customers · Products · Services · Calendar · Tasks · Orders · Finance · Documents · Notifications · Reporting',
+    'FireUX is a Nuxt UI-based framework for building industry-specific SaaS. Start with reusable account, team and product features, then build the workflows and customer apps your industry needs.',
   heroBullets: [
     'Build with shared SaaS foundations and industry libraries',
     'Create an industry platform with connected customer Apps',
@@ -19,17 +19,17 @@ export const fireuxOffer = {
     {
       title: 'Create your industry SaaS',
       description:
-        'Work with FireUX to define and assemble an industry platform, its Workspaces and customer Apps.',
+        'Work with FireUX to scope a platform with software for business teams and apps for their customers.',
       icon: 'i-lucide-orbit',
       action: {
-        label: 'Explore the ecosystem offer',
+        label: 'See platform pricing',
         to: '/pricing/your-ecosystem',
       },
     },
     {
       title: 'Create your branded App',
       description:
-        'Request a dedicated App using an existing industry platform’s supported capabilities, with your brand and agreed scope.',
+        'Request a dedicated app with your brand and features from an existing industry platform.',
       icon: 'i-lucide-app-window',
       action: {
         label: 'Request a branded App',

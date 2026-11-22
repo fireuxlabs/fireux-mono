@@ -6,11 +6,7 @@ import { resolveWorkspaceEntityCreationId } from 'fireux-workspace/runtime/works
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { USER_MUTATION_TARGETS } from 'fireux-core/runtime/user/server/mutation-targets'
 import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
-import {
-  KITCHEN_MUTATION_TARGETS,
-  serverKitchenMenusTarget,
-  serverKitchenTeamMembersTarget,
-} from '../../mutation-targets'
+import { KITCHEN_MUTATION_TARGETS } from '../../mutation-targets'
 import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/membership/mutation-targets'
 import {
   onboardingText as text,
@@ -21,11 +17,6 @@ import {
   parseKitchenOnboardingBeneficiaryUserId,
   readKitchenOnboardingActor as actor,
 } from './onboarding-actor'
-import { buildKitchenTeamMemberRecord } from '../../team/member-record.ts'
-import {
-  readKitchenTeamAccountLinkInTransaction,
-  requireUnambiguousKitchenTeamLink,
-} from '../../team/account-link'
 import {
   serverKitchenAccessTarget,
   resolveKitchenGrantIds,
@@ -35,7 +26,6 @@ import {
   withKitchenAppAccess,
 } from '../../../utils/kitchen-access'
 import { createMembershipAccess } from 'fireux-core/runtime/app/utils/membership/membership-access'
-import { createKitchenSystemMenus } from './system-menus.ts'
 import { fail, readKitchenOnboardingRequest as request } from './request.ts'
 
 export async function createKitchenShell(event: H3Event, input: unknown) {
@@ -62,35 +52,19 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
   )
   const memberships = serverAppUsersTarget(current.appId)
   const accessTarget = serverKitchenAccessTarget()
-  const teamMembers = serverKitchenTeamMembersTarget(kitchenId)
-  const menus = serverKitchenMenusTarget(kitchenId)
 
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [
-      membership,
-      user,
-      place,
-      root,
-      teamLink,
-      actorMembership,
-      systemMenus,
-      access,
-    ] = await Promise.all([
-      mutations.read(memberships, ownerUserId),
-      mutations.read(USER_MUTATION_TARGETS.runtimeUsers, ownerUserId),
-      mutations.read(PLACE_MUTATION_TARGETS.places, kitchenId),
-      mutations.read(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId),
-      readKitchenTeamAccountLinkInTransaction(
-        mutations,
-        teamMembers,
-        ownerUserId
-      ),
-      ownerUserId === current.uid
-        ? Promise.resolve(null)
-        : mutations.read(memberships, current.uid),
-      mutations.readAll(menus, 1),
-      mutations.read(accessTarget, ownerUserId),
-    ])
+    const [membership, user, place, root, actorMembership, access] =
+      await Promise.all([
+        mutations.read(memberships, ownerUserId),
+        mutations.read(USER_MUTATION_TARGETS.runtimeUsers, ownerUserId),
+        mutations.read(PLACE_MUTATION_TARGETS.places, kitchenId),
+        mutations.read(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId),
+        ownerUserId === current.uid
+          ? Promise.resolve(null)
+          : mutations.read(memberships, current.uid),
+        mutations.read(accessTarget, ownerUserId),
+      ])
     const ownerRole = requireOnboardingMemberRole(
       membership.exists,
       membership.data?.role
@@ -102,31 +76,32 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         )
       : ownerRole
     assertKitchenOnboardingBeneficiaryAuthority(current, ownerUserId, actorRole)
-    const ownerName = text(user.data?.display_name)
-    if (!ownerName) {
-      fail(409, 'The Kitchen owner must finish their User name first.')
+    if (!user.exists) {
+      fail(409, 'The Kitchen owner must have a User record.')
     }
 
-    const teamMember = requireUnambiguousKitchenTeamLink(teamLink)
-    const anyShellRecord = Boolean(place.exists || root.exists || teamMember)
     const kitchenIds = readKitchenAccessIds(
       access.data,
       membership.data,
       current.appId
     )
-    const kitchenAccess = withKitchenAppAccess(
-      access.data,
-      current.appId,
-      createMembershipAccess(
-        resolveKitchenGrantIds(membership.data, kitchenIds, kitchenId),
-        membership.data
-      )
-    )
-    if (anyShellRecord) {
-      if (!place.exists || !root.exists || !teamMember) {
+    const existingShell = place.exists || root.exists
+    if (existingShell) {
+      if (!place.exists || !root.exists) {
         fail(409, 'Kitchen shell identity is incomplete.')
       }
+      if (!kitchenIds.includes(kitchenId)) {
+        fail(403, 'Kitchen association is required.')
+      }
     } else {
+      const kitchenAccess = withKitchenAppAccess(
+        access.data,
+        current.appId,
+        createMembershipAccess(
+          resolveKitchenGrantIds(membership.data, kitchenIds, kitchenId),
+          membership.data
+        )
+      )
       const slug = normalizeSlug(name) || kitchenId.toLowerCase()
       const created = serverAuditStamp({
         by: current.uid,
@@ -144,31 +119,15 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         created,
         updated: serverAuditStamp({ by: current.uid }),
       })
-      createKitchenSystemMenus({
-        mutations,
-        target: menus,
-        kitchenId,
-        menus: systemMenus,
-        created,
-      })
-      mutations.create(
-        teamMembers,
-        ownerUserId,
-        buildKitchenTeamMemberRecord({
-          name: ownerName,
-          userId: ownerUserId,
-        })
-      )
-    }
-
-    if (access.exists) {
-      mutations.update<Record<string, unknown>>(
-        accessTarget,
-        ownerUserId,
-        kitchenAccess
-      )
-    } else {
-      mutations.create(accessTarget, ownerUserId, kitchenAccess)
+      if (access.exists) {
+        mutations.update<Record<string, unknown>>(
+          accessTarget,
+          ownerUserId,
+          kitchenAccess
+        )
+      } else {
+        mutations.create(accessTarget, ownerUserId, kitchenAccess)
+      }
     }
 
     const slug =
@@ -179,9 +138,9 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       ok: true as const,
       kitchen_id: kitchenId,
       place_id: kitchenId,
-      action: anyShellRecord ? ('open' as const) : ('create' as const),
-      created_root: !anyShellRecord,
-      created_team_member: !anyShellRecord,
+      action: existingShell ? ('open' as const) : ('create' as const),
+      created_root: !existingShell,
+      created_team_member: false,
       owner_user_id: ownerUserId,
       ...(slug ? { slug } : {}),
     }

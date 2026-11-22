@@ -12,7 +12,7 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-workspace/runtime/workspace/server/entity/onboarding-authority'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { buildKitchenTeamMemberRecord } from '../../team/member-record'
-import { createKitchenSystemMenus } from './system-menus'
+import { createKitchenSystemMenus } from '../../../../menu/server/document/starter'
 import { fail, readKitchenOnboardingRequest } from './request'
 
 /** One real, unpublished Kitchen per anonymous identity; no AppUser is fabricated. */

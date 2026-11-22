@@ -334,6 +334,14 @@ export function useMenuDocument() {
     try {
       const token = await getToken(current)
       const destination = await resolveKitchen(name, token, current)
+      if (!destination.claimSecret && !menuChoice.value && !data.value) {
+        await $fetch('/api/kitchens/menus/document/prepare', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: { kitchenId: destination.kitchenId },
+        })
+        assertCurrent(current)
+      }
       const existing = await read(
         token,
         destination.kitchenId,

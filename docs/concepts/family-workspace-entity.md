@@ -597,10 +597,11 @@ migration verification, and protected Workspace consumer are complete.
   other families whose trusted creation command is not yet proved.
 - Visible `canWrite` state never replaces server or Rules enforcement.
 - Workspace onboarding uses a fixed-runtime family endpoint and one trusted
-  transaction for root, the caller's Team authority, and any required parent
-  records. Authentication is the default; Kitchen's name-only shell command is
-  the accepted bounded exception that may authorize a Firebase anonymous
-  identity.
+  transaction for the root, its required authority, and any required parent
+  records. Ordinary Kitchen creation requires an active App membership, writes
+  a membership-bound Kitchen grant, and starts with an empty Team roster.
+  Menu Hosting's separate guest command uses a bounded Firebase anonymous
+  identity and claim.
 - Workspace-capable roots that declare management share one management ladder:
   `root`, `workspace`, or
   `app`. `workspace` resolves by convention to the ecosystem App

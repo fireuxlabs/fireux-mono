@@ -161,6 +161,28 @@ sharing Apps. If target readback differs or a required journey fails, stop the
 release and follow the approved rollback decision using the saved policy.
 Restoring the development preimage would restore its open access.
 
+### Shared database compatibility review
+
+The repository configures six Apps on `misebox-78f9c` / `misebox`: Misebox,
+Bären, Friiites, La Tap, Bangin Coffee and Interlaken Essen. The
+[production candidate](../../../../packages/ecosystem/fireux-misebox/src/config/firebase/firestore.production.rules)
+lists all six IDs. The existing emulator suite covers Kitchen grants and
+Offering reads for each ID and representative Menu, public root, and App
+membership access.
+
+**Rollout blocker.** The main Misebox App enables Customer, Agent and
+Professional profiles. Their Dashboard editors use the
+[direct profile update helper](../../../../packages/core/fireux-core/src/runtime/user/composables/profile/useProfileUpdateBase.ts)
+to write `users/{uid}/profiles/{kind}` in the shared identity database. The
+candidate permits direct owner updates only to `profiles/chef`. Those three
+writes would be denied. Verify the supported owner-edit journeys with the
+complete candidate before release. Driver profile and App-state access also
+need a consumer check. Public profile directories use server projections and
+should be verified through their public routes.
+
+This was a source review of the candidate and configured consumers. Confirm
+the active policy and deployed App inventory at the release gate.
+
 ## Access review
 
 The [2026-10-29 access review](../../../../docs/reviews/misebox-production-access-2026-10-29.json)

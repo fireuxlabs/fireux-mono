@@ -479,7 +479,7 @@ test('Kitchen onboarding creates one combined Menu with a generated identity and
     buildKitchenSystemMenu,
     KitchenSystemMenuKinds,
   } = load(
-    '../runtime/kitchen/server/index/onboarding/system-menus.ts',
+    '../runtime/menu/server/document/starter.ts',
     {
       randomUUID: () => `stable-${++sequence}`,
     },

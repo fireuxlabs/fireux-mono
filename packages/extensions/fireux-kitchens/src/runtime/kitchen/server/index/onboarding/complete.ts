@@ -6,7 +6,6 @@ import { USER_MUTATION_TARGETS } from 'fireux-core/runtime/user/server/mutation-
 import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
 import {
   KITCHEN_MUTATION_TARGETS,
-  serverKitchenMenusTarget,
   serverKitchenTeamMembersTarget,
 } from '../../mutation-targets'
 import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/membership/mutation-targets'
@@ -23,7 +22,6 @@ import {
   readKitchenOnboardingActor as actor,
 } from './onboarding-actor'
 import { resolveKitchenOnboardingTransactionLocator } from './locator'
-import { buildKitchenTeamMemberRecord } from '../../team/member-record.ts'
 import {
   readKitchenTeamAccountLinkInTransaction,
   requireUnambiguousKitchenTeamLink,
@@ -37,10 +35,6 @@ import {
   withKitchenAppAccess,
 } from '../../../utils/kitchen-access'
 import { createMembershipAccess } from 'fireux-core/runtime/app/utils/membership/membership-access'
-import {
-  readKitchenManagementMenus,
-  createKitchenSystemMenus,
-} from './system-menus.ts'
 import { fail, readKitchenOnboardingRequest as request } from './request.ts'
 
 export async function completeKitchenOnboarding(
@@ -57,34 +51,24 @@ export async function completeKitchenOnboarding(
   const memberships = serverAppUsersTarget(current.appId)
   const accessTarget = serverKitchenAccessTarget()
   const teamMembers = serverKitchenTeamMembersTarget(locator.kitchenId)
-  const menus = serverKitchenMenusTarget(locator.kitchenId)
 
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [
-      membership,
-      user,
-      place,
-      root,
-      teamLink,
-      actorMembership,
-      systemMenus,
-      access,
-    ] = await Promise.all([
-      mutations.read(memberships, ownerUserId),
-      mutations.read(USER_MUTATION_TARGETS.runtimeUsers, ownerUserId),
-      mutations.read(PLACE_MUTATION_TARGETS.places, locator.placeId),
-      mutations.read(KITCHEN_MUTATION_TARGETS.kitchens, locator.kitchenId),
-      readKitchenTeamAccountLinkInTransaction(
-        mutations,
-        teamMembers,
-        ownerUserId
-      ),
-      ownerUserId === current.uid
-        ? Promise.resolve(null)
-        : mutations.read(memberships, current.uid),
-      readKitchenManagementMenus(mutations, menus),
-      mutations.read(accessTarget, ownerUserId),
-    ])
+    const [membership, user, place, root, teamLink, actorMembership, access] =
+      await Promise.all([
+        mutations.read(memberships, ownerUserId),
+        mutations.read(USER_MUTATION_TARGETS.runtimeUsers, ownerUserId),
+        mutations.read(PLACE_MUTATION_TARGETS.places, locator.placeId),
+        mutations.read(KITCHEN_MUTATION_TARGETS.kitchens, locator.kitchenId),
+        readKitchenTeamAccountLinkInTransaction(
+          mutations,
+          teamMembers,
+          ownerUserId
+        ),
+        ownerUserId === current.uid
+          ? Promise.resolve(null)
+          : mutations.read(memberships, current.uid),
+        mutations.read(accessTarget, ownerUserId),
+      ])
     const role = requireOnboardingMemberRole(
       membership.exists,
       membership.data?.role
@@ -139,47 +123,18 @@ export async function completeKitchenOnboarding(
     }
 
     const createdRoot = !root.exists
-    const createdTeamMember = !teamMember
     const placeName = text(place.data?.name)
     const slug =
       text((rootData?.identity as Record<string, unknown> | undefined)?.slug) ||
       normalizeSlug(placeName || locator.kitchenId)
-    const ownerName = text(user.data?.display_name)
-    if (createdTeamMember && !ownerName) {
-      fail(409, 'The Kitchen owner must finish their User name first.')
-    }
-
     if (createdRoot) {
+      if (!user.exists) fail(409, 'The Kitchen owner must have a User record.')
       const stamp = serverAuditStamp({ by: current.uid, appId: current.appId })
       mutations.create(KITCHEN_MUTATION_TARGETS.kitchens, locator.kitchenId, {
         identity: { source: 'place', slug, status: 'active', visibility: true },
         created: stamp,
         updated: serverAuditStamp({ by: current.uid }),
       })
-    }
-
-    const defaultsStamp = serverAuditStamp({
-      by: current.uid,
-      appId: current.appId,
-    })
-    if (createdRoot)
-      createKitchenSystemMenus({
-        mutations,
-        target: menus,
-        menus: systemMenus,
-        kitchenId: locator.kitchenId,
-        created: defaultsStamp,
-      })
-
-    if (createdTeamMember) {
-      mutations.create(
-        teamMembers,
-        ownerUserId,
-        buildKitchenTeamMemberRecord({
-          name: ownerName,
-          userId: ownerUserId,
-        })
-      )
     }
 
     if (access.exists) {
@@ -198,7 +153,7 @@ export async function completeKitchenOnboarding(
       place_id: locator.placeId,
       action: decision.action,
       created_root: createdRoot,
-      created_team_member: createdTeamMember,
+      created_team_member: false,
       owner_user_id: ownerUserId,
       ...(slug ? { slug } : {}),
     }

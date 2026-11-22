@@ -55,7 +55,7 @@ import {
   readKitchenTeamAccountLinkInTransaction,
   requireUnambiguousKitchenTeamLink,
 } from '../../runtime/kitchen/server/team/account-link.ts'
-import { createKitchenSystemMenus } from '../../runtime/kitchen/server/index/onboarding/system-menus.ts'
+import { createKitchenSystemMenus } from '../../runtime/menu/server/document/starter.ts'
 import {
   guestKitchenClaimTarget,
   hashGuestKitchenSecret,
@@ -345,8 +345,6 @@ function shellHarness({
       resolveWorkspaceEntityCreationId,
       serverAppUsersTarget: (appId) => target(`apps/${appId}/users`),
       serverKitchenAccessTarget,
-      serverKitchenTeamMembersTarget: (id) => target(`kitchens/${id}/team`),
-      serverKitchenMenusTarget: (id) => target(`kitchens/${id}/menus`),
       USER_MUTATION_TARGETS: { runtimeUsers: target('users') },
       PLACE_MUTATION_TARGETS: { places: target('places') },
       KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
@@ -360,22 +358,10 @@ function shellHarness({
         by,
         ...(appId ? { app_id: appId } : {}),
       }),
-      buildKitchenTeamMemberRecord,
-      readKitchenTeamAccountLinkInTransaction,
-      requireUnambiguousKitchenTeamLink,
-      createKitchenSystemMenus,
       runGuardedServerTransaction: async (_scope, run) => {
         const queued = []
         const tx = {
           read: async (owner, id) => snapshot(owner, id),
-          query: async (owner, input) =>
-            queryRecords(records, owner.collectionPath, input),
-          readMany: async (owner, ids) => ids.map((id) => snapshot(owner, id)),
-          readAll: async (owner, limit) =>
-            [...records]
-              .filter(([key]) => key.startsWith(owner.collectionPath + '/'))
-              .slice(0, limit)
-              .map(([key, data]) => ({ id: key.split('/').at(-1), data })),
           create: (owner, id, value) =>
             queued.push({ path: path(owner, id), value, verb: 'create' }),
           update: (owner, id, value) =>
@@ -398,7 +384,7 @@ function shellHarness({
   }
 }
 
-test('shell creation commits Kitchen, Place, menus, Team and scoped access without changing AppUser', async () => {
+test('shell creation commits only Kitchen, Place and scoped access without changing AppUser', async () => {
   const membership = member()
   const h = shellHarness({ membership })
   const result = await h.create()
@@ -417,12 +403,11 @@ test('shell creation commits Kitchen, Place, menus, Team and scoped access witho
     h.writes.some((write) => write.path.startsWith('apps/')),
     false
   )
-  for (const path of [
-    'places/user',
-    'kitchens/user',
-    'kitchens/user/team/user',
-  ])
-    assert.ok(h.records.has(path), path)
+  assert.deepEqual(
+    h.writes.map((write) => write.path),
+    ['places/user', 'kitchens/user', 'kitchen_access/user']
+  )
+  assert.equal(result.created_team_member, false)
   const kitchen = h.records.get('kitchens/user')
   assert.deepEqual(kitchen.created, {
     at: created,
@@ -430,17 +415,6 @@ test('shell creation commits Kitchen, Place, menus, Team and scoped access witho
     app_id: 'misebox-app',
   })
   assert.deepEqual(kitchen.updated, { at: created, by: 'user' })
-  const menus = [...h.records].filter(([path]) =>
-    path.startsWith('kitchens/user/menus/')
-  )
-  assert.deepEqual(
-    menus.map(([, value]) => value.slug),
-    ['main']
-  )
-  assert.equal(menus[0][1].name, 'Food & Drinks')
-  assert.ok(
-    menus.every(([path, value]) => path.split('/').at(-1) !== value.slug)
-  )
   assert.equal(
     Object.hasOwn(h.records.get('kitchen_access/user').apps, 'another-app'),
     false
@@ -455,7 +429,9 @@ test('shell creation commits Kitchen, Place, menus, Team and scoped access witho
 })
 
 test('reopening a historical shell does not backfill or replace its root stamps', async () => {
-  const h = shellHarness()
+  const h = shellHarness({
+    access: { ids: ['user'], membership_created_at: created },
+  })
   const historical = {
     identity: { slug: 'old', status: 'active', visibility: false },
     created: { at: { seconds: 1, nanoseconds: 2 }, by: 'original' },
@@ -482,19 +458,16 @@ test('missing App membership cannot be created implicitly by Kitchen onboarding'
   assert.equal(h.writes.length, 0)
 })
 
-test('reopening a shell with an existing non-UID roster link preserves the member', async () => {
+test('a legacy roster row cannot restore a revoked shell grant or claim a directory contribution', async () => {
   const h = shellHarness()
   h.records.set('kitchens/user', { identity: { slug: 'venue' } })
   h.records.set('places/user', { name: 'Venue' })
-  h.records.set('kitchens/user/team/roster-uuid', {
-    user_id: 'user',
-    role_ids: ['cook'],
-  })
-  assert.equal((await h.create()).created_team_member, false)
-  assert.equal(h.records.has('kitchens/user/team/user'), false)
-  assert.deepEqual(h.records.get('kitchens/user/team/roster-uuid').role_ids, [
-    'cook',
-  ])
+  for (const withRoster of [false, true]) {
+    if (withRoster)
+      h.records.set('kitchens/user/team/roster-uuid', { user_id: 'user' })
+    await assert.rejects(h.create(), { statusCode: 403 })
+  }
+  assert.deepEqual(h.writes, [])
 })
 
 test('malformed access blocks creation and retained access enforces subscription capacity', async () => {
