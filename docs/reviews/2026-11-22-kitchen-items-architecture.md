@@ -110,3 +110,79 @@ starter Menus through its own [guest workflow](../../packages/extensions/fireux-
 **Evidence.** 111 focused Kitchen access, root read/update, Item command/read,
 and Menu placement cases passed. They establish source behaviour for the cases
 exercised. This audit made no code, Rules, or data changes.
+
+## Vertical canon consistency
+
+**Verdict:** FireUX's ownership rules remain coherent down to Kitchen Items.
+The stored relationship already follows them. The remaining conflicts concern
+what the base code must load and validate, who composes the Item screen, and
+how the narrow installation is documented.
+
+### What aligns
+
+| Step             | Canon applied to the source                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FireUX → Entity  | [FireUX package ownership](../concepts/fireux.md#package-and-data-ownership) and [Lasagne](../concepts/lasagne.md) put neutral mechanics in Core, domain truth in Extensions, and product composition above them. [Workspace](../concepts/workspace.md) supplies selection and framing. The Kitchen reader and commands still check current App membership and the Kitchen grant. Entity ignorance does not remove those authorization inputs.                                                                                                                                                                                                                                                                                                                          |
+| Entity → Kitchen | [Entity classification](../concepts/entities.md#kitchen-owned-menu-identity) allows Menu to be a distinct Entity with a Kitchen-scoped document and a sibling source root. The narrow Kitchen mode uses the same canonical Kitchen root, with name-only creation and rename functioning locally without Place or operational child records.                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Kitchen → Items  | Item is a Kitchen-owned Record with its own child document and stable ID. It can be acquired once and reused by both Workspace detail and Menu consumers. [Firestore ownership](../concepts/firestore-entity.md#choose-the-document-shape-by-ownership) supports sibling `dishes` and `menus` collections and nested Menu placements. The [runtime convention](../concepts/runtime-filesystem.md#domain-component-surfaces) explicitly lets Workspace component folders follow navigation, so `Workspace/Menu/Items` can be correct for the full App. `records/menus/items` is less clear for a Kitchen-owned definition, but [the Entity map](../concepts/entities.md#parent-owned-records) already identifies it correctly. Neither folder requires a Firestore move. |
+
+### Contradictions and implementation gaps
+
+- **A lower read can fail because of an optional capability.** The
+  [Firestore map](../concepts/firestore-entity.md#choose-the-document-shape-by-ownership)
+  permits small Kitchen-owned settings on the root. The conflict is the
+  [canonical reader](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/read-kitchen-document.ts)
+  rejecting Kitchen identity when the Service, Order, or Tables configuration
+  is invalid. Keep strict identity and access validation. Let each capability
+  validate and report its own configuration failures. The Kitchen-only mode
+  also registers the existing [update endpoint](../../packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/update.patch.ts),
+  whose [accepted fields](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/update-input.ts)
+  include Service and Tables settings. Narrow its write surface if this mode
+  is intended to exclude those capabilities completely.
+- **Item identity is independent, but the screen imports Menu.** The
+  [Item detail](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Items/Detail/Index.vue)
+  uses one owning Item read, in line with Lasagne. It also mounts a Menu-owned
+  preview directly. Prove the baseline with that preview absent and compose
+  it above the Item surface in the full App. The deletion reference check
+  protects existing downstream data and should remain intact while this is done.
+- **The narrow Workspace hides inaccessible records but leaves saved selection
+  unreconciled.** [The page](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/pages/workspace.vue)
+  renders an allowed fallback when the saved ID is excluded. It does not call
+  the shared reconciliation that clears or replaces the persisted ID after
+  access settles. The [full Kitchen controller](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspace.ts)
+  does. Verify the narrow browser path through Core sign-in, refresh and
+  revocation before calling the Workspace contract complete.
+- **Currency ownership is already established.** The earlier audit treated
+  ownership as open. [Finance](../../packages/extensions/fireux-finance/README.md#operational-default-currency)
+  assigns the optional default to the operating Entity and lets Place suggest
+  a value. The [Menu family](../concepts/family-menu.md#item-offer-denomination)
+  already calls for denomination on priced Item terms. The Menu command still
+  reads Place currency and ItemOffer lacks the denomination field. What needs
+  approval is the transition, including the denomination of existing bare
+  prices and whether an unpriced private Menu draft can precede configuration.
+
+### What the docs leave unresolved
+
+- The [Kitchens README](../../packages/extensions/fireux-kitchens/README.md#entity-spine)
+  points to `models/kitchen.model.ts`, while the model is `models/model.ts`.
+  It has no Kitchen-only installation entry. The [Misebox onboarding guide](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md#kitchen-onboarding)
+  describes the Place-writing full path. That remains accurate for full
+  Misebox and needs an explicit distinction from the new opt-in mode.
+- The [package contract](../concepts/runtime-package.md#registration-steps)
+  distinguishes native discovery from explicit module registration. It does
+  not explain how to graduate the present Kitchen-only module route into a
+  maintained capability composition. The branch is a bounded proof and does
+  not establish a new discovery convention or package split.
+
+### Decisions still needed
+
+- Keep one Kitchen model. Approve where optional settings are validated and
+  which writes belong to the base installation before choosing any storage
+  changes. Preserve the current Place-backed name behaviour until the name
+  ownership policy for attachment is agreed.
+- Approve the Items-only entrance and the owner that composes the full App's
+  Menu preview. The existing Menus grouping may remain. Decide how Items-only
+  installation handles deletion while enforcing every saved reference.
+- Approve a currency adoption plan before any write or change to publication
+  requirements. The first implementation gate remains the Kitchen-only browser
+  journey. Items-only follows it. Keep existing document paths and IDs in both.
