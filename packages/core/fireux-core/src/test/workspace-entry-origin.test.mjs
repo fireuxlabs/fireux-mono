@@ -97,6 +97,11 @@ test('public operator intent preserves its Kitchen query and explicitly crosses 
     to: 'http://workspace.localhost:3001/?kitchenId=allowed%2Fkitchen+%2B+2',
     options: { external: true },
   })
+  value.openWorkspace({}, { replace: true })
+  assert.deepEqual(calls[1], {
+    to: 'http://workspace.localhost:3001/',
+    options: { external: true, replace: true },
+  })
 })
 
 test('Apps without a split origin and tenant entrances retain their registered mechanics', () => {

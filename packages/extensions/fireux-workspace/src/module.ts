@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module'
 import { dirname } from 'node:path'
-import { createResolver, defineNuxtModule } from '@nuxt/kit'
+import { addServerHandler, createResolver, defineNuxtModule } from '@nuxt/kit'
 import {
   registerComponentsDir,
   registerComposablesDirs,
@@ -9,6 +9,13 @@ import {
 export default defineNuxtModule({
   meta: { name: 'fireux-workspace' },
   setup() {
+    addServerHandler({
+      route: '/workspace.webmanifest',
+      method: 'get',
+      handler: createResolver(import.meta.url).resolve(
+        './runtime/server/manifest.get'
+      ),
+    })
     // Until the runtime cutover, register the existing implementation in place.
     const require = createRequire(import.meta.url)
     const runtime = createResolver(

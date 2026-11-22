@@ -58,7 +58,9 @@ Current Core entrypoints under `packages/core/fireux-core/src/runtime/`:
 - `workspace/composables/useWorkspaceEntryCta.ts`: App-aware entry links.
 - `workspace/components/EntitySwitcher.vue`: selected-Entity switching control.
 - `app/components/FireuxApp.vue`: one native layout and page outlet.
-- `app/composables/useAppManifest.ts`: configured native Workspace manifest path.
+- `workspace/composables/useWorkspaceManifest.ts`: versioned Workspace Home
+  manifest link for the native Workspace layout. The optional module registers
+  its manifest handler.
 - `layouts/workspace.vue`: native sidebar, Workspace frame and shared controls.
 - `workspace/components/Page.vue`: dashboard panel, main and supplied page slot.
 - `workspace/components/Navbar.vue` and `Breadcrumbs.vue`: shared page framing.

@@ -66,13 +66,12 @@ retain their theme setup; Interlaken Essen retains its language metadata.
 Those product differences do not create another shared route renderer.
 
 [useAppHead](../../packages/core/fireux-core/src/runtime/app/composables/useAppHead.ts)
-owns the single reactive theme, robots and versioned-manifest registration.
-[useAppManifest](../../packages/core/fireux-core/src/runtime/app/composables/useAppManifest.ts)
-owns the App manifest path: a native Workspace layout and enabled family use the
-existing `useWorkspaceEntryCta` Home destination as `start_url`; other layouts
-use the ordinary manifest. It coordinates route/configuration policy without
-loading Workspace UI or acquiring domain records. The manifest endpoint retains
-its own scope validation. Rendering and route authority remain separate facts.
+owns the reactive theme, robots and default versioned App manifest link.
+The [Workspace page frame](../../packages/core/fireux-core/src/runtime/workspace/components/Page.vue)
+overrides the same head link for an enabled family using its Home destination.
+The optional Workspace module registers [its manifest handler](../../packages/extensions/fireux-workspace/src/runtime/server/manifest.get.ts),
+which validates the allowed family and origin. The Core handler supplies the
+ordinary App manifest and supports same-origin kiosk destinations.
 
 [AppInitializationGate](../../packages/core/fireux-core/src/runtime/app/components/InitializationGate.vue)
 retains its single App read and setup modal.

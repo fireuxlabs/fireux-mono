@@ -16,6 +16,7 @@ definePageMeta({
     desktop: true,
     mobile: true,
     menus: ['dashboard'],
+    visibility: { modules: ['fireux-workspace'] },
   },
   requiresAuth: true,
 })

@@ -188,19 +188,15 @@ test('declared static paths cannot bypass configured noindex headers and sitemap
 })
 
 test('Core manifest uses the App description and versioned brand assets', () => {
-  const handler = load(
-    '../runtime/server/manifest.webmanifest.get.ts',
-    'handler',
+  const builder = load(
+    '../runtime/app/server/manifest.ts',
+    '({ buildAppManifest, readManifestStartUrl })',
     {
-      defineEventHandler: (value) => value,
       useAppConfig: (...args) => {
         assert.equal(args.length, 0)
         return {}
       },
       resolveAppTheme: (value) => value,
-      getQuery: () => ({}),
-      getRequestURL: () => new URL('https://bike.example'),
-      setHeader: () => {},
       withBuildVersion: (path, version) => `${path}?v=${version}`,
       brandAssets: {
         pwaIcon192: '/img/app/pwa/icon-192.png',
@@ -216,6 +212,16 @@ test('Core manifest uses the App description and versioned brand assets', () => 
           },
         },
       }),
+    }
+  )
+  const handler = load(
+    '../runtime/server/manifest.webmanifest.get.ts',
+    'handler',
+    {
+      ...builder,
+      defineEventHandler: (value) => value,
+      getQuery: () => ({}),
+      setHeader: () => {},
     }
   )
   const manifest = handler({})

@@ -22,15 +22,8 @@
       {{ roleLabels[appUser.role] }} · {{ planLabels[appUser.subscription] }}
     </p>
     <UAlert v-if="joinError" color="error" :title="joinError" />
-    <div class="fx-card__actions">
+    <div v-if="canManageApp" class="fx-card__actions">
       <UButton
-        v-if="hasWorkspaceEntry"
-        :to="workspaceEntryHref"
-        label="Open Workspace"
-        icon="i-lucide-panels-top-left"
-      />
-      <UButton
-        v-if="canManageApp"
         to="/dashboard/admin"
         label="Manage App"
         icon="i-lucide-shield-check"
@@ -49,13 +42,11 @@ import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAppUserRead } from '../../../app/composables/membership/useAppUserRead'
 import { runAppUserCommand } from '../../../app/composables/membership/run-app-user-command'
 import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
-import { useWorkspaceEntryCta } from '../../../workspace/composables/useWorkspaceEntryCta'
 
 const config = useFireUXConfig()
 const route = useRoute()
 const { uid } = useAuth()
 const { appUser, outcome } = useAppUserRead(config.appId, uid)
-const { hasWorkspaceEntry, workspaceEntryHref } = useWorkspaceEntryCta()
 const canManageApp = computed(
   () =>
     outcome.value === 'ready' &&

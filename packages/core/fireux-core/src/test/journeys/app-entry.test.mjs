@@ -18,45 +18,58 @@ function manifest(
   workspaceConfig = {},
   theme
 ) {
-  const source = readFileSync(
-    new URL(
-      '../../runtime/server/manifest.webmanifest.get.ts',
-      import.meta.url
-    ),
-    'utf8'
-  )
-  const code = stripTypeScriptTypes(
-    source.replace(/^import .*?\n/gm, '')
-  ).replace('export default ', 'return ')
-  return compileFunction(code, [
-    'defineEventHandler',
-    'getQuery',
-    'getRequestURL',
-    'setHeader',
-    'useRuntimeConfig',
-    'useAppConfig',
-    'resolveAppTheme',
-    'brandAssets',
-    'withBuildVersion',
-  ])(
-    (fn) => fn,
-    () => query,
-    () => new URL(origin),
-    () => {},
-    () => ({
-      public: {
-        fireux: {
-          name: 'Misebox',
-          shortName: 'Misebox',
-          workspaces: ['kitchen'],
-          workspaceConfig,
-        },
+  const runtime = () => ({
+    public: {
+      fireux: {
+        name: 'Misebox',
+        shortName: 'Misebox',
+        workspaces: ['kitchen'],
+        workspaceConfig,
       },
-    }),
-    () => ({ theme }),
-    (value) => value,
-    { pwaIcon192: '/192.png', pwaIcon512: '/512.png' },
-    (url) => url
+    },
+  })
+  const load = (path, bindings, result) => {
+    const source = readFileSync(path, 'utf8')
+      .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
+      .replace(/^export default /m, 'const handler = ')
+      .replace(/^export /gm, '')
+    return compileFunction(
+      stripTypeScriptTypes(source) + '; return ' + result,
+      Object.keys(bindings)
+    )(...Object.values(bindings))
+  }
+  const builder = load(
+    new URL('../../runtime/app/server/manifest.ts', import.meta.url),
+    {
+      useRuntimeConfig: runtime,
+      useAppConfig: () => ({ theme }),
+      resolveAppTheme: (value) => value,
+      brandAssets: { pwaIcon192: '/192.png', pwaIcon512: '/512.png' },
+      withBuildVersion: (url) => url,
+    },
+    '({ buildAppManifest, readManifestStartUrl })'
+  )
+  const path =
+    query.surface === 'workspace'
+      ? new URL(
+          'packages/extensions/fireux-workspace/src/runtime/server/manifest.get.ts',
+          root
+        )
+      : new URL(
+          '../../runtime/server/manifest.webmanifest.get.ts',
+          import.meta.url
+        )
+  return load(
+    path,
+    {
+      ...builder,
+      useRuntimeConfig: runtime,
+      defineEventHandler: (fn) => fn,
+      getQuery: () => query,
+      getRequestURL: () => new URL(origin),
+      setHeader: () => {},
+    },
+    'handler'
   )({})
 }
 

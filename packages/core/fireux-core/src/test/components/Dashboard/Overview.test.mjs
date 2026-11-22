@@ -3,7 +3,15 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
-import { compile, computed, createSSRApp, defineComponent, h, ref } from 'vue'
+import {
+  compile,
+  computed,
+  createSSRApp,
+  defineComponent,
+  h,
+  ref,
+  watch,
+} from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import { isUserIdentityComplete } from '../../../runtime/user/utils/normalize-user.ts'
 
@@ -29,6 +37,10 @@ async function render(file, values) {
       }
       const dependencies = {
         computed,
+        ref,
+        watch,
+        useRoute: () => ({ fullPath: '/dashboard' }),
+        useCommandScope: () => () => () => true,
         isUserIdentityComplete,
         useAuth: () => ({ uid: ref('person') }),
         useFireUXConfig: () => ({ appId: 'app', appName: values.appName }),
@@ -56,15 +68,10 @@ async function render(file, values) {
           }),
           outcome: ref(values.membershipOutcome),
         }),
-        useWorkspaceEntryCta: () => ({
-          hasWorkspaceEntry: ref(values.canOpenWorkspace),
-          workspaceEntryHref: ref(values.workspacePath),
-          workspaceActions: ref([{ icon: values.workspaceIcon }]),
-        }),
       }
       const result = file.endsWith('User.vue')
         ? '{user,view,accountOutcome,isLoading,hasError,error,isUserIdentityComplete}'
-        : '{config,appUser,outcome,hasWorkspaceEntry,workspaceEntryHref,canManageApp,roleLabels,planLabels,reload}'
+        : '{config,appUser,outcome,canManageApp,roleLabels,planLabels,reload,joining,joinError,join}'
       return compileFunction(
         stripTypeScriptTypes(script) + '; return ' + result,
         Object.keys(dependencies)
@@ -127,13 +134,10 @@ async function render(file, values) {
 const app = {
   appName: 'Example App',
   membershipOutcome: 'ready',
-  canOpenWorkspace: false,
-  workspacePath: '/workspace/kitchen',
-  workspaceIcon: 'i-lucide-panels-top-left',
   canManageApp: false,
 }
 
-test('the App card shows membership and only offers configured Workspace and management actions', async () => {
+test('the App card shows membership and offers App management to the administrator', async () => {
   const plain = await render('Overview/App.vue', app)
   assert.match(plain, /Example App/)
   assert.doesNotMatch(
@@ -142,10 +146,9 @@ test('the App card shows membership and only offers configured Workspace and man
   )
   const available = await render('Overview/App.vue', {
     ...app,
-    canOpenWorkspace: true,
     canManageApp: true,
   })
-  assert.match(available, /href="\/workspace\/kitchen"/)
+  assert.doesNotMatch(available, /Open Workspace|href="\/workspace/)
   assert.match(available, /Manage App/)
   assert.match(plain, /Member · Free/)
   assert.match(available, /Administrator · Free/)
@@ -155,12 +158,12 @@ test('the App card shows membership and only offers configured Workspace and man
   )
 })
 
-test('missing App membership has an explicit join action back to Dashboard', async () => {
+test('missing App membership has an explicit Join action', async () => {
   const html = await render('Overview/App.vue', {
     ...app,
     membershipOutcome: 'empty',
   })
-  assert.match(html, /href="\/users\/create\?redirect=%2Fdashboard"/)
+  assert.match(html, /Join Example App/)
   assert.doesNotMatch(html, /has not granted/)
 })
 

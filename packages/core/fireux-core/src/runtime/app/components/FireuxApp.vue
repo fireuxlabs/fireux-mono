@@ -16,7 +16,5 @@
 </template>
 <script setup lang="ts">
 import { useAppHead } from '../composables/useAppHead'
-import { useAppManifest } from '../composables/useAppManifest'
-
-useAppHead(useAppManifest())
+useAppHead()
 </script>

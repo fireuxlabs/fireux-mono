@@ -10,9 +10,16 @@ import { useWorkspaceEntryCta } from '../../workspace/composables/useWorkspaceEn
 definePageMeta({
   layout: false,
   requiresAuth: false,
+  nav: {
+    key: 'workspace-entry',
+    label: 'Workspace',
+    icon: 'i-lucide-panels-top-left',
+    menus: ['default', 'landing'],
+    visibility: { modules: ['fireux-workspace'] },
+  },
 })
 
-const { workspaceEntryPath } = useWorkspaceEntryCta()
+const { openWorkspace } = useWorkspaceEntryCta()
 
-await navigateTo(workspaceEntryPath.value, { replace: true })
+await openWorkspace({}, { replace: true })
 </script>

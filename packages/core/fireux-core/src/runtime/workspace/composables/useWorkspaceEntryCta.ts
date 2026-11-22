@@ -75,7 +75,10 @@ export function useWorkspaceEntryCta(family?: WorkspaceFamily) {
       : workspaces.value[0]
     return entry ? entryHref(entry) : '/'
   })
-  const openWorkspace = (query: Record<string, string> = {}) => {
+  const openWorkspace = (
+    query: Record<string, string> = {},
+    options: { replace?: boolean } = {}
+  ) => {
     const destination = new URL(workspaceEntryHref.value, requestUrl.origin)
     for (const [key, value] of Object.entries(query)) {
       destination.searchParams.set(key, value)
@@ -85,7 +88,7 @@ export function useWorkspaceEntryCta(family?: WorkspaceFamily) {
       external
         ? destination.href
         : `${destination.pathname}${destination.search}${destination.hash}`,
-      { external }
+      { external, ...options }
     )
   }
   const workspaceActions = computed<WorkspaceEntryAction[]>(() =>

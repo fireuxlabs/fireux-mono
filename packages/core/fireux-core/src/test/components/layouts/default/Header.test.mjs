@@ -25,15 +25,6 @@ async function renderHeader(phase, hasWorkspace, subscription = 'business') {
     '../../../app/composables/config/FireUXConfig': {
       useFireUXConfig: () => ({ appName: 'Example App' }),
     },
-    '../../../workspace/composables/useWorkspaceEntryCta': {
-      useWorkspaceEntryCta: () => {
-        calls.push('workspace')
-        return {
-          hasWorkspaceEntry: vue.ref(hasWorkspace),
-          workspaceEntryHref: vue.ref('/workspace/example'),
-        }
-      },
-    },
     '../../../user/composables/session/useUserSession': {
       useUserSession: () => {
         calls.push('session')
@@ -59,6 +50,7 @@ async function renderHeader(phase, hasWorkspace, subscription = 'business') {
           { label: 'Menus', to: '/menus' },
           { label: 'Legal', to: '/legal', position: 'bottom' },
         ]
+        if (hasWorkspace) items.push({ label: 'Workspace', to: '/workspace' })
         return { desktop: vue.ref(items), mobile: vue.ref(items) }
       },
     },
@@ -134,7 +126,7 @@ async function renderHeader(phase, hasWorkspace, subscription = 'business') {
     html.match(
       new RegExp(`<section data-region="${name}">([\\s\\S]*?)</section>`)
     )[1]
-  assert.deepEqual(calls, ['workspace', 'session'])
+  assert.deepEqual(calls, ['session'])
   return {
     right: region('right'),
     body: region('body'),
@@ -146,9 +138,9 @@ for (const phase of ['guest', 'loading', 'signed-in']) {
   for (const hasWorkspace of [false, true]) {
     test(`Header preserves ${phase} account and navigation actions with Workspace ${hasWorkspace}`, async () => {
       const { right, body, nav } = await renderHeader(phase, hasWorkspace)
-      assert.equal(right.includes('href="/workspace/example"'), hasWorkspace)
-      assert.equal(body.includes('href="/workspace/example"'), hasWorkspace)
-      if (hasWorkspace) assert.match(right, /fx-header-desktop-action/)
+      assert.doesNotMatch(right, /href="\/workspace"/)
+      assert.equal(nav.includes('href="/workspace"'), hasWorkspace)
+      assert.equal(body.includes('href="/workspace"'), hasWorkspace)
       assert.match(nav, /href="\/menus"/)
       assert.doesNotMatch(nav, /href="\/kitchens"/)
       assert.match(body, /href="\/kitchens"/)

@@ -25,8 +25,8 @@ export default defineNuxtRouteMiddleware((to) => {
         .some((route) => route.path === '/workspace')
     )
       return
-    const { workspaceEntryPath } = useWorkspaceEntryCta()
-    return navigateTo(workspaceEntryPath.value, { replace: true })
+    const { openWorkspace } = useWorkspaceEntryCta()
+    return openWorkspace({}, { replace: true })
   }
   const config = useFireUXConfig()
   const family = workspaceFamilyFromRouteContext(path, to.meta.workspace)

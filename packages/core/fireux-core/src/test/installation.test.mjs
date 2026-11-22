@@ -139,6 +139,7 @@ function assertCurrentWorkspaceRegistration(result, { selected, layer }) {
   assert.equal(result.middleware.includes('fireux-workspace-global'), layer)
   assert.equal(result.components.includes('WorkspaceSidebar'), selected)
   assert.equal(/\buseWorkspace\b/.test(result.imports), selected)
+  assert.equal(hasHandler(result, '/workspace.webmanifest', 'GET'), selected)
 }
 
 function coreWorkspaceImports() {
@@ -226,8 +227,10 @@ for (const [name, module, layer] of [
               /runtime\/workspace\/|\buseWorkspace\w*\b/.test(line)
             )
             .map((line) => line.split(' from ')[0]),
-          handlers: result.handlers.filter(({ route }) =>
-            route?.startsWith('/api/workspace')
+          handlers: result.handlers.filter(
+            ({ route }) =>
+              route === '/workspace.webmanifest' ||
+              route?.startsWith('/api/workspace')
           ),
           runtimeImports: coreWorkspaceImports(),
           bundledRuntime: existsSync(join(installed, 'src/runtime/workspace')),

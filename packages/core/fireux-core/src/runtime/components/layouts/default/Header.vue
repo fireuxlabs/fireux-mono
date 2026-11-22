@@ -16,16 +16,6 @@
       <template #right>
         <div data-fireux-header-right class="fx-header-actions">
           <UButton
-            v-if="hasWorkspaceEntry"
-            class="fx-header-desktop-action"
-            :to="workspaceEntryHref"
-            size="sm"
-            color="neutral"
-            variant="soft"
-            icon="i-lucide-panels-top-left"
-            label="Workspace"
-          />
-          <UButton
             v-if="authPhase === 'guest'"
             :to="{ path: '/auth', query: { redirect: route.fullPath } }"
             size="sm"
@@ -63,22 +53,8 @@
       </template>
 
       <template #body>
-        <div
-          v-if="hasWorkspaceEntry || (isSignedIn && subscription)"
-          class="fx-header-menu-actions"
-        >
-          <UButton
-            v-if="hasWorkspaceEntry"
-            :to="workspaceEntryHref"
-            color="neutral"
-            variant="soft"
-            icon="i-lucide-panels-top-left"
-            label="Workspace"
-          />
-          <div
-            v-if="isSignedIn && subscription"
-            class="fx-header-menu-membership"
-          >
+        <div v-if="isSignedIn && subscription" class="fx-header-menu-actions">
+          <div class="fx-header-menu-membership">
             <span>Your plan</span>
             <AppUserAccessBadge :subscription="subscription" />
           </div>
@@ -95,7 +71,6 @@
 
 <script setup lang="ts">
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
-import { useWorkspaceEntryCta } from '../../../workspace/composables/useWorkspaceEntryCta'
 import { useUserSession } from '../../../user/composables/session/useUserSession'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
@@ -109,7 +84,6 @@ defineOptions({ name: 'FireLayoutsDefaultHeader' })
 /** Nav (scoped to the layout Nuxt actually resolved) */
 const { appName } = useFireUXConfig()
 const route = useRoute()
-const { hasWorkspaceEntry, workspaceEntryHref } = useWorkspaceEntryCta()
 const currentLayout = computed(() =>
   typeof route.meta.layout === 'string' ? route.meta.layout : 'default'
 )

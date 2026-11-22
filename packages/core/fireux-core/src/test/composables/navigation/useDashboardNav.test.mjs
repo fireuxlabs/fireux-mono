@@ -24,7 +24,6 @@ const load = compileFunction(
     'useNav',
     'useUserSession',
     'useDeveloperAccess',
-    'useWorkspaceEntryCta',
     'useDashboardProfiles',
   ]
 )
@@ -72,31 +71,24 @@ test('profile navigation stays reactive and prefers one canonical entry per prof
 test('cached permissions do not change the pre-hydration Dashboard tree; mounted navigation follows current authority', () => {
   const mounted = ref(false),
     admin = ref(true),
-    developer = ref(true),
-    workspace = ref(true)
+    developer = ref(true)
   const nav = load(
     computed,
     () => mounted,
     () => ({ desktop: ref([]) }),
     () => ({ isAdmin: admin }),
     () => ({ isDeveloper: developer }),
-    () => ({ hasWorkspaceEntry: workspace }),
     useDashboardProfiles
   )()
   const home = { key: 'dashboard-home' },
-    privateItems = [
-      { roles: ['admin'] },
-      { roles: ['developer'] },
-      { key: 'dashboard-workspace' },
-    ]
+    privateItems = [{ roles: ['admin'] }, { roles: ['developer'] }]
   assert.equal(nav.baseNavFilter(home), true)
-  assert.deepEqual(privateItems.map(nav.baseNavFilter), [false, false, false])
+  assert.deepEqual(privateItems.map(nav.baseNavFilter), [false, false])
   mounted.value = true
-  assert.deepEqual(privateItems.map(nav.baseNavFilter), [true, true, true])
+  assert.deepEqual(privateItems.map(nav.baseNavFilter), [true, true])
   admin.value = false
   developer.value = false
-  workspace.value = false
-  assert.deepEqual(privateItems.map(nav.baseNavFilter), [false, false, false])
+  assert.deepEqual(privateItems.map(nav.baseNavFilter), [false, false])
 })
 
 test('Profile button follows User identity and keeps an accessible collapsed link', async () => {
@@ -200,13 +192,10 @@ test('member and admin Workspace navigation follows configured availability, not
         () => ({ desktop: ref([]) }),
         () => ({ isAdmin: ref(isAdmin) }),
         () => ({ isDeveloper: ref(false) }),
-        () => ({ hasWorkspaceEntry: ref(available) }),
         useDashboardProfiles
       )()
-      assert.equal(
-        nav.baseNavFilter({ ...meta.nav, roles: meta.roles }),
-        available
-      )
+      assert.equal(nav.baseNavFilter({ ...meta.nav, roles: meta.roles }), true)
+      assert.deepEqual(meta.nav.visibility.modules, ['fireux-workspace'])
       assert.equal(
         nav.baseNavFilter({ key: 'dashboard-admin', roles: ['admin'] }),
         isAdmin

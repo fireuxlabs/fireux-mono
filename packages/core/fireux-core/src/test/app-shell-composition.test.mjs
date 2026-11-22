@@ -55,7 +55,7 @@ test('the common App root owns one native outlet, initialization and shared head
   assert.doesNotMatch(base, /<slot|<UMain|LazyWorkspace/)
   assert.match(base, /<DevOnly>\s*<AppDevControls\s*\/>\s*<\/DevOnly>/)
   assert.match(base, /<AppInitializationGate/)
-  assert.match(base, /useAppHead\(useAppManifest\(\)\)/)
+  assert.match(base, /useAppHead\(\)/)
   assert.match(gate, /useAppRead\(config\.appId\)/)
   assert.match(gate, /exists\.value === false/)
   assert.match(head, /resolveSeoRobots/)
@@ -752,9 +752,10 @@ function loadScript(source, dependencies) {
   return module.exports
 }
 
-test('actual App manifest follows native layout changes and declared Workspace availability without a rendering branch', () => {
+test('Workspace head selects Home and clears its override on other layouts', () => {
   const route = reactive({ path: '/docs', meta: {} })
   const config = reactive({ workspaces: ['project'] })
+  const registrations = []
   const routes = loadScript(
     readFileSync(join(runtime, 'workspace/utils/routes.ts'), 'utf8'),
     {}
@@ -763,42 +764,55 @@ test('actual App manifest follows native layout changes and declared Workspace a
     readFileSync(join(runtime, 'app/utils/page-layout.ts'), 'utf8'),
     {}
   )
-  const { useAppManifest } = loadScript(
-    readFileSync(join(runtime, 'app/composables/useAppManifest.ts'), 'utf8'),
+  const { useWorkspaceManifest } = loadScript(
+    readFileSync(
+      join(runtime, 'workspace/composables/useWorkspaceManifest.ts'),
+      'utf8'
+    ),
     {
-      vue,
-      '#imports': { useRoute: () => route },
-      './config/FireUXConfig': { useFireUXConfig: () => config },
-      '../utils/page-layout': layouts,
-      '../../workspace/utils/routes': routes,
-      '../../workspace/composables/useWorkspaceEntryCta': {
+      '#imports': {
+        useRoute: () => route,
+        useRuntimeConfig: () => ({ app: { buildId: 'test' } }),
+        useHead: (registration) => registrations.push(registration),
+      },
+      '../../app/composables/config/FireUXConfig': {
+        useFireUXConfig: () => config,
+      },
+      '../../app/utils/page-layout': layouts,
+      '../../app/utils/build-version-url': {
+        withBuildVersion: (url, build) => url + '&v=' + build,
+      },
+      '../utils/routes': routes,
+      './useWorkspaceEntryCta': {
         useWorkspaceEntryCta: () => ({
-          homePath: (family) => `/entry/${family}`,
+          homePath: (family) => `/workspace/${family}`,
         }),
       },
     }
   )
-  const manifest = useAppManifest()
-  assert.equal(manifest.value, '/manifest.webmanifest')
+  useWorkspaceManifest()
+  const [head] = registrations
+  assert.deepEqual(head(), {})
   route.path = '/workspace/project/identity'
   route.meta = { layout: 'workspace', workspace: 'project' }
-  assert.equal(
-    manifest.value,
-    '/manifest.webmanifest?surface=workspace&start_url=%2Fentry%2Fproject'
-  )
+  assert.deepEqual(head().link, [
+    {
+      key: 'fireux-manifest',
+      rel: 'manifest',
+      href: '/workspace.webmanifest?start_url=%2Fworkspace%2Fproject&v=test',
+    },
+  ])
   route.meta.layout = { name: 'workspace', props: { compact: true } }
-  assert.match(manifest.value, /surface=workspace/)
+  assert.equal(head().link.length, 1)
   route.meta.layout = false
-  assert.equal(manifest.value, '/manifest.webmanifest')
+  assert.deepEqual(head(), {})
   route.meta.layout = 'workspace'
-  config.workspaces = []
-  assert.equal(manifest.value, '/manifest.webmanifest')
   config.workspaces = ['kitchen']
-  assert.equal(manifest.value, '/manifest.webmanifest')
+  assert.deepEqual(head(), {})
   config.workspaces = ['project']
   route.path = '/docs/app'
   route.meta = { layout: 'docs' }
-  assert.equal(manifest.value, '/manifest.webmanifest')
+  assert.deepEqual(head(), {})
 })
 
 test('actual App head retains one reactive registration across normal and Workspace navigation', () => {
