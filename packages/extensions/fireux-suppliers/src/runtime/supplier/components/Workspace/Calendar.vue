@@ -9,7 +9,7 @@
   </WorkspaceCalendarSurface>
 </template>
 <script setup lang="ts">
-import WorkspaceCalendarSurface from 'fireux-core/runtime/workspace/components/CalendarSurface.vue'
+import WorkspaceCalendarSurface from 'fireux-workspace/runtime/workspace/components/CalendarSurface.vue'
 import { useSupplierWorkspaceCalendar } from '../../composables/workspace/useSupplierWorkspaceCalendar'
 const calendar = useSupplierWorkspaceCalendar()
 </script>

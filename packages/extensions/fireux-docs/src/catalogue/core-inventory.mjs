@@ -8,7 +8,6 @@ const roots = [
   ['app/components/User', 'AppUser', 'AppUser'],
   ['ecosystem/components', 'Ecosystem', 'Ecosystem'],
   ['user/components', 'User', 'User'],
-  ['workspace/components', 'Workspace', 'Workspace'],
 ]
 
 function files(directory) {

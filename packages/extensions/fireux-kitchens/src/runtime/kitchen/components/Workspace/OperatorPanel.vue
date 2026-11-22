@@ -28,9 +28,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceEntryCta'
 import { useKitchenAccess } from '../../composables/useKitchenAccess'
-import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
+import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 
 const props = defineProps<{ kitchen?: { id: string; slug?: string } | null }>()
 const access = useKitchenAccess()

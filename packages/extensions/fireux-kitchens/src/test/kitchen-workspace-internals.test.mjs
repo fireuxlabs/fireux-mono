@@ -1,6 +1,6 @@
-import { workspaceSwitchPath } from '../../../../core/fireux-core/src/runtime/workspace/utils/switch-route.ts'
+import { workspaceSwitchPath } from '../../../fireux-workspace/src/runtime/workspace/utils/switch-route.ts'
 import { isNavigationFailure } from 'vue-router'
-import { useWorkspaceRecord } from '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts'
+import { useWorkspaceRecord } from '../../../fireux-workspace/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -365,7 +365,7 @@ function selection(page = '[menuSlug]/[sectionId].vue') {
     },
   }
   const useWorkspaceSwitch = load(
-    '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceSwitch.ts',
+    '../../../fireux-workspace/src/runtime/workspace/composables/useWorkspaceSwitch.ts',
     'useWorkspaceSwitch',
     bindings
   )

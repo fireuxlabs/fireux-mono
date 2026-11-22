@@ -143,7 +143,7 @@ server after editing catalogue metadata. The Docs `core-inventory.test.mjs` and
 `library-routes.test.mjs` check publication and development/production boundaries.
 
 The full source inventory is internal at `/dev/core-components`. It includes
-App, User, Ecosystem, Workspace and shared implementation components; inclusion
+App, User, Ecosystem and shared Core implementation components; inclusion
 is not a public API promise. Its detail pages show source and existing previews.
 The Docs layer excludes those routes in production and generates an empty
 internal inventory there. Public detail routes resolve only the public catalogue,

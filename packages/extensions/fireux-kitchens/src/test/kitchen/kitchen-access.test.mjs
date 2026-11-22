@@ -1,4 +1,4 @@
-import { useWorkspaceRecord } from '../../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts'
+import { useWorkspaceRecord } from '../../../../fireux-workspace/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/utils/membership/validation.ts'
 import { resolveAppUserAccess } from '../../../../../core/fireux-core/src/runtime/app/utils/membership/access.ts'
 import { readKitchenDocument } from '../../runtime/kitchen/utils/read-kitchen-document.ts'
@@ -34,7 +34,7 @@ import {
   resolvePostAuthDestination,
   userOnboardingPath,
 } from 'fireux-core/runtime/user/utils/auth-redirect'
-import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/server/entity/creation-identity'
+import { resolveWorkspaceEntityCreationId } from 'fireux-workspace/runtime/workspace/server/entity/creation-identity'
 import {
   serverKitchenAccessTarget,
   resolveKitchenGrantIds,
@@ -316,7 +316,10 @@ function shellHarness({
     data: records.get(path(owner, id)),
   })
   const requireOnboardingMemberRole = compile(
-    new URL('workspace/server/entity/onboarding-authority.ts', core),
+    new URL(
+      '../../../../fireux-workspace/src/runtime/workspace/server/entity/onboarding-authority.ts',
+      import.meta.url
+    ),
     'requireWorkspaceEntityMemberRole',
     { createError }
   )

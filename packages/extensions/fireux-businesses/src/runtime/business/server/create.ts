@@ -1,5 +1,5 @@
 import { normalizeBusiness } from '../utils/normalize-business'
-import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/workspace/utils/policy'
+import { resolveWorkspaceCanCreate } from 'fireux-workspace/runtime/workspace/utils/policy'
 import { businessProfile } from './profile'
 import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
 import {

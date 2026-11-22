@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { workspaceSwitchPath } from '../../../../core/fireux-core/src/runtime/workspace/utils/switch-route.ts'
+import { workspaceSwitchPath } from '../../../fireux-workspace/src/runtime/workspace/utils/switch-route.ts'
 import { test } from 'node:test'
 const switchPath = (matched, registered) =>
   workspaceSwitchPath(matched, registered, '/workspace/property')

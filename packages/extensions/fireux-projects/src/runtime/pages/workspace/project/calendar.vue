@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
+import WorkspaceIntroInfo from 'fireux-workspace/runtime/workspace/components/IntroInfo.vue'
 const intro = {
   title: 'Project Calendar',
   purpose: 'Browse dates in a visual month view.',

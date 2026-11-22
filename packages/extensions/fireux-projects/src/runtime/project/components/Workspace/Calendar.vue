@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import WorkspaceCalendarSurface from 'fireux-core/runtime/workspace/components/CalendarSurface.vue'
+import WorkspaceCalendarSurface from 'fireux-workspace/runtime/workspace/components/CalendarSurface.vue'
 import { useProjectWorkspaceCalendar } from '../../composables/workspace/useProjectWorkspaceCalendar'
 
 const {

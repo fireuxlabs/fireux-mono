@@ -1,6 +1,6 @@
 import { refreshNuxtData } from 'nuxt/app'
 import { computed } from 'vue'
-import { useWorkspaceCreation } from 'fireux-core/runtime/workspace/composables/useWorkspaceCreation'
+import { useWorkspaceCreation } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceCreation'
 import { useKitchenAccess } from './useKitchenAccess'
 import {
   kitchenCapacity,

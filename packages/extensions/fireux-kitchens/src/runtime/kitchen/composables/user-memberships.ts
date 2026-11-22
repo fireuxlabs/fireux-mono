@@ -4,7 +4,7 @@ import type {
 } from 'fireux-core/runtime/app/records/app-user'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { KitchenPublicSummary } from '../types/public'
-import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/workspace/models/team-member.model'
+import type { WorkspaceTeamMemberDocument } from 'fireux-workspace/runtime/workspace/models/team-member.model'
 
 export type KitchenUserTeamState = 'linked' | 'missing' | 'invalid'
 

@@ -1,4 +1,4 @@
-import { useWorkspaceRecord } from '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts'
+import { useWorkspaceRecord } from '../../../fireux-workspace/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -231,7 +231,7 @@ test('Malformed granted Property roots fail the selector without clearing its se
     return map.get(key)
   }
   const workspace = load(
-    '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspace.ts',
+    '../../../fireux-workspace/src/runtime/workspace/composables/useWorkspace.ts',
     'useWorkspace',
     {
       computed,

@@ -1,5 +1,5 @@
-import { useWorkspaceRecord } from 'fireux-core/runtime/workspace/composables/useWorkspaceRecord'
-import { useWorkspaceSwitch } from 'fireux-core/runtime/workspace/composables/useWorkspaceSwitch'
+import { useWorkspaceRecord } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceRecord'
+import { useWorkspaceSwitch } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceSwitch'
 import { computed, watch } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/membership/access'
@@ -8,9 +8,9 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import {
   useWorkspace,
   defineWorkspace,
-} from 'fireux-core/runtime/workspace/composables/useWorkspace'
+} from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import { useKitchenCollection } from '../useKitchenCollection'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceEntryCta'
 import { useKitchenInterface } from '../useKitchenInterface'
 import { useKitchenRead } from '../useKitchenRead'
 

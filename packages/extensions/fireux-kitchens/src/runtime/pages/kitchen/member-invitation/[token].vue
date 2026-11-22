@@ -63,7 +63,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { authRedirectPath } from 'fireux-core/runtime/user/utils/auth-redirect'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceEntryCta'
 
 definePageMeta({ requiresAuth: false })
 

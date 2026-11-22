@@ -11,8 +11,8 @@ import {
   watchEffect,
   type InjectionKey,
 } from 'vue'
-import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
-import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/workspace/models/capability-context'
+import { useWorkspacePageState } from 'fireux-workspace/runtime/workspace/composables/useWorkspacePageState'
+import { defineWorkspaceCapabilityContext } from 'fireux-workspace/runtime/workspace/models/capability-context'
 import { kitchenMenusWorkspaceKey } from '../state'
 import { useCookie, useState } from '#imports'
 import { useKitchenWorkspace } from '../../useKitchenWorkspace'

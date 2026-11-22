@@ -58,6 +58,7 @@
   },
   "dependencies": {
     "fireux-core": "workspace:*",
+    "fireux-workspace": "workspace:*",
     "fireux-places": "workspace:*"
   },
   "peerDependencies": {

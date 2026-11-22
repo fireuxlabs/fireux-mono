@@ -6,7 +6,7 @@ import { useRoute } from '#imports'
 import { computed, unref, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
+import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import type { MenuCreateInput } from '../../../utils/records/create-input'
 export type { MenuCreateInput } from '../../../utils/records/create-input'
 export function useMenuCreate(

@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import OverviewCapabilities from './Capabilities.vue'
 import { computed } from 'vue'
-import WorkspaceOverview from 'fireux-core/runtime/workspace/components/Overview/Index.vue'
+import WorkspaceOverview from 'fireux-workspace/runtime/workspace/components/Overview/Index.vue'
 import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
 const { data, outcome } = useProjectWorkspace()
 const incompleteFields = computed(() =>

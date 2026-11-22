@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "fireux-core": "workspace:*",
+    "fireux-workspace": "workspace:*",
     "fireux-finance": "workspace:*",
     "fireux-properties": "workspace:*"
   },

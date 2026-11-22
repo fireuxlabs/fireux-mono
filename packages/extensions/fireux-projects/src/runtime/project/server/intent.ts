@@ -2,7 +2,7 @@ import { createError, type H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { TEAM_INTENT_RECORD_LIMIT } from 'fireux-core/runtime/workspace/utils/team-intent-records'
+import { TEAM_INTENT_RECORD_LIMIT } from 'fireux-workspace/runtime/workspace/utils/team-intent-records'
 
 const object = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)

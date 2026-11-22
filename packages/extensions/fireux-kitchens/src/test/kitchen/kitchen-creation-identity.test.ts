@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/server/entity/creation-identity'
+import { resolveWorkspaceEntityCreationId } from 'fireux-workspace/runtime/workspace/server/entity/creation-identity'
 import { resolveKitchenGrantIds } from '../../runtime/kitchen/server/core/access.ts'
 import { readKitchenAccessIds } from '../../runtime/kitchen/utils/kitchen-access.ts'
 import {
@@ -40,7 +40,7 @@ test('Workspace creation reacts to actual account allowance and waits for accoun
     .replace(/^export /gm, '')
   const sharedSource = readFileSync(
     new URL(
-      '../../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceCreation.ts',
+      '../../../../fireux-workspace/src/runtime/workspace/composables/useWorkspaceCreation.ts',
       import.meta.url
     ),
     'utf8'

@@ -8,11 +8,11 @@ import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
-import { useWorkspaceTeam } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
-import type { WorkspaceTeamMember } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
+import { useWorkspaceTeam } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceTeam'
+import type { WorkspaceTeamMember } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceTeam'
 import { normalizeString } from 'fireux-core/runtime/utils/normalize-string'
 import { useProjectWorkspace } from './useProjectWorkspace'
-import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
+import { useWorkspacePageState } from 'fireux-workspace/runtime/workspace/composables/useWorkspacePageState'
 
 type ProjectTeamResponse = {
   ok: true

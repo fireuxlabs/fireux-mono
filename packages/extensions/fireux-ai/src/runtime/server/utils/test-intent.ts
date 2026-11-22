@@ -2,12 +2,8 @@ import { createError, type H3Event } from 'h3'
 import { useFireuxAi } from './fireux-ai.server'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import type { TestIntent } from 'fireux-core/runtime/workspace/models/test-intent'
 
-export async function interpretTestIntent(
-  event: H3Event,
-  body: unknown
-): Promise<TestIntent> {
+export async function interpretTestIntent(event: H3Event, body: unknown) {
   await requireFirebaseBearerUser(event, 'Sign in to use Test AI.')
   const input = body as Record<string, any> | null
   const context = input?.context
@@ -51,7 +47,7 @@ export async function interpretTestIntent(
   const actions = ['create', 'read', ...(selected ? ['update', 'delete'] : [])]
   const result = await useFireuxAi(event, {
     developmentTransport: 'codex',
-  }).generateJson<TestIntent>({
+  }).generateJson<Record<string, unknown>>({
     appId: useFireUXConfig(event).appId,
     task: 'extract_structured_data',
     input: { prompt: input.prompt.trim() },
@@ -75,10 +71,13 @@ export async function interpretTestIntent(
     },
   })
   const intent = result.data
+  const action = (['create', 'read', 'update', 'delete', 'none'] as const).find(
+    (candidate) => candidate === intent?.action
+  )
   if (
     !result.ok ||
     !intent ||
-    !['create', 'read', 'update', 'delete', 'none'].includes(intent.action) ||
+    !action ||
     typeof intent.recordId !== 'string' ||
     intent.recordId.length > 150 ||
     typeof intent.value !== 'string' ||
@@ -93,18 +92,18 @@ export async function interpretTestIntent(
   }
   const value = intent.value.trim().replace(/\s+/g, ' ')
   if (
-    intent.action !== 'none' &&
-    (!actions.includes(intent.action) ||
-      (['create', 'update'].includes(intent.action) && !value) ||
-      (intent.action === 'create' && intent.recordId !== '') ||
-      (intent.action === 'read' &&
+    action !== 'none' &&
+    (!actions.includes(action) ||
+      (['create', 'update'].includes(action) && !value) ||
+      (action === 'create' && intent.recordId !== '') ||
+      (action === 'read' &&
         intent.recordId !== '' &&
         !records.some((row) => row.id === intent.recordId)) ||
-      (['update', 'delete'].includes(intent.action) &&
+      (['update', 'delete'].includes(action) &&
         intent.recordId !== selected?.id))
   ) {
     return {
-      action: 'none',
+      action: 'none' as const,
       recordId: '',
       value: '',
       message:
@@ -112,7 +111,7 @@ export async function interpretTestIntent(
     }
   }
   return {
-    action: intent.action,
+    action,
     recordId: intent.recordId,
     value,
     message: intent.message,

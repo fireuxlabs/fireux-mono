@@ -1,5 +1,5 @@
 import { useProjectUpdate } from '../useProjectUpdate'
-import { useWorkspaceIdentity } from 'fireux-core/runtime/workspace/composables/useWorkspaceIdentity'
+import { useWorkspaceIdentity } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceIdentity'
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/normalize-string'
 import type { ProjectStatus } from '../../models/project.model'

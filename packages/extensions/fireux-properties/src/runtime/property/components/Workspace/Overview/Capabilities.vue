@@ -74,7 +74,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
+import Summary from 'fireux-workspace/runtime/workspace/components/Overview/Summary.vue'
 import { usePropertyWorkspaceHome } from '../../../composables/workspace/usePropertyWorkspaceHome'
 import { usePropertyWorkspaceIdentity } from '../../../composables/workspace/usePropertyWorkspaceIdentity'
 import { usePropertyWorkspace } from '../../../composables/workspace/usePropertyWorkspace'

@@ -18,7 +18,7 @@ import { usePortfolioScope } from 'fireux-properties/runtime/portfolio/composabl
 import { usePortfolioWorkspace } from 'fireux-properties/runtime/portfolio/composables/workspace/usePortfolioWorkspace'
 
 import { computed } from 'vue'
-import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
+import Summary from 'fireux-workspace/runtime/workspace/components/Overview/Summary.vue'
 import { usePortfolioComplianceRecordCollection } from '../../../composables/usePortfolioComplianceRecordCollection'
 const compliance = usePortfolioComplianceRecordCollection(
   usePortfolioScope(usePortfolioWorkspace().id)

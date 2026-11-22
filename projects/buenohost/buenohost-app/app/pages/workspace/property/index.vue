@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { useAuthPhase } from 'fireux-core/runtime/composables/fireux/firebase/useAuthPhase'
 const { isSignedIn } = useAuthPhase()
-import WorkspaceGuestWelcome from 'fireux-core/runtime/workspace/components/GuestWelcome.vue'
+import WorkspaceGuestWelcome from 'fireux-workspace/runtime/workspace/components/GuestWelcome.vue'
 import { useSeoMeta } from '#imports'
 
 definePageMeta({

@@ -1,4 +1,4 @@
-import { useWorkspaceCalendar } from 'fireux-core/runtime/workspace/composables/useWorkspaceCalendar'
+import { useWorkspaceCalendar } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceCalendar'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 
 /** Kitchen's required Calendar entrance; event integration belongs here. */

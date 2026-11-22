@@ -13,7 +13,7 @@
 import { usePortfolioWorkspace } from '../../../../../../../fireux-properties/src/runtime/portfolio/composables/workspace/usePortfolioWorkspace'
 
 import { computed } from 'vue'
-import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
+import Summary from 'fireux-workspace/runtime/workspace/components/Overview/Summary.vue'
 import { usePortfolioScope } from 'fireux-properties/runtime/portfolio/composables/usePortfolioScope'
 import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { usePortfolioDocuments } from '../../../composables/documents/usePortfolioDocuments'

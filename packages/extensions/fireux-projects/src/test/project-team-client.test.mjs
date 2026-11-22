@@ -5,7 +5,7 @@ import { compileFunction } from 'node:vm'
 import test from 'node:test'
 import { computed, effectScope, nextTick, ref, watchEffect } from 'vue'
 import { useCommandScope } from '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
-import { useWorkspaceTeam } from '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceTeam.ts'
+import { useWorkspaceTeam } from '../../../fireux-workspace/src/runtime/workspace/composables/useWorkspaceTeam.ts'
 import { appSubscriptionCapacity } from '../../../../core/fireux-core/src/runtime/app/utils/app-subscription-capacity.ts'
 import { normalizeString } from '../../../../core/fireux-core/src/runtime/utils/normalize-string.ts'
 

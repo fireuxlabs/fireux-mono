@@ -89,7 +89,7 @@ import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
 } from 'fireux-core/runtime/types/entity-create'
-import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
+import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import { useSupplierCreate } from '../../composables/firestore/mutations/useSupplierCreate'
 
 const props = defineProps<{

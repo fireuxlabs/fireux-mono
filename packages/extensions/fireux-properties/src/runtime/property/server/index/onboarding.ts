@@ -18,7 +18,7 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import {
   requireWorkspaceEntityMemberRole,
   resolveWorkspaceEntityOnboardingPolicy,
-} from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
+} from 'fireux-workspace/runtime/workspace/server/entity/onboarding-authority'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   PROPERTY_MUTATION_TARGETS,

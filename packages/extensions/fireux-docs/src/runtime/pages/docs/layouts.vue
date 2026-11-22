@@ -22,8 +22,8 @@
           Core provides <code>default</code> for ordinary site pages,
           <code>landing</code> for marketing pages, <code>dashboard</code> for
           signed-in navigation, <code>auth</code> for sign-in and
-          <code>diagnostics</code> for inspection tools. The native
-          <code>workspace</code> layout supplies the operational frame. Layouts
+          <code>diagnostics</code> for inspection tools. The optional
+          <code>fireux-workspace/layer</code> supplies the native <code>workspace</code> layout for the operational frame. Layouts
           consume the page slot inside one main landmark.
         </p>
         <p>

@@ -34,7 +34,7 @@ function harness() {
   const useWorkspaceRecord = load(
     readFileSync(
       new URL(
-        '../../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts',
+        '../../../../fireux-workspace/src/runtime/workspace/composables/useWorkspaceRecord.ts',
         runtime
       ),
       'utf8'

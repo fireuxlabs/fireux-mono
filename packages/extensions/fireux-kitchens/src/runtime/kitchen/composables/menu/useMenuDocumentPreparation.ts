@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 import { useRoute, navigateTo } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useMenuEditorScope } from '../../../menu/composables/useMenuEditorScope'
-import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
+import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import type { MenuSourceProcessContext } from './useMenuSourceProcess'
 
 /** Save one existing source as a document Menu; the live readers own the result. */

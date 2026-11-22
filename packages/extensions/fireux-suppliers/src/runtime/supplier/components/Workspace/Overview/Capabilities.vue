@@ -81,7 +81,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
+import Summary from 'fireux-workspace/runtime/workspace/components/Overview/Summary.vue'
 import { useSupplierWorkspaceHome } from '../../../composables/workspace/useSupplierWorkspaceHome'
 import { useSupplierWorkspaceIdentity } from '../../../composables/workspace/useSupplierWorkspaceIdentity'
 import { useSupplierWorkspace } from '../../../composables/workspace/useSupplierWorkspace'

@@ -1,19 +1,19 @@
 import { refreshNuxtData, useAsyncData } from 'nuxt/app'
 
-import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/workspace/models/team-member.model'
+import type { WorkspaceTeamMemberDocument } from 'fireux-workspace/runtime/workspace/models/team-member.model'
 import { computed, watchEffect } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useWorkspaceTeam } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
+import { useWorkspaceTeam } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceTeam'
 import { normalizeString } from 'fireux-core/runtime/utils/normalize-string'
 import { kitchenTeamMemberLimit } from '../../utils/team.ts'
 import { useKitchenWorkspace } from './useKitchenWorkspace'
 import { useKitchenChildCollection } from '../useKitchenChildCollection'
-import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
-import type { WorkspaceTeamMember } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
+import { useWorkspacePageState } from 'fireux-workspace/runtime/workspace/composables/useWorkspacePageState'
+import type { WorkspaceTeamMember } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceTeam'
 import { useKitchenMemberInvitationCreate } from '../team/useKitchenMemberInvitationCreate'
 
 type KitchenTeamResponse = {

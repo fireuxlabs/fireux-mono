@@ -8,8 +8,8 @@ import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subsc
 import {
   useWorkspaceTeam,
   type WorkspaceTeamMember,
-} from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
-import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
+} from 'fireux-workspace/runtime/workspace/composables/useWorkspaceTeam'
+import { useWorkspacePageState } from 'fireux-workspace/runtime/workspace/composables/useWorkspacePageState'
 import { usePropertyWorkspace } from './usePropertyWorkspace'
 
 type PropertyTeamResponse = {

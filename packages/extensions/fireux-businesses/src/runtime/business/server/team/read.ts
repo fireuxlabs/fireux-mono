@@ -6,7 +6,7 @@ import {
   readBusinessMutationActor,
   requireBusinessMutationAuthority,
 } from './authority'
-import { enrichTeamMembers } from 'fireux-core/runtime/workspace/server/team/members'
+import { enrichTeamMembers } from 'fireux-workspace/runtime/workspace/server/team/members'
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 export async function readBusinessTeamMembers(
   event: H3Event,

@@ -56,7 +56,7 @@ import type WorkspaceKitchenHomeSingle from './Home/Single.vue'
 import { computed, ref, watchEffect } from 'vue'
 import { navigateTo } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
-import { workspaceLandingState } from 'fireux-core/runtime/workspace/utils/landing-state'
+import { workspaceLandingState } from 'fireux-workspace/runtime/workspace/utils/landing-state'
 import {
   kitchenLandingDestinations,
   type KitchenLandingIntent,
@@ -66,7 +66,7 @@ import { useKitchenAnonymousAdoption } from '../../composables/workspace/useKitc
 import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
 import { useKitchenWorkspaceIdentity } from '../../composables/workspace/identity/useKitchenWorkspaceIdentity'
 
-import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
+import { useWorkspacePageState } from 'fireux-workspace/runtime/workspace/composables/useWorkspacePageState'
 import { kitchenWorkspaceIntro } from '../../utils/kitchen-workspace-intro'
 
 defineProps<{ dedicatedAppName?: string }>()

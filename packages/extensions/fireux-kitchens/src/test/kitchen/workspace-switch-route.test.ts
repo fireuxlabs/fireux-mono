@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { workspaceSwitchPath } from '../../../../../core/fireux-core/src/runtime/workspace/utils/switch-route.ts'
+import { workspaceSwitchPath } from '../../../../fireux-workspace/src/runtime/workspace/utils/switch-route.ts'
 
 const kitchenWorkspaceSwitchPath = (
   matched: readonly string[],

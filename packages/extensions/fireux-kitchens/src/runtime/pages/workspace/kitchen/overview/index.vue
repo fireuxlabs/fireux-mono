@@ -11,9 +11,9 @@
 </template>
 
 <script setup lang="ts">
-import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
+import { useWorkspacePageState } from 'fireux-workspace/runtime/workspace/composables/useWorkspacePageState'
 const pageState = useWorkspacePageState('kitchen')
-import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
+import WorkspaceIntroInfo from 'fireux-workspace/runtime/workspace/components/IntroInfo.vue'
 const intro = {
   title: 'Kitchen Overview',
   purpose: 'Open a working area for the selected Kitchen.',

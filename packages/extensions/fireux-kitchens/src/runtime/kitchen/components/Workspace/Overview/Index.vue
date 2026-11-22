@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import OverviewGroups from './Groups.vue'
 import { computed, watchEffect } from 'vue'
-import type { WorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
+import type { WorkspacePageState } from 'fireux-workspace/runtime/workspace/composables/useWorkspacePageState'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
 import { useKitchenIdentityProjection } from '../../../composables/useKitchenIdentity'
 const workspace = useKitchenWorkspace()

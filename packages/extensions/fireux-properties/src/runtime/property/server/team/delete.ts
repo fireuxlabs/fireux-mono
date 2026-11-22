@@ -6,7 +6,7 @@ import {
   readPropertyMutationActor,
   requirePropertyMutationAuthority,
 } from './authority'
-import { deleteTeamMember } from 'fireux-core/runtime/workspace/server/team/members'
+import { deleteTeamMember } from 'fireux-workspace/runtime/workspace/server/team/members'
 export async function deletePropertyTeamMember(
   event: H3Event,
   input: { propertyId: string; memberId: string }

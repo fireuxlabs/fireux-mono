@@ -119,7 +119,7 @@
 import { computed, type Ref } from 'vue'
 import { useProjectApps } from '../../../composables/useProjectApps'
 import { useProjectEcosystems } from '../../../composables/useProjectEcosystems'
-import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
+import Summary from 'fireux-workspace/runtime/workspace/components/Overview/Summary.vue'
 import { useProjectTeamSummary } from '../../../composables/useProjectTeamSummary'
 import { useProjectTestRecords } from '../../../composables/useProjectTestRecords'
 import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'

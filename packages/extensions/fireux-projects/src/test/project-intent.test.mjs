@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
-import { TEAM_INTENT_RECORD_LIMIT } from '../../../../core/fireux-core/src/runtime/workspace/utils/team-intent-records.ts'
+import { TEAM_INTENT_RECORD_LIMIT } from '../../../fireux-workspace/src/runtime/workspace/utils/team-intent-records.ts'
 const source = readFileSync(
   new URL('../runtime/project/server/intent.ts', import.meta.url),
   'utf8'

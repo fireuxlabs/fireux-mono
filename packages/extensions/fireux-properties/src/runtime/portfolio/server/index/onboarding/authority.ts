@@ -7,7 +7,7 @@ import type { FireuxEntityManagement } from 'fireux-core/runtime/types/entity-ma
 import {
   requireWorkspaceEntityMemberRole,
   resolveWorkspaceEntityOnboardingPolicy,
-} from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
+} from 'fireux-workspace/runtime/workspace/server/entity/onboarding-authority'
 import { fail, type MemberRole } from './input'
 
 export type RuntimePolicy = {

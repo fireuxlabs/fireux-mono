@@ -59,6 +59,7 @@
     "fireux-ai": "workspace:*",
     "fireux-businesses": "workspace:*",
     "fireux-core": "workspace:*",
+    "fireux-workspace": "workspace:*",
     "fireux-places": "workspace:*",
     "fireux-products": "workspace:*"
   },

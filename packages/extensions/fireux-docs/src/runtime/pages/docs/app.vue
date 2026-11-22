@@ -38,8 +38,9 @@
           supplied by the root. Pages select the Workspace frame with
           <code>layout: 'workspace'</code>; Nuxt loads that layout
           asynchronously. Its shared page frame owns the Workspace landmark,
-          Navbar, breadcrumbs and error boundary. The App manifest follows the
-          selected layout and configured Workspace entrance.
+          Navbar, breadcrumbs and error boundary. Core serves the default App
+          manifest. The optional Workspace layout supplies the Workspace
+          manifest for its configured entrance.
         </p>
       </UPageSection>
       <UPageSection title="Choose the entrance">

@@ -24,7 +24,7 @@ function load(file, name, deps) {
   const source = readFileSync(
     new URL(
       file === 'shared'
-        ? '../../../../core/fireux-core/src/runtime/workspace/server/team/members.ts'
+        ? '../../../fireux-workspace/src/runtime/workspace/server/team/members.ts'
         : `../runtime/property/server/team/${file}.ts`,
       import.meta.url
     ),

@@ -5,7 +5,7 @@ import test from 'node:test'
 import { compileFunction } from 'node:vm'
 import { computed, effectScope, ref, watch, watchEffect } from 'vue'
 import { useCommandScope } from '../../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
-import { teamIntentRecords } from '../../../../../core/fireux-core/src/runtime/workspace/utils/team-intent-records.ts'
+import { teamIntentRecords } from '../../../../fireux-workspace/src/runtime/workspace/utils/team-intent-records.ts'
 
 function load(file, expression, deps) {
   const source = readFileSync(

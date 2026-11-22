@@ -18,8 +18,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import WorkspaceEntitySwitcher from 'fireux-core/runtime/workspace/components/EntitySwitcher.vue'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
+import WorkspaceEntitySwitcher from 'fireux-workspace/runtime/workspace/components/EntitySwitcher.vue'
+import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceEntryCta'
 import { usePortfolioInterface } from '../../composables/firestore/utils/view/usePortfolioInterface'
 import { usePortfolioWorkspace } from '../../composables/workspace/usePortfolioWorkspace'
 

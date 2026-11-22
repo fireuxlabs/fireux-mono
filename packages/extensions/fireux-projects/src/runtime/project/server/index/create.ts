@@ -8,7 +8,7 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/server/entity/creation-identity'
+import { resolveWorkspaceEntityCreationId } from 'fireux-workspace/runtime/workspace/server/entity/creation-identity'
 import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/membership/access'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from '../app-targets'
@@ -19,7 +19,7 @@ import {
 } from 'fireux-core/runtime/app/utils/membership/membership-access'
 import { serverProjectAccessTarget } from '../access'
 import { isGuestProject } from '../../utils/guest-project'
-import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/workspace/utils/policy'
+import { resolveWorkspaceCanCreate } from 'fireux-workspace/runtime/workspace/utils/policy'
 
 function fail(statusCode: number, statusMessage: string): never {
   throw createError({ statusCode, statusMessage })

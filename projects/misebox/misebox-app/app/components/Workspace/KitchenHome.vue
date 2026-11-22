@@ -21,10 +21,10 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import WorkspaceGuestWelcome from 'fireux-core/runtime/workspace/components/GuestWelcome.vue'
-import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
-import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
-import type { WorkspaceIntro } from 'fireux-core/runtime/workspace/models/capability-context'
+import WorkspaceGuestWelcome from 'fireux-workspace/runtime/workspace/components/GuestWelcome.vue'
+import WorkspaceIntroInfo from 'fireux-workspace/runtime/workspace/components/IntroInfo.vue'
+import { useWorkspacePageState } from 'fireux-workspace/runtime/workspace/composables/useWorkspacePageState'
+import type { WorkspaceIntro } from 'fireux-workspace/runtime/workspace/models/capability-context'
 import WorkspaceKitchen from 'fireux-kitchens/runtime/kitchen/components/Workspace/Index.vue'
 import { useKitchenWorkspace } from 'fireux-kitchens/runtime/kitchen/composables/workspace/useKitchenWorkspace'
 import type { KitchenLandingIntent } from 'fireux-kitchens/runtime/kitchen/content/landing-intent'

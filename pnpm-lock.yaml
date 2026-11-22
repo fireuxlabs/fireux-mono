@@ -259,6 +259,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-workspace:
+        specifier: workspace:*
+        version: link:../fireux-workspace
     devDependencies:
       '@nuxt/module-builder':
         specifier: ^1.0.2
@@ -452,6 +455,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-workspace:
+        specifier: workspace:*
+        version: link:../fireux-workspace
       fireux-places:
         specifier: workspace:*
         version: link:../fireux-places
@@ -468,6 +474,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-workspace:
+        specifier: workspace:*
+        version: link:../fireux-workspace
       fireux-properties:
         specifier: workspace:*
         version: link:../fireux-properties
@@ -500,6 +509,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-workspace:
+        specifier: workspace:*
+        version: link:../fireux-workspace
       fireux-properties:
         specifier: workspace:*
         version: link:../fireux-properties
@@ -616,6 +628,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-workspace:
+        specifier: workspace:*
+        version: link:../fireux-workspace
       fireux-finance:
         specifier: workspace:*
         version: link:../fireux-finance
@@ -659,6 +674,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-workspace:
+        specifier: workspace:*
+        version: link:../fireux-workspace
       fireux-finance:
         specifier: workspace:*
         version: link:../fireux-finance
@@ -721,6 +739,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-workspace:
+        specifier: workspace:*
+        version: link:../fireux-workspace
       fireux-places:
         specifier: workspace:*
         version: link:../fireux-places
@@ -737,6 +758,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-workspace:
+        specifier: workspace:*
+        version: link:../fireux-workspace
       fireux-finance:
         specifier: workspace:*
         version: link:../fireux-finance
@@ -778,6 +802,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-workspace:
+        specifier: workspace:*
+        version: link:../fireux-workspace
       fireux-places:
         specifier: workspace:*
         version: link:../fireux-places
@@ -797,6 +824,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-workspace:
+        specifier: workspace:*
+        version: link:../fireux-workspace
       fireux-properties:
         specifier: workspace:*
         version: link:../fireux-properties

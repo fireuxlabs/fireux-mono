@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "fireux-core": "workspace:*",
+    "fireux-workspace": "workspace:*",
     "fireux-properties": "workspace:*",
     "fireux-tasks": "workspace:*"
   },

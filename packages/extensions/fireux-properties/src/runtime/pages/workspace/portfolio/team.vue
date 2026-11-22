@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import WorkspacePortfolioTeam from '../../../portfolio/components/Workspace/Team.vue'
-import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
+import WorkspaceIntroInfo from 'fireux-workspace/runtime/workspace/components/IntroInfo.vue'
 import { usePortfolioWorkspaceTeam } from '../../../portfolio/composables/workspace/usePortfolioWorkspaceTeam'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

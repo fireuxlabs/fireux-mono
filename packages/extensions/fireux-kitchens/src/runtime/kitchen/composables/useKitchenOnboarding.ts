@@ -8,7 +8,7 @@ import { computed, ref, watch, onScopeDispose } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useKitchenCollection } from './useKitchenCollection'
-import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
+import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import type {
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPlace,

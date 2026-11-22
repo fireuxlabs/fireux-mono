@@ -28,10 +28,10 @@ import { useRoute } from '#imports'
 import { computed, ref, watch } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/workspace/composables/useWorkspaceDraftHandoff'
-import { teamIntentRecords } from 'fireux-core/runtime/workspace/utils/team-intent-records'
+import { useWorkspaceDraftHandoff } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceDraftHandoff'
+import { teamIntentRecords } from 'fireux-workspace/runtime/workspace/utils/team-intent-records'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
+import type { TeamAIIntent } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceTeam'
 import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/useKitchenWorkspaceTeam'
 const props = defineProps<{
   team: ReturnType<typeof useKitchenWorkspaceTeam>

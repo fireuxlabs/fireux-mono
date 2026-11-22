@@ -24,7 +24,7 @@
 import { refreshNuxtData } from 'nuxt/app'
 
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
+import { useWorkspacePageState } from 'fireux-workspace/runtime/workspace/composables/useWorkspacePageState'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { ProjectLandingIntent } from '../../../models/landing-intent'
 

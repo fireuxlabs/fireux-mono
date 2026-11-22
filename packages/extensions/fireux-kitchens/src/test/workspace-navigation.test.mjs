@@ -373,7 +373,7 @@ test('Overview presents group entrances without flattening their children', () =
 test('shared Workspace breadcrumbs own Kitchen route ancestry', () => {
   const file = fileURLToPath(
     new URL(
-      '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspacePageNavigation.ts',
+      '../../../fireux-workspace/src/runtime/workspace/composables/useWorkspacePageNavigation.ts',
       import.meta.url
     )
   )
@@ -480,7 +480,7 @@ test('shared Workspace navigation preserves the agreed Kitchen group order', () 
   const source = readFileSync(
     fileURLToPath(
       new URL(
-        '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceNav.ts',
+        '../../../fireux-workspace/src/runtime/workspace/composables/useWorkspaceNav.ts',
         import.meta.url
       )
     ),
@@ -568,7 +568,7 @@ test('group child surfaces retain every entrance and compose summaries inside th
   const components = new URL('../runtime/kitchen/components/', import.meta.url)
   const group = readFileSync(
     new URL(
-      '../../../../core/fireux-core/src/runtime/workspace/components/PageLinks.vue',
+      '../../../fireux-workspace/src/runtime/workspace/components/PageLinks.vue',
       import.meta.url
     ),
     'utf8'

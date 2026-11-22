@@ -3,7 +3,7 @@ import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/a
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestore-document-id.ts'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
-import { resolveWorkspaceCanCreate } from '../../../../core/fireux-core/src/runtime/workspace/utils/policy.ts'
+import { resolveWorkspaceCanCreate } from '../../../fireux-workspace/src/runtime/workspace/utils/policy.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'

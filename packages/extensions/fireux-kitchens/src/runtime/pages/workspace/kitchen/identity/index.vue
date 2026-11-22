@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { useKitchenWorkspaceIdentity } from '../../../../kitchen/composables/workspace/identity/useKitchenWorkspaceIdentity'
 import { watchEffect } from 'vue'
-import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
+import { useWorkspacePageState } from 'fireux-workspace/runtime/workspace/composables/useWorkspacePageState'
 const identity = useKitchenWorkspaceIdentity()
 const page = useWorkspacePageState('kitchen')
 watchEffect(() =>

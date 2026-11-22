@@ -20,8 +20,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
-import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
+import type { TeamAIIntent } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceTeam'
+import WorkspaceIntroInfo from 'fireux-workspace/runtime/workspace/components/IntroInfo.vue'
 import * as People from './index'
 import { useKitchenWorkspaceTeam } from '../../../../composables/workspace/useKitchenWorkspaceTeam'
 import { kitchenTeamAgentTools } from '../../../../tools/team'

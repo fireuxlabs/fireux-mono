@@ -1,10 +1,10 @@
-import { useWorkspaceCreation } from 'fireux-core/runtime/workspace/composables/useWorkspaceCreation'
+import { useWorkspaceCreation } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceCreation'
 import { computed, watch } from 'vue'
 import { useAsyncData, refreshNuxtData, useRoute, type AsyncData } from 'nuxt/app'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useWorkspace, defineWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
+import { useWorkspace, defineWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type { Business } from '../models/business.model'
 

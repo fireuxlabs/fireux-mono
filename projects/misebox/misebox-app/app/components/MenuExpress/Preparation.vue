@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import { useKitchenCollection } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenCollection'
-import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
+import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import type { MenuExpressRequestView } from '../../composables/useMenuExpressRequest'
 defineProps<{
   state: Pick<MenuExpressRequestView, 'request' | 'busy' | 'act'>

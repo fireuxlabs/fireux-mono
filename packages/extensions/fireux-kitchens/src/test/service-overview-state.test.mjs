@@ -87,7 +87,7 @@ test('published Services state is available to the shared Copy page JSON action'
     await import('vue')
   const source = readFileSync(
     new URL(
-      '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspacePageState.ts',
+      '../../../fireux-workspace/src/runtime/workspace/composables/useWorkspacePageState.ts',
       import.meta.url
     ),
     'utf8'

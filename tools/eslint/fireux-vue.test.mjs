@@ -72,7 +72,7 @@ test('Workspace Overview uses the bounded foundation rule through repository ESL
     '<template><UAvatar :ui="{ image: \'object-contain\' }" /></template>',
     {
       filePath:
-        'packages/core/fireux-core/src/runtime/workspace/components/Overview/Index.vue',
+        'packages/extensions/fireux-workspace/src/runtime/workspace/components/Overview/Index.vue',
     }
   )
   assert.ok(

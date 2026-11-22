@@ -35,7 +35,7 @@ const { readMembershipAccessIds } = load(
   {}
 )
 const enrichTeamMembers = load(
-  '../../../../core/fireux-core/src/runtime/workspace/server/team/members.ts',
+  '../../../fireux-workspace/src/runtime/workspace/server/team/members.ts',
   'enrichTeamMembers',
   { createError, requireFirestoreDocumentId, normalizeUser }
 )

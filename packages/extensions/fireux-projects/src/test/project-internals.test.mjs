@@ -14,7 +14,7 @@ import {
   watch,
 } from 'vue'
 import { useCommandScope } from '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
-import { teamIntentRecords } from '../../../../core/fireux-core/src/runtime/workspace/utils/team-intent-records.ts'
+import { teamIntentRecords } from '../../../fireux-workspace/src/runtime/workspace/utils/team-intent-records.ts'
 import { useIdentityEditor } from '../../../../core/fireux-core/src/runtime/composables/fireux/useIdentityEditor.ts'
 import { normalizeString } from '../../../../core/fireux-core/src/runtime/utils/normalize-string.ts'
 
@@ -448,7 +448,7 @@ test('Project Identity coordinates stored status and activation without broadeni
     { computed }
   )
   const useWorkspaceIdentity = load(
-    '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceIdentity.ts',
+    '../../../fireux-workspace/src/runtime/workspace/composables/useWorkspaceIdentity.ts',
     'useWorkspaceIdentity',
     { computed, useIdentity }
   )

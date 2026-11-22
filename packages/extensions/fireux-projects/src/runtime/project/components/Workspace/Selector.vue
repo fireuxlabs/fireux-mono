@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useWorkspaceCreation } from 'fireux-core/runtime/workspace/composables/useWorkspaceCreation'
+import { useWorkspaceCreation } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceCreation'
 import { useProjectWorkspace } from '../../composables/workspace/useProjectWorkspace'
 
 withDefaults(

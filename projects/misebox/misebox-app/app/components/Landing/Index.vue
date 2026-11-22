@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceEntryCta'
 import type { LandingProductCatalogueContent } from 'fireux-app/runtime/models/landing/product'
 import type { FireuxMetaSolution } from 'fireux-core/runtime/app/literature/types'
 import { useAppCollection } from 'fireux-core/runtime/app/composables/useAppCollection'

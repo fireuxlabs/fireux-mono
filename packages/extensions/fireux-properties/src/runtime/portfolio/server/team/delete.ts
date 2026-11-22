@@ -6,7 +6,7 @@ import {
   readPortfolioMutationActor,
   requirePortfolioMutationAuthority,
 } from './authority'
-import { deleteTeamMember } from 'fireux-core/runtime/workspace/server/team/members'
+import { deleteTeamMember } from 'fireux-workspace/runtime/workspace/server/team/members'
 export async function deletePortfolioTeamMember(
   event: H3Event,
   input: { portfolioId: string; memberId: string }

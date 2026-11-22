@@ -13,7 +13,7 @@
   </UCard>
 </template>
 <script setup lang="ts">
-import WorkspaceTeamEditor from 'fireux-core/runtime/workspace/components/Team/Editor.vue'
+import WorkspaceTeamEditor from 'fireux-workspace/runtime/workspace/components/Team/Editor.vue'
 import { useBusinessWorkspaceTeam } from '../../composables/useBusinessWorkspaceTeam'
 const team = useBusinessWorkspaceTeam()
 </script>

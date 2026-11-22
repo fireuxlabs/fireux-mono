@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useWorkspaceCalendar } from 'fireux-core/runtime/workspace/composables/useWorkspaceCalendar'
+import { useWorkspaceCalendar } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceCalendar'
 import { useProjectWorkspace } from './useProjectWorkspace'
 
 /** Project's required Calendar entrance; shared behaviour stays in Core. */

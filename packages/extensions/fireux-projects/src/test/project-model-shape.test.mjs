@@ -1,4 +1,4 @@
-import { useWorkspaceRecord } from '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts'
+import { useWorkspaceRecord } from '../../../fireux-workspace/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'

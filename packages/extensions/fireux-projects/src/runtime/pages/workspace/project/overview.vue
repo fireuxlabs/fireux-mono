@@ -10,8 +10,8 @@
 import WorkspaceProjectOverview from '../../../project/components/Workspace/Overview/Index.vue'
 import { watchEffect } from 'vue'
 import { useProjectWorkspace } from '../../../project/composables/workspace/useProjectWorkspace'
-import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
-import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
+import { useWorkspacePageState } from 'fireux-workspace/runtime/workspace/composables/useWorkspacePageState'
+import WorkspaceIntroInfo from 'fireux-workspace/runtime/workspace/components/IntroInfo.vue'
 const workspace = useProjectWorkspace()
 const pageState = useWorkspacePageState('project')
 watchEffect(() => {

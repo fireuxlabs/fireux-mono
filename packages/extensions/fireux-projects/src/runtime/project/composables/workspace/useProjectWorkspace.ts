@@ -1,9 +1,9 @@
-import { useWorkspaceRecord } from 'fireux-core/runtime/workspace/composables/useWorkspaceRecord'
+import { useWorkspaceRecord } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceRecord'
 import { watch } from 'vue'
 import {
   useWorkspace,
   defineWorkspace,
-} from 'fireux-core/runtime/workspace/composables/useWorkspace'
+} from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import { useProjectCollection } from '../useProjectCollection'
 import { useProjectRead } from '../useProjectRead'
 

@@ -25,8 +25,8 @@
 import { computed } from 'vue'
 import type { AvatarProps } from '@nuxt/ui'
 import type { SupplierCard } from '../../composables/firestore/utils/view/useSupplierInterface'
-import WorkspaceEntitySwitcher from 'fireux-core/runtime/workspace/components/EntitySwitcher.vue'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
+import WorkspaceEntitySwitcher from 'fireux-workspace/runtime/workspace/components/EntitySwitcher.vue'
+import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceEntryCta'
 import { useSupplierInterface } from '../../composables/firestore/utils/view/useSupplierInterface'
 import { useSupplierWorkspace } from '../../composables/workspace/useSupplierWorkspace'
 

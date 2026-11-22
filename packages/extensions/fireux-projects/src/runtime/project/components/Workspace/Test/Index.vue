@@ -42,11 +42,11 @@ const collectionTitle = computed(() =>
     : 'Tests'
 )
 
-import WorkspaceCapability from 'fireux-core/runtime/workspace/components/Capability.vue'
-import TestCollection from 'fireux-core/runtime/workspace/components/Test/Collection.vue'
-import TestSingle from 'fireux-core/runtime/workspace/components/Test/Single.vue'
-import WorkspaceContextTools from 'fireux-core/runtime/workspace/components/ContextTools.vue'
-import type { TestController } from 'fireux-core/runtime/workspace/composables/useWorkspaceTest'
+import WorkspaceCapability from 'fireux-workspace/runtime/workspace/components/Capability.vue'
+import TestCollection from 'fireux-workspace/runtime/workspace/components/Test/Collection.vue'
+import TestSingle from 'fireux-workspace/runtime/workspace/components/Test/Single.vue'
+import WorkspaceContextTools from 'fireux-workspace/runtime/workspace/components/ContextTools.vue'
+import type { TestController } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceTest'
 defineProps<{ test: TestController }>()
 const family = 'project'
 </script>

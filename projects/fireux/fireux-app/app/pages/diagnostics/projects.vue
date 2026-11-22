@@ -84,7 +84,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
+import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import { useProjectCollection } from 'fireux-projects/runtime/project/composables/useProjectCollection'
 import type { Project } from 'fireux-projects/runtime/project/models/project.model'
 

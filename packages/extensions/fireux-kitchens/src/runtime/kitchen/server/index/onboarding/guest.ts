@@ -9,7 +9,7 @@ import {
 } from '../../mutation-targets'
 import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
+import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-workspace/runtime/workspace/server/entity/onboarding-authority'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { buildKitchenTeamMemberRecord } from '../../team/member-record'
 import { createKitchenSystemMenus } from './system-menus'

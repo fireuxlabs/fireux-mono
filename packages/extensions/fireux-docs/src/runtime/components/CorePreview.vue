@@ -235,16 +235,6 @@
       <p>Shows App details and access for your signed-in account.</p>
       <UButton to="/dashboard" label="Open Dashboard" />
     </div>
-    <div v-else-if="name === 'WorkspaceSelectionRow'">
-      <WorkspaceSelectionRow :selected="enabled" @select="enabled = !enabled"
-        >Example workspace</WorkspaceSelectionRow
-      >
-    </div>
-    <div v-else-if="name === 'WorkspaceFormActions'">
-      <form @submit.prevent="count++">
-        <WorkspaceFormActions :status="`Saved locally ${count} times`" />
-      </form>
-    </div>
   </div>
 </template>
 

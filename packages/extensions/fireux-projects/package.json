@@ -59,7 +59,8 @@
   },
   "dependencies": {
     "fireux-ai": "workspace:*",
-    "fireux-core": "workspace:*"
+    "fireux-core": "workspace:*",
+    "fireux-workspace": "workspace:*"
   },
   "peerDependencies": {
     "nuxt": "^4.4.0",

@@ -43,11 +43,11 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import WorkspaceTeamEditor from 'fireux-core/runtime/workspace/components/Team/Editor.vue'
-import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
+import WorkspaceTeamEditor from 'fireux-workspace/runtime/workspace/components/Team/Editor.vue'
+import type { TeamAIIntent } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceTeam'
 import type { useProjectWorkspaceTeam } from '../../../composables/workspace/useProjectWorkspaceTeam'
-import WorkspaceTeamRoles from 'fireux-core/runtime/workspace/components/Team/Roles.vue'
-import WorkspaceTeamAssignment from 'fireux-core/runtime/workspace/components/Team/Assignment.vue'
+import WorkspaceTeamRoles from 'fireux-workspace/runtime/workspace/components/Team/Roles.vue'
+import WorkspaceTeamAssignment from 'fireux-workspace/runtime/workspace/components/Team/Assignment.vue'
 
 const props = defineProps<{
   memberId?: string

@@ -1,11 +1,11 @@
-import { useWorkspaceRecord } from 'fireux-core/runtime/workspace/composables/useWorkspaceRecord'
-import { useWorkspaceSwitch } from 'fireux-core/runtime/workspace/composables/useWorkspaceSwitch'
+import { useWorkspaceRecord } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceRecord'
+import { useWorkspaceSwitch } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceSwitch'
 import { computed, watch } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import {
   useWorkspace,
   defineWorkspace,
-} from 'fireux-core/runtime/workspace/composables/useWorkspace'
+} from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import { usePropertyCollection } from '../usePropertyCollection'
 import { usePropertyAccess } from '../usePropertyAccess'
 import { usePropertyFetch } from '../firestore/fetch/usePropertyFetch'

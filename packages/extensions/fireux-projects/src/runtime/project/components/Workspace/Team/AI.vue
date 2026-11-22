@@ -11,10 +11,10 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/workspace/composables/useWorkspaceDraftHandoff'
-import { teamIntentRecords } from 'fireux-core/runtime/workspace/utils/team-intent-records'
+import { useWorkspaceDraftHandoff } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceDraftHandoff'
+import { teamIntentRecords } from 'fireux-workspace/runtime/workspace/utils/team-intent-records'
 import type { useProjectWorkspaceTeam } from '../../../composables/workspace/useProjectWorkspaceTeam'
-import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
+import type { TeamAIIntent } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceTeam'
 import { useProjectIntent } from '../../../composables/workspace/ai/useProjectIntent'
 import type { ProjectIntent } from '../../../models/intent'
 const props = defineProps<{

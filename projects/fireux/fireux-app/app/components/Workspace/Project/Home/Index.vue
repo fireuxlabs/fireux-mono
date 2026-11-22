@@ -25,13 +25,13 @@
 
 <script setup lang="ts">
 import { useAuthPhase } from 'fireux-core/runtime/composables/fireux/firebase/useAuthPhase'
-import WorkspaceGuestWelcome from 'fireux-core/runtime/workspace/components/GuestWelcome.vue'
-import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
+import WorkspaceGuestWelcome from 'fireux-workspace/runtime/workspace/components/GuestWelcome.vue'
+import WorkspaceIntroInfo from 'fireux-workspace/runtime/workspace/components/IntroInfo.vue'
 import { navigateTo } from '#imports'
 import { computed, ref } from 'vue'
 import type { ProjectLandingIntent } from 'fireux-projects/runtime/project/models/landing-intent'
-import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
-import type { WorkspaceIntro } from 'fireux-core/runtime/workspace/models/capability-context'
+import { useWorkspacePageState } from 'fireux-workspace/runtime/workspace/composables/useWorkspacePageState'
+import type { WorkspaceIntro } from 'fireux-workspace/runtime/workspace/models/capability-context'
 import { projectWorkspaceIntro } from 'fireux-projects/runtime/project/utils/project-workspace-intro'
 
 const { isSignedIn } = useAuthPhase()

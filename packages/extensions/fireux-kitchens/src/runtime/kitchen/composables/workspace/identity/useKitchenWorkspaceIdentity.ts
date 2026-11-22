@@ -1,4 +1,4 @@
-import { useWorkspaceIdentity } from 'fireux-core/runtime/workspace/composables/useWorkspaceIdentity'
+import { useWorkspaceIdentity } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceIdentity'
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {

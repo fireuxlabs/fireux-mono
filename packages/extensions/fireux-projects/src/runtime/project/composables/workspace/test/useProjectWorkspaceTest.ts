@@ -1,6 +1,6 @@
 import { refreshNuxtData } from 'nuxt/app'
 import { useProjectTestRecords } from '../../useProjectTestRecords'
-import { useWorkspaceTest } from 'fireux-core/runtime/workspace/composables/useWorkspaceTest'
+import { useWorkspaceTest } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceTest'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useProjectWorkspace } from '../useProjectWorkspace'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

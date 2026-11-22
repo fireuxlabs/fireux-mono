@@ -18,7 +18,7 @@ import {
 import { renderToString } from 'vue/server-renderer'
 import test from 'node:test'
 import { useIdentityEditor } from '../../../../../core/fireux-core/src/runtime/composables/fireux/useIdentityEditor.ts'
-import { useWorkspaceIdentity } from '../../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceIdentity.ts'
+import { useWorkspaceIdentity } from '../../../../fireux-workspace/src/runtime/workspace/composables/useWorkspaceIdentity.ts'
 import { normalizeString } from '../../../../../core/fireux-core/src/runtime/utils/normalize-string.ts'
 import { normalizeSlug } from '../../../../../core/fireux-core/src/runtime/utils/slug/normalize-slug.ts'
 import { readPlaceCurrencyCode } from '../../../../fireux-places/src/runtime/place/utils/place-spine.ts'

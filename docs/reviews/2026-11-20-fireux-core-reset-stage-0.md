@@ -355,3 +355,22 @@ Workspace package validation and external consumer migration remain separate
 from this checkpoint. Migrate shared extensions before their dependent Apps,
 then run the integration gate and verify the retired Core Workspace path
 has no callers.
+
+### External Workspace consumer verification
+
+The consumer cutover uses explicit `fireux-workspace` dependencies for
+shared Workspace controls, selection and Team mechanics. Default AI validates
+its Test intent proposal without importing Workspace. The Docs developer
+inventory scans Core's component roots.
+
+The strict Core gate passed 10 checks. The serial Core suite reproduced only
+the 14 failures above. Nuxt prepared all 12 Workspace-enabled Apps, including
+Blank in the strict gate, and found their layout and middleware in the optional
+package. Disposable FireUX and Misebox dev servers rendered Project Workspace,
+the Core component inventory, public Misebox Home and Kitchen Workspace with
+local emulators. The focused consumer run passed 295 of
+318 tests. Its 23 unresolved Property and Portfolio overview fixture failures
+were reproduced by name against `394b3fc2d`, before extraction. The failures
+cover Property scope and retained read outcomes, Team and Notifications
+composition, and the Portfolio scope used by Documents, Tasks and Compliance.
+They are separate from the 14 failures listed in the Slice 3 checkpoint.
