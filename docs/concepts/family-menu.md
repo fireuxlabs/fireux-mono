@@ -63,7 +63,10 @@ per-date publication feature.
 Kitchen's combined Food & drinks catalogue filters the same Item family by
 `item_kind` through All/Food/Drinks; unknown historical kinds remain under All.
 Menu names do not classify Items. The operator catalogue reads the selected
-Kitchen's items and lists links to individual records.
+Kitchen's Items and lists links to individual records. Add item requires a
+name and accepts a description and photo. Default price and choices belong
+to the detail editor. Menu publication still validates the selling terms of
+its referenced Items.
 Item detail shows the Item's read surfaces. Preparation specification,
 prep requirements and Station management belong to Prep & Production; the Menu
 Item route does not acquire their readers. Preparation owns reusable output

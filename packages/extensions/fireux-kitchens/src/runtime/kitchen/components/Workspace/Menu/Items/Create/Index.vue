@@ -1,48 +1,30 @@
 <template>
   <form @submit.prevent="addItem">
-    <UFormField label="Image">
-      <div>
-        <FireFormsEditableImagePicker
-          :src="imagePreviewUrl"
-          :alt="name.trim() || `New ${singular}`"
-          :initials="imageInitials"
-          :button-label="`Choose ${singular} image`"
-          :disabled="saving || !canCreateItem"
-          :update="stageImage"
-        />
-        <p>Choose a clear photo of the Item. You can add or change it later.</p>
-      </div>
+    <UFormField label="Name" required>
+      <UInput
+        v-model="name"
+        placeholder="Margherita"
+        :disabled="saving || !canCreateItem"
+      />
     </UFormField>
 
-    <div>
-      <UFormField label="Name">
-        <UInput
-          v-model="name"
-          placeholder="Margherita"
-          :disabled="saving || !canCreateItem"
-        />
-      </UFormField>
-
-      <UFormField label="Description">
-        <UTextarea
-          v-model="description"
-          placeholder="Tomato sauce, mozzarella, oregano"
-          :disabled="saving || !canCreateItem"
-          :rows="3"
-        />
-      </UFormField>
-    </div>
-
-    <UFormField label="Normal price" required>
-      <!-- @vue-generic {string | number, {}} -->
-      <UInput
-        v-model="price"
-        type="number"
-        min="0"
-        step="0.01"
-        placeholder="Enter price"
-        aria-label="Normal price"
+    <UFormField label="Description">
+      <UTextarea
+        v-model="description"
+        placeholder="Tomato sauce, mozzarella, oregano"
         :disabled="saving || !canCreateItem"
+        :rows="3"
+      />
+    </UFormField>
+
+    <UFormField label="Image">
+      <FireFormsEditableImagePicker
+        :src="imagePreviewUrl"
+        :alt="name.trim() || `New ${singular}`"
+        :initials="imageInitials"
+        :button-label="`Choose ${singular} image`"
+        :disabled="saving || !canCreateItem"
+        :update="stageImage"
       />
     </UFormField>
 
@@ -51,12 +33,12 @@
         type="submit"
         icon="i-lucide-plus"
         :loading="saving"
-        :disabled="!canCreateItem || saving || !name.trim() || !validPrice"
+        :disabled="!canCreateItem || saving || !name.trim()"
       >
         Create {{ singular }}
       </UButton>
 
-      <p v-if="message">
+      <p v-if="message" role="status">
         {{ message }}
       </p>
     </div>
@@ -79,13 +61,6 @@ const singular = 'item'
 const toast = useToastify()
 const route = useRoute()
 
-const price = ref<string | number>('')
-const validPrice = computed(
-  () =>
-    String(price.value).trim() !== '' &&
-    Number.isFinite(Number(price.value)) &&
-    Number(price.value) >= 0
-)
 const name = ref('')
 const description = ref('')
 const saving = ref(false)
@@ -119,7 +94,6 @@ onBeforeUnmount(clearImageDraft)
 useItemEditorScope(
   [kitchenId, () => itemKind.value, () => route.fullPath],
   () => {
-    price.value = ''
     name.value = ''
     description.value = ''
     message.value = ''
@@ -128,7 +102,7 @@ useItemEditorScope(
   }
 )
 const ownerSources = [kitchenId, () => itemKind.value, () => route.fullPath]
-const draftSources = [...ownerSources, name, description, price, imageFile]
+const draftSources = [...ownerSources, name, description, imageFile]
 const captureScope = useItemEditorScope(draftSources, () => {
   saving.value = false
   message.value = ''
@@ -138,7 +112,7 @@ const { uploadItemImage } = useItemImageUpload([...draftSources, canCreateItem])
 const addItem = async () => {
   const isCurrent = captureScope()
   const requestedImage = imageFile.value
-  if (!canCreateItem.value || saving.value || !validPrice.value) return
+  if (!canCreateItem.value || saving.value) return
 
   const itemName = normalizeString(name.value)
   if (!itemName) {
@@ -155,11 +129,11 @@ const addItem = async () => {
 
   try {
     const resolvedKitchenId = normalizeString(kitchenId.value)
+    const itemDescription = normalizeString(description.value)
     const result = await createItem(
       {
         name: itemName,
-        price: Number(price.value),
-        description: normalizeString(description.value),
+        ...(itemDescription ? { description: itemDescription } : {}),
       },
       { kitchenId: resolvedKitchenId }
     )
@@ -189,7 +163,6 @@ const addItem = async () => {
           icon: 'i-lucide-image-off',
         })
         clearImageDraft()
-        price.value = ''
         name.value = ''
         description.value = ''
         message.value = partialMessage
@@ -198,7 +171,6 @@ const addItem = async () => {
     }
 
     if (!isCurrent()) return
-    price.value = ''
     name.value = ''
     description.value = ''
     clearImageDraft()

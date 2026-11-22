@@ -525,10 +525,9 @@ test('Native creation is group-neutral and locks inputs and invalidates changed 
         f = mount(
           h,
           'Menu/Items/Create/Index',
-          '{addItem,price,name,description,imageFile,saving,message}'
+          '{addItem,name,description,imageFile,saving,message}'
         )
       f.identity.catalogue.itemKind = kind
-      f.api.price.value = 13
       f.api.name.value = 'Submitted'
       const flight = f.api.addItem()
       await vue.nextTick()
@@ -544,7 +543,7 @@ test('Native creation is group-neutral and locks inputs and invalidates changed 
       await flight
       assert.equal(h.calls.length, changed === 'stable' ? 1 : 0)
       if (changed === 'stable') {
-        assert.equal(h.calls[0].options.body.draft.item_kind, undefined)
+        assert.deepEqual(h.calls[0].options.body.draft, { name: 'Submitted' })
         assert.equal(f.api.name.value, '')
         assert.match(f.api.message.value, /Created Submitted/)
       } else {
@@ -565,7 +564,7 @@ test('Creation reports saved Item with failed image and suppresses obsolete foll
       f = mount(
         h,
         'Menu/Items/Create/Index',
-        '{addItem,price,name,imageFile,message}',
+        '{addItem,name,imageFile,message}',
         {
           useItemImageUpload: () => ({
             uploadItemImage: async (input) => {
@@ -575,7 +574,6 @@ test('Creation reports saved Item with failed image and suppresses obsolete foll
           }),
         }
       )
-    f.api.price.value = 13
     f.api.name.value = 'Item'
     f.api.imageFile.value = new File(['original'], 'original.png')
     const flight = f.api.addItem()

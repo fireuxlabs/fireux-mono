@@ -105,10 +105,9 @@ test('create does not upload or show stale outcomes after Kitchen/account round 
             uploadItemImage: (x) => uploads.push(x),
           }),
         },
-        '({addItem,price,name,imageFile,message,saving})',
+        '({addItem,name,imageFile,message,saving})',
         true
       )
-      api.price.value = 13
       api.name.value = 'Pizza'
       api.imageFile.value = { name: 'image' }
       const result = api.addItem()
@@ -152,10 +151,9 @@ test('create captures original upload and reports saved Item with failed image h
         },
       }),
     },
-    '({addItem,price,name,imageFile,message})',
+    '({addItem,name,imageFile,message})',
     true
   )
-  api.price.value = 13
   api.name.value = 'Pizza'
   api.imageFile.value = original
   const result = api.addItem()
@@ -418,36 +416,40 @@ test('item moves disable list boundaries and discard obsolete completion', async
   assert.equal(api.moving.value, '')
 })
 
-test('item creation requires a price and submits explicit zero without a fixed type', async () => {
-  for (const itemKind of ['food', 'drink']) {
+test('catalogue creation sends only the name, or a name and optional description', async () => {
+  for (const description of ['', '  Fresh basil  ']) {
     const h = setup(),
       drafts = []
     const api = evaluate(
       component('Menu/Items/Create/Index'),
       {
         ...h.deps,
-        defineProps: () => ({ kitchenId: h.kitchenId.value, itemKind }),
+        defineProps: () => ({ kitchenId: h.kitchenId.value }),
         defineEmits: () => () => {},
         useItemActions: () => ({
-          createItem: async (draft) => {
-            drafts.push(draft)
+          createItem: async (draft, target) => {
+            drafts.push({ draft, target })
             return { id: 'item' }
           },
         }),
         useItemImageUpload: () => ({ uploadItemImage() {} }),
       },
-      '({addItem,name,price,validPrice})',
+      '({addItem,name,description})',
       true
     )
-    api.name.value = 'Item'
-    assert.equal(api.validPrice.value, false)
     await api.addItem()
     assert.equal(drafts.length, 0)
-    api.price.value = 0
-    assert.equal(api.validPrice.value, true)
+    api.name.value = '  Item  '
+    api.description.value = description
     await api.addItem()
-    assert.equal(drafts[0].price, 0)
-    assert.equal(drafts[0].item_kind, undefined)
+    assert.deepEqual(drafts, [
+      {
+        draft: description
+          ? { name: 'Item', description: 'Fresh basil' }
+          : { name: 'Item' },
+        target: { kitchenId: h.kitchenId.value },
+      },
+    ])
   }
 })
 

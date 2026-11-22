@@ -31,8 +31,22 @@ verified in local Misebox. [Source map and evidence](../reviews/2026-11-20-kitch
 
 ### Phase B — Decide what is sold
 
-- [ ] **04. Define Items.** Enter the dishes, drinks, or products the kitchen intends to offer. The Item is a Kitchen-owned record and should have a simple create/list/detail/edit journey. A dish name can exist before a complete recipe or price. **Done when:** one Item can be created, read, updated and listed alphabetically with no Menu or Order required.
+- [x] **04. Define Items.** Enter the dishes, drinks, or products the kitchen intends to offer. The Item is a Kitchen-owned record and should have a simple create/list/detail/edit journey. A dish name can exist before a complete recipe or price. **Done when:** one Item can be created, read, updated and listed alphabetically with no Menu or Order required.
 - [ ] **05. Sketch a Menu.** Organise existing Items into sections and intended offerings, with placement rules, variations and selling terms only where required. **Done when:** a draft/working Menu can reference Items, be reviewed, and remain private/unpublished. Menus consume Items; they must not redefine Item identity. This is **not** an orderable Menu yet.
+
+**Slice 02 local checkpoint.** Signed-in Misebox created name-only Items at
+desktop and mobile widths. The existing alphabetical list opened the exact
+`kitchens/{kitchenId}/dishes/{dishId}` record. Editing the name retained the
+same document ID and survived reload with the price still unset. Switching
+to a second Kitchen hid the first Kitchen's Items. The authored Rules and
+trusted update command denied an unrelated member and a previously authorized
+operator after live grant revocation. The test Kitchens had zero Menus,
+Recipes, Suppliers or Orders.
+
+The 159 focused tests also cover description, photo intent and failure
+handling, and rejection of unpriced Items at Menu publication. Browser
+checks used the named Firestore emulator with the production Rules candidate.
+The five existing Misebox typecheck errors remain outside this slice.
 
 ### Phase C — Work out how food is made and supplied
 
