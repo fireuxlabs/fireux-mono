@@ -6,12 +6,10 @@ Role: current work and decisions
 
 ## Kitchen development
 
-The [Kitchen Core checkpoint](../reviews/2026-11-20-kitchen-core-independence.md)
-and [independent Items checkpoint](../handoffs/2026-11-20-kitchen-real-world-build-order.md#phase-b--decide-what-is-sold)
-passed locally in Misebox. The next slice in the agreed Kitchen build order is
-a private draft Menu that references existing Items, can be reviewed without
-publishing, and works without ordering. Verify in signed-in Misebox without
-changing storage paths or promoting unpriced Items to public availability.
+The [Kitchen Core checkpoint](../reviews/2026-11-20-kitchen-core-independence.md),
+independent Items and the [private draft Menu](../handoffs/2026-11-20-kitchen-real-world-build-order.md#phase-b--decide-what-is-sold)
+passed locally in Misebox. An operator can assemble and review an unpublished
+Menu from existing Items, including Items with no prices yet.
 The [Kitchen build order](../handoffs/2026-11-20-kitchen-real-world-build-order.md)
 holds the later gates for publication, Services and Orders. The
 [Menu and Orders boundary](../concepts/menu-ordering.md) describes today's

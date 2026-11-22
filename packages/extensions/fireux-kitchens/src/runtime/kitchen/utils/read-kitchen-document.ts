@@ -121,7 +121,12 @@ const omittedWorkspaceFields = ['currency', 'management', 'integrations']
 function isIdentity(value: unknown): value is KitchenIdentity {
   return (
     isRecord(value) &&
-    hasFields(value, ['source', 'slug', 'status', 'visibility']) &&
+    hasFields(value, ['source', 'name', 'slug', 'status', 'visibility']) &&
+    (value.name === undefined ||
+      (value.source === 'user' &&
+        typeof value.name === 'string' &&
+        Boolean(value.name.trim()) &&
+        value.name.length <= 120)) &&
     (value.source === undefined ||
       KITCHEN_IDENTITY_SOURCES.some((source) => source === value.source)) &&
     typeof value.slug === 'string' &&

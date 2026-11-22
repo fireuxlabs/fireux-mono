@@ -54,7 +54,7 @@ export function useKitchenInterface() {
 
     const backdrop = readMediaBackdropColor(place?.media_backdrop_color)
     const presentation = {
-      display_name: safeString(place?.name),
+      display_name: safeString(place?.name || kitchen.identity.name),
       tagline: safeString(place?.tagline),
       image_url: safeString(place?.image_url),
       ...(backdrop ? { media_backdrop_color: backdrop } : {}),
@@ -97,7 +97,7 @@ export function useKitchenInterface() {
         ? { operator_ids: parts.scope.operator_ids }
         : {}),
       ...(parts.scope?.team_ids ? { team_ids: parts.scope.team_ids } : {}),
-      name: place?.name,
+      name: place?.name || kitchen.identity.name,
       short_name: place?.short_name,
       about: place?.about,
       formatted_address: place?.formatted_address,

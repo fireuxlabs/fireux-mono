@@ -3,6 +3,7 @@ import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-publ
 import type { Kitchen } from '../../models/model'
 
 export type KitchenUpdateInput = {
+  'identity.name'?: string
   'identity.slug'?: string
   'identity.status'?: Kitchen['identity']['status']
   'identity.visibility'?: boolean
@@ -21,6 +22,7 @@ function fail(message: string): never {
 }
 
 const allowed = new Set([
+  'identity.name',
   'identity.slug',
   'identity.status',
   'identity.visibility',
@@ -57,6 +59,12 @@ export function parseKitchenUpdate(
   const out: Record<string, unknown> = {}
 
   for (const [key, raw] of Object.entries(patch)) {
+    if (key === 'identity.name') {
+      if (typeof raw !== 'string' || !raw.trim() || raw.trim().length > 120)
+        fail('Kitchen name is required and must be 120 characters or fewer.')
+      out[key] = raw.trim()
+      continue
+    }
     if (key === 'services.item_images') {
       if (typeof raw !== 'boolean')
         fail('Item image preference must be boolean.')

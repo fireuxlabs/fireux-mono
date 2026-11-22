@@ -106,13 +106,27 @@ extras and required variants remain distinct. See the [Menu family](../../../doc
 The [Items route](src/runtime/pages/workspace/kitchen/menu/items/index.vue)
 renders a [simple list](src/runtime/kitchen/components/Workspace/Menu/Items/Index.vue).
 Its [collection reader](src/runtime/kitchen/composables/workspace/menu/items/useKitchenWorkspaceItems.ts)
-waits for the selected Kitchen to be ready. The
-[detail route](src/runtime/pages/workspace/kitchen/menu/items/%5BdishId%5D.vue)
-uses the [exact Item reader](src/runtime/kitchen/composables/items/useKitchenItemRead.ts)
-and the current Kitchen grant. Start verification with the
-[Item reader tests](src/test/item-reader-internals.test.mjs).
+waits for the selected Kitchen to be ready.
 
 Keep empty, failed, and pending reads distinct. Decide any further filtering,
 card presentation, or related-record hydration from an actual Kitchen
 workflow. A join needs its own authorized domain reader or projection.
 A matching ID alone does not justify fetching another record.
+
+## Item detail
+
+The [detail route](src/runtime/pages/workspace/kitchen/menu/items/%5BdishId%5D.vue)
+uses the current Kitchen grant to [read one Item](src/runtime/kitchen/composables/items/useKitchenItemRead.ts)
+at `kitchens/{kitchenId}/dishes/{dishId}`. It shares that read with the
+[Workspace detail](src/runtime/kitchen/components/Workspace/Menu/Items/Detail/Index.vue),
+which shows Item basics and editing alongside the
+[Menu-owned guest presentation](src/runtime/menu/components/ItemDetail.vue).
+That presentation uses an explicitly linked Menu or looks up a published
+public placement in the selected Kitchen. Without a matching Menu it shows
+the Item's basic presentation.
+
+The same document supplies [Item identity](src/runtime/kitchen/records/menus/items/item.ts)
+and [selling defaults](src/runtime/kitchen/records/menus/items/item-offer.ts)
+as separate projections and provides the raw document for development diagnostics.
+Menus, Prep and Team relationship panels are placeholders. Verify read reuse
+and route scope with the [Item reader tests](src/test/item-reader-internals.test.mjs).

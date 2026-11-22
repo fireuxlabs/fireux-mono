@@ -1,5 +1,12 @@
 // Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: align Kitchen sitemap publication with canonical visibility.
-import { addImports, createResolver, defineNuxtModule } from '@nuxt/kit'
+import {
+  addImports,
+  addServerHandler,
+  createResolver,
+  defineNuxtModule,
+  extendPages,
+  getLayerDirectories,
+} from '@nuxt/kit'
 import {
   configureRuntime,
   configureOrdering,
@@ -22,6 +29,7 @@ import { configureAssets } from './config/module/assets-config.ts'
 export interface ModuleOptions {
   prefix?: string
   defaultKitchenId?: string
+  workspaceOnly?: boolean
   ordering?: OrderingConfiguration
 }
 
@@ -47,6 +55,42 @@ export default defineNuxtModule<ModuleOptions>({
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
+    if (options.workspaceOnly) {
+      if (
+        options.ordering ||
+        getLayerDirectories(nuxt).some(
+          (layer) => layer.root === resolver.resolve('./runtime')
+        )
+      ) {
+        throw new Error(
+          '[fireux-kitchens] workspaceOnly cannot use the full Kitchens layer or ordering.'
+        )
+      }
+      configureRuntime(nuxt, 'kitchens')
+      nuxt.options.runtimeConfig.kitchensWorkspaceOnly = true
+      extendPages((pages) => {
+        pages.push({
+          name: 'workspace-kitchen',
+          path: '/workspace/kitchen',
+          file: resolver.resolve('./runtime/kitchen/pages/workspace.vue'),
+        })
+      })
+      addServerHandler({
+        route: '/api/kitchens/onboarding/shell',
+        method: 'post',
+        handler: resolver.resolve(
+          './runtime/server/api/kitchens/onboarding/shell.post.ts'
+        ),
+      })
+      addServerHandler({
+        route: '/api/workspace/kitchen/update',
+        method: 'patch',
+        handler: resolver.resolve(
+          './runtime/server/api/workspace/kitchen/update.patch.ts'
+        ),
+      })
+      return
+    }
     configureOrdering(nuxt, options.ordering)
     nuxt.hook('prepare:types', ({ references }) => {
       references.push({

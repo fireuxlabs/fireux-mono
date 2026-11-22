@@ -9,6 +9,7 @@ export type KitchenIdentitySource = 'user' | 'place'
 export type KitchenStatus = 'active' | 'inactive' | 'archived'
 export type KitchenIdentity = {
   source?: KitchenIdentitySource
+  name?: string
   slug: string
   status: KitchenStatus
   visibility: boolean

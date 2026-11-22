@@ -323,6 +323,7 @@ function shellHarness({
   if (accessDocument !== undefined)
     records.set('kitchen_access/user', accessDocument)
   const writes = []
+  const reads = []
   const target = (collectionPath) => ({ collectionPath })
   const path = (owner, id) => `${owner.collectionPath}/${id}`
   const snapshot = (owner, id) => ({
@@ -376,7 +377,10 @@ function shellHarness({
       runGuardedServerTransaction: async (_scope, run) => {
         const queued = []
         const tx = {
-          read: async (owner, id) => snapshot(owner, id),
+          read: async (owner, id) => {
+            reads.push(path(owner, id))
+            return snapshot(owner, id)
+          },
           create: (owner, id, value) =>
             queued.push({ path: path(owner, id), value, verb: 'create' }),
           update: (owner, id, value) =>
@@ -395,7 +399,9 @@ function shellHarness({
   return {
     records,
     writes,
-    create: () => command({}, { intent: 'create_shell', name: 'My Kitchen' }),
+    reads,
+    create: (withPlace = true, name = 'My Kitchen') =>
+      command({}, { intent: 'create_shell', name }, withPlace),
   }
 }
 
@@ -441,6 +447,31 @@ test('shell creation commits only Kitchen, Place and scoped access without chang
     h.records.get('kitchen_access/user').apps['misebox-app'].ids,
     ['user']
   )
+})
+
+test('Kitchen-only shell persists its own name and retries without reading or writing Place', async () => {
+  const h = shellHarness()
+  const result = await h.create(false)
+  assert.equal(result.place_id, undefined)
+  assert.deepEqual(
+    h.writes.map(({ path }) => path),
+    ['kitchens/user', 'kitchen_access/user']
+  )
+  const identity = readKitchenDocument(
+    h.records.get('kitchens/user'),
+    'user'
+  )?.identity
+  assert.deepEqual(identity, {
+    source: 'user',
+    name: 'My Kitchen',
+    slug: 'my-kitchen',
+    status: 'active',
+    visibility: false,
+  })
+  assert.equal((await h.create(false, 'Ignored retry name')).action, 'open')
+  assert.equal(h.records.get('kitchens/user').identity.name, 'My Kitchen')
+  assert.equal(h.writes.length, 2)
+  assert.ok(h.reads.every((path) => !path.startsWith('places/')))
 })
 
 test('reopening a historical shell does not backfill or replace its root stamps', async () => {

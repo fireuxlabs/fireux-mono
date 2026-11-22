@@ -28,7 +28,11 @@ import {
 import { createMembershipAccess } from 'fireux-core/runtime/app/utils/membership/membership-access'
 import { fail, readKitchenOnboardingRequest as request } from './request.ts'
 
-export async function createKitchenShell(event: H3Event, input: unknown) {
+export async function createKitchenShell(
+  event: H3Event,
+  input: unknown,
+  withPlace = true
+) {
   const body = request(input, ['intent', 'name', 'owner_user_id'])
   if (body.intent !== 'create_shell') {
     fail(400, 'Explicit Kitchen shell creation intent is required.')
@@ -58,7 +62,9 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       await Promise.all([
         mutations.read(memberships, ownerUserId),
         mutations.read(USER_MUTATION_TARGETS.runtimeUsers, ownerUserId),
-        mutations.read(PLACE_MUTATION_TARGETS.places, kitchenId),
+        withPlace
+          ? mutations.read(PLACE_MUTATION_TARGETS.places, kitchenId)
+          : Promise.resolve(null),
         mutations.read(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId),
         ownerUserId === current.uid
           ? Promise.resolve(null)
@@ -85,9 +91,13 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       membership.data,
       current.appId
     )
-    const existingShell = place.exists || root.exists
+    const identity = root.data?.identity as Record<string, unknown> | undefined
+    const existingShell = Boolean(place?.exists || root.exists)
     if (existingShell) {
-      if (!place.exists || !root.exists) {
+      if (
+        !root.exists ||
+        (withPlace && !place?.exists && !text(identity?.name))
+      ) {
         fail(409, 'Kitchen shell identity is incomplete.')
       }
       if (!kitchenIds.includes(kitchenId)) {
@@ -107,15 +117,23 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         by: current.uid,
         appId: current.appId,
       })
-      mutations.create(PLACE_MUTATION_TARGETS.places, kitchenId, {
-        name,
-        slug,
-        place_type: 'non_physical',
-        entity_families: ['kitchen'],
-        created,
-      })
+      if (withPlace) {
+        mutations.create(PLACE_MUTATION_TARGETS.places, kitchenId, {
+          name,
+          slug,
+          place_type: 'non_physical',
+          entity_families: ['kitchen'],
+          created,
+        })
+      }
       mutations.create(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId, {
-        identity: { source: 'user', slug, status: 'active', visibility: true },
+        identity: {
+          source: 'user',
+          ...(withPlace ? {} : { name }),
+          slug,
+          status: 'active',
+          visibility: withPlace,
+        },
         created,
         updated: serverAuditStamp({ by: current.uid }),
       })
@@ -130,14 +148,13 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       }
     }
 
-    const slug =
-      text(
-        (root.data?.identity as Record<string, unknown> | undefined)?.slug
-      ) || normalizeSlug(name)
+    const slug = text(identity?.slug) || normalizeSlug(name)
     return {
       ok: true as const,
       kitchen_id: kitchenId,
-      place_id: kitchenId,
+      ...(withPlace && (place?.exists || !existingShell)
+        ? { place_id: kitchenId }
+        : {}),
       action: existingShell ? ('open' as const) : ('create' as const),
       created_root: !existingShell,
       created_team_member: false,

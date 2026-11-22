@@ -238,6 +238,22 @@ test('Kitchen keeps its current slug and writes the verified actor and App audit
   assert.equal(h.records.get('kitchens/first').identity.visibility, true)
 })
 
+test('Kitchen-owned names can be renamed without changing the slug or Place-owned identity', async () => {
+  const h = harness()
+  const first = h.records.get('kitchens/first')
+  first.identity.source = 'user'
+  first.identity.name = 'First Kitchen'
+  const rename = (kitchen_id, name) =>
+    h.update({}, { kitchen_id, patch: { 'identity.name': name } })
+  await rename('first', '  Another Name  ')
+  assert.equal(first.identity.name, 'Another Name')
+  assert.equal(first.identity.slug, 'first')
+  assert.equal(h.queries.length, 0)
+  await assert.rejects(rename('first', ' '), { statusCode: 400 })
+  await assert.rejects(rename('second', 'Place rename'), { statusCode: 409 })
+  assert.equal(h.writes.length, 1)
+})
+
 test('Kitchen rechecks revoked membership and lifetime-bound access before slug query or write', async () => {
   for (const revoke of [
     (h) => h.records.delete('apps/owner-app/users/operator'),

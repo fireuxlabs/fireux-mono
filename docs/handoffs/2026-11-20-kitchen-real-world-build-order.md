@@ -32,7 +32,7 @@ verified in local Misebox. [Source map and evidence](../reviews/2026-11-20-kitch
 ### Phase B — Decide what is sold
 
 - [x] **04. Define Items.** Enter the dishes, drinks, or products the kitchen intends to offer. The Item is a Kitchen-owned record and should have a simple create/list/detail/edit journey. A dish name can exist before a complete recipe or price. **Done when:** one Item can be created, read, updated and listed alphabetically with no Menu or Order required.
-- [ ] **05. Sketch a Menu.** Organise existing Items into sections and intended offerings, with placement rules, variations and selling terms only where required. **Done when:** a draft/working Menu can reference Items, be reviewed, and remain private/unpublished. Menus consume Items; they must not redefine Item identity. This is **not** an orderable Menu yet.
+- [x] **05. Sketch a Menu.** Organise existing Items into sections and intended offerings, with placement rules, variations and selling terms only where required. **Done when:** a draft/working Menu can reference Items, be reviewed, and remain private/unpublished. Menus consume Items; they must not redefine Item identity. This is **not** an orderable Menu yet.
 
 **Slice 02 local checkpoint.** Signed-in Misebox created name-only Items at
 desktop and mobile widths. The existing alphabetical list opened the exact
@@ -47,6 +47,15 @@ The 159 focused tests also cover description, photo intent and failure
 handling, and rejection of unpriced Items at Menu publication. Browser
 checks used the named Firestore emulator with the production Rules candidate.
 The five existing Misebox typecheck errors remain outside this slice.
+
+**Draft Menu local checkpoint.** A signed-in Misebox operator created a blank
+regular Menu, added a section and selected two existing unpriced Items. Both
+placements survived reload and could be reviewed in Items & prices. Publishing
+showed Unpublished and identified both missing prices. Readback from the named
+`misebox` emulator database confirmed `status: draft` and two `dish_id`
+references at the existing section Items path. The public Menu API returned
+404 and the production Rules candidate denied a read by an App member without
+the Kitchen grant. The test Kitchen had no Orders.
 
 ### Phase C — Work out how food is made and supplied
 
@@ -97,9 +106,3 @@ coupling before going downstream.
 The long-term goal is that a future developer could describe a real-world business and Ignite could guide them from **prerequisites → Entity Core → Workspace → dependency-ordered capability slices**, with explicit readiness gates. Ignite should explain *what to build next and why* and what evidence proves readiness, not generate every feature at once.
 
 **Current priority is manual development with the operator and Codex.** Capture this method as durable context but **do not launch an Ignite rewrite, new engine, or generalized generator in this task**. Use the Kitchen as the first worked example; only generalise after a second genuinely different Workspace Entity succeeds.
-
-## Next slice
-
-Prove a private draft Menu built from existing Items. Keep the Kitchen and Item
-checkpoints closed unless a regression is reproduced. Live data changes, policy
-rollout and deployment still require separate authority.

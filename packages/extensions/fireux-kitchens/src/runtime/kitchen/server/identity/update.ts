@@ -51,6 +51,18 @@ export async function updateKitchen(event: H3Event, input: unknown) {
       actor,
       requested.kitchenId
     )
+    const identity = current.rootData.identity as
+      | Record<string, unknown>
+      | undefined
+    if (
+      'identity.name' in requested.patch &&
+      (identity?.source !== 'user' || typeof identity.name !== 'string')
+    ) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'This Kitchen’s name is managed by its Place.',
+      })
+    }
     if (slug) {
       const matches = await mutations.query(KITCHEN_MUTATION_TARGETS.kitchens, {
         field: 'identity.slug',

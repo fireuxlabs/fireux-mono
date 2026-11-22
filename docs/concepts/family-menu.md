@@ -1032,33 +1032,12 @@ The content editor's rows share Menu display and choice controls with Browse.
 Preview selections stay local. Workspace actions handle placement and
 navigation to Item detail.
 
-The Items workspace at `/workspace/kitchen/menu/items` reads the selected
-Kitchen's reusable item collection once and lists each Item as a link to
-its record. The `[dishId]` route reads the Item once in the selected Kitchen
-and passes the result to Workspace Item detail. The guest placement reader mounts once
-the menu has resolved. The Workspace name has one Edit item action for
-identity and default selling terms. The secondary Delete item action opens a
-named confirmation and links to blocking placements or promotions.
-`WorkspaceItemDetail` shows the Item's name, description and optional photo
-as read-only fields.
-The same detail composes Menu's `components/ItemDetail.vue` directly.
-The plain Item URL resolves the first published public Menu in the selected
-Kitchen's Menu order with an active placement of that exact Item. Links from a
-specific Menu may retain `?menu=<slug>` to preview that Menu. The preview uses
-the public Browse catalogue and theme. Items without a published placement
-show their basic presentation.
-Ordering retains its Service context.
-
-The Items collection opens Create and links a newly saved Item to its detail.
-The detail keeps the two reads visible and opens the existing identity and
-pricing editors or removal view on demand. They use the route's live Item
-context.
-The removal view checks usage before enabling confirmation, and the trusted
-delete command rechecks the exact Item and its references.
-
 Menu section rows link directly to the shared Kitchen Item record. Shared Item
-identity, image and description apply wherever that Item is used. Removal
-from a section is distinct from deleting the Item record.
+identity, image and description apply wherever that Item is used. The Menu
+owns placement and publication. Removing a placement leaves the Item intact.
+The trusted Item delete command checks for references before deleting it.
+See [Item detail](../../packages/extensions/fireux-kitchens/README.md#item-detail)
+for the Workspace read and guest presentation.
 
 The standalone Section detail exposes rename and archive/restore through the
 same Section command that the Menu's section list uses.
@@ -1093,16 +1072,3 @@ creation, source preparation, record editing and QR presentation. State feedback
 uses Core FireState; the QR coordinator owns its combined read outcome and error
 facts without relabelling idle as pending. Menu Express does not own or duplicate
 this lower presentation or data lifecycle.
-
-## Kitchen Item read ownership
-
-Kitchen Item's canonical record definition is `kitchen/records/menus/items/item.ts`. Its optional stamps
-represent missing historical provenance honestly; trusted Item creation still
-writes both creation and update stamps. `useKitchenItemRead` owns acquisition,
-Kitchen access gating and private normalization through Core's Firestore reader.
-`useKitchenItemContext` only shares that existing reader with detail children.
-Item Detail composes its capability children directly. Menus, Prep and Team
-are empty placeholders. In development, the detail shows the stored item
-document from the existing reader as inline JSON.
-There is no separate read-item adapter or `ReadableItem` contract. See
-`src/test/kitchen/item/foundation.test.mjs` and the Item UI scope tests.
