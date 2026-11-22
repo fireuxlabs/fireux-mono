@@ -156,7 +156,7 @@ test('Profile button follows User identity and keeps an accessible collapsed lin
 
 test('member and admin Workspace navigation follows configured availability, not admin access', async () => {
   const text = readFileSync(
-    new URL('../../../runtime/pages/dashboard/workspace.vue', import.meta.url),
+    new URL('../../../../../../extensions/fireux-workspace/src/runtime/pages/dashboard/workspace.vue', import.meta.url),
     'utf8'
   )
   const script = text

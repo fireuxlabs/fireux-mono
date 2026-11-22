@@ -6,7 +6,7 @@ import { createRenderer, h, nextTick, onUnmounted, ref } from 'vue'
 // Exercise Vue's lifecycle with the actual layout boundary key, without a DOM.
 test('Workspace entity changes dispose page drafts while unchanged scope preserves them', async () => {
   const source = readFileSync(
-    new URL('../runtime/workspace/components/Page.vue', import.meta.url),
+    new URL('../../../../extensions/fireux-workspace/src/runtime/workspace/components/Page.vue', import.meta.url),
     'utf8'
   )
   const expression = source.match(/<NuxtErrorBoundary\s+:key="([^"]+)"/)[1]

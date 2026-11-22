@@ -14,7 +14,7 @@ function load(path, name, deps) {
   )(...Object.values(deps))
 }
 const command = load(
-  'packages/core/fireux-core/src/runtime/workspace/server/team/roles.ts',
+  'packages/extensions/fireux-workspace/src/runtime/workspace/server/team/roles.ts',
   'teamRolesCommand',
   {
     randomUUID: () => 'custom-id',

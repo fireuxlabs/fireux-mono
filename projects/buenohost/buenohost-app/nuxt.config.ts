@@ -18,7 +18,11 @@ export default defineFireuxEcosystem({
   },
   workspaces: ['property'],
   modules: ['fireux-workspace'],
-  extends: ['fireux-core/layer', 'fireux-buenohost/property-layer'],
+  extends: [
+    'fireux-workspace/layer',
+    'fireux-core/layer',
+    'fireux-buenohost/property-layer',
+  ],
   subscriptionCapacity: {
     property: { free: 1, pro: 1, business: null },
     'property.team': { free: 3, pro: 7, business: null },

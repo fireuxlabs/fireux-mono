@@ -10,7 +10,7 @@ import { transpileModule, ModuleKind } from 'typescript'
 
 const require = createRequire(import.meta.url)
 const path = new URL(
-  '../../../runtime/workspace/components/AI/Composer.vue',
+  '../../../../../../extensions/fireux-workspace/src/runtime/workspace/components/AI/Composer.vue',
   import.meta.url
 )
 const { descriptor } = parse(readFileSync(path, 'utf8'), {

@@ -333,7 +333,9 @@ async function renderSidebar({
     '../utils/active-destination': { workspaceActiveDestination: () => null },
   }
   function component(file) {
-    const path = new URL(`../../runtime/${file}`, import.meta.url)
+    const path = file.startsWith('workspace/')
+    ? new URL(`packages/extensions/fireux-workspace/src/runtime/${file}`, root)
+    : new URL(`../../runtime/${file}`, import.meta.url)
     const { descriptor } = parse(readFileSync(path, 'utf8'), {
       filename: path.pathname,
     })
@@ -633,7 +635,9 @@ async function renderPolishComponent(
   file,
   { phase = 'guest', member = null } = {}
 ) {
-  const path = new URL(`../../runtime/${file}`, import.meta.url)
+  const path = file.startsWith('workspace/')
+    ? new URL(`packages/extensions/fireux-workspace/src/runtime/${file}`, root)
+    : new URL(`../../runtime/${file}`, import.meta.url)
   const { descriptor } = parse(readFileSync(path, 'utf8'), {
     filename: path.pathname,
   })

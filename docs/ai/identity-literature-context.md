@@ -207,9 +207,8 @@ Core SEO owner and retain deliberate audience and indexing differences.
 ## Current source
 
 - `packages/extensions/fireux-ecosystem/src/runtime/components/landing/DirectoryHome.vue`
-- `packages/core/fireux-core/src/runtime/workspace/components/Hero.vue`
-- `packages/core/fireux-core/src/runtime/workspace/components/GuestWelcome.vue`
-- `packages/core/fireux-core/src/runtime/workspace/components/EntityCollection.vue`
+- `packages/extensions/fireux-workspace/src/runtime/workspace/components/GuestWelcome.vue`
+- `packages/extensions/fireux-workspace/src/runtime/workspace/components/EntityCollection.vue`
 
 - `packages/extensions/fireux-app/src/runtime/models/landing/product.ts`
 - `packages/extensions/fireux-app/src/runtime/components/landing/ProductIndex.vue`

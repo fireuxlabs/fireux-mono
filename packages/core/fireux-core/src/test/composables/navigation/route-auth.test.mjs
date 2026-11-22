@@ -182,10 +182,18 @@ function guardHarness({
   }
   const h = authHarness(bindings)
   const guard = load(
-    `../../../runtime/middleware/fireux-${kind === 'dev' ? 'diagnostics' : kind}.global.ts`,
+    `../../../runtime/middleware/fireux-${kind === 'dev' ? 'diagnostics' : 'auth'}.global.ts`,
     'middleware',
     { ...bindings, ...h.api }
   )
+  const availability =
+    kind === 'workspace'
+      ? load(
+          '../../../../../../extensions/fireux-workspace/src/runtime/middleware/fireux-workspace.global.ts',
+          'middleware',
+          bindings
+        )
+      : () => undefined
   return {
     ...h,
     route,
@@ -193,7 +201,7 @@ function guardHarness({
     moves,
     errors,
     ready,
-    guard,
+    guard: (to) => availability(to) ?? guard(to),
     admin: (result) =>
       resolveAdmin({ exists: () => result, data: () => ({ role: 'admin' }) }),
   }

@@ -2,7 +2,7 @@ import { computed, watch } from 'vue'
 import {
   useWorkspace,
   defineWorkspace,
-} from 'fireux-core/runtime/workspace/composables/useWorkspace'
+} from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import { useBlankCollection } from '../fireux/firestore/blank/useBlank'
 import { normalizeString } from 'fireux-core/runtime/utils/normalize-string'
 

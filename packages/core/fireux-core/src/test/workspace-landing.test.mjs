@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { workspaceLandingState } from '../runtime/workspace/utils/landing-state.ts'
+import { workspaceLandingState } from '../../../../extensions/fireux-workspace/src/runtime/workspace/utils/landing-state.ts'
 
 const empty = {
   outcome: 'empty',

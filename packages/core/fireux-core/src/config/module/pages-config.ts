@@ -8,7 +8,7 @@ export function configurePages(resolver: Resolver, nuxt: Nuxt) {
 }
 
 /** Keep shared frames stable and fragment-based Dashboard pages unanimated. */
-export function configurePageTransitions(nuxt: Nuxt) {
+export function configurePageTransitions(nuxt: Nuxt, frame = 'dashboard') {
   // The policy needs the layout name before Nuxt generates runtime routes.
   nuxt.options.experimental.extraPageMetaExtractionKeys = [
     ...new Set([
@@ -20,7 +20,7 @@ export function configurePageTransitions(nuxt: Nuxt) {
     const applyPolicy = (items: any[], parentLayout?: string | false) => {
       for (const page of items) {
         const layout = pageLayoutName(page?.meta?.layout) ?? parentLayout
-        if (layout === 'dashboard' || layout === 'workspace') {
+        if (layout === frame) {
           page.meta = { ...(page.meta || {}), pageTransition: false }
         }
         if (Array.isArray(page?.children)) {

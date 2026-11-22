@@ -323,7 +323,7 @@ for (const event of ['draft change', 'modal ABA', 'owner change', 'dispose']) {
     })
     const form = () =>
       load(
-        'packages/core/fireux-core/src/runtime/workspace/components/Test/Form.vue',
+        'packages/extensions/fireux-workspace/src/runtime/workspace/components/Test/Form.vue',
         '({ save, value, busy, error })',
         {
           ref,

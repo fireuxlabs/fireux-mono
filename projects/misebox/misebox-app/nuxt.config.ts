@@ -33,6 +33,7 @@ export default defineFireuxEcosystem({
     ['fireux-jobs', { categories: ['hospitality'] }],
   ],
   extends: [
+    'fireux-workspace/layer',
     'fireux-misebox/kitchen-layer',
     'fireux-core/layer',
     'fireux-places/layer',

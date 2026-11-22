@@ -1,4 +1,4 @@
-import { useWorkspaceRecord } from '../runtime/workspace/composables/useWorkspaceRecord.ts'
+import { useWorkspaceRecord } from '../../../../extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import {
   KITCHEN_ACCESS_COLLECTION_PATH,
   readKitchenAppAccess,

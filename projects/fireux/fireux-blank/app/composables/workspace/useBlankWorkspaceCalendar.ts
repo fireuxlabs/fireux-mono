@@ -1,5 +1,5 @@
 import { useBlankWorkspace } from './useBlankWorkspace'
-import { useWorkspaceCalendar } from 'fireux-core/runtime/workspace/composables/useWorkspaceCalendar'
+import { useWorkspaceCalendar } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceCalendar'
 
 export function useBlankWorkspaceCalendar() {
   const workspace = useBlankWorkspace()

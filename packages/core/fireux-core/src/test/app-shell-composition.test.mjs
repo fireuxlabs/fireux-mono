@@ -17,6 +17,7 @@ import {
 
 const repo = fileURLToPath(new URL('../../../../../', import.meta.url))
 const runtime = join(repo, 'packages/core/fireux-core/src/runtime')
+const workspaceRuntime = join(repo, 'packages/extensions/fireux-workspace/src/runtime')
 
 test('maintained App roots share the stock lifecycle; only Go QR embeds its own outlet', () => {
   for (const group of readdirSync(join(repo, 'projects'), {
@@ -123,7 +124,7 @@ test('Workspace navigation preserves its frame while route and Entity changes di
       () =>
         h(tag, slots.default?.()),
   })
-  const workspace = surface(join(runtime, 'layouts/workspace.vue'), {
+  const workspace = surface(join(workspaceRuntime, 'layouts/workspace.vue'), {
     notificationsOpen: false,
   })
   const setupWorkspace = workspace.setup
@@ -149,7 +150,7 @@ test('Workspace navigation preserves its frame while route and Entity changes di
   })
   app.component(
     'WorkspacePage',
-    surface(join(runtime, 'workspace/components/Page.vue'), {
+    surface(join(workspaceRuntime, 'workspace/components/Page.vue'), {
       route,
       title: 'Team',
       description: '',
@@ -313,7 +314,7 @@ for (const layout of [
                   'packages/extensions/fireux-docs/src/runtime/layouts/docs.vue'
                 )
               : join(
-                  runtime,
+                  layout === 'workspace' ? workspaceRuntime : runtime,
                   `layouts/${layout === 'embedded' ? 'default' : layout}.vue`
                 ),
             {
@@ -331,7 +332,7 @@ for (const layout of [
     app.component('FireLayoutsDefaultFooter', wrapper('footer'))
     app.component(
       'WorkspacePage',
-      surface(join(runtime, 'workspace/components/Page.vue'), {
+      surface(join(workspaceRuntime, 'workspace/components/Page.vue'), {
         route: { path: '/workspace/example' },
         title: 'Workspace',
         description: '',
@@ -723,7 +724,11 @@ test('reviewed shared foundation templates compile with their named slots', () =
     'components/molecules/DisclosureCard.vue',
     'workspace/components/PageHeader.vue',
   ]) {
-    const { descriptor } = parse(readFileSync(join(runtime, file), 'utf8'))
+    const owner =
+      file.startsWith('workspace/') || file === 'layouts/workspace.vue'
+        ? workspaceRuntime
+        : runtime
+    const { descriptor } = parse(readFileSync(join(owner, file), 'utf8'))
     assert.deepEqual(
       compileTemplate({
         source: descriptor.template.content,
@@ -757,7 +762,7 @@ test('Workspace head selects Home and clears its override on other layouts', () 
   const config = reactive({ workspaces: ['project'] })
   const registrations = []
   const routes = loadScript(
-    readFileSync(join(runtime, 'workspace/utils/routes.ts'), 'utf8'),
+    readFileSync(join(workspaceRuntime, 'workspace/utils/routes.ts'), 'utf8'),
     {}
   )
   const layouts = loadScript(
@@ -766,7 +771,7 @@ test('Workspace head selects Home and clears its override on other layouts', () 
   )
   const { useWorkspaceManifest } = loadScript(
     readFileSync(
-      join(runtime, 'workspace/composables/useWorkspaceManifest.ts'),
+      join(workspaceRuntime, 'workspace/composables/useWorkspaceManifest.ts'),
       'utf8'
     ),
     {
@@ -775,11 +780,11 @@ test('Workspace head selects Home and clears its override on other layouts', () 
         useRuntimeConfig: () => ({ app: { buildId: 'test' } }),
         useHead: (registration) => registrations.push(registration),
       },
-      '../../app/composables/config/FireUXConfig': {
+      'fireux-core/runtime/app/composables/config/FireUXConfig': {
         useFireUXConfig: () => config,
       },
-      '../../app/utils/page-layout': layouts,
-      '../../app/utils/build-version-url': {
+      'fireux-core/runtime/app/utils/page-layout': layouts,
+      'fireux-core/runtime/app/utils/build-version-url': {
         withBuildVersion: (url, build) => url + '&v=' + build,
       },
       '../utils/routes': routes,
@@ -924,7 +929,7 @@ test('App theme validates the same complete palette and typography contract', ()
 
 for (const contentHeader of [false, true]) {
   test(`Workspace introduction has one owner with contentHeader=${contentHeader}`, async () => {
-    const page = surface(join(runtime, 'workspace/components/Page.vue'), {
+    const page = surface(join(workspaceRuntime, 'workspace/components/Page.vue'), {
       route: { path: '/workspace/example' },
       title: 'Example',
       description: 'Static description',

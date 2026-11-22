@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, watch } from 'vue'
-import * as routes from '../runtime/workspace/utils/routes.ts'
+import * as routes from '../../../../extensions/fireux-workspace/src/runtime/workspace/utils/routes.ts'
 import {
   resolvePostAuthDestination,
   authRedirectPath,
@@ -13,7 +13,7 @@ import {
 
 const source = readFileSync(
   new URL(
-    '../runtime/workspace/composables/useWorkspaceEntryCta.ts',
+    '../../../../extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspaceEntryCta.ts',
     import.meta.url
   ),
   'utf8'
@@ -113,7 +113,7 @@ function workspaceGuard(
 ) {
   const source = readFileSync(
     new URL(
-      '../runtime/middleware/fireux-workspace.global.ts',
+      '../../../../extensions/fireux-workspace/src/runtime/middleware/fireux-workspace.global.ts',
       import.meta.url
     ),
     'utf8'
@@ -122,6 +122,12 @@ function workspaceGuard(
     .replace('export default ', 'const middleware = ')
     .replaceAll('import.meta.server', String(server))
     .replaceAll('import.meta.dev', String(dev))
+  const authSource = readFileSync(
+    new URL('../runtime/middleware/fireux-auth.global.ts', import.meta.url),
+    'utf8'
+  )
+    .replace(/^import .*\n/gm, '')
+    .replace('export default ', 'return ')
   const bindings = {
     defineNuxtRouteMiddleware: (callback) => callback,
     navigateTo: (target) => target,
@@ -147,10 +153,14 @@ function workspaceGuard(
     }),
     resolveClientAuthState: async () => ({ isAuthenticated: authenticated }),
   }
-  return compileFunction(
+  const availability = compileFunction(
     `${stripTypeScriptTypes(source)}; return middleware`,
     Object.keys(bindings)
   )(...Object.values(bindings))
+  const auth = compileFunction(authSource, Object.keys(bindings))(
+    ...Object.values(bindings)
+  )
+  return (to) => availability(to) ?? auth(to)
 }
 
 test('server and client resolve the same workspace entrance for tenant and global Apps', async () => {

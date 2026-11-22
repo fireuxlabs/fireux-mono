@@ -26,7 +26,7 @@ const scratch = mkdtempSync(
   join(realpathSync(tmpdir()), 'fireux-core-installation-')
 )
 const installed = join(scratch, 'node_modules/fireux-core')
-// Opt in while the existing registration baseline and the cutover target differ.
+// The strict installation suite also runs the localhost emulator journey.
 const verifyCoreOnly = process.env.FIREUX_VERIFY_CORE_ONLY === '1'
 
 before(() => {
@@ -90,6 +90,18 @@ async function prepare(cwd, buildDir) {
         realpathSync(layer.root)
       ),
       pages: app.pages.map((page) => page.path),
+      css: nuxt.options.css,
+      workspaceNativeFiles: [
+        ...app.pages
+          .filter(({ path }) => ['/workspace', '/dashboard/workspace'].includes(path))
+          .map(({ file }) => file),
+        app.layouts.workspace?.file,
+        ...app.middleware
+          .filter(({ name }) => name.includes('workspace'))
+          .map(({ path }) => path),
+      ]
+        .filter(Boolean)
+        .map((file) => realpathSync(file)),
       layouts: Object.keys(app.layouts),
       middleware: app.middleware.map(({ name }) => name),
       components: app.components.map(({ pascalName }) => pascalName),
@@ -133,10 +145,30 @@ function assertCoreRegistration(result, { module, layer }) {
   )
 }
 
-function assertCurrentWorkspaceRegistration(result, { selected, layer }) {
-  assert.equal(result.pages.includes('/workspace'), layer)
-  assert.equal(result.layouts.includes('workspace'), layer)
-  assert.equal(result.middleware.includes('fireux-workspace-global'), layer)
+function assertWorkspaceRegistration(result, { selected }) {
+  assert.equal(result.pages.includes('/workspace'), selected)
+  assert.equal(result.layouts.includes('workspace'), selected)
+  assert.equal(result.middleware.includes('fireux-workspace-global'), selected)
+  const runtime = join(
+    repository,
+    'packages/extensions/fireux-workspace/src/runtime'
+  )
+  const nativeFiles = [
+    'layouts/workspace.vue',
+    'middleware/fireux-workspace.global.ts',
+    'pages/dashboard/workspace.vue',
+    'pages/workspace/index.vue',
+  ].map((file) => join(runtime, file))
+  assert.deepEqual(result.workspaceNativeFiles.sort(), selected ? nativeFiles : [])
+  if (selected) {
+    assert.ok(result.css.includes(join(runtime, 'assets/styles/workspace.css')))
+    assert.ok(!result.css.includes('fireux-core/runtime/assets/styles/main.css'))
+    assert.ok(result.middleware.includes('fireux-auth-global'))
+    assert.ok(
+      result.middleware.indexOf('fireux-workspace-global') <
+        result.middleware.indexOf('fireux-auth-global')
+    )
+  }
   assert.equal(result.components.includes('WorkspaceSidebar'), selected)
   assert.equal(/\buseWorkspace\b/.test(result.imports), selected)
   assert.equal(hasHandler(result, '/workspace.webmanifest', 'GET'), selected)
@@ -183,7 +215,7 @@ for (const [name, module, layer] of [
       result.layers.join(', ')
     )
     assertCoreRegistration(result, { module, layer })
-    assertCurrentWorkspaceRegistration(result, { selected: false, layer })
+    assertWorkspaceRegistration(result, { selected: false })
   })
 
   if (verifyCoreOnly) {
@@ -303,16 +335,15 @@ for (const [name, workspaces, path] of [
     try {
       const result = await prepare(cwd, join(scratch, name))
       assertCoreRegistration(result, { module: true, layer: true })
-      assertCurrentWorkspaceRegistration(result, {
+      assertWorkspaceRegistration(result, {
         selected: workspaces.length > 0,
-        layer: true,
       })
       assert.deepEqual(result.workspaces, workspaces)
       assert.ok(result.pages.includes(path), path)
       if (!workspaces.length) {
         assert.deepEqual(
           result.pages.filter((route) => route.startsWith('/workspace')),
-          ['/workspace']
+          []
         )
       }
     } finally {

@@ -97,6 +97,7 @@ export default config
         modules: [
           function (_options, nuxt) {
             configurePageTransitions(nuxt)
+            configurePageTransitions(nuxt, 'workspace')
             nuxt.hook('nitro:config', (config) => {
               publicAssets = config.publicAssets || []
             })

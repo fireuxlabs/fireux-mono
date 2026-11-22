@@ -1,0 +1,63 @@
+import { computed } from 'vue'
+import { useRoute } from '#imports'
+import { useWorkspaceNav } from './useWorkspaceNav'
+import { useWorkspaceEntryCta } from './useWorkspaceEntryCta'
+import { toWorkspaceFamilyLabel } from '../utils/routes'
+import type { NavItem } from 'fireux-core/runtime/types/navigation'
+
+/** Route metadata describes the page; navigation supplies its named ancestors. */
+export function useWorkspacePageNavigation() {
+  const route = useRoute()
+  const navigation = useWorkspaceNav()
+  const { workspaceEntryPath } = useWorkspaceEntryCta()
+  const metadata = computed(
+    () => route.meta.nav as Partial<NavItem> | undefined
+  )
+  const entries = computed<Partial<NavItem>[]>(() =>
+    navigation.items.value.flatMap((item) => [item, ...(item.children || [])])
+  )
+  const current = computed(() =>
+    entries.value.find(
+      (item) =>
+        item.to === route.path ||
+        (metadata.value?.key && item.key === metadata.value.key)
+    )
+  )
+  const title = computed(
+    () =>
+      metadata.value?.label ||
+      current.value?.label ||
+      toWorkspaceFamilyLabel(navigation.currentWorkspace.value) ||
+      'Workspace'
+  )
+  const description = computed(
+    () => metadata.value?.description || current.value?.description || ''
+  )
+  // Explicit content ownership avoids duplicate introductions without child-to-parent state.
+  const contentHeader = computed(() => route.meta.workspaceHeader === 'content')
+  const children = computed(() => current.value?.children || [])
+  const breadcrumbs = computed(() => {
+    if (metadata.value?.groupIndex || current.value?.groupIndex) return []
+    const items: { label: string; to?: string }[] = []
+    const seen = new Set<string>([route.path])
+    const add = (label: string, to?: string) => {
+      if (!to || seen.has(to)) return
+      items.push({ label, to })
+      seen.add(to)
+    }
+    for (const item of navigation.items.value) {
+      if (
+        item.to &&
+        item.to !== workspaceEntryPath.value &&
+        item.to !== `/workspace/${navigation.currentWorkspace.value}` &&
+        item.key !==
+          `workspace-${navigation.currentWorkspace.value}-overview` &&
+        route.path.startsWith(item.to.replace(/\/$/, '') + '/')
+      )
+        add(item.label, item.to)
+    }
+    items.push({ label: title.value })
+    return items.length > 1 ? items : []
+  })
+  return { title, description, contentHeader, children, breadcrumbs }
+}

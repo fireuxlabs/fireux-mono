@@ -20,6 +20,7 @@ const fireux = defineFireuxApp({
   context:
     'A customer-facing prototype for premium private guided rides. Visitors can check the configured departure against working days, closed dates and Ben’s Google Calendar and confirm one private tour per day at the catalog price per person; the App stores a booking record and the shared FireUX Bookings package owns confirmation orchestration and Calendar transport. The Business Workspace provides profile/contact details, linked locations, a Team roster, availability settings and private booking records. Public bookings require a server-configured Business id and Calendar credentials. No payment, outbound confirmation email or cancellation flow is implemented. Prices and operating capacity require operator review before release.',
   extends: [
+    'fireux-workspace/layer',
     'fireux-core/layer',
     'fireux-slap/layer',
     'fireux-businesses/layer',

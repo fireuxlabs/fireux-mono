@@ -26,6 +26,7 @@ export default defineFireuxApp({
     'fireux-sproochli',
   ],
   extends: [
+    'fireux-workspace/layer',
     'fireux-misebox/kitchen-layer',
     'fireux-core/layer',
     'fireux-places/layer',

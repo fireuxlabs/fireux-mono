@@ -8,7 +8,7 @@ import { renderToString } from 'vue/server-renderer'
 const { descriptor } = parse(
   readFileSync(
     new URL(
-      '../../../runtime/workspace/components/AI/Compact.vue',
+      '../../../../../../extensions/fireux-workspace/src/runtime/workspace/components/AI/Compact.vue',
       import.meta.url
     ),
     'utf8'
@@ -64,7 +64,7 @@ test('compact prompt guards keyboard submission for busy, disabled and empty sta
   const { descriptor: prompt } = parse(
     readFileSync(
       new URL(
-        '../../../runtime/workspace/components/AI/CompactComposer.vue',
+        '../../../../../../extensions/fireux-workspace/src/runtime/workspace/components/AI/CompactComposer.vue',
         import.meta.url
       ),
       'utf8'

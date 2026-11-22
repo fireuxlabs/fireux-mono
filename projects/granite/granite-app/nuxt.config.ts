@@ -14,7 +14,11 @@ export default defineFireuxEcosystem({
   seo: { staticPaths: ['/home'], noindexPaths: ['/'] },
   workspaces: ['portfolio'],
   modules: ['fireux-workspace'],
-  extends: ['fireux-core/layer', 'fireux-granite/portfolio-layer'],
+  extends: [
+    'fireux-workspace/layer',
+    'fireux-core/layer',
+    'fireux-granite/portfolio-layer',
+  ],
   subscriptionCapacity: {
     portfolio: { free: 1, pro: 1, business: null },
     'portfolio.team': { free: 3, pro: 7, business: null },

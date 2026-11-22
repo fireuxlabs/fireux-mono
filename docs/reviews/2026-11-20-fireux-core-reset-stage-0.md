@@ -327,3 +327,31 @@ Core's own public surface.
 
 This review authorizes no source moves. The cutover and its acceptance
 checks remain pending review.
+
+### Slice 3 verification checkpoint
+
+Slice 3 moved the shared Workspace runtime and native Nuxt entries into
+`fireux-workspace`. The strict packed Core gate passed 10 checks, including
+module-only, layer-only and combined installs with Workspace unavailable,
+and the signed-in account journey against local Firebase emulators.
+
+Go QR rendered pricing without Workspace. FireUX Blank rendered its opted-in
+Workspace home and overview and loaded the Workspace stylesheet and manifest.
+The signed-in fixture rendered the Misebox Chef Dashboard editor with Core
+and the Chef capability. Saving a Chef profile and running the full Misebox
+App remain unverified.
+
+The broader Core suite passed 1,203 of 1,217 tests. The same 14 failures were
+reproduced against Slice 2 (`394b3fc2d`) and remain open:
+
+| Cases | Failing contract |
+| --- | --- |
+| 2 | Menu pagination retry and Kitchen collection read outcomes fail because their fixtures do not supply `useApiRead`. |
+| 1 | Team collection composition fails its empty-state assertion. |
+| 7 | Kitchen Test command-scope cases point at the retired `useKitchenWorkspaceTest.ts` fixture source. |
+| 4 | Project create, update, delete and App create membership-replacement cases fail because their fixtures do not supply `resolveAppUserAccess`. |
+
+Workspace package validation and external consumer migration remain separate
+from this checkpoint. Migrate shared extensions before their dependent Apps,
+then run the integration gate and verify the retired Core Workspace path
+has no callers.

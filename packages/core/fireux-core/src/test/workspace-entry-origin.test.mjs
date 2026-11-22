@@ -31,7 +31,7 @@ function entry({
 } = {}) {
   const calls = []
   const useEntry = load(
-    '../runtime/workspace/composables/useWorkspaceEntryCta.ts',
+    '../../../../extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspaceEntryCta.ts',
     'useWorkspaceEntryCta',
     {
       computed,

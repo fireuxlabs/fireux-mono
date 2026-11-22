@@ -40,7 +40,7 @@ with registration; do not retain old-name aliases.
 Entity operator components follow the accepted `<Entity>Workspace<Capability>*`
 direction in the [component surface convention](components.md#domain-component-surfaces).
 That convention records current registration adoption separately; it does not
-rename Core's shared `Workspace*` components or imply a `Public<Entity>*` cutover.
+rename the shared `Workspace*` components or imply a `Public<Entity>*` cutover.
 
 ## Shared HTTP reads
 
@@ -69,9 +69,9 @@ historical knowledge:
 2. Which declared Entity or shared Workspace concept owns it?
 
 Named runtime roots are reserved for the package's owned Entities and the
-shared Workspace concept. Core owns `app/`, `ecosystem/`, `user/` and
-`workspace/`; other packages retain their named Entity roots and may add
-`workspace/` for genuine package-wide composition. Workspace owns
+shared Workspace concept. Core owns `app/`, `ecosystem/` and `user/`.
+The optional `fireux-workspace` package owns the shared `workspace/` runtime.
+Other packages may use `workspace/` for their own package-wide composition. Workspace owns
 shared management presentation and selection, without owning the domain records
 being managed. `Detail`, `Directory`, `AI` and other surfaces stay beneath their
 actual owner and technical role. Nuxt entrypoints and genuinely shared technical
@@ -310,9 +310,9 @@ src/runtime/workspace/
 
 Nuxt adapters remain under `runtime/layouts/`, `runtime/pages/workspace/`,
 `runtime/middleware/` and `runtime/server/api/workspace/`. They consume the
-Workspace owner or the appropriate Entity owner. Core explicitly registers
-`workspace/components` with the `Workspace` prefix and registers its composables;
-its Tailwind source list includes the moved component root. The shared Team and
+Workspace owner or the appropriate Entity owner. The optional Workspace layer
+owns the shared pages, layout and middleware. Its module registers components
+with the `Workspace` prefix, the composables and the Workspace Tailwind sources. The shared Team and
 Test controllers are `useWorkspaceTeam` and `useWorkspaceTest`.
 
 Package-wide Workspace composition belongs to the package that selects and
@@ -320,7 +320,7 @@ combines its domain capabilities. Granite proves this at
 [`fireux-granite/src/runtime/workspace/components/Portfolio/Overview/Index.vue`](../../packages/ecosystem/fireux-granite/src/runtime/workspace/components/Portfolio/Overview/Index.vue):
 it composes the Portfolio overview with Documents, Tasks and Compliance and
 registers the existing `WorkspacePortfolioOverview` name explicitly. This is an
-upper integration owner, distinct from Core's shared `Workspace*` tree and an
+upper integration owner, distinct from the shared `Workspace*` tree and an
 Entity's operator component scan. Its explicit name and imports must move with
 the Portfolio family if that registration cuts over; changing a base prefix
 alone would leave the override under its former name. Reservations similarly

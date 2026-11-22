@@ -49,12 +49,12 @@ shared component admission and current component evidence.
 
 ## Current shared frame
 
-Core's [WorkspacePage.vue](../../packages/core/fireux-core/src/runtime/workspace/components/Page.vue)
+Workspace's [WorkspacePage.vue](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/Page.vue)
 composes Nuxt UI's dashboard panel around the App-supplied page slot with the shared
-[Navbar.vue](../../packages/core/fireux-core/src/runtime/workspace/components/Navbar.vue)
-and [Breadcrumbs.vue](../../packages/core/fireux-core/src/runtime/workspace/components/Breadcrumbs.vue).
+[Navbar.vue](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/Navbar.vue)
+and [Breadcrumbs.vue](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/Breadcrumbs.vue).
 Group links use Nuxt UI page cards through the ordinary
-[PageLinks.vue](../../packages/core/fireux-core/src/runtime/workspace/components/PageLinks.vue)
+[PageLinks.vue](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/PageLinks.vue)
 content component. The frame uses semantic styles in
 [workspace-surface.scss](../../packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/workspace-surface.scss).
 WorkspaceNavbar owns selected identity and page actions; Dashboard's separate

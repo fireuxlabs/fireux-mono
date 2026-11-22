@@ -44,7 +44,7 @@ for (const domain of ['Kitchen', 'Project']) {
       serverAuditStamp: () => ({ by: 'actor' }),
     }
     const memberSource = readFileSync(
-      new URL('../runtime/workspace/server/team/members.ts', import.meta.url),
+      new URL('../../../../extensions/fireux-workspace/src/runtime/workspace/server/team/members.ts', import.meta.url),
       'utf8'
     )
       .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')

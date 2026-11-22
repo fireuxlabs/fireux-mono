@@ -21,6 +21,7 @@ export default defineFireuxApp({
   },
   modules: ['fireux-workspace', 'fireux-places', 'fireux-go-qr'],
   extends: [
+    'fireux-workspace/layer',
     'fireux-misebox/kitchen-layer',
     'fireux-core/layer',
     'fireux-places/layer',

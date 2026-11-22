@@ -6,16 +6,35 @@
   "type": "module",
   "exports": {
     ".": "./src/module.ts",
+    "./layer": "./src/runtime/nuxt.config.ts",
+    "./runtime/*.vue": "./src/runtime/*.vue",
+    "./runtime/*": "./src/runtime/*.ts",
     "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "runtime/*.vue": [
+        "src/runtime/*.vue"
+      ],
+      "runtime/*": [
+        "src/runtime/*.ts"
+      ]
+    }
   },
   "files": [
     "src/**/*"
   ],
   "dependencies": {
-    "@nuxt/kit": "^4.6.1",
+    "@nuxt/kit": "4.6.1",
     "fireux-core": "workspace:*"
   },
   "peerDependencies": {
-    "nuxt": "^4.6.1"
+    "@nuxt/schema": "^4.6.1",
+    "@nuxt/ui": "^4.12.0",
+    "firebase-admin": "^12.7.0",
+    "h3": "^1.15.4",
+    "nuxt": "^4.6.1",
+    "vue": "^3.5.43",
+    "vue-router": "^5.4.0"
   }
 }

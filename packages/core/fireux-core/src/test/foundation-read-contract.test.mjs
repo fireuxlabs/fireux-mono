@@ -155,10 +155,6 @@ test('Dashboard sections keep their reads and outcomes separate without another 
     useAppRead: forbidden,
     useUserSession: forbidden,
     useDashboardNav: forbidden,
-    useWorkspaceEntryCta: () => ({
-      hasWorkspaceEntry: ref(true),
-      workspaceEntryHref: ref('/workspace'),
-    }),
   }
   function section(file, names) {
     const source = readFileSync(
@@ -180,7 +176,7 @@ test('Dashboard sections keep their reads and outcomes separate without another 
     calls.map(([owner]) => owner),
     ['user', 'account']
   )
-  const app = section('App.vue', '{outcome,canManageApp,hasWorkspaceEntry}')
+  const app = section('App.vue', '{outcome,canManageApp}')
   assert.deepEqual(
     calls.map(([owner]) => owner),
     ['user', 'account', 'membership']
@@ -197,7 +193,6 @@ test('Dashboard sections keep their reads and outcomes separate without another 
     avatarUrl: '',
     to: '/users/person',
   })
-  assert.equal(app.hasWorkspaceEntry.value, true)
   membership.outcome.value = 'ready'
   identity.outcome.value = 'error'
   assert.equal(user.hasError.value, true)

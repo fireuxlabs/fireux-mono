@@ -8,7 +8,7 @@ import { renderToString } from 'vue/server-renderer'
 import { parse } from 'vue/compiler-sfc'
 const source = readFileSync(
   new URL(
-    '../runtime/workspace/composables/useWorkspacePageNavigation.ts',
+    '../../../../extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspacePageNavigation.ts',
     import.meta.url
   ),
   'utf8'
@@ -192,7 +192,7 @@ test('the actual breadcrumb component renders no empty landmark and keeps ancest
   const { descriptor } = parse(
     readFileSync(
       new URL(
-        '../runtime/workspace/components/Breadcrumbs.vue',
+        '../../../../extensions/fireux-workspace/src/runtime/workspace/components/Breadcrumbs.vue',
         import.meta.url
       ),
       'utf8'

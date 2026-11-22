@@ -22,7 +22,7 @@ test('Workspace transitions are disabled recursively without changing other rout
   configure({
     options,
     hook: (name, callback) => hooks.push({ name, callback }),
-  })
+  }, 'workspace')
   assert.deepEqual(options.experimental.extraPageMetaExtractionKeys, [
     'nav',
     'layout',

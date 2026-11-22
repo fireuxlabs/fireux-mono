@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useWorkspaceIdentity } from 'fireux-core/runtime/workspace/composables/useWorkspaceIdentity'
+import { useWorkspaceIdentity } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceIdentity'
 import { useBlankWorkspace } from './useBlankWorkspace'
 
 export function useBlankWorkspaceIdentity() {

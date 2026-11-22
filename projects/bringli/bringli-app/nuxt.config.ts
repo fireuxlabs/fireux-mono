@@ -14,6 +14,7 @@ export default defineFireuxEcosystem({
   seo: { staticPaths: ['/home'], noindexPaths: ['/'] },
   workspaces: ['supplier'],
   extends: [
+    'fireux-workspace/layer',
     'fireux-core/layer',
     'fireux-bringli/supplier-layer',
     'fireux-places/layer',

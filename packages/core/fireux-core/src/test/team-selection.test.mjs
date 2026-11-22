@@ -25,7 +25,7 @@ function load(relativePath, name, dependencies) {
 
 test('Team retains selection while its collection is unsettled', async () => {
   const useWorkspaceTeam = load(
-    '../runtime/workspace/composables/useWorkspaceTeam.ts',
+    '../../../../extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspaceTeam.ts',
     'useWorkspaceTeam',
     { computed, ref, watchEffect, defineWorkspaceCapabilityContext: value => value }
   )
@@ -52,7 +52,7 @@ test('Team retains selection while its collection is unsettled', async () => {
 
 
 test('Team focuses a created member only in its original workspace and shares capacity', async () => {
-  const useWorkspaceTeam = load('../runtime/workspace/composables/useWorkspaceTeam.ts', 'useWorkspaceTeam', {
+  const useWorkspaceTeam = load('../../../../extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspaceTeam.ts', 'useWorkspaceTeam', {
     computed, ref, watchEffect, defineWorkspaceCapabilityContext: value => value,
   })
   const members = ref([{id: 'one'}])

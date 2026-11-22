@@ -28,36 +28,35 @@ Related maps: [repository](fireux-mono.md), [components](components.md),
 
 Dashboard is a universal Core surface for App and account work. Workspace is
 optional and manages a specific Entity. Apps with a Workspace family select
-`fireux-workspace` in their Nuxt modules. That module owns component and
-composable registration. The Workspace runtime and native layer entries
-remain in Core pending their separate cutover.
+`fireux-workspace` in their Nuxt modules and extend `fireux-workspace/layer`.
+The module registers shared components, composables and the Workspace manifest.
+The layer owns its pages, layout and middleware.
 
 ```text
 App → Ecosystem → Extension → Core
 
-Core                    Shared Workspace mechanics and proved controls
+Workspace               Shared Workspace mechanics and proved controls
 Domain Entity runtime   Identity, capabilities, authority, records and commands
 Ecosystem / App         Product composition, enabled surfaces and App policy
 ```
 
-- Core owns selection mechanics, entry resolution, the named Workspace
+- Workspace owns selection mechanics, entry resolution, the named Workspace
   composition and its shared page frame, plus Identity and Team interaction
   primitives.
 - Domains supply accessible Entity collections, canonical readers, fields,
   roles, invitations, capability rules and trusted commands. Sharing a control
-  does not transfer its authority to Core.
+  does not transfer its authority to Workspace.
 - Apps own deployment, branding, configured navigation and route adapters.
   Ecosystems own genuine cross-extension composition. Neither copies a lower
   owner's implementation.
 - An independently owned child Entity retains its models and commands even when
   another Entity's Workspace manages it. UI grouping does not decide storage.
 
-Current Core entrypoints under `packages/core/fireux-core/src/runtime/`:
+Current shared entrypoints under `packages/extensions/fireux-workspace/src/runtime/`:
 
 - `workspace/composables/useWorkspace.ts`: active Entity selection.
 - `workspace/composables/useWorkspaceEntryCta.ts`: App-aware entry links.
 - `workspace/components/EntitySwitcher.vue`: selected-Entity switching control.
-- `app/components/FireuxApp.vue`: one native layout and page outlet.
 - `workspace/composables/useWorkspaceManifest.ts`: versioned Workspace Home
   manifest link for the native Workspace layout. The optional module registers
   its manifest handler.
@@ -65,8 +64,12 @@ Current Core entrypoints under `packages/core/fireux-core/src/runtime/`:
 - `workspace/components/Page.vue`: dashboard panel, main and supplied page slot.
 - `workspace/components/Navbar.vue` and `Breadcrumbs.vue`: shared page framing.
 - `workspace/components/PageLinks.vue`: group navigation as page content.
-- `composables/fireux/useIdentity.ts` and `useWorkspaceTeam.ts`: shared interaction state.
+- `workspace/composables/useWorkspaceIdentity.ts` and
+  `workspace/composables/useWorkspaceTeam.ts`: shared interaction state.
 - `workspace/components/Team/`: Editor, People, Assignment and Roles controls.
+
+The [Core App shell](../../packages/core/fireux-core/src/runtime/app/components/FireuxApp.vue)
+supplies the native layout and page outlet.
 
 ## Home, Overview, groups and children
 
@@ -80,10 +83,10 @@ These are separate responsibilities:
 | Capability page | Do the named domain work with its own controls and authority.                                                   |
 | Record page     | Inspect or edit a record when the journey needs a separate destination.                                         |
 
-The [Workspace sidebar](../../packages/core/fireux-core/src/runtime/workspace/components/Sidebar.vue)
+The [Workspace sidebar](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/Sidebar.vue)
 links the App wordmark to the configured public `homePath`. Compact mode uses
 the App logo for the same link. Signed-in users can also reach App Home from
-their account menu. The [Entity switcher](../../packages/core/fireux-core/src/runtime/workspace/components/EntitySwitcher.vue)
+their account menu. The [Entity switcher](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/EntitySwitcher.vue)
 opens one menu from the selected Entity's avatar, name or chevrons when choices
 are available. Compact mode opens the same menu from the avatar. Both menus
 offer the active family's Workspace Home followed by its available Entities.
@@ -94,7 +97,7 @@ Misebox domain groups, with Settings after domain work.
 Other families retain their own declared navigation; this is not a claim that
 all have adopted Kitchen's grouping or need the same number of groups.
 
-Pages select Core's native `workspace` layout through `layout: 'workspace'`.
+Pages select the optional package's native `workspace` layout through `layout: 'workspace'`.
 FireuxApp supplies the same page outlet used by every other native layout.
 Workspace composes the persistent sidebar, one page frame and shared
 Navbar/Breadcrumbs; the frame consumes the supplied page slot and owns its main
@@ -122,7 +125,7 @@ counts; status comes from records and policy, not AI.
 ## Breadcrumbs
 
 `useWorkspacePageNavigation` owns the shared trail consumed by native
-`UBreadcrumb`. Core's `WorkspacePage` mounts `WorkspaceBreadcrumbs` once, before
+`UBreadcrumb`. The shared `WorkspacePage` mounts `WorkspaceBreadcrumbs` once, before
 the route content; domain page headers and children do not mount another trail.
 An explicit registered `nav.groupIndex` suppresses its trail, including nested
 group indexes. A trail containing only the current-page label is also omitted
@@ -141,7 +144,7 @@ a generic detail label is not evidence of a record's name.
 
 ## Page introductions
 
-Core's [WorkspacePageHeader](../../packages/core/fireux-core/src/runtime/workspace/components/PageHeader.vue)
+Workspace's [WorkspacePageHeader](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/PageHeader.vue)
 is the shared Workspace introduction presentation, built on native `UPageHeader`.
 It accepts reactive `title` and `description` props, an optional `actions` slot,
 and `variant="primary"` (default) or `variant="child"`. A group index or
@@ -203,7 +206,7 @@ rather than nesting it inside another WorkspaceAI section. Existing domain
 Assistant controllers remain mounted once and own their lifecycle. See the
 [compact surface checks](../../packages/core/fireux-core/src/test/workspace/components/AICompact.test.mjs).
 
-Core's `workspace/components/AI/Composer.vue` is the shared prompt control.
+Workspace's `workspace/components/AI/Composer.vue` is the shared prompt control.
 Use `WorkspaceAIComposer spacious` for a group index: three initial text rows,
 growing to twelve. Child capabilities use the same composer without `spacious`:
 one initial row, growing to four. Native UChatPrompt retains textarea resizing,
@@ -291,7 +294,7 @@ family path, for shared entry actions.
 
 ## Composition and authority
 
-Routes remain thin adapters. Workspace route metadata selects the shared Core
+Routes remain thin adapters. Workspace route metadata selects the shared Workspace
 frame; pages provide domain content and may use nested Nuxt outlets only for a
 real parent/child route. Follow the
 [component API rule](components.md#component-apis-and-extension-points); a shared

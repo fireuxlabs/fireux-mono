@@ -1,5 +1,5 @@
-import { workspaceSwitchPath } from '../runtime/workspace/utils/switch-route.ts'
-import { useWorkspaceRecord } from '../runtime/workspace/composables/useWorkspaceRecord.ts'
+import { workspaceSwitchPath } from '../../../../extensions/fireux-workspace/src/runtime/workspace/utils/switch-route.ts'
+import { useWorkspaceRecord } from '../../../../extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import { isNavigationFailure } from 'vue-router'
 import { useCommandScope } from '../runtime/composables/fireux/commands/useCommandScope.ts'
 import {
@@ -43,7 +43,7 @@ function createWorkspace() {
     return map.get(key)
   }
   const useWorkspace = load(
-    '../runtime/workspace/composables/useWorkspace.ts',
+    '../../../../extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspace.ts',
     'useWorkspace',
     {
       computed,
@@ -176,7 +176,7 @@ for (const family of [
           : 'useBlankCollection']: () => source,
     }
     const useWorkspaceSwitch = load(
-      '../runtime/workspace/composables/useWorkspaceSwitch.ts',
+      '../../../../extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspaceSwitch.ts',
       'useWorkspaceSwitch',
       bindings
     )
@@ -414,7 +414,7 @@ test('workspace creation uses only the supplied domain count and waits for acces
     { readAppUserSubscription }
   )
   const resolveWorkspaceCanCreate = load(
-    '../runtime/workspace/utils/policy.ts',
+    '../../../../extensions/fireux-workspace/src/runtime/workspace/utils/policy.ts',
     'resolveWorkspaceCanCreate',
     {}
   )
@@ -429,7 +429,7 @@ test('workspace creation uses only the supplied domain count and waits for acces
     subscriptionCapacity: { project: { free: 1, pro: 1, business: null } },
   }
   const useWorkspaceCreation = load(
-    '../runtime/workspace/composables/useWorkspaceCreation.ts',
+    '../../../../extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspaceCreation.ts',
     'useWorkspaceCreation',
     {
       computed,
@@ -480,7 +480,7 @@ test('workspace creation uses only the supplied domain count and waits for acces
 
 test('compact and open string forms keep failed drafts and submit the same trimmed value', async () => {
   const source = readFileSync(
-    new URL('../runtime/workspace/components/Test/Form.vue', import.meta.url),
+    new URL('../../../../extensions/fireux-workspace/src/runtime/workspace/components/Test/Form.vue', import.meta.url),
     'utf8'
   )
     .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
@@ -552,7 +552,7 @@ test('component-local cookie refs all retain the last shared selection on dispos
   const states = new Map(),
     cookies = []
   const use = load(
-    '../runtime/workspace/composables/useWorkspace.ts',
+    '../../../../extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspace.ts',
     'useWorkspace',
     {
       computed,
@@ -605,7 +605,7 @@ test('a Kitchen selected in another tab replaces stale state and survives later 
     cookies = []
   let stored = 'la-tap'
   const use = load(
-    '../runtime/workspace/composables/useWorkspace.ts',
+    '../../../../extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspace.ts',
     'useWorkspace',
     {
       computed,
@@ -641,7 +641,7 @@ test('a Kitchen selected in another tab replaces stale state and survives later 
 
 test('Workspace footer composes the active family switcher independently of bottom navigation entries', () => {
   const source = readFileSync(
-    new URL('../runtime/workspace/components/Sidebar.vue', import.meta.url),
+    new URL('../../../../extensions/fireux-workspace/src/runtime/workspace/components/Sidebar.vue', import.meta.url),
     'utf8'
   )
   assert.match(source, /:is="workspaceNavigation"/)

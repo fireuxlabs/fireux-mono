@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 const source = readFileSync(
-  new URL('../runtime/workspace/utils/active-destination.ts', import.meta.url),
+  new URL('../../../../extensions/fireux-workspace/src/runtime/workspace/utils/active-destination.ts', import.meta.url),
   'utf8'
 ).replace('export function', 'function')
 const active = compileFunction(
@@ -78,7 +78,7 @@ test('path boundaries prevent similarly named capabilities matching each other',
 // Exercise the actual shared sidebar projection for both supported group shapes.
 function sidebar(items, route, mode = 'expanded') {
   const layout = readFileSync(
-    new URL('../runtime/workspace/components/Sidebar.vue', import.meta.url),
+    new URL('../../../../extensions/fireux-workspace/src/runtime/workspace/components/Sidebar.vue', import.meta.url),
     'utf8'
   )
   const start = layout.indexOf('const activeDestination = computed(')

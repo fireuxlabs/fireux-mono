@@ -155,7 +155,7 @@ Their explicit provider plumbing is not the public group-parent naming template.
 Not every `useX` is an injected getter: ordinary readers, command
 adapters and local workflow composables retain their construction semantics.
 Workspace families also consume Core's
-[`defineWorkspace`](../../packages/core/fireux-core/src/runtime/workspace/composables/useWorkspace.ts)
+[`defineWorkspace`](../../packages/extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspace.ts)
 through capability names; its App-scoped instance and last-consumer cleanup are
 a separate, explicit sharing mechanism, not a reason to introduce providers.
 

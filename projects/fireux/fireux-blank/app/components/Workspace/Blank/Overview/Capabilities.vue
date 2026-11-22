@@ -80,7 +80,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
+import Summary from 'fireux-workspace/runtime/workspace/components/Overview/Summary.vue'
 import { useBlankWorkspaceHome } from '../../../../composables/workspace/useBlankWorkspaceHome'
 import { useBlankWorkspaceIdentity } from '../../../../composables/workspace/useBlankWorkspaceIdentity'
 import { useBlankWorkspace } from '../../../../composables/workspace/useBlankWorkspace'

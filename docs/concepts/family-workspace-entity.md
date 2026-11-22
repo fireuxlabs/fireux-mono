@@ -50,7 +50,7 @@ also keyed by member ID, and closing a dialog disposes its form. Forms own local
 busy/error state and suppress completion after disposal; they do not acquire Auth,
 App membership or selection-epoch watchers. Domain controllers use the live roster
 and apply post-create selection only if its original Entity remains selected.
-The six `use*Team` owners and Core's `useWorkspaceTeam.ts` define this bounded contract;
+The six `use*Team` owners and Workspace's `useWorkspaceTeam.ts` define this bounded contract;
 other capability preparation flows remain outside this cutover.
 
 ## Workspace ownership levels
@@ -335,7 +335,7 @@ Every Workspace Entity must share these rules:
 
 - Neutral Identity read presentation and availability reuse
   [`useIdentity`](../../packages/core/fireux-core/src/runtime/composables/fireux/useIdentity.ts)
-  and [`useWorkspaceIdentity`](../../packages/core/fireux-core/src/runtime/workspace/composables/useWorkspaceIdentity.ts).
+  and [`useWorkspaceIdentity`](../../packages/extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspaceIdentity.ts).
   The domain supplies identity fields, readiness and write availability; linked
   locations and protected update targets remain domain-owned. An enabled UI
   action is never mutation authority.
@@ -490,7 +490,7 @@ migration verification, and protected Workspace consumer are complete.
 - Core owns only server primitives proven across entity families. Shared App
   runtime policy, membership validation, bounded Team-authority parsing,
   and capacity enforcement live in
-  `packages/core/fireux-core/src/runtime/workspace/server/entity/onboarding-authority.ts`.
+  `packages/extensions/fireux-workspace/src/runtime/workspace/server/entity/onboarding-authority.ts`.
   Entity-specific management validation, projections, messages, and
   transactions remain in the owning entity slice.
 
@@ -743,13 +743,13 @@ its same-id Place. Address, contact, business hours and timezone stay Place-owne
 operational currency follows the [Entity-owned contract](#operational-default-currency).
 No shared Identity-field model is required by these consumers.
 
-Core’s [Team Editor](../../packages/core/fireux-core/src/runtime/workspace/components/Team/Editor.vue)
+Workspace’s [Team Editor](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/Team/Editor.vue)
 opens the existing searchable roster in read-only mode for an AI Read. Kitchen
 and Project supply the detail link for each member ID. The AI request includes
 a bounded set of records with the selected member. The review uses the full
 roster available to the page. The selected member’s
 settings own name editing. Manual Remove and AI Delete open the same
-[confirmation](../../packages/core/fireux-core/src/runtime/workspace/components/Team/Crud/Remove.vue),
+[confirmation](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/Team/Crud/Remove.vue),
 which names the person. Only confirmation calls the domain removal command.
 Changing Workspace, member or removal availability cancels the review.
 Roles are assigned beside the selected person. Dev and Operator are fixed labels and each
@@ -782,7 +782,7 @@ Entity navigation controller owns active identity, alternative Entity choices,
 and selection requests so the app-owned navbar remains a thin presentation
 adapter and behaves identically on landing and capability routes.
 
-Core's shared Workspace navbar also owns the invariant operational controls:
+The shared Workspace navbar also owns the invariant operational controls:
 subscription, page context, bounded page JSON, Calendar, and Notifications.
 Pages may supply their title and capability-specific context body, but they do
 not hide or reconstruct those controls. A control without current runtime data
@@ -1842,7 +1842,7 @@ Place/Portfolio controls keep their existing interaction; this grouped seam
 does not introduce a universal form or field registry.
 
 Kitchen Identity composes venue profile sections, listing controls and domain
-context at `/workspace/kitchen/identity` inside Core's named Workspace route
+context at `/workspace/kitchen/identity` inside the optional Workspace route
 composition and shared Identity read-state presentation. The separate profile
 route is retired; Hours and Appearance remain domain child pages. Place editors
 and Kitchen publication commands retain their separate authority.
@@ -1918,10 +1918,10 @@ into payload state or share actor data between server requests.
 `useWorkspace(family)` owns the remembered selection and reconciliation policy.
 Project, Property, Portfolio, Supplier and Kitchen pass their existing access
 and document reader to
-Core's [selected-record helper](../../packages/core/fireux-core/src/runtime/workspace/composables/useWorkspaceRecord.ts).
+Workspace's [selected-record helper](../../packages/extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspaceRecord.ts).
 The helper gates the exact read and masks retained data for a different ID.
 Kitchen still composes its Place projection and entry handoffs. For Kitchen and
-Property, [route-safe switching](../../packages/core/fireux-core/src/runtime/workspace/composables/useWorkspaceSwitch.ts)
+Property, [route-safe switching](../../packages/extensions/fireux-workspace/src/runtime/workspace/composables/useWorkspaceSwitch.ts)
 leaves a record route before committing the still-current, still-allowed choice.
 Project selects directly. Domain collections and command authority remain with
 their existing owners.

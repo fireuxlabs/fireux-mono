@@ -142,7 +142,7 @@ their execution and authority checks. Static research remains independent of
 execution as described above.
 
 `fireux-ai` owns [provider/model presentation](../../packages/extensions/fireux-ai/src/runtime/components/Workspace/AI/ModelLabel.vue).
-Core's [Workspace composer](../../packages/core/fireux-core/src/runtime/workspace/components/AI/Composer.vue)
+Workspace's [Workspace composer](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/AI/Composer.vue)
 remains a passive control with a `model` slot; it does not read AI configuration
 or choose provider/model labels. The
 [Kitchen Test consumer](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Test/AI.vue)

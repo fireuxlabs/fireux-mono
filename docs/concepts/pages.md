@@ -37,8 +37,8 @@ Map how route pages should be built and where consensus is still forming.
   supplies its single page outlet to the selected layout; the Workspace frame
   consumes that slot. Layouts own their content landmark; `layout: false` pages
   supply their own `UMain`. Workspace pages retain their domain content and authority.
-- Core supplies the app-wide Nuxt page transition and disables it for Workspace
-  routes and routes using the Dashboard layout through
+- Core supplies the app-wide Nuxt page transition. Core and Workspace each
+  disable transitions for their own layout through
   [pages-config.ts](../../packages/core/fireux-core/src/config/module/pages-config.ts)
   so shared Workspace frames stay mounted and fragment-based Dashboard pages
   remain unanimated. Do not re-enable per-page transitions
@@ -65,11 +65,11 @@ Map how route pages should be built and where consensus is still forming.
 
 ## Route availability and sign-in
 
-Core's Workspace middleware checks the configured Workspace family on server
-and client. A query parameter cannot enable another family. Diagnostics and
+The optional Workspace middleware checks the configured Workspace family on server
+and client before Core auth runs. A query parameter cannot enable another family. Diagnostics and
 developer-only Workspace routes are unavailable in production on both sides.
 
-The auth, Workspace and diagnostics middleware delegate session and role
+The Core auth and diagnostics middleware delegate session and role
 decisions to [route-auth.ts](../../packages/core/fireux-core/src/runtime/composables/navigation/route-auth.ts).
 These client navigation checks wait for Firebase Auth settlement and cancel
 obsolete decisions after navigation. They do not authorize protected server
@@ -159,11 +159,11 @@ membership and trusted domain commands retain their authority.
 - One owning reader or page composable acquires the collection; the Collection
   receives canonical records and owns presentation. Existing specialized
   Directory/manager surfaces retain their inspected lifecycle until migrated.
-- Layouts own shared framing. Workspace uses Core's existing route outlet;
+- Layouts own shared framing. Workspace uses Nuxt's existing route outlet;
   do not introduce a custom universal page shell.
 - Scoped child routes should use named scoped surfaces, not root collection managers with scoped override data.
 - Workspace indexes render their domain `WorkspaceXIndex` as content inside the
-  shared Core frame; group navigation uses `WorkspacePageLinks`.
+  shared Workspace frame; group navigation uses `WorkspacePageLinks`.
 - Internal dev previews and component labs live under `/dev`.
 - `/demo` is reserved for a project's public Product Demo index and its guided
   child demonstrations. These pages are project-owned, remain thin, and use

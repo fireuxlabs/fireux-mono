@@ -6,7 +6,7 @@ import test from 'node:test'
 
 function mechanics() {
   const source = readFileSync(
-    new URL('../runtime/workspace/server/team/members.ts', import.meta.url),
+    new URL('../../../../extensions/fireux-workspace/src/runtime/workspace/server/team/members.ts', import.meta.url),
     'utf8'
   )
     .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')

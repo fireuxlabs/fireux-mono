@@ -8,7 +8,10 @@ import { useCommandScope } from '../../runtime/composables/fireux/commands/useCo
 import { useCollectionSearch } from '../../runtime/composables/shared/useCollectionSearch.ts'
 
 const { h, nextTick, ref, computed } = Vue
-const runtime = new URL('../../runtime/workspace/components/', import.meta.url)
+const runtime = new URL(
+  '../../../../../extensions/fireux-workspace/src/runtime/workspace/components/',
+  import.meta.url
+)
 const cache = new Map()
 function component(file) {
   if (cache.has(file.href)) return cache.get(file.href)
@@ -159,7 +162,7 @@ export function mountTeamEditor(
   )
   app.component(
     'FireState',
-    component(new URL('../../components/molecules/State.vue', runtime))
+    component(new URL('../../runtime/components/molecules/State.vue', import.meta.url))
   )
   app.component('UAlert', {
     props: ['title', 'description'],

@@ -9,7 +9,7 @@ const settle = () => new Promise((resolve) => setImmediate(resolve))
 
 function setup() {
   const component = readFileSync(
-    new URL('../runtime/workspace/components/Team/Roles.vue', import.meta.url),
+    new URL('../../../../extensions/fireux-workspace/src/runtime/workspace/components/Team/Roles.vue', import.meta.url),
     'utf8'
   )
   const source = component

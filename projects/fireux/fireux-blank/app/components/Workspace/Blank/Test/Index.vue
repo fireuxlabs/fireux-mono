@@ -14,5 +14,5 @@
   </WorkspaceCapability>
 </template>
 <script setup lang="ts">
-import WorkspaceCapability from 'fireux-core/runtime/workspace/components/Capability.vue'
+import WorkspaceCapability from 'fireux-workspace/runtime/workspace/components/Capability.vue'
 </script>

@@ -67,7 +67,7 @@ Those product differences do not create another shared route renderer.
 
 [useAppHead](../../packages/core/fireux-core/src/runtime/app/composables/useAppHead.ts)
 owns the reactive theme, robots and default versioned App manifest link.
-The [Workspace page frame](../../packages/core/fireux-core/src/runtime/workspace/components/Page.vue)
+The [Workspace page frame](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/Page.vue)
 overrides the same head link for an enabled family using its Home destination.
 The optional Workspace module registers [its manifest handler](../../packages/extensions/fireux-workspace/src/runtime/server/manifest.get.ts),
 which validates the allowed family and origin. The Core handler supplies the
@@ -95,22 +95,22 @@ FireUX/Misebox public-root differences are mapped in
 ## Workspace composition
 
 Pages select `layout: 'workspace'` through native `definePageMeta`.
-Core's [workspace.vue](../../packages/core/fireux-core/src/runtime/layouts/workspace.vue)
+Workspace's [workspace.vue](../../packages/extensions/fireux-workspace/src/runtime/layouts/workspace.vue)
 is discovered through the native runtime layer and loaded asynchronously by
 Nuxt. It composes the existing Dashboard group, Sidebar, WorkspacePage and
 User-owned auxiliary controls within one layout root. The layout stays mounted
 while its supplied route content changes.
 
-[WorkspacePage](../../packages/core/fireux-core/src/runtime/workspace/components/Page.vue)
-owns the panel, [Navbar](../../packages/core/fireux-core/src/runtime/workspace/components/Navbar.vue),
-[breadcrumbs](../../packages/core/fireux-core/src/runtime/workspace/components/Breadcrumbs.vue),
+[WorkspacePage](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/Page.vue)
+owns the panel, [Navbar](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/Navbar.vue),
+[breadcrumbs](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/Breadcrumbs.vue),
 main and native error boundary. Its slot consumes the App's page. The boundary
 key retains Workspace family, selected Entity and route path so old page state
 is disposed when that context changes. Navbar and page-title responsibilities
 remain with the existing navigation owner.
 
 Group links use
-[WorkspacePageLinks](../../packages/core/fireux-core/src/runtime/workspace/components/PageLinks.vue)
+[WorkspacePageLinks](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/PageLinks.vue)
 as ordinary content. Group indexes omit breadcrumb trails; other pages show a
 trail only when the existing registered navigation provides useful ancestors.
 See the [Workspace breadcrumb contract](workspace.md#breadcrumbs).

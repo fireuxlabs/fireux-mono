@@ -61,7 +61,7 @@ async function fixture(file, names, controllerFixture) {
     }),
   })
   const source = readFileSync(
-    new URL('../runtime/workspace/components/Team/' + file, import.meta.url),
+    new URL('../../../../extensions/fireux-workspace/src/runtime/workspace/components/Team/' + file, import.meta.url),
     'utf8'
   )
     .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
