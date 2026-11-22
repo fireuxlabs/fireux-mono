@@ -1,5 +1,6 @@
 import {
   addPlugin,
+  addServerPlugin,
   createResolver,
   defineNuxtModule,
   installModule,
@@ -53,6 +54,10 @@ export default defineNuxtModule<FireuxFirebaseOptions>({
     const resolver = createResolver(import.meta.url)
 
     const isDev = !!(nuxt.options as any).dev
+    const useEmulators =
+      isDev &&
+      process.env.NODE_ENV !== 'production' &&
+      process.env.VUEFIRE_EMULATORS === 'true'
 
     const { eco, app } = pickFirebaseRuntime(nuxt)
 
@@ -111,6 +116,13 @@ export default defineNuxtModule<FireuxFirebaseOptions>({
       ...existingAuth,
       enabled: authEnabled,
     }
+    nuxt.options.vuefire.emulators = useEmulators
+      ? { ...nuxt.options.vuefire.emulators, enabled: true }
+      : false
+
+    // Only VueFire's discovery result can supply emulator destinations.
+    const publicVuefire = nuxt.options.runtimeConfig.public.vuefire
+    delete publicVuefire.emulators
 
     // Ensure `nuxt-vuefire` is installed AFTER we set `nuxt.options.vuefire`.
     // This removes ordering anxiety from app configs.
@@ -144,6 +156,22 @@ export default defineNuxtModule<FireuxFirebaseOptions>({
           googleApplicationCredentials
       }
     }
+
+    if (
+      useEmulators &&
+      (!publicVuefire.emulators?.firestore ||
+        (authEnabled && !publicVuefire.emulators?.auth))
+    ) {
+      throw new Error(
+        '[fireux-core/firebase] Emulator mode requires a running Firebase Emulator Hub with Firestore and, when enabled, Auth.'
+      )
+    }
+
+    addServerPlugin(
+      resolver.resolve(
+        '../../../src/runtime/plugins/firebase/firebase-emulators.nitro.ts'
+      )
+    )
 
     // nuxt-vuefire's server auth plugin expects `$firebaseAdminApp`. FireUX
     // owns Admin initialization so ADC and external explicit credentials share

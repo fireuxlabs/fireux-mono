@@ -47,7 +47,7 @@ function authHarness(dependencies = {}) {
       },
       doc: () => {},
       getDoc: () => {},
-      getFirestore: () => {},
+      getAppFirestore: () => {},
       ...dependencies,
     }
   )

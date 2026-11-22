@@ -12,8 +12,9 @@ import { authRedirectPath } from '../../user/utils/auth-redirect'
 import { watch } from 'vue'
 import { getApp, getApps, type FirebaseApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { doc, getDoc, getFirestore } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import type { AppUserWithId } from '../../app/contracts/membership-read.ts'
+import { getAppFirestore } from '../fireux/firestore/vuefire'
 
 type AuthGuardState = {
   uid: string | null
@@ -24,6 +25,7 @@ type AdminGuardOptions = {
   uid: string | null | undefined
   appId: string | null | undefined
   databaseId?: string | null | undefined
+  emulator?: { host: string; port: number }
   timeoutMs: number
 }
 
@@ -131,7 +133,7 @@ export async function resolveClientAppAdmin(
     const app = await waitForFirebaseApp(options.timeoutMs)
     if (!app) return false
 
-    const membership = await readAppUser(app, uid, appId, options.databaseId)
+    const membership = await readAppUser(app, uid, appId, options)
     return membership?.role === 'admin' || membership?.role === 'dev'
   }
 
@@ -142,11 +144,11 @@ async function readAppUser(
   app: FirebaseApp,
   uid: string,
   appId: string,
-  databaseId?: string | null
+  { databaseId, emulator }: Pick<AdminGuardOptions, 'databaseId' | 'emulator'>
 ): Promise<AppUserWithId | null> {
   const user = getAuth(app).currentUser
   if (!user || user.uid !== uid) return null
-  const db = getFirestore(app, String(databaseId || '(default)'))
+  const db = getAppFirestore(app, databaseId?.trim() || '', emulator)
   const snapshot = await getDoc(doc(db, 'apps', appId, 'users', uid))
   return snapshot.exists()
     ? ({ id: snapshot.id, ...snapshot.data() } as AppUserWithId)
@@ -188,6 +190,7 @@ export function enforceClientRouteAuth(
         uid: auth.uid,
         appId: config.appId,
         databaseId: runtime.public.firebaseEcosystem?.firebase?.databaseId,
+        emulator: runtime.public.vuefire?.emulators?.firestore,
         timeoutMs: 1500,
       })
       if (!check.signal.aborted && !isAdmin) return redirect('/dashboard')

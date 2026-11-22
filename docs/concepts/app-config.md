@@ -73,6 +73,14 @@ inputs. Developer access uses authenticated UID checks, not `DEVELOPER_PIN`.
 The current Firebase integration does not configure Analytics or consume
 `NUXT_FIREBASE_MEASUREMENT_ID`.
 
+Normal development uses the configured Firebase project. For a local test,
+start the Firebase Emulator Hub with Firestore and, when App Auth is enabled,
+Authentication, then start Nuxt with `VUEFIRE_EMULATORS=true`. VueFire connects
+the default client database and Core connects named databases to the same
+discovered host. Nitro requires its SDK emulator hosts to match that discovery.
+Missing discovery stops startup. Production uses the configured Firebase
+services and rejects SDK emulator hosts.
+
 Current hosted Stripe Checkout uses the existing server credentials; generated
 Ignition examples do not advertise `NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` without
 a browser Stripe consumer. Server secret and webhook settings remain unchanged.
@@ -179,6 +187,8 @@ composes those owners without adding an AI dependency to Core.
   identity database and must be read through an explicit identity seam. Do not
   repeat the Ecosystem database id in project config; declare `databaseId` only
   for a genuine App override, including a standalone App-owned database.
+  An App override preserves the Ecosystem's original identity scope, including
+  `(default)` when the binding has no named database.
 - Every production `standalone` App declares its own named `databaseId`; the
   database is created in each Firebase project where that App owns local
   outputs. A standalone App never falls back to the FireUX ecosystem database.

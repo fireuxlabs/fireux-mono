@@ -16,23 +16,31 @@ const loadModule = compileFunction(
     'defineNuxtModule',
     'createResolver',
     'addPlugin',
+    'addServerPlugin',
     'installModule',
     'process',
     'moduleUrl',
   ]
 )
 
-function fixture({ credentials, installError, modules = [], ssr = true } = {}) {
-  const env =
-    credentials === undefined
-      ? {}
-      : { GOOGLE_APPLICATION_CREDENTIALS: credentials }
+function fixture({
+  credentials,
+  installError,
+  modules = [],
+  ssr = true,
+  dev = false,
+  environment = {},
+  emulators,
+} = {}) {
+  const env = { ...environment }
+  if (credentials !== undefined)
+    env.GOOGLE_APPLICATION_CREDENTIALS = credentials
   const plugins = []
   const installations = []
   const resolved = []
   const nuxt = {
     options: {
-      dev: false,
+      dev,
       ssr,
       modules,
       vuefire: { auth: { sessionCookie: true } },
@@ -69,6 +77,7 @@ function fixture({ credentials, installError, modules = [], ssr = true } = {}) {
       if (options?.append) plugins.push(plugin)
       else plugins.unshift(plugin)
     },
+    () => {},
     async (name) => {
       installations.push({
         name,
@@ -77,6 +86,8 @@ function fixture({ credentials, installError, modules = [], ssr = true } = {}) {
         config: { ...nuxt.options.runtimeConfig.public.vuefire.config },
       })
       if (installError) throw installError
+      if (nuxt.options.vuefire.emulators?.enabled && emulators)
+        nuxt.options.runtimeConfig.public.vuefire.emulators = emulators
       plugins.push({ src: 'vuefire-server', mode: 'server' })
       plugins.push({ src: 'vuefire-client', mode: 'client' })
     },
@@ -119,7 +130,48 @@ test('Core configures VueFire before installation and orders its SSR and Auth pl
   assert.ok(
     context.plugins[3].src.endsWith('/firebase-auth-persistence.client.ts')
   )
-  assert.equal(context.resolved.length, 2)
+  assert.equal(context.resolved.length, 3)
+})
+
+test('normal development and production disable VueFire emulator discovery', async () => {
+  for (const context of [
+    fixture({ dev: true }),
+    fixture({
+      dev: true,
+      environment: { NODE_ENV: 'production', VUEFIRE_EMULATORS: 'true' },
+    }),
+    fixture({ environment: { VUEFIRE_EMULATORS: 'true' } }),
+  ]) {
+    context.nuxt.options.vuefire.emulators = { enabled: true }
+    await context.module.setup({}, context.nuxt)
+    assert.equal(context.nuxt.options.vuefire.emulators, false)
+    assert.equal(
+      context.nuxt.options.runtimeConfig.public.vuefire.emulators,
+      undefined
+    )
+  }
+})
+
+test('explicit emulator development requires discovered Firestore and Auth before startup', async () => {
+  const configured = {
+    dev: true,
+    environment: { VUEFIRE_EMULATORS: 'true' },
+  }
+  const firestore = { host: '127.0.0.1', port: 8181 }
+  for (const emulators of [undefined, { firestore }]) {
+    const context = fixture({ ...configured, emulators })
+    await assert.rejects(
+      context.module.setup({}, context.nuxt),
+      /requires a running Firebase Emulator Hub/
+    )
+  }
+  const emulators = { firestore, auth: { host: '127.0.0.1', port: 9199 } }
+  const context = fixture({ ...configured, emulators })
+  await context.module.setup({}, context.nuxt)
+  assert.deepEqual(
+    context.nuxt.options.runtimeConfig.public.vuefire.emulators,
+    emulators
+  )
 })
 
 test('disabling Auth retains SSR Admin setup and omits client persistence', async () => {

@@ -1,3 +1,4 @@
+import 'nuxt-vuefire'
 import type { AppTheme } from './theme'
 import type { RuntimeApp, RuntimeFirebaseEcosystem, RuntimeFirebaseApp, RuntimePrivate } from '../config/app/runtime'
 
