@@ -410,3 +410,19 @@ denied both reading and saving the seeded Chef profile for its owner and for
 another signed-in User. The candidate lacks a Chef profile rule. Restricted
 owner saving remains an open release requirement. No live rules or data were
 touched.
+
+#### Restricted Chef owner follow-up
+
+The original candidate had no Chef profile path. The default deny therefore
+covered the owner as well as other users. The revised local candidate grants
+only an authenticated owner's exact read and validated update at
+`users/{uid}/profiles/chef`. Trusted creation and other profile fields retain
+their existing boundaries.
+
+The production-candidate emulator suite passed 28 tests. With the revised
+rules loaded in the named identity emulator database, the actual Core-only
+Dashboard saved an owner's title, persisted the actor stamp, and displayed
+the new value after refresh. A second authenticated User was denied reads and
+writes. The User, private account and App membership stayed intact. No rules
+were deployed. Restricted access remains open for release review and rollout,
+separate from the accepted Stage 5 boundary.

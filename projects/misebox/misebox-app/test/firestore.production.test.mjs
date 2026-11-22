@@ -633,6 +633,58 @@ test('signed-in accounts read only their own User root, without granting collect
   )
 })
 
+test('Chef identity is editable only by its signed-in owner, independently of membership', async () => {
+  const uid = 'chef-without-membership'
+  const path = `users/${uid}/profiles/chef`
+  const chef = {
+    kind: 'chef',
+    title: 'Chef',
+    summary: '',
+    chef_bio: '',
+    chef_image: '',
+    chef_signature_dishes: [],
+    chef_gallery: [],
+    chef_organization_name: '',
+    ...stamp(uid),
+  }
+  await seed(path, chef)
+  allowed(await get(path, uid))
+  denied(await get(path))
+  denied(await get(path, uid, 'anonymous'))
+  denied(await get(path, 'outsider'))
+  denied(await query('profiles', uid, `users/${uid}`))
+  denied(await get(`users/${uid}/profiles/agent`, uid))
+
+  const patch = { title: 'Pastry chef', updated: { by: uid } }
+  const mask = ['title', 'updated']
+  allowed(await write(path, patch, uid, { mask }))
+  const persisted = JSON.parse((await get(path, uid)).text).fields
+  assert.equal(persisted.title.stringValue, patch.title)
+  assert.equal(persisted.updated.mapValue.fields.by.stringValue, uid)
+  assert.deepEqual(persisted.created, value(chef.created))
+  denied(await write(path, patch, 'outsider', { mask }))
+  denied(await write(path, patch, uid, { mask, stamped: false }))
+  denied(await write(path, { ...patch, updated: { by: 'outsider' } }, uid, { mask }))
+  denied(await write(path, patch, uid, { remove: true }))
+  denied(await write('users/another-chef/profiles/chef', chef, 'another-chef', { create: true }))
+
+  for (const [field, data] of [
+    ['created', { by: 'outsider', at: time }],
+    ['kind', 'agent'],
+    ['kitchen_ids', ['unowned-kitchen']],
+    ['chef_gallery', [{ name: 'Dish', image_url: 'https://example.test/dish.jpg' }]],
+    ['title', 'x'.repeat(121)],
+    ['chef_image', 'http://example.test/chef.jpg'],
+    ['chef_signature_dishes', Array.from({ length: 21 }, () => 'Pie')],
+    ['chef_signature_dishes', ['x'.repeat(241)]],
+    ['chef_signature_dishes', [42]],
+  ]) {
+    denied(await write(path, { [field]: data, updated: { by: uid } }, uid, { mask: [field, 'updated'] }))
+  }
+  const dishes = Array.from({ length: 20 }, (_, index) => `Dish ${index + 1}`)
+  allowed(await write(path, { chef_signature_dishes: dishes, updated: { by: uid } }, uid, { mask: ['chef_signature_dishes', 'updated'] }))
+})
+
 test('raw Products stay private even when published; authoring is exact-App admin scoped', async () => {
   await seed('apps/baeren-ringgenberg/users/editor', {
     role: 'admin',

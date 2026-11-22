@@ -89,10 +89,54 @@ service cloud.firestore {
 
     // Misebox's identity database defaults to this named runtime database.
     // Account setup/session reads its own canonical User before App membership.
-    // Public profiles use server projections; private descendants remain denied.
+    // Public profile discovery uses server projections. Chef identity is owner-managed.
     match /users/{uid} {
       allow get: if signedIn() && own(uid);
       match /private/account { allow get: if signedIn() && own(uid); }
+
+      match /profiles/chef {
+        function bounded(value, limit) {
+          return value is string && value.size() <= limit;
+        }
+        function signatureItem(items, index) {
+          return index >= items.size() || bounded(items[index], 240);
+        }
+        function validSignatureDishes(items) {
+          return items is list && items.size() <= 20 &&
+            signatureItem(items, 0) && signatureItem(items, 1) &&
+            signatureItem(items, 2) && signatureItem(items, 3) &&
+            signatureItem(items, 4) && signatureItem(items, 5) &&
+            signatureItem(items, 6) && signatureItem(items, 7) &&
+            signatureItem(items, 8) && signatureItem(items, 9) &&
+            signatureItem(items, 10) && signatureItem(items, 11) &&
+            signatureItem(items, 12) && signatureItem(items, 13) &&
+            signatureItem(items, 14) && signatureItem(items, 15) &&
+            signatureItem(items, 16) && signatureItem(items, 17) &&
+            signatureItem(items, 18) && signatureItem(items, 19);
+        }
+        function validChefEdit() {
+          let profile = request.resource.data;
+          let changed = profile.diff(resource.data).affectedKeys();
+          return resource.data.kind == 'chef' &&
+            changed.hasOnly(['title', 'summary', 'chef_bio', 'chef_image',
+              'chef_signature_dishes', 'chef_organization_name', 'updated']) &&
+            (!changed.hasAny(['title']) || bounded(profile.title, 120)) &&
+            (!changed.hasAny(['summary']) || bounded(profile.summary, 1000)) &&
+            (!changed.hasAny(['chef_bio']) || bounded(profile.chef_bio, 4000)) &&
+            (!changed.hasAny(['chef_image']) ||
+              (bounded(profile.chef_image, 2048) &&
+                (profile.chef_image == '' || profile.chef_image.matches('^https://.+$')))) &&
+            (!changed.hasAny(['chef_signature_dishes']) ||
+              validSignatureDishes(profile.chef_signature_dishes)) &&
+            (!changed.hasAny(['chef_organization_name']) ||
+              bounded(profile.chef_organization_name, 160)) &&
+            profile.updated is map && profile.updated.keys().hasOnly(['at', 'by']) &&
+            profile.updated.at == request.time && profile.updated.by == uid;
+        }
+        // Trusted provisioning owns create. The owner edits their identity independently.
+        allow get: if signedIn() && own(uid);
+        allow update: if signedIn() && own(uid) && validChefEdit();
+      }
     }
 
     match /apps/{app} {

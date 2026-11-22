@@ -500,6 +500,11 @@ earlier-grant cases, not only single-App cases. ID lists must remain string-only
 Rules joining a list alone is not a type check.
 The App-owned release README documents the local proof and separate rollout boundary.
 
+Chef identity is a User-owned profile at `users/{uid}/profiles/chef`. The
+candidate permits the signed-in owner to read it and update the editor's
+bounded fields using an actor-bound server timestamp. Profile provisioning
+stays trusted. Workspace access and App membership do not grant profile writes.
+
 The Misebox production candidate permits membership-bound Kitchen reads only.
 Kitchen root and child mutations, including Dish, Recipe, Prep, Station, sourcing,
 Waste and Menu content, remain owned by their trusted commands; there are no

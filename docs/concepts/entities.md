@@ -345,7 +345,9 @@ plan, protected preimages, concurrency checks and explicit mutation authority;
 retired scripts do not authorize or verify a new migration.
 
 ChefProfile and DriverProfile are confirmed User-owned Records at
-`users/{uid}/profiles/{kind}`. Presentation reads join canonical User rather
+`users/{uid}/profiles/{kind}`. Ownership and maintenance of person identity
+follow the signed-in User. App membership and Workspace grants govern access
+to their respective resources. Presentation reads join canonical User rather
 than copying person identity. Genuine App-specific capability state may live
 beneath that profile at `app-state/{appId}`. KitchenTeamMember is the canonical roster
 record at `kitchens/{kitchenId}/team/{uid}` and may carry Kitchen-specific
