@@ -22,16 +22,9 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
       : []
   )
   const hasModule = (name: string) => modules.has(name)
-  const workspaces = new Set(
-    Array.isArray(fireux.workspaces)
-      ? fireux.workspaces.map((value: unknown) => String(value || '').trim())
-      : []
-  )
-
   const currentPlaces = fireux.places
   const currentJobs = fireux.jobs
   const currentSproochli = asRecord(fireux.sproochli)
-  const currentDesignPacks = asRecord(fireux.designPacks)
 
   const placeDefaults = getPlacesConfig()
   const jobDefaults = getJobsConfig()
@@ -54,16 +47,6 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
       installed: true,
       enabled: true,
       ...currentSproochli,
-    }
-  }
-
-  if (hasModule('fireux-kitchens') || workspaces.has('kitchen')) {
-    fireux.designPacks = {
-      ...currentDesignPacks,
-      publicMenu: {
-        preset: 'classic',
-        ...asRecord(currentDesignPacks.publicMenu),
-      },
     }
   }
 }

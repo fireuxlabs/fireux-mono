@@ -41,8 +41,6 @@ export type FireuxAppConfig = {
   databaseId?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
-  /** Optional app-level surface design packs, e.g. designPacks.publicMenu. */
-  designPacks?: Record<string, Record<string, unknown>>
   role: AppRole
   /** Extra capabilities or custom options for the standard Core, Blogs, Products and AI modules. */
   modules?: NonNullable<NuxtConfig['modules']>

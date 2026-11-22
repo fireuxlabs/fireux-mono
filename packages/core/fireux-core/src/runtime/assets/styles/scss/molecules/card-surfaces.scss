@@ -1,7 +1,6 @@
 /*
 Shared structural surface for canonical Cards that are not rooted in UCard.
 The default deliberately follows Nuxt UI's plain outline/elevated vocabulary.
-Optional design packs may add atmosphere without changing Card anatomy.
 */
 
 :where(.card.card--cell, .fx-card--cell, .pill, .preview) {

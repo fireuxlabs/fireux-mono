@@ -88,7 +88,6 @@ export function defineFireuxApp(input: FireuxAppConfig): NuxtConfig {
       shortName: app.shortName,
       ...(app.homePath ? { homePath: app.homePath } : {}),
       ...(app.contactEmail ? { contactEmail: app.contactEmail } : {}),
-      ...(app.designPacks ? { designPacks: app.designPacks } : {}),
       ...(envDeveloperId ? { developerId: envDeveloperId } : {}),
       domain: envDomain,
       ...(siteUrl ? { siteUrl } : {}),

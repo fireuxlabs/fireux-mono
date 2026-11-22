@@ -52,15 +52,6 @@ function optRoutePath(src: AnyRecord, key: string): `/${string}` | undefined {
     : undefined
 }
 
-function optRecord(
-  src: AnyRecord,
-  key: string
-): Record<string, unknown> | undefined {
-  const v = src[key]
-  if (!v || typeof v !== 'object' || Array.isArray(v)) return undefined
-  return v as Record<string, unknown>
-}
-
 function toStringArray(v: unknown): string[] {
   if (!Array.isArray(v)) return []
   return v
@@ -184,9 +175,6 @@ export function useFireUXConfig(event?: H3Event): Readonly<FireUXConfig> {
     profiles: toStringArray(fireux.profiles),
 
     contactEmail: optString(fireux, 'contactEmail'),
-    designPacks: optRecord(fireux, 'designPacks') as
-      | Record<string, Record<string, unknown>>
-      | undefined,
     developerId: optString(fireux, 'developerId'),
 
     isTenant: role === 'tenant',

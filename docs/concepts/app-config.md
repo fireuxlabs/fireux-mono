@@ -353,9 +353,9 @@ for a separately justified App; it is not the default.
 
 Do not duplicate app mode logic in domain code. Read it through `useFireUXConfig` and `useWorkspace`.
 
-App chrome uses the Nuxt UI baseline. The plural `designPacks` field remains
-only for named, surface-specific runtime configuration such as `publicMenu`;
-it is not an App-wide theme or alternate chrome loader.
+App chrome uses the Nuxt UI baseline and the App's native theme settings.
+Public Menu presentation follows the
+[Menu family's palette inheritance](family-menu.md#presentation-inheritance).
 
 Apps inherit the Core page transition. Route-specific exceptions use
 `definePageMeta`; app shells do not set `NuxtPage` transition props. A repeated
