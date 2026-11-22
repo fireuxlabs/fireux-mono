@@ -207,3 +207,109 @@ Menus, Services and Orders were unregistered. An unrelated App member and the
 revoked Kitchen owner both received `403` on update. Opening the detail after
 revocation showed no Item. The in-app browser stalled during the live
 revocation check, so that transition remains unverified.
+
+## Vertical consistency follow-up (2026-11-23)
+
+This follow-up compares the canon with the Kitchen-only, independent Items and
+private draft checkpoints through `690d329f0`. The public Menu changes present
+in the working tree are considered separately. The audit uses source inspection
+and the recorded local checkpoints.
+
+### Where the boundaries hold
+
+- **FireUX → Entity.** The [platform ownership map](../concepts/fireux.md#package-and-data-ownership)
+  and [Workspace contract](../concepts/workspace.md#ownership) put selection
+  and framing in Workspace, and record authority in the domain. The
+  [Kitchen-only controller](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenOnlyWorkspace.ts)
+  uses shared selection and waits for settled Kitchen grants. App membership
+  and the Kitchen grant are valid inputs to authority. They remain separate
+  from identity and from the saved selection.
+- **Entity → Kitchen.** One [canonical Kitchen model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/model.ts)
+  serves the full App and the narrow mode. The latter proved a name-only
+  Kitchen with no Place or capability records. The minimum creation input
+  can be smaller than the readable record, which also includes identity,
+  lifecycle, exposure, and provenance. The permission to keep small owned
+  maps on that document comes from the [Firestore ownership rule](../concepts/firestore-entity.md#choose-the-document-shape-by-ownership).
+- **Kitchen → Items.** The [Entity map](../concepts/entities.md#parent-owned-records)
+  calls Item a Kitchen-owned Record. Its stable child document and exact
+  detail URL are consistent with that classification. The
+  [direct Items page](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/pages/items.vue)
+  gates the editor on the selected Kitchen. The tested name-only create,
+  list, detail and rename work without Menu registration. A Menu placement
+  [references the existing Item](../../packages/extensions/fireux-kitchens/src/runtime/menu/server/items/write.ts).
+  Both the Items route and the Menus grouping can use the same `dishes` path.
+  The [runtime filesystem map](../concepts/runtime-filesystem.md#domain-component-surfaces)
+  allows operator component directories to follow navigation.
+
+### Contradictions and avoidable dependencies
+
+- **Base reads can fail on optional capability settings.** The
+  [canonical reader](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/read-kitchen-document.ts)
+  still rejects the whole Kitchen on malformed Orders, Services or Tables
+  fields, even with Place hydration disabled. The
+  [root update input](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/update-input.ts)
+  also accepts Services and Tables changes through the base route. The failure
+  and write boundaries are the concern. The storage rule already permits
+  root maps, so changing those boundaries need not start with a data move.
+- **Item code still knows its Menu consumer.** The full App
+  [Item detail](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Items/Detail/Index.vue)
+  includes a Menu preview, and the shared
+  [Item actions](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/items/useItemActions.ts)
+  explicitly refresh Menu payload keys after writes, even when called by the
+  direct Items editor. [Lasagne](../concepts/lasagne.md) puts these consumer
+  effects in the Menu-aware composition. Preserve actual preview freshness
+  when changing the owner. The [Item deletion check](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/items/delete.ts)
+  serves a different purpose. It protects stored references even when the
+  Menu routes are absent.
+- **The Item editor opens a broader session than it uses.** Its
+  [scope guard](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/items/useItemEditorScope.ts)
+  reads only the membership portion of the
+  [User session](../../packages/core/fireux-core/src/runtime/user/composables/session/useUserSession.ts),
+  which also starts the canonical User reader. The editor also consumes
+  [Kitchen access](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenAccess.ts),
+  which already resolves App membership. A future cleanup can remove the
+  unrelated identity read and check whether the existing membership
+  acquisition can serve both. Keep account, membership and grant invalidation.
+
+### Documentation gaps and decisions
+
+1. **Define what optional registration guarantees.** The
+   [Kitchens module](../../packages/extensions/fireux-kitchens/src/module.ts)
+   gates pages and handlers, while the same
+   [package manifest](../../packages/extensions/fireux-kitchens/package.json)
+   retains full dependencies, including Place and Finance. The local results
+   establish registration and exercised behavior. They give no evidence of
+   installing Kitchens with those dependencies unavailable. Decide whether
+   registration-only composition is the maintained contract before growing
+   the option list or changing package boundaries. In that contract, specify
+   which root errors can block identity and which writes the base exposes.
+2. **Name the owner of the full Item screen and its reverse checks.** The
+   [Entity map](../concepts/entities.md#parent-owned-records) classifies Item
+   correctly but points to its definition under `records/menus/items`.
+   Document the difference between Kitchen record ownership, the full App's
+   Menus navigation, and the direct Items entrance. Approve the composition
+   owner for preview and refresh, and decide when Items-only can expose Delete
+   with reference checks intact. None of these decisions requires a path
+   migration.
+3. **Separate Place attachment and currency from base creation.** The
+   [Misebox onboarding context](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md#kitchen-onboarding)
+   describes the full Place-writing flow. The [operational currency rule](../../packages/extensions/fireux-finance/README.md#operational-default-currency)
+   already assigns the optional default to the operating Entity, while
+   [draft creation](../../packages/extensions/fireux-kitchens/src/runtime/menu/server/records/create.ts)
+   still requires a Place with a currency. Approve the name authority when a
+   Place is attached, the denomination of existing bare prices, and whether
+   unpriced private drafts can precede currency setup. Keep the publication
+   readiness gate.
+
+The uncommitted public Menu slice adds a browse-only branch to the existing
+projection. That branch suppresses Service reads, and the recorded check
+shows signed-out browsing after publish and refresh. The new guest page at
+`menu/pages/browse.vue` uses `useFetch`. The
+[server API contract](../concepts/server-api.md#api-reads-and-refresh)
+calls for the owning live reader for mutable projections, as used by
+[the existing Menu reader](../../packages/extensions/fireux-kitchens/src/runtime/menu/composables/useMenu.ts).
+Continuous guest
+updates or clearing an already-open Menu after unpublication remain outside
+the recorded proof. Review that acquisition before accepting it as a
+maintained public surface. The Items checkpoint likewise leaves live
+revocation in the open Item editor unverified.
