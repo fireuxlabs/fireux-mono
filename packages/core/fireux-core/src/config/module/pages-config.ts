@@ -1,11 +1,5 @@
-import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
-import { requireNativeRuntimeLayer } from './runtime-layer.ts'
 import { pageLayoutName } from '../../runtime/app/utils/page-layout.ts'
-
-export function configurePages(resolver: Resolver, nuxt: Nuxt) {
-  requireNativeRuntimeLayer(resolver, nuxt)
-}
 
 /** Keep shared frames stable and fragment-based Dashboard pages unanimated. */
 export function configurePageTransitions(nuxt: Nuxt, frame = 'dashboard') {

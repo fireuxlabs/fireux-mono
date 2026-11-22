@@ -4,7 +4,6 @@
     :packages="appPackages"
     :selected="selected"
     :examples="examples"
-    :component-links="componentLinks"
   />
 </template>
 <script setup lang="ts">
@@ -23,9 +22,6 @@ const examples = computed(() =>
       ]
     : []
 )
-const componentLinks = {
-  PublicKitchenOrdersTicket: '/packages/fireux-kitchens/ordering/ticket',
-}
 definePageMeta({
   layout: 'default',
   nav: { hidden: true },

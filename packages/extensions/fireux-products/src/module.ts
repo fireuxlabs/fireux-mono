@@ -36,7 +36,7 @@ export default defineNuxtModule({
   },
   setup(options: FireuxProductsModuleOptions = {}, nuxt) {
     const resolver = createResolver(import.meta.url)
-    registerReservedRootRouteKeys(['products'])
+    registerReservedRootRouteKeys(nuxt, ['products'])
     nuxt.hook('fireux:seo:extend' as any, (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/products')
     })

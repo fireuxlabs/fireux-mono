@@ -7,7 +7,7 @@ import {
   registerComposablesDir,
   registerLayoutComponents,
 } from './module-helpers.ts'
-import { configurePages } from './pages-config.ts'
+import { requireNativeRuntimeLayer } from './runtime-layer.ts'
 
 type EcosystemResolverStep = (resolver: Resolver, nuxt: Nuxt) => void
 type EcosystemNuxtStep = (nuxt: Nuxt) => void
@@ -17,7 +17,6 @@ export type ConfigureFireuxEcosystemModuleOptions = {
   configureRuntimeConfig?: EcosystemNuxtStep
   configurePages?: EcosystemResolverStep
   configureComponents?: EcosystemResolverStep
-  configurePublicAssets?: EcosystemResolverStep
 }
 
 const configureDefaultPublicAssets = (resolver: Resolver, nuxt: Nuxt) => {
@@ -85,15 +84,11 @@ export function configureFireuxEcosystemModule(
   if (options.configurePages) {
     options.configurePages(resolver, nuxt)
   } else if (existsSync(resolver.resolve('./runtime/pages'))) {
-    configurePages(resolver, nuxt)
+    requireNativeRuntimeLayer(resolver, nuxt)
   }
   options.configureComponents?.(resolver, nuxt)
   registerLayoutComponents(resolver)
   registerComposablesDir(resolver)
 
-  if (options.configurePublicAssets) {
-    options.configurePublicAssets(resolver, nuxt)
-  } else {
-    configureDefaultPublicAssets(resolver, nuxt)
-  }
+  configureDefaultPublicAssets(resolver, nuxt)
 }

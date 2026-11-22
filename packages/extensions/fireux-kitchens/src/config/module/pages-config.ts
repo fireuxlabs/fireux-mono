@@ -64,6 +64,6 @@ export function configurePages(resolver: Resolver, nuxt: Nuxt) {
   const runtimeConfig = nuxt.options.runtimeConfig as Record<string, any>
   const role = String(runtimeConfig.public?.fireux?.role ?? '').trim()
   const tenant = role === 'tenant'
-  if (tenant) registerReservedRootRouteKeys(tenantAppPageRouteKeys(nuxt))
+  if (tenant) registerReservedRootRouteKeys(nuxt, tenantAppPageRouteKeys(nuxt))
   nuxt.hook('pages:extend', (pages) => configureMenuDetailRoutes(pages, tenant))
 }

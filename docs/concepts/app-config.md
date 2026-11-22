@@ -119,14 +119,12 @@ Use App `modules` tuples for package-owned configuration. For example:
 
 ```ts
 modules: [
-  ['fireux-core', { componentCatalogue: true }],
   ['fireux-kitchens', { ordering: { channels: ['pos', 'kiosk', 'website'] } }],
 ]
 ```
 
 The App bundle places one configured Core module in its existing registration
-position. Core's catalogue option publishes registered names through its generated
-template; it needs no public runtime marker. Kitchens validates its opt-in channels
+position. Kitchens validates its opt-in channels
 and projects them into the existing `public.ordering` contract used by readers and
 trusted commands. Omitted ordering options enable no channels. App declarations
 do not patch these runtime fields manually.
@@ -240,8 +238,9 @@ composes those owners without adding an AI dependency to Core.
   or imported App-config profile.
 - Authored `app/meta.ts` is pure data and may be consumed by browser or server
   presentation. Its `defineFireuxMeta` helper and types stay free of Node-only
-  dependencies; filesystem and Markdown loading belong to Core's config-only
-  metadata loader. Shared literature types live in Core
+  dependencies. Core's config-only metadata loader uses explicit `app.meta`
+  when supplied and otherwise reads `app/meta.ts`. The App builder passes that
+  metadata to SEO and private runtime configuration. Shared literature types live in Core
   `runtime/app/literature/types.ts`; the pure `defineFireuxMeta` helper lives
   in `runtime/app/literature/define-meta.ts`. The descriptive vocabulary for
   published Workspace operations lives in

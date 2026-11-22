@@ -26,30 +26,6 @@
           icon="i-lucide-blocks"
         />
       </UPageGrid>
-      <section>
-        <h2>Components · {{ componentNames.length }}</h2>
-        <UInput
-          v-if="componentNames.length"
-          v-model="search"
-          placeholder="Find a component"
-          aria-label="Find a component"
-        />
-        <ul v-if="filteredComponents.length">
-          <li v-for="name in filteredComponents" :key="name">
-            <NuxtLink v-if="componentLinks[name]" :to="componentLinks[name]">{{
-              name
-            }}</NuxtLink>
-            <span v-else>{{ name }}</span>
-          </li>
-        </ul>
-        <p v-else>
-          {{
-            componentNames.length
-              ? 'No matching components.'
-              : 'No components registered by this package in this App.'
-          }}
-        </p>
-      </section>
     </template>
     <UPageGrid v-else>
       <UPageCard
@@ -64,30 +40,10 @@
   </UContainer>
 </template>
 <script setup lang="ts">
-import packageComponents from '#build/fireux-package-components'
-const props = withDefaults(
-  defineProps<{
-    appName: string
-    packages: { name: string; description?: string }[]
-    selected?: string
-    componentLinks?: Record<string, string>
-    examples: { title: string; description: string; to: string }[]
-  }>(),
-  { componentLinks: () => ({}) }
-)
-const search = ref('')
-const componentNames = computed<string[]>(
-  () => packageComponents[props.selected || ''] || []
-)
-const filteredComponents = computed(() =>
-  componentNames.value.filter((name) =>
-    name.toLowerCase().includes(search.value.toLowerCase())
-  )
-)
-watch(
-  () => props.selected,
-  () => {
-    search.value = ''
-  }
-)
+defineProps<{
+  appName: string
+  packages: { name: string; description?: string }[]
+  selected?: string
+  examples: { title: string; description: string; to: string }[]
+}>()
 </script>

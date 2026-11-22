@@ -74,9 +74,9 @@ export const metaContent = defineFireuxMeta({ seo: { description: 'Fixture publi
         assert.equal(app.runtimeConfig.public.fireux.ecosystemId, 'fireux')
         assert.equal(defineFireuxApp({ ...input, projectId: ' fireux ' }).runtimeConfig.public.fireux.projectId, 'fireux')
         assert.throws(() => defineFireuxApp({ ...input, projectId: ' ' }), /app.projectId/)
-        const configuredCore = defineFireuxApp({ ...input, modules: [['fireux-core', { componentCatalogue: true }]] })
+        const configuredCore = defineFireuxApp({ ...input, modules: [['fireux-core', {}]] })
         const coreDeclarations = configuredCore.modules.filter(entry => entry === 'fireux-core' || (Array.isArray(entry) && entry[0] === 'fireux-core'))
-        assert.deepEqual(coreDeclarations, [['fireux-core', { componentCatalogue: true }]])
+        assert.deepEqual(coreDeclarations, [['fireux-core', {}]])
         assert.equal(app.runtimeConfig.fireux.meta.seo.description, 'Fixture public literature')
         for (const name of ['fireux-blogs', 'fireux-products', 'fireux-ai']) {
           assert.equal(app.modules.filter(entry => entry === name).length, 1)

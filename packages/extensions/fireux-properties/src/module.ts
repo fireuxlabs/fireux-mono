@@ -36,7 +36,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    registerReservedRootRouteKeys(['portfolios', 'properties'])
+    registerReservedRootRouteKeys(nuxt, ['portfolios', 'properties'])
     nuxt.hook('fireux:seo:extend' as any, (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/portfolios')
       ctx.addStaticPath('/portfolios/learn-more')

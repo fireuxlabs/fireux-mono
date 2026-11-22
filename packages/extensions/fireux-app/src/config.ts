@@ -8,11 +8,7 @@ import { configViteWorkspace } from 'fireux-core/config/app/vite'
 import { createAppDatabaseRuntimeModule } from 'fireux-core/config/app/database'
 import { optEnv, reqEnv } from 'fireux-core/config/app/env'
 import { toValidJsIdentifier } from 'fireux-core/config/app/identifier'
-import {
-  loadFireuxAppMetaContent,
-  loadFireuxSolutionsMarkdown,
-  mergeFireuxSolutionMarkdownContent,
-} from 'fireux-core/config/app/meta-content-loader'
+import { loadFireuxAppMetaContent } from 'fireux-core/config/app/meta-content-loader'
 import { moduleName } from 'fireux-core/config/app/modules'
 import {
   withDefaultAppLayers,
@@ -82,11 +78,7 @@ export function defineFireuxApp(input: FireuxAppConfig): NuxtConfig {
   const moduleNames = (nuxt.modules || [])
     .map(moduleName)
     .filter(Boolean) as string[]
-  const loadedMetaContent = loadFireuxAppMetaContent(app.meta)
-  const metaContent = mergeFireuxSolutionMarkdownContent(
-    loadedMetaContent,
-    loadFireuxSolutionsMarkdown()
-  )
+  const metaContent = loadFireuxAppMetaContent(app.meta)
   const resolvedSeo = resolveContentSeo(app.seo, metaContent)
 
   setRuntime(nuxt, {

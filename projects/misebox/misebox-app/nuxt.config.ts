@@ -20,7 +20,6 @@ export default defineFireuxEcosystem({
   },
   modules: [
     'fireux-workspace',
-    ['fireux-core', { componentCatalogue: true }],
     [
       'fireux-kitchens',
       { ordering: { channels: ['pos', 'kiosk', 'website'] } },

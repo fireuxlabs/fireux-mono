@@ -50,7 +50,6 @@ const appConfig = defineFireuxEcosystem({
   },
   modules: [
     'fireux-workspace',
-    ['fireux-core', { componentCatalogue: true }],
     [
       'fireux-products',
       {

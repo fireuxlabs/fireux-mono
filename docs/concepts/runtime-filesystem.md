@@ -503,7 +503,7 @@ with the other configuration-shared utilities.
 
 Public-slug policy follows the same config/runtime boundary. Core
 `src/utils/public-slug-policy.ts` owns fixed root/entity keys and normalization;
-`config/module/reserved-route-keys.ts` owns build-time registration. Runtime
+`config/module/reserved-route-keys.ts` collects build-time contributions in each Nuxt App’s runtime configuration. Runtime
 `utils/slug/validate-public-slug.ts` is stateless: callers provide their App's
 published `reservedRouteKeys` as `runtimeReservedRouteKeys`, plus any domain-local
 `reserved` keys. User handles, Kitchen publication, tenant Menu naming and Go QR

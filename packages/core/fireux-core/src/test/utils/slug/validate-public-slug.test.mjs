@@ -13,10 +13,8 @@ const { normalizeSlug } = await jiti.import(
 )
 const { BASE_RESERVED_ROUTE_KEYS, BASE_RESERVED_ROUTE_SEGMENT_KEYS } =
   await jiti.import('../../../utils/public-slug-policy.ts')
-const { registerReservedRootRouteKeys, getReservedRootRouteKeys } =
-  await jiti.import('../../../config/module/reserved-route-keys.ts')
-const { configureFireuxModule } = await jiti.import(
-  '../../../config/module/module-wiring.ts'
+const { registerReservedRootRouteKeys } = await jiti.import(
+  '../../../config/module/reserved-route-keys.ts'
 )
 
 test('fixed root/entity reservations, normalization and error copy retain their scope', () => {
@@ -63,16 +61,12 @@ test('fixed root/entity reservations, normalization and error copy retain their 
 test('build registration reaches runtime through an explicit App snapshot only', () => {
   const key = 'slug-test-added-route'
   const later = 'slug-test-later-app-route'
-  registerReservedRootRouteKeys([` ${key.toUpperCase()} `, key, ''])
-  assert.equal(
-    getReservedRootRouteKeys().filter((value) => value === key).length,
-    1
-  )
-  const nuxt = { options: { runtimeConfig: {} } }
-  configureFireuxModule({}, nuxt, {})
+  const nuxt = { options: { runtimeConfig: { public: {} } } }
+  registerReservedRootRouteKeys(nuxt, [` ${key.toUpperCase()} `, key, ''])
   const keys = nuxt.options.runtimeConfig.public.fireux.reservedRouteKeys
-  assert.ok(keys.includes(key))
-  registerReservedRootRouteKeys([later])
+  assert.equal(keys.filter((value) => value === key).length, 1)
+  const other = { options: { runtimeConfig: { public: {} } } }
+  registerReservedRootRouteKeys(other, [later])
   assert.equal(validatePublicSlug(key, { reservedScope: 'root' }).isValid, true)
   assert.equal(
     validatePublicSlug(key, {

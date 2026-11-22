@@ -32,7 +32,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    registerReservedRootRouteKeys(['reservations'])
+    registerReservedRootRouteKeys(nuxt, ['reservations'])
 
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>

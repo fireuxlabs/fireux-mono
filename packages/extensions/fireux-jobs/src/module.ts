@@ -66,7 +66,7 @@ export default defineNuxtModule<ModuleOptions>({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
     const capabilities = appCapabilities(nuxt)
-    registerReservedRootRouteKeys([
+    registerReservedRootRouteKeys(nuxt, [
       ...(capabilities.jobs ? ['jobs'] : []),
       ...(capabilities.agents ? ['agents'] : []),
       ...(capabilities.professionals ? ['professionals'] : []),

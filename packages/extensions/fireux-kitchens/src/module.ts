@@ -54,7 +54,7 @@ export default defineNuxtModule<ModuleOptions>({
       })
       references.push({ path: resolver.resolve('./types/runtime-config.d.ts') })
     })
-    registerReservedRootRouteKeys([
+    registerReservedRootRouteKeys(nuxt, [
       'menus',
       'order',
       'kitchens',

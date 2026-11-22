@@ -209,7 +209,8 @@ authored Core position and deduplicating declarations, so
 Core discovery does not depend on an App remembering a separate declaration.
 Core's module no longer inserts its runtime into Nuxt's internal layer list.
 The module owns explicit Entity component/composable registration, configuration,
-root SEO/manifest handlers, and one Workspace page-transition hook. Its layer
+root SEO/manifest handlers, and Dashboard page-transition policy. The optional
+Workspace module owns Workspace page-transition policy. Core’s layer
 owns conventional pages, layouts, middleware, plugins, and server discovery.
 
 Tenant and standalone Apps use `defineFireuxApp`; Main Apps use

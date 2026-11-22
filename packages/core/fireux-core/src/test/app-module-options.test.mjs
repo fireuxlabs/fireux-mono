@@ -7,7 +7,7 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = fileURLToPath(new URL('../../../../../', import.meta.url))
-test('Misebox native dependencies retain App module options and publish only catalogue names', () => {
+test('Misebox native dependencies retain App module options and preserve native registrations', () => {
   const output = mkdtempSync(join(tmpdir(), 'fireux-app-module-options-'))
   try {
     const proof = execFileSync(process.execPath, ['--input-type=module'], {
@@ -17,7 +17,7 @@ test('Misebox native dependencies retain App module options and publish only cat
       timeout: 120000,
       input: `
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { loadNuxt, build } from ${JSON.stringify(import.meta.resolve('nuxt'))}
 const output = ${JSON.stringify(output)}
@@ -35,9 +35,7 @@ try {
     assert.ok(components.includes(name))
   }
   assert.equal(components.includes('FireDashboardOverviewEcosystem'), false)
-  const catalogue = readFileSync(join(output, 'fireux-package-components.ts'), 'utf8')
-  assert.ok(catalogue.includes('AppAssets'))
-  assert.equal(catalogue.includes(${JSON.stringify(root)}), false)
+  assert.equal(existsSync(join(output, 'fireux-package-components.ts')), false)
   console.log('Native module options passed')
 } finally { await nuxt.close() }
 `,

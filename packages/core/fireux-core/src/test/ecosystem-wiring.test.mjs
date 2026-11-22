@@ -126,7 +126,7 @@ for (const [name, workspace] of [['fireux-projects', 'project']]) {
       const configure = load(
         resolve(source, 'config/module/pages-config.ts'),
         {
-          configurePages: () => {
+          requireNativeRuntimeLayer: () => {
             nativeChecks++
           },
           filterPagesByGlob,
@@ -180,7 +180,7 @@ test('Shared ecosystem wiring publishes each ecosystem asset directory once', ()
     {
       existsSync,
       setRuntimeFirebaseEcosystem: () => {},
-      configurePages: () => {},
+      requireNativeRuntimeLayer: () => {},
       registerLayoutComponents: () => {},
       registerComposablesDir: () => {},
     },
@@ -221,7 +221,7 @@ test('An ecosystem with bindings and assets alone does not require a page layer'
     {
       existsSync: (path) => path.endsWith('/runtime/public'),
       setRuntimeFirebaseEcosystem: () => {},
-      configurePages: () => {
+      requireNativeRuntimeLayer: () => {
         throw Error('Unowned page layer was required')
       },
       registerLayoutComponents: () => {},
@@ -253,7 +253,7 @@ test('each ecosystem owns both Firebase region fields and missing region is reje
     {
       existsSync: () => false,
       setRuntimeFirebaseEcosystem: () => {},
-      configurePages: () => {},
+      requireNativeRuntimeLayer: () => {},
       registerLayoutComponents: () => {},
       registerComposablesDir: () => {},
     },

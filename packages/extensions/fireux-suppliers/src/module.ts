@@ -34,7 +34,7 @@ export default defineNuxtModule<FireuxSuppliersModuleOptions>({
     const ownsSupplierProduct = options.mode === 'owner'
 
     if (ownsSupplierProduct) {
-      registerReservedRootRouteKeys(['suppliers'])
+      registerReservedRootRouteKeys(nuxt, ['suppliers'])
       nuxt.hook('fireux:seo:extend' as any, (ctx: FireuxSeoExtendContext) => {
         ctx.addHub('/suppliers')
         ctx.addStaticPath('/suppliers/learn-more')
