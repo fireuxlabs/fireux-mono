@@ -131,6 +131,36 @@ restricted fragments use obsolete authority and are not a fallback. Rules rollou
 still follows the backup, exact-target and read-back requirements in
 `docs/ai/firestore-mutations-context.md`.
 
+## Restricted Chef profile rollout checkpoint
+
+The Chef owner rule is part of the Firestore production candidate for project
+`misebox-78f9c`, named database `misebox`. Its emulator evidence establishes
+owner reads and writes without App membership, cross-user denial, and a
+persisted Dashboard edit. The development policy currently selected for
+Misebox is open. Switching to this candidate changes permissions across the
+whole named database and affects every App that shares it.
+
+Before a separately authorized Rules-only rollout:
+
+1. Confirm the exact Firestore project, named database, release and current
+   effective Rules source by readback. Retain the existing release/ruleset
+   identifiers, source and digest as the rollback preimage.
+2. Verify the complete candidate against the supported Apps sharing `misebox`.
+   Confirm that required client access survives, including User setup and
+   Chef editing, operator access and public projections. Run the existing
+   local policy suites for any services included in the approved release.
+3. Confirm the rollback owner and exact prior policy. Approve the Rules
+   release separately from application deployment or any Storage change.
+
+After an authorized rollout, read back the effective named Firestore release
+and match its source digest to the approved candidate. With approved test
+accounts, confirm an owner can edit and refresh their Chef profile without
+App membership and a second user cannot read or write that raw profile.
+Verify User setup and representative public and operator routes across the
+sharing Apps. If target readback differs or a required journey fails, stop the
+release and follow the approved rollback decision using the saved policy.
+Restoring the development preimage would restore its open access.
+
 ## Access review
 
 The [2026-10-29 access review](../../../../docs/reviews/misebox-production-access-2026-10-29.json)

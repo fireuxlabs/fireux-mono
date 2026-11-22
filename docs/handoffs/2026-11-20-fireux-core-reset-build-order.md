@@ -162,13 +162,13 @@ This is a **separate explicitly selected implementation slice**, not a reason to
 
 ### 6 — Clean cutover and evidence
 
-- [ ] Remove obsolete folders, duplicate models, stale composables/controllers, aliases and obsolete registrations only after their real consumers have moved.
-- [ ] Update the **existing** source-backed maps: `docs/concepts/runtime-filesystem.md`, `docs/concepts/core-models.md`, `docs/concepts/entities.md`, `docs/concepts/workspace.md`, `docs/concepts/family-workspace-entity.md` and routed package contexts as appropriate. Do not create a second canon.
-- [ ] Run focused Core source-owned tests for root models, membership, selection, access and scope transitions. Run owning package checks, relevant App prepare/typechecks and a real rendered Core-only plus Workspace App journey.
-- [ ] List *exact* surviving broken consumers of optional packages as **known, intentional follow-on repairs**. A broken downstream screen is acceptable during the rebuild; a broken Core-only contract, leaked authority, incorrect data scope or unexamined write is not.
-- [ ] Report actual commands and results, not assumptions. For code changes, finish with `git diff --check` and path-level registration/import review.
+- [x] Verify the Core/Workspace cutover left no retired runtime folder, registration, alias or executable import. Keep unrelated cleanup out of the reset.
+- [x] Update the **existing** source-backed maps: `docs/concepts/runtime-filesystem.md`, `docs/concepts/core-models.md`, `docs/concepts/entities.md`, `docs/concepts/workspace.md`, `docs/concepts/family-workspace-entity.md` and routed package contexts as appropriate. Do not create a second canon.
+- [x] Run focused Core source-owned tests for root models, membership, selection, access and scope transitions. Run owning package checks, relevant App prepare/typechecks and a real rendered Core-only plus Workspace App journey.
+- [x] Record downstream checks and known failures in the [Stage 6 evidence](../reviews/2026-11-20-fireux-core-reset-stage-0.md#stage-6-clean-cutover-evidence).
+- [x] Report actual commands and results, not assumptions. For code changes, finish with `git diff --check` and path-level registration/import review.
 
-**Exit:** a checked-off Core architectural baseline, optional Workspace boundary and explicit remaining downstream repairs. **Only then return to Kitchen Core.**
+**Stage 6 local checkpoint.** Core and optional Workspace are verified in the reference Apps. The review records the open baseline failures and separate release gates. The next implementation stage is Kitchen Core.
 
 ## Operator decision — simplest proof first (20 Nov 2026)
 

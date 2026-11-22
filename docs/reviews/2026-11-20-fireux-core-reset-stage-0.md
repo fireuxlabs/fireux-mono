@@ -426,3 +426,31 @@ the new value after refresh. A second authenticated User was denied reads and
 writes. The User, private account and App membership stayed intact. No rules
 were deployed. Restricted access remains open for release review and rollout,
 separate from the accepted Stage 5 boundary.
+
+### Stage 6 clean cutover evidence
+
+The retired Core Workspace runtime and native entries are absent. The
+package/import scan found zero executable references to the retired Core path.
+Apps explicitly select the optional module and layer. Workspace owns the
+operational frame and selection, while Core's Dashboard continues to compose
+User, Profile and App membership surfaces.
+
+Core `tsc --noEmit` and `nuxi typecheck` for Go QR and FireUX Blank passed.
+Blank's strict check exposed untyped callbacks in the Workspace manifest and
+route switch. Adding their input types preserved the existing behavior.
+The serial focused Core run passed 125 tests, including package installation,
+App initialization, User flow, command scope, Workspace selection, manifest
+entry origin and App shell composition.
+
+The strict packed Core gate passed 10 checks, including the signed-in
+account journey. Together with the separate Chef Dashboard fixture, it
+verified identity and account operations without Workspace. In the actual FireUX Blank
+browser fixture, a protected route prompted for sign-in. The operator saw only
+the two granted targets, selected one, retained it after refresh, and lost
+access to it when its grant was removed. The local Emulator test proved the
+App's selection and access response. Release Rules remain a separate gate.
+
+The 14 Core and 23 overview failures above remain open. Production Rules
+rollout and live readback require separate authorization. The
+[Misebox release checklist](../../projects/misebox/misebox-app/release/README.md#restricted-chef-profile-rollout-checkpoint)
+records exact target, backup, compatibility and rollback checks.

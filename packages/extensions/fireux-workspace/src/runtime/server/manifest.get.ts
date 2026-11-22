@@ -14,7 +14,7 @@ export default defineEventHandler((event) => {
   }).origin
   const allowed =
     Array.isArray(fireux?.workspaces) &&
-    fireux.workspaces.some((family) => {
+    fireux.workspaces.some((family: unknown) => {
       if (typeof family !== 'string' || !/^[a-z][a-z0-9-]*$/.test(family))
         return false
       const origin = fireux.workspaceConfig?.[family]?.origin

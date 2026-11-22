@@ -109,9 +109,9 @@ Shared rules:
   provider and remains available with AI execution disabled; authored research
   stays in each consuming App.
 - `fireux-ai` also owns provider/model presentation in `WorkspaceAIModelLabel`.
-  Its existing component-tree registration publishes that badge. Core's
+  Its existing component-tree registration publishes that badge. Workspace's
   `WorkspaceAIComposer` consumes only supplied `model` slot content; domain
-  adapters compose the badge without a Core-to-AI import or another prompt wrapper.
+  adapters compose the badge without a Workspace-to-AI import or another prompt wrapper.
 - Cross-extension composition belongs in an ecosystem package or project that
   declares every participating package.
 - Do not place a nested `package.json` under `src`.

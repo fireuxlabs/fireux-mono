@@ -1,5 +1,5 @@
 import { navigateTo, useRoute, useRouter, useState } from '#imports'
-import { isNavigationFailure } from 'vue-router'
+import { isNavigationFailure, type RouteRecordNormalized } from 'vue-router'
 import { toValue, type MaybeRefOrGetter, type Ref } from 'vue'
 import type { UseAppSessionReturn } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -61,8 +61,8 @@ export function useWorkspaceSwitch(
       typeof exit === 'string' && route.path.startsWith(`${workspacePath}/`)
         ? exit
         : workspaceSwitchPath(
-            route.matched.map((record) => record.path),
-            router.getRoutes().map((record) => record.path),
+            route.matched.map((record: RouteRecordNormalized) => record.path),
+            router.getRoutes().map((record: RouteRecordNormalized) => record.path),
             workspacePath,
             toValue(homePath)
           )

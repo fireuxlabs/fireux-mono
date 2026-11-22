@@ -507,7 +507,7 @@ public presentation does not enable ordering or change publication.
 ## Kitchen Workspace navigation
 
 Route `nav` metadata under `fireux-kitchens/src/runtime/pages/workspace/kitchen`
-is the current navigation source. Core's Workspace layout renders it, and
+is the current navigation source. the optional Workspace layout renders it, and
 `Workspace/Overview/Capabilities.vue` reuses it for capability doorways.
 Follow `docs/concepts/components.md#workspace-navigation-contract`; these groups
 can evolve with operator feedback and are not a fixed Workspace taxonomy.
@@ -620,7 +620,7 @@ Overview presents one entrance per visible Kitchen area, using route-owned names
 descriptions and destinations; it does not flatten child pages or show placeholder
 summaries. Group labels open their indexes. Orders, Prep & Production, Stock &
 Purchasing, Food Safety, Team, Reports and Settings use the same
-Core native Workspace layout with route-owned content and one App-supplied
+native layout supplied by `fireux-workspace` with route-owned content and one App-supplied
 NuxtPage outlet.
 Their indexes are mini overviews; the child pages remain the working surfaces.
 Menus is the group index at `/workspace/kitchen/menu`
@@ -2192,7 +2192,7 @@ Menus, Food, Drinks and Ingredients collection route adapters share
 one dashboard-panel/header/body composition with the same bounded content width.
 Each owns its existing context and metadata; capability information occupies the
 navbar's right slot. `Workspace/Collection/Header.vue` supplies their Kitchen content title and
-actions without owning reads or permissions. Core's Workspace frame owns the
+actions without owning reads or permissions. the shared Workspace frame owns the
 single route-breadcrumb trail; the Kitchen header does not derive another one.
 Menu AI composition lives in the Menu capability rather than its route adapter.
 CollectionToolbar supplies the shared search/count row and optional controls and
@@ -2982,7 +2982,7 @@ for product labels, saved record names and ordering vocabulary.
 Kitchen navigation groups Items, Menus, Promotions and Services beneath the
 Food & drink overview, separate from Prep & Production (Prep plan, Recipes, Ingredients, Stations, Batches).
 The [Services Workspace boundary](../../../../../docs/concepts/family-menu.md#services-workspace-boundary)
-defines its Kitchen ownership and the target grouping. Core's shared Workspace
+defines its Kitchen ownership and the target grouping. The optional Workspace
 sidebar cycles compact, expanded and expand-all using its existing navigation
 projection; active-route resolution and command authority remain unchanged.
 
