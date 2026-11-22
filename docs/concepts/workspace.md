@@ -30,7 +30,10 @@ Dashboard is a universal Core surface for App and account work. Workspace is
 optional and manages a specific Entity. Apps with a Workspace family select
 `fireux-workspace` in their Nuxt modules and extend `fireux-workspace/layer`.
 The module registers shared components, composables and the Workspace manifest.
-The layer owns its pages, layout and middleware.
+The layer owns its pages, layout and middleware. Declare `fireux-workspace`
+directly when an App enables those surfaces or a package imports its runtime.
+Consumers that only use Core Dashboard or a domain Profile require Core and the
+Profile owner. The [package contract](runtime-package.md) covers exports.
 
 ```text
 App → Ecosystem → Extension → Core

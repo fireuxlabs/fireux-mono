@@ -104,6 +104,34 @@ shipping authorization. See [Entity storage](firestore-entity.md),
 [Rules composition](firestore-rules.md), and
 [Workspace ownership](family-workspace-entity.md) for FireUX-specific details.
 
+## FireUX App public literature
+
+The [FireUX App](../../projects/fireux/fireux-app/app/pages/index.vue) owns the
+framework homepage. Its [authored offers](../../projects/fireux/fireux-app/app/content/meta/source.ts)
+lead to Build with FireUX, Create your industry SaaS and Create your branded
+App. The [Product page](../../projects/fireux/fireux-app/app/pages/product.vue)
+uses the App's framework shell and shared foundation presentation. Showcase
+uses the public App reader. Docs leads to the
+[source guide](../../projects/fireux/fireux-app/app/pages/getting-started.vue)
+and the [platform explanation](../../projects/fireux/fireux-app/app/pages/context/index.vue).
+Project Workspace has its own entrance. The starter overview describes the
+source starter, and preview or catalogue entries need independent delivery
+evidence before they become offers.
+
+The [Ignition intake context](../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md)
+owns the industry brief and priced branded-App intake. The FireUX Project Apps
+capability creates and previews an App record. Hosting and infrastructure are
+separate delivery operations. See the [onboarding boundary](../onboarding.md)
+for the shared unavailable state and internal initialization.
+
+The [Capabilities library](../../projects/fireux/fireux-app/app/pages/capabilities.vue)
+describes shared primitives, presentation, read-only surfaces and
+domain implementations. Blank is the neutral reference for structure.
+The [Patterns catalogue](../../projects/fireux/fireux-app/app/pages/patterns/index.vue)
+explains examples and their limits. Credit external patterns to their authors
+and identify FireUX adaptations. Apply repository guidance for implementation
+and use working consumers for release claims.
+
 ## Current integration sources
 
 - [App composition](../../packages/extensions/fireux-app/src/config.ts)

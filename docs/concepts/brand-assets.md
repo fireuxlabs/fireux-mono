@@ -179,6 +179,15 @@ Verify byte geometry, orientation, alpha preservation and grid bursts with
 the existing proxy network-policy and protected-upload tests. A consuming screen
 still needs visual review; these tests do not establish live image appearance.
 
+### Main App landing photography
+
+Shared static Hero photos show people doing the product's current work in
+the [App layer's image frame](../../packages/extensions/fireux-app/src/runtime/components/landing/ProductHeroImage.vue).
+Use a 1600 × 1000 pixel, opaque 8-bit RGB PNG for this photo treatment.
+Subject, alt text and focal position are App-owned. The FireUX framework Hero
+and [Misebox Kitchen product preview](../../projects/misebox/misebox-app/app/components/Landing/HeroImage.vue)
+use their own compositions.
+
 ## Ecosystem identity
 
 BuenoHost's SVG masters live in its ecosystem package; global App exports

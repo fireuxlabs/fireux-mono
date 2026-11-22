@@ -125,6 +125,11 @@ reader, eligibility and controls. They share Intro/default chrome, not one
 combined acquisition or result contract. Other Main Apps and tenants retain
 their own entrance policies.
 
+The immersive [product landing](../../../../../projects/misebox/misebox-app/app/components/Landing/Index.vue)
+uses the shared Product layout and region ordering. Its wide Hero shows the
+[Kitchen product preview](../../../../../projects/misebox/misebox-app/app/components/Landing/HeroImage.vue)
+with the menu kiosk and Workspace as an App-owned composition.
+
 The Main App's `/products` composes Pro and Business from App-owned
 `useMiseboxPricing`, which selects the App layer's shared commercial tiers, alongside the existing
 Products reader without a type filter. App-owned `Products/Services.vue` selects

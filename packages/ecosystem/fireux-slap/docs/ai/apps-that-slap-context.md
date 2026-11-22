@@ -20,6 +20,11 @@ away from genuine operational domains.
 
 ## Scope and ownership boundaries
 
+The [Slap Main App landing](../../../../../projects/slap/slap-app/app/components/Landing/Index.vue)
+uses the shared Ecosystem landing and disables section dwell for its
+brand-commerce presentation. Preserve that choice when changing the shared
+landing. Slap tenant Apps retain their own scene and motion choices.
+
 - `slap` remains the stable package, project-routing, Firebase, and database
   binding key. The product name is Apps That Slap; do not create a competing
   package or ecosystem identifier merely to expand the name.

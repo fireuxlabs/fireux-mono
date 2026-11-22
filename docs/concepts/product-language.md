@@ -296,6 +296,14 @@ App-owned features. Present a single surface directly without a selector or a
 visible `Surfaces` label. Use a selector only when the App has multiple genuine
 usage surfaces backed by current routes.
 
+The shared [Product landing](../../packages/extensions/fireux-app/src/runtime/components/landing/ProductIndex.vue)
+owns the region vocabulary and default order. Apps select an ordered subset
+through `regionOrder`. The shared
+[Ecosystem landing](../../packages/extensions/fireux-ecosystem/src/runtime/components/landing/EcosystemHome.vue)
+shows “<App name>'s Apps” when the public collection contains at least two
+active child Apps after excluding the Main App. FireUX owns its separate
+Ecosystems directory backed by published records.
+
 ### Products over shared capabilities
 
 A public Product packages a domain capability without becoming the owner of its

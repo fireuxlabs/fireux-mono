@@ -164,12 +164,23 @@ Misebox keeps public pages, authentication and Kitchen Workspace on one host.
 Its old host-switching middleware and configured Workspace origin are removed.
 The App's Workspace Home lives at `/workspace/kitchen`; capability descendants
 keep their existing paths and noindex/no-store response policy. Public entry
-does not change Workspace authority. Core's entrance reader resolves the
+does not change Workspace authority. The optional Workspace entrance reader resolves the
 Workspace destination from the registered `workspace-<family>`
 nav key; optional external origins remain available only for a separately
 justified App. A hostname never changes membership, selection or permission.
 The native route and configuration remain the owners; no parallel entry model
 or role-specific root component is introduced.
+
+BuenoHost and Granite compose shared `DirectoryHome` with the published
+Property directory. Granite's public Home uses the same Property projection
+without exposing operational Portfolio records. Misebox uses its own public
+Home composition as described in its App context.
+
+The Project, Kitchen, Property and Portfolio Workspace homes use the shared
+[GuestWelcome control](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/GuestWelcome.vue)
+for settled guests. Sign-in retains the destination, and the domain decides
+which guest tools to show. Keep operational selectors with signed-in accounts
+and expose a landing AI action only where the owning workflow supports it.
 
 ## Workspace collection and record detail
 

@@ -260,6 +260,22 @@ composes those owners without adding an AI dependency to Core.
   environment check, while the trusted bootstrap endpoint verifies the
   configured developer UID and existing App-admin state before writing.
 
+## Public metadata reference
+
+Core's [public metadata reader](../../packages/core/fireux-core/src/runtime/app/server/index/meta.ts)
+publishes allowlisted copy, SEO and sharing fields, legal notices and public
+images. App metadata and page-level head overrides retain their own sources.
+
+The [shared viewer](../../packages/extensions/fireux-app/src/runtime/components/Meta/Index.vue)
+reads the response once with native Nuxt data, presents copy as escaped text,
+offers read retry and reuses the shared Legal notice presenter.
+[FireUX](../../projects/fireux/fireux-app/app/pages/meta.vue) and
+[Misebox](../../projects/misebox/misebox-app/app/pages/meta.vue) explicitly
+supply their own route, header, JSON link and `noindex,follow` policy. Other
+Apps opt in through their own routes. Check the public response, head, links
+and desktop/mobile rendering alongside the
+[viewer tests](../../packages/extensions/fireux-app/src/test/components/Meta.test.mjs).
+
 ## Sitemap publication conditions
 
 Domains register canonical sitemap sources through `fireux:seo:sitemaps:extend`.
