@@ -31,6 +31,7 @@ export interface ModuleOptions {
   defaultKitchenId?: string
   workspaceOnly?: boolean
   workspaceItems?: boolean
+  workspaceMenus?: boolean
   ordering?: OrderingConfiguration
 }
 
@@ -61,6 +62,11 @@ export default defineNuxtModule<ModuleOptions>({
         '[fireux-kitchens] workspaceItems requires workspaceOnly.'
       )
     }
+    if (options.workspaceMenus && !options.workspaceItems) {
+      throw new Error(
+        '[fireux-kitchens] workspaceMenus requires workspaceItems.'
+      )
+    }
     if (options.workspaceOnly) {
       if (
         options.ordering ||
@@ -87,6 +93,13 @@ export default defineNuxtModule<ModuleOptions>({
             file: resolver.resolve('./runtime/kitchen/pages/items.vue'),
           })
         }
+        if (options.workspaceMenus) {
+          pages.push({
+            name: 'workspace-kitchen-menus',
+            path: '/workspace/kitchen/menus/:menuSlug?',
+            file: resolver.resolve('./runtime/kitchen/pages/menus.vue'),
+          })
+        }
       })
       addServerHandler({
         route: '/api/kitchens/onboarding/shell',
@@ -109,6 +122,21 @@ export default defineNuxtModule<ModuleOptions>({
             method,
             handler: resolver.resolve(
               `./runtime/server/api/workspace/kitchen/dishes/index.${method}.ts`
+            ),
+          })
+        }
+      }
+      if (options.workspaceMenus) {
+        for (const [path, file] of [
+          ['/api/workspace/kitchen/menus', 'index'],
+          ['/api/workspace/kitchen/menus/section', 'section'],
+          ['/api/workspace/kitchen/menus/item', 'item'],
+        ]) {
+          addServerHandler({
+            route: path,
+            method: 'post',
+            handler: resolver.resolve(
+              `./runtime/server/api/workspace/kitchen/menus/${file}.post.ts`
             ),
           })
         }

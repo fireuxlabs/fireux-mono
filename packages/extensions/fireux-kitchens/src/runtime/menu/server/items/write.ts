@@ -19,7 +19,11 @@ import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/targ
 import { normalizeKitchenPromotion } from '../../../kitchen/utils/promotions/pricing'
 import type { MenuEntry } from '../../records/sections/entry'
 
-export async function createKitchenMenuItem(event: H3Event, input: unknown) {
+export async function createKitchenMenuItem(
+  event: H3Event,
+  input: unknown,
+  draftOnly = false
+) {
   if (!input || typeof input !== 'object' || Array.isArray(input))
     throw createError({
       statusCode: 400,
@@ -70,6 +74,11 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
           statusCode: 404,
           statusMessage:
             'Select an existing Menu section and Item from this Kitchen.',
+        })
+      if (draftOnly && menu.data?.status !== 'draft')
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'Only draft Menus can be edited here.',
         })
       if (
         menu.data?.schedule === 'daily' &&

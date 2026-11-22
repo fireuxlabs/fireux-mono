@@ -69,8 +69,15 @@ Add `workspaceItems: true` alongside `workspaceOnly: true` to opt into
 the [Items route](src/runtime/kitchen/pages/items.vue). It lists Items from the
 selected Kitchen, supports name-only creation and editing, and opens each Item
 at `/workspace/kitchen/items/:dishId`. Items use the existing protected commands
-and stay at `kitchens/{kitchenId}/dishes/{dishId}`. Menus, Services and Orders
-are outside this installation.
+and stay at `kitchens/{kitchenId}/dishes/{dishId}`.
+
+Add `workspaceMenus: true` when Items are enabled to build and review
+[private drafts](src/runtime/kitchen/pages/menus.vue). The existing Menu
+commands require a Place with a currency and retain the App membership,
+Kitchen grant and subscription checks. Section placements reference existing
+Kitchen Items. This installation registers draft creation, section creation
+and Item placement. Publishing, public Menu routes, Services and Orders are
+outside its scope.
 
 ## Ownership and execution
 

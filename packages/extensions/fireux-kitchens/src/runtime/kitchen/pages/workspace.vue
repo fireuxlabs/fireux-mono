@@ -21,9 +21,12 @@
   </form>
   <p v-else-if="kitchen">{{ kitchen.identity.slug }}</p>
   <p v-else>No Kitchen is available to this account.</p>
-  <UButton v-if="kitchen && itemsRoute" :to="{ name: itemsRoute.name }">
+  <UButton v-if="kitchen && hasItems" to="/workspace/kitchen/items">
     Items
   </UButton>
+  <UButton v-if="kitchen && hasMenus" to="/workspace/kitchen/menus"
+    >Menus</UButton
+  >
 </template>
 
 <script setup lang="ts">
@@ -47,9 +50,9 @@ definePageMeta({
 
 const { currentUser, isAuthenticated } = useAuth()
 const config = useFireUXConfig()
-const itemsRoute = useRouter()
-  .getRoutes()
-  .find((route) => route.name === 'workspace-kitchen-items')
+const router = useRouter()
+const hasItems = router.hasRoute('workspace-kitchen-items')
+const hasMenus = router.hasRoute('workspace-kitchen-menus')
 const {
   data: kitchen,
   outcome,

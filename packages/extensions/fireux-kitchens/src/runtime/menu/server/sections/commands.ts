@@ -4,7 +4,10 @@ import { createError, type H3Event } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { serverKitchenMenusTarget, serverKitchenMenuSectionsTarget } from '../../../kitchen/server/mutation-targets'
+import {
+  serverKitchenMenusTarget,
+  serverKitchenMenuSectionsTarget,
+} from '../../../kitchen/server/mutation-targets'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
@@ -64,7 +67,11 @@ function changes(input: unknown) {
       : {}),
   }
 }
-export async function createKitchenMenuSection(event: H3Event, input: unknown) {
+export async function createKitchenMenuSection(
+  event: H3Event,
+  input: unknown,
+  draftOnly = false
+) {
   const value = fields(input, ['kitchenId', 'menuId', 'label', 'description'])
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
   const menuId = requireFirestoreDocumentId(value.menuId, 'Menu id')
@@ -81,6 +88,11 @@ export async function createKitchenMenuSection(event: H3Event, input: unknown) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Menu was not found.',
+      })
+    if (draftOnly && menu.data?.status !== 'draft')
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Only draft Menus can be edited here.',
       })
     if (
       menu.data?.schedule === 'daily' &&

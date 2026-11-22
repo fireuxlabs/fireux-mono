@@ -57,6 +57,16 @@ references at the existing section Items path. The public Menu API returned
 404 and the production Rules candidate denied a read by an App member without
 the Kitchen grant. The test Kitchen had no Orders.
 
+**Independent draft Menu checkpoint.** With only Kitchen, Items and private
+draft Menus registered, normal Core sign-in opened the draft Workspace.
+The operator created “Kitchen Lunch,” added one section and placed two
+existing unpriced Items. Both placements survived reload under “Unpublished.”
+The named emulator confirmed `status: draft`, unchanged Item records, and
+`dish_id` references at the existing section Items path. The Rules candidate
+denied guests and an unrelated App member, and the public Menu API returned
+`404`. Nuxt registered no Services, Orders, publishing or public Menu routes.
+This check used the existing Place and currency prerequisite.
+
 ### Phase C — Work out how food is made and supplied
 
 - [ ] **06. Define the method of production.** For each relevant Item: ingredients, preparation or Recipe, quantities, units, portions/yield, equipment, dietary/allergen facts and practical production instructions. Purchased finished goods may need little or no recipe. **Done when:** those facts live with the correct owner and can be linked to the Item without bloating its base model.

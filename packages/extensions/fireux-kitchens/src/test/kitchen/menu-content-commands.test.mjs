@@ -201,6 +201,25 @@ test('Menu content commands persist scoped sections/items without changing publi
       .every((x) => Object.keys(x[3]).every((key) => key === 'updated'))
   )
 })
+test('Draft-only commands reject non-draft Menus inside the transaction', async () => {
+  for (const run of [
+    (h) => h.createKitchenMenuSection({}, section, true),
+    (h) => h.createKitchenMenuItem({}, item, true),
+  ]) {
+    const h = harness()
+    const menu = h.records.get('kitchens/k/menus/m')
+    h.before(() => {
+      menu.status = 'published'
+    })
+    await assert.rejects(() => run(h), { statusCode: 409 })
+    assert.deepEqual(h.writes, [])
+    h.before(() => {
+      menu.status = 'draft'
+    })
+    await run(h)
+    assert.ok(h.writes.some(([verb]) => verb === 'create'))
+  }
+})
 test('Every content command rechecks membership and binding inside transaction', async () => {
   for (const run of [
     (h) => h.createKitchenMenuSection({}, section),
