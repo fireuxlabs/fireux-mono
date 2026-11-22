@@ -13,9 +13,3 @@ export function coreInventory(
   components?: { filePath: string; pascalName: string }[],
   previewSource?: string
 ): CoreInventoryEntry[]
-
-export function publicLibrary(
-  runtimeRoot: string,
-  components?: { filePath: string; pascalName: string }[],
-  previewSource?: string
-): (CoreInventoryEntry & { description: string })[]

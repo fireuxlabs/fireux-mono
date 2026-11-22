@@ -2,7 +2,7 @@ import type { NuxtConfig } from '@nuxt/schema'
 import { addTemplate, updateTemplates } from '@nuxt/kit'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { coreInventory, publicLibrary } from '../catalogue/core-inventory.mjs'
+import { coreInventory } from '../catalogue/core-inventory.mjs'
 
 const coreRoot = fileURLToPath(
   new URL('../../../../core/fireux-core/src/runtime', import.meta.url)
@@ -18,12 +18,6 @@ export default {
   modules: [
     (_options, nuxt) => {
       let components: { filePath: string; pascalName: string }[] = []
-      addTemplate({
-        filename: 'fireux-public-components.ts',
-        write: true,
-        getContents: () =>
-          `export default ${JSON.stringify(publicLibrary(coreRoot, components, readFileSync(previewFile, 'utf8')))}`,
-      })
       addTemplate({
         filename: 'fireux-core-inventory.ts',
         write: true,
@@ -56,11 +50,7 @@ export default {
           path.includes('CorePreview.vue')
         ) {
           await updateTemplates({
-            filter: (template) =>
-              [
-                'fireux-core-inventory.ts',
-                'fireux-public-components.ts',
-              ].includes(template.filename),
+            filter: (template) => template.filename === 'fireux-core-inventory.ts',
           })
         }
       })

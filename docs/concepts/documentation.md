@@ -133,26 +133,17 @@ The public reference follows the parts of a Nuxt App that developers work
 with: configuration, app.vue, pages, layouts, components, composables, and server
 routes. Each guide leads with what FireUX adds, shows an example, and links
 to the relevant Nuxt or Nuxt UI reference for the basics.
-The public library at `/docs/components` is explicit. Core owns
-[`src/catalogue/public-components.mjs`](../../packages/core/fireux-core/src/catalogue/public-components.mjs):
-each entry names a component, source, purpose and group. Nuxt registration alone
-does not publish a component. Add an entry only for a useful supported building
-block, with a safe sample-data preview in Docs' `CorePreview.vue`. The Docs
-builder checks source/name agreement and requires that preview. Restart the dev
-server after editing catalogue metadata. The Docs `core-inventory.test.mjs` and
-`library-routes.test.mjs` check publication and development/production boundaries.
+The manually maintained Core public component catalogue has been removed.
+The `/docs/components` route remains as a landing page, alongside existing
+hand-authored examples. No replacement discovery or public-library contract
+has been adopted yet.
 
 The full source inventory is internal at `/dev/core-components`. It includes
 App, User, Ecosystem and shared Core implementation components; inclusion
 is not a public API promise. Its detail pages show source and existing previews.
 The Docs layer excludes those routes in production and generates an empty
-internal inventory there. Public detail routes resolve only the public catalogue,
-so an internal component's old Docs URL returns 404.
-
-Extension components keep separate package-owned previews, such as the
-[Bookings customer form](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue).
-They do not become Core components by appearing in Docs. Previews use sample
-data and local callbacks; never auto-mount connected account or App screens.
+internal inventory there. Extension components retain their own examples, such
+as the [Bookings customer form](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue).
 
 The smaller `fireux-docs/src/runtime/models/catalogue.ts` supplies the curated
 usage guides and sidebar links. Patterns and templates remain separate

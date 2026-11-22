@@ -518,18 +518,14 @@ accepts `hasMore`, `loading` and optional `error`, emits `load-more`, and uses
 fetch records. App collection acquisition keeps next-page failures separate
 from initial-load errors, retaining the current records while loading or retrying.
 
-The public [component reference](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/index.vue)
-publishes only Core's explicit `src/catalogue/public-components.mjs` entries,
-each with a Docs-owned safe preview. Core contains reusable runtime components;
-example-only fixtures stay with the consuming reference. The complete inventory lives at the development-only
-`/dev/core-components`; internal implementation components are not a public API.
-Extension previews live separately
-and may render a package-owned component with generic placeholder data; this
-does not make that component part of Core. The
-[Bookings preview](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue)
-shows the shared customer surface separately from the Core inventory. The FireUX App
-[playground](../../projects/fireux/fireux-app/app/pages/components/index.vue)
-links to that reference. Nuxt UI documents its own controls.
+The [component reference](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/index.vue)
+no longer uses a manually maintained public Core catalogue. Existing hand-authored
+guides and examples remain; a new discovery strategy has not been chosen.
+The complete inventory lives at the development-only `/dev/core-components`;
+internal implementation components are not a public API. Extension previews
+remain separate, including the [Bookings preview](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue).
+The FireUX App [playground](../../projects/fireux/fireux-app/app/pages/components/index.vue)
+links to the reference. Nuxt UI documents its own controls.
 
 [Page composition](../../projects/fireux/fireux-app/app/pages/patterns/page-composition.vue)
 shows how to use native `UPage` with FireUX components and a single collection reader.

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 
 const root = fileURLToPath(new URL('../../../../../', import.meta.url))
 
-test('native Docs routes and generated data keep the full inventory development-only', () => {
+test('native Docs routes and generated data keep the internal inventory development-only', () => {
   const output = mkdtempSync(join(tmpdir(), 'fireux-library-'))
   try {
     const result = execFileSync(process.execPath, ['--input-type=module'], {
@@ -38,13 +38,10 @@ for (const dev of [false, true]) {
     assert.equal(inventory.includes('components/Library/'), false)
     if (dev) assert.ok(inventory.includes('FireLayoutsDashboardProfileButton'))
     else assert.equal(inventory.trim(), 'export default []')
-    const library = readFileSync(join(output, 'fireux-public-components.ts'), 'utf8')
-    assert.ok(library.includes('FireState'))
-    assert.equal(library.includes('FireLayoutsDashboardProfileButton'), false)
-    assert.equal(library.includes('app/components/InitializationGate.vue'), false)
-    const detail = readFileSync(${JSON.stringify(join(root, 'packages/extensions/fireux-docs/src/runtime/pages/docs/components/core/[id].vue'))}, 'utf8')
-    assert.ok(detail.includes('#build/fireux-public-components'))
-    assert.equal(detail.includes('#build/fireux-core-inventory'), false)
+    assert.equal(
+      pages.some(page => page.file?.includes('/pages/docs/components/core/')),
+      false
+    )
   } finally { await nuxt.close() }
 }
 console.log('Library boundaries passed')
