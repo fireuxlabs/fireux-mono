@@ -95,7 +95,7 @@ these records or change their behaviour. Pre-order is not another delivery metho
 ## Source and verification
 
 - Kitchen setup choices in [`offering-options.ts`](../src/runtime/kitchen/utils/offering-options.ts) and the saved [`KitchenOffering` contract](../src/runtime/kitchen/utils/offering-policy.ts).
-- Item and selling-term contracts in [`item.model.ts`](../src/runtime/kitchen/models/item.model.ts) and [`item-offer.ts`](../src/runtime/kitchen/records/menus/items/item-offer.ts).
+- The [Item model](../src/runtime/kitchen/models/item.model.ts) owns identity and selling terms.
 - Service type labels: `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-order-label.ts`.
 - Public directory labels: `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/service-summary.ts`.
 - Menu entrances: `packages/extensions/fireux-kitchens/src/runtime/menu/utils/navigation/context.ts`.

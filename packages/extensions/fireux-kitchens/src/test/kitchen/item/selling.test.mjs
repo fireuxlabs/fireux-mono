@@ -8,8 +8,9 @@ import {
   priceItemChoices,
 } from '../../../runtime/kitchen/utils/item-choices.ts'
 import {
-  normalizeItemPricingPatch,
-  readItemOffer,
+  normalizeItemSellingTerms,
+  readItemPricing,
+  readItemSellingTerms,
 } from '../../../runtime/kitchen/utils/item-pricing.ts'
 
 const group = () => ({
@@ -46,8 +47,9 @@ test('canonical selling choices win and workspace/public price calculation uses 
     price_options: [{ label: 'Old', price: 50 }],
   }
   const before = structuredClone(raw)
-  const offer = readItemOffer(raw)
-  assert.equal(offer.price, 8)
+  const offer = readItemSellingTerms(raw)
+  assert.equal(offer.price, undefined)
+  assert.equal(readItemPricing(raw).price, 8)
   assert.equal(
     priceItemChoices(offer.price, offer.choice_groups, { size: ['large'] })
       .unitMinor,
@@ -62,11 +64,11 @@ test('canonical selling choices win and workspace/public price calculation uses 
 
 test('pricing draft survives same-record refresh, resets on navigation, and ignores obsolete save feedback', async () => {
   const scope = effectScope()
-  const offer = ref({ price: 10, choice_groups: [] }),
+  const item = ref({ price: 10, currency_code: 'CHF', choice_groups: [] }),
     kitchenId = ref('k'),
     itemId = ref('aioli'),
     canWrite = ref(true),
-    offerError = ref(null)
+    pricingError = ref(null)
   let resolveSave
   const calls = []
   const api = scope.run(() =>
@@ -78,13 +80,10 @@ test('pricing draft survives same-record refresh, resets on navigation, and igno
         ref,
         watch,
         normalizeItemChoiceGroups,
-        normalizeItemPricingPatch,
         priceItemChoices,
-        useKitchenWorkspace: () => ({ data: ref({}) }),
-        readPlaceCurrencyCode: () => 'CHF',
         useKitchenItemContext: () => ({
-          offer,
-          offerError,
+          item,
+          pricingError,
           kitchenId,
           itemId,
           canWrite,
@@ -117,26 +116,93 @@ test('pricing draft survives same-record refresh, resets on navigation, and igno
   )
   assert.equal(api.price.value, 10)
   api.price.value = 15
-  offer.value = { price: 11, choice_groups: [] }
+  item.value = { price: 11, currency_code: 'CHF', choice_groups: [] }
   await nextTick()
   assert.equal(api.price.value, 15)
   api.resetDraft()
   assert.equal(api.price.value, 11)
   api.groups.value = [group()]
-  assert.equal(offer.value.choice_groups.length, 0)
+  assert.equal(item.value.choice_groups.length, 0)
   const save = api.save()
-  assert.equal(calls[0].changes.price, 8)
+  assert.equal(calls[0].changes.price, null)
+  assert.equal(calls[0].changes.currency_code, 'CHF')
   assert.equal(Object.hasOwn(calls[0].changes, 'price_options'), false)
   itemId.value = 'soup'
-  offer.value = { price: 7, choice_groups: [] }
+  item.value = { price: 7, choice_groups: [] }
   await nextTick()
   resolveSave({ id: 'aioli' })
   await save
   assert.equal(api.price.value, 7)
   assert.equal(api.message.value, '')
   assert.equal(api.busy.value, false)
-  offer.value = { choice_groups: [] }
+  item.value = { choice_groups: [] }
   await nextTick()
   assert.equal(api.previewPrice.value, 'Set a normal price to preview.')
   scope.stop()
+})
+
+test('Margherita stores one denomination and derives its starting and selected prices', () => {
+  const choices = [
+    {
+      ...group(),
+      options: [
+        { id: '12-inch', label: '12 inch', price: 18 },
+        { id: '16-inch', label: '16 inch', price: 24 },
+      ],
+    },
+    {
+      id: 'extras',
+      name: 'Extras',
+      min: 0,
+      max: null,
+      pricing: 'additional',
+      options: [{ id: 'olives', label: 'Olives', price: 2.5 }],
+    },
+  ]
+  const terms = normalizeItemSellingTerms({
+    currency_code: 'CHF',
+    choice_groups: choices,
+  })
+  assert.equal(terms.currency_code, 'CHF')
+  assert.equal(Object.hasOwn(terms, 'price'), false)
+  assert.equal(readItemPricing(terms).price, 18)
+  assert.equal(
+    priceItemChoices(terms.price, terms.choice_groups, {
+      size: ['16-inch'],
+      extras: ['olives'],
+    }).unitMinor,
+    2650
+  )
+  assert.throws(
+    () => normalizeItemSellingTerms({ choice_groups: choices }),
+    /currency code/
+  )
+  assert.throws(
+    () =>
+      normalizeItemSellingTerms({
+        price: 18,
+        currency_code: 'CHF',
+        choice_groups: choices,
+      }),
+    /full prices on the choices/
+  )
+  assert.throws(
+    () =>
+      normalizeItemSellingTerms(
+        { choice_groups: choices.slice(1) },
+        {
+          ...terms,
+          price: 18,
+        }
+      ),
+    /base price/
+  )
+  assert.deepEqual(
+    normalizeItemSellingTerms({ price: 0, currency_code: 'CHF' }),
+    {
+      price: 0,
+      currency_code: 'CHF',
+      choice_groups: [],
+    }
+  )
 })

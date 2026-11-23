@@ -1,6 +1,7 @@
+import { FieldValue } from 'firebase-admin/firestore'
 import { validateItemReferenceIds } from '../../utils/item-preparation'
 import { requireItemPreparationStations } from '../stations/item-references'
-import { normalizeItemPricingPatch } from '../../utils/item-pricing'
+import { normalizeItemSellingTerms } from '../../utils/item-pricing'
 import { createError, type H3Event } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverKitchenItemsTarget } from '../mutation-targets'
@@ -21,16 +22,16 @@ import { itemFields, itemText, validateItemInput } from './record-input'
 export async function updateItem(event: H3Event, input: unknown) {
   const value = itemFields(input, ['kitchenId', 'dishId', 'changes'])
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
-  const dishId = requireFirestoreDocumentId(value.dishId, 'Item id')
+  const itemId = requireFirestoreDocumentId(value.dishId, 'Item id')
   const changes = itemFields(value.changes, [
     'name',
     'slug',
     'description',
+    'item_kind',
     'preparation_station_ids',
     'spec',
     'price',
-    'price_options',
-    'add_ons',
+    'currency_code',
     'choice_groups',
   ])
   if (!Object.keys(changes).length)
@@ -52,20 +53,23 @@ export async function updateItem(event: H3Event, input: unknown) {
   if ('slug' in changes) patch.slug = itemText(changes.slug)
   if ('description' in changes)
     patch.description = itemText(changes.description)
+  if ('item_kind' in changes) {
+    if (changes.item_kind !== 'food' && changes.item_kind !== 'drink')
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Choose food or drink.',
+      })
+    patch.item_kind = changes.item_kind
+  }
   if ('spec' in changes)
     patch.spec = validateItemInput(() =>
       validateItemSpecification(changes.spec)
     )
   const pricing = Object.fromEntries(
-    ['price', 'price_options', 'add_ons', 'choice_groups']
+    ['price', 'currency_code', 'choice_groups']
       .filter((key) => key in changes)
       .map((key) => [key, changes[key]])
   )
-  if (Object.keys(pricing).length)
-    Object.assign(
-      patch,
-      validateItemInput(() => normalizeItemPricingPatch(pricing))
-    )
   const actor = await readKitchenMutationActor(event)
 
   return runGuardedServerTransaction(
@@ -73,7 +77,7 @@ export async function updateItem(event: H3Event, input: unknown) {
     async (transaction) => {
       await requireKitchenRecordMutationAuthority(transaction, actor, kitchenId)
       const target = serverKitchenItemsTarget(kitchenId)
-      const existing = await transaction.read(target, dishId)
+      const existing = await transaction.read(target, itemId)
       if (!existing.exists)
         throw createError({ statusCode: 404, statusMessage: 'Item not found.' })
       if (
@@ -107,11 +111,24 @@ export async function updateItem(event: H3Event, input: unknown) {
           )
         )
       }
-      transaction.update(target, dishId, {
+      const pricingPatch: Record<string, unknown> = {}
+      if (Object.keys(pricing).length) {
+        const stored = existing.data ?? {}
+        const terms = validateItemInput(() =>
+          normalizeItemSellingTerms(pricing, stored)
+        )
+        Object.assign(pricingPatch, terms)
+        for (const field of ['price', 'currency_code']) {
+          if (Object.hasOwn(stored, field) && !Object.hasOwn(terms, field))
+            pricingPatch[field] = FieldValue.delete()
+        }
+      }
+      transaction.update(target, itemId, {
         ...patch,
+        ...pricingPatch,
         updated: serverAuditStamp({ by: actor.uid }),
       })
-      return { id: dishId }
+      return { id: itemId }
     }
   )
 }

@@ -1,18 +1,21 @@
 import { refreshNuxtData, useNuxtApp } from 'nuxt/app'
 import type { WatchSource } from 'vue'
+import type { Item } from '../../models/item.model'
 import type { ItemIdentityChanges } from '../../utils/item-identity'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { useItemEditorScope } from './useItemEditorScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 
-type ItemCreateDraft = {
-  price?: number
-  name: string
-  description?: string
-  item_kind?: string
-  preparation_station_ids?: string[]
-}
+type ItemCreateDraft = Pick<
+  Item,
+  | 'name'
+  | 'description'
+  | 'item_kind'
+  | 'price'
+  | 'currency_code'
+  | 'choice_groups'
+> & { preparation_station_ids?: string[] }
 
 /** Bind the Item commands to one editor's lifetime. */
 export function useItemActions(ownerSources: WatchSource[] = []) {

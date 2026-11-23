@@ -1,7 +1,10 @@
-import { normalizeItemChoiceGroups } from './item-choices'
+import {
+  isItemPrice,
+  normalizeItemChoiceGroups,
+  readItemChoiceGroups,
+} from './item-choices'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
-import type { ItemOffer } from '../records/menus/items/item-offer'
-import { readItemChoiceGroups } from './item-choices'
+import type { Item } from '../models/item.model'
 
 /** Historical storage/read shapes, not the canonical Item model. */
 export type ItemPriceOption = {
@@ -11,8 +14,9 @@ export type ItemPriceOption = {
   price: number
 }
 export type ItemAddOnOption = { id: string; label: string; price: number }
-export type ItemPricing = Partial<ItemOffer> & {
-  price?: number
+type ItemSellingTerms = Pick<Item, 'price' | 'choice_groups' | 'currency_code'>
+
+export type ItemPricing = ItemSellingTerms & {
   price_options: ItemPriceOption[]
   add_ons: ItemAddOnOption[]
 }
@@ -184,27 +188,8 @@ export function normalizeItemPricingPatch(
   return normalized
 }
 
-export function readItemPricing(
-  data: Record<string, unknown>
-): ItemPricing & { price: number } {
-  if (!Object.hasOwn(data, 'price'))
-    throw new Error(
-      'Set the Item normal price before using it on a published Menu.'
-    )
-  const patch = normalizeItemPricingPatch({
-    price: data.price,
-    ...(Object.hasOwn(data, 'choice_groups')
-      ? { choice_groups: data.choice_groups }
-      : {}),
-    price_options: data.price_options ?? [],
-    add_ons: data.add_ons ?? [],
-  } as ItemPricing)
-  return patch as ItemPricing & { price: number }
-}
-
-/** Read selling defaults without inventing a price or writing historical choices. */
-export function readItemOffer(data: Record<string, unknown>): ItemOffer {
-  const pricing = normalizeItemPricingPatch({
+function readStoredPricing(data: Record<string, unknown>) {
+  return normalizeItemPricingPatch({
     ...(Object.hasOwn(data, 'price') ? { price: data.price } : {}),
     ...(Object.hasOwn(data, 'choice_groups')
       ? { choice_groups: data.choice_groups }
@@ -212,8 +197,84 @@ export function readItemOffer(data: Record<string, unknown>): ItemOffer {
     price_options: data.price_options ?? [],
     add_ons: data.add_ons ?? [],
   })
+}
+
+/** Price projection for existing Menu and Order consumers. */
+export function readItemPricing(
+  data: Record<string, unknown>
+): ItemPricing & { price: number } {
+  const pricing = readStoredPricing(data)
+  // Keep the existing publication prerequisite for historical flat variants.
+  const price = pricing.price
+  if (price === undefined)
+    throw new Error(
+      'Set the Item normal price before using it on a published Menu.'
+    )
   return {
-    ...(pricing.price !== undefined ? { price: pricing.price } : {}),
-    choice_groups: normalizeItemChoiceGroups(readItemChoiceGroups(pricing)),
+    price_options: [],
+    add_ons: [],
+    ...pricing,
+    price,
+  }
+}
+
+function currencyCode(value: unknown): string {
+  if (typeof value !== 'string' || !/^[A-Z]{3}$/.test(value))
+    throw new Error('Enter an ISO currency code such as CHF.')
+  return value
+}
+
+/** Read one Item's terms, projecting historical choices without writing them. */
+export function readItemSellingTerms(
+  data: Record<string, unknown>
+): ItemSellingTerms {
+  const pricing = readStoredPricing(data)
+  const choice_groups = normalizeItemChoiceGroups(readItemChoiceGroups(pricing))
+  const hasFullPrice = choice_groups.some((group) => group.pricing === 'full')
+  return {
+    ...(!hasFullPrice && pricing.price !== undefined
+      ? { price: pricing.price }
+      : {}),
+    ...(data.currency_code !== undefined
+      ? { currency_code: currencyCode(data.currency_code) }
+      : {}),
+    ...(choice_groups.length ? { choice_groups } : {}),
+  }
+}
+
+/** Validate the final authored terms before persisting them on the Item. */
+export function normalizeItemSellingTerms(
+  changes: Record<string, unknown>,
+  existing: Record<string, unknown> = {}
+): ItemSellingTerms {
+  const storedGroups = () => readItemChoiceGroups(existing)
+  const choice_groups = Object.hasOwn(changes, 'choice_groups')
+    ? normalizeItemChoiceGroups(changes.choice_groups)
+    : normalizeItemChoiceGroups(storedGroups())
+  const hasFullPrice = choice_groups.some((group) => group.pricing === 'full')
+  if (hasFullPrice && changes.price != null)
+    throw new Error('Set full prices on the choices only.')
+  const rawPrice = hasFullPrice
+    ? undefined
+    : Object.hasOwn(changes, 'price')
+      ? (changes.price ?? undefined)
+      : storedGroups().some((group) => group.pricing === 'full')
+        ? undefined
+        : existing.price
+  const price = isItemPrice(rawPrice) ? rawPrice : undefined
+  if (rawPrice !== undefined && price === undefined)
+    throw new Error(
+      'Price must be a non-negative amount with at most two decimals.'
+    )
+  if (choice_groups.length && !hasFullPrice && price === undefined)
+    throw new Error('Set a base price before adding extras.')
+  const priced = price !== undefined || hasFullPrice
+  const currency = Object.hasOwn(changes, 'currency_code')
+    ? changes.currency_code
+    : existing.currency_code
+  return {
+    ...(price !== undefined ? { price } : {}),
+    ...(priced ? { currency_code: currencyCode(currency) } : {}),
+    choice_groups,
   }
 }

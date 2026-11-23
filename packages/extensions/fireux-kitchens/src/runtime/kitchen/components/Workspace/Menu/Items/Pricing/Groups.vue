@@ -143,7 +143,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { ItemChoiceGroup } from '../../../../../records/menus/items/item-offer'
+import type { ItemChoiceGroup } from '../../../../../models/item.model'
 const groups = defineModel<ItemChoiceGroup[]>({ required: true })
 defineProps<{ disabled: boolean; currency: string }>()
 const newId = () => crypto.randomUUID()

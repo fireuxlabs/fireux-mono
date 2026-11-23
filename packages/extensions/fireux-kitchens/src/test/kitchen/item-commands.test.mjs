@@ -14,7 +14,11 @@ import {
   readRecordString,
 } from 'fireux-core/runtime/server/utils/records/read'
 function load(path, dependencies, name) {
-  dependencies = { ...itemPricingHelpers, ...dependencies }
+  dependencies = {
+    ...itemPricingHelpers,
+    FieldValue: { delete: () => deleteField },
+    ...dependencies,
+  }
 
   dependencies = commandScopeDeps({ isFirestoreDocumentId, ...dependencies })
   if (path.endsWith('/useItemActions.ts') && !dependencies.useItemEditorScope)
@@ -31,6 +35,7 @@ function load(path, dependencies, name) {
     Object.keys(dependencies)
   )(...Object.values(dependencies))
 }
+const deleteField = { deleteField: true }
 const createError = (x) => Object.assign(new Error(x.statusMessage), x)
 const usageTargets = {
   serverKitchenMenusTarget: (k) => `kitchens/${k}/menus`,
@@ -364,7 +369,7 @@ test('update rejects protected/unknown fields, malformed spec and missing record
     { image: 'url' },
     { kitchen_id: 'other' },
     { updated: {} },
-    { item_kind: 'drink' },
+    { item_kind: 'invalid' },
     {},
     { category: 42 },
     { name: '' },
@@ -854,7 +859,10 @@ test('Item creation preserves unset, explicit zero and normal prices without cha
       {},
       {
         kitchenId: 'k',
-        draft: { name: 'New item', ...(price === undefined ? {} : { price }) },
+        draft: {
+          name: 'New item',
+          ...(price === undefined ? {} : { price, currency_code: 'CHF' }),
+        },
       }
     )
     const data = h.writes[0][3]
@@ -967,7 +975,7 @@ test('new Items need no Food/Drink type; group and Station references are checke
   assert.equal(h.writes.length, count)
 })
 
-test('choice groups use the existing authorized Item update and derive a full-price group minimum', async () => {
+test('authorized Item update stores choice prices and removes a prior base price', async () => {
   const groups = [
     {
       id: 'size',
@@ -982,20 +990,20 @@ test('choice groups use the existing authorized Item update and derive a full-pr
     },
   ]
   const h = harness()
+  h.records.set('dishes/k/existing', { name: 'Margherita', price: 9 })
   await h.updateItem(
     {},
     {
       kitchenId: 'k',
       dishId: 'existing',
       changes: {
-        price: 0,
+        currency_code: 'CHF',
         choice_groups: groups,
-        price_options: [],
-        add_ons: [],
       },
     }
   )
-  assert.equal(h.writes[0][3].price, 12)
+  assert.deepEqual(h.writes[0][3].price, deleteField)
+  assert.equal(h.writes[0][3].currency_code, 'CHF')
   assert.deepEqual(h.writes[0][3].choice_groups, groups)
   const denied = harness()
   denied.records.delete('apps/app/users/u')

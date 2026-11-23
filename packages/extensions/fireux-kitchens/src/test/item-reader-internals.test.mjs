@@ -158,7 +158,7 @@ function lowerReader(f) {
       ItemStorage,
       normalizeItem,
       readItemIdentity,
-      readItemOffer: itemPricingHelpers.readItemOffer,
+      readItemSellingTerms: itemPricingHelpers.readItemSellingTerms,
       resolveKitchenChildCollectionBasePath,
       useFirestoreCollectionState,
     }
@@ -369,7 +369,7 @@ test('Item record route stays reactive across both kinds while catalogues retain
       ItemStorage,
       normalizeItem,
       readItemIdentity,
-      readItemOffer: itemPricingHelpers.readItemOffer,
+      readItemSellingTerms: itemPricingHelpers.readItemSellingTerms,
       useKitchenAccess: () => access,
       useFirestoreRead: () => f.read,
       readRuntimeFirestoreDatabaseId: () => 'misebox',
@@ -1493,7 +1493,7 @@ function flagshipFixture({ exists = true, rows = [], selectedRows } = {}) {
       normalizeLegacyItemKind,
       normalizeItem,
       readItemIdentity,
-      readItemOffer: itemPricingHelpers.readItemOffer,
+      readItemSellingTerms: itemPricingHelpers.readItemSellingTerms,
       getRuntimeFirestore: () => db,
       requireFirestoreDocumentId: (value) => {
         if (typeof value !== 'string' || !value.trim() || value.includes('/'))

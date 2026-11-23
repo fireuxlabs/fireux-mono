@@ -1,7 +1,4 @@
-import type {
-  ItemChoiceGroup,
-  ItemChoiceSelection,
-} from '../records/menus/items/item-offer'
+import type { ItemChoiceGroup, ItemChoiceSelection } from '../models/item.model'
 const record = (value: unknown): value is Record<string, any> =>
   Boolean(value && typeof value === 'object' && !Array.isArray(value))
 const id = (value: unknown): value is string =>
@@ -11,7 +8,7 @@ const id = (value: unknown): value is string =>
 const unique = (values: string[]) => new Set(values).size === values.length
 const text = (value: unknown, max: number) =>
   typeof value === 'string' && value.trim().length > 0 && value.length <= max
-const amount = (value: unknown): value is number =>
+export const isItemPrice = (value: unknown): value is number =>
   typeof value === 'number' &&
   Number.isFinite(value) &&
   value >= 0 &&
@@ -57,7 +54,7 @@ export function normalizeItemChoiceGroups(value: unknown): ItemChoiceGroup[] {
         ) ||
         !id(option.id) ||
         !text(option.label, 140) ||
-        !amount(option.price)
+        !isItemPrice(option.price)
       )
         throw new Error(
           'Choices need stable identifiers, names and non-negative prices with up to two decimals.'
@@ -143,21 +140,31 @@ export function readItemChoiceGroups(item: {
       : []),
   ]
 }
+export function itemStartingPrice(
+  base: number | undefined,
+  groups: ItemChoiceGroup[]
+) {
+  const full = groups.find((group) => group.pricing === 'full')
+  return full ? Math.min(...full.options.map((option) => option.price)) : base
+}
+
 export function priceItemChoices(
-  base: number,
+  base: number | undefined,
   groups: ItemChoiceGroup[],
   selections: ItemChoiceSelection,
   partial = false
 ) {
+  const start = base ?? itemStartingPrice(undefined, groups)
   if (
-    !amount(base) ||
+    start === undefined ||
+    !isItemPrice(start) ||
     !record(selections) ||
     Object.keys(selections).some(
       (key) => !groups.some((group) => group.id === key)
     )
   )
     throw new Error('Review the Item choices.')
-  let full = Math.round(base * 100),
+  let full = Math.round(start * 100),
     extra = 0
   const details: string[] = []
   const selected: ItemChoiceSelection = {}
@@ -176,7 +183,7 @@ export function priceItemChoices(
     selected[group.id] = [...ids].sort()
     for (const choiceId of ids) {
       const option = group.options.find((option) => option.id === choiceId)
-      if (!option || !amount(option.price))
+      if (!option || !isItemPrice(option.price))
         throw new Error(`A choice in ${group.name} is no longer available.`)
       details.push(`${group.name}: ${option.label}`)
       if (group.pricing === 'full') full = Math.round(option.price * 100)

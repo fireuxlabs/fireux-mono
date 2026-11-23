@@ -1147,16 +1147,14 @@ command edits it. Order validation still rechecks that Place snapshot. Other
 Place-currency descriptions in this context describe that current implementation,
 not the accepted ownership rule.
 
-Kitchen Items and choices retain bare-number prices. The cutover must preserve
-explicitly verified denomination and refuse clearing/changing a currency when
-that would relabel retained prices. Historical Orders, Sales and other monetary
-facts retain their saved currency; defaults never convert or rewrite them. The
-retained denomination owner is the existing `kitchen/records/menus/items/item-offer.ts` ItemOffer.
-Its accepted adoption contract adds explicit `currency_code` covering base,
-choice prices in their existing amount units; current runtime
-has not implemented it. New priced terms capture denomination atomically from
-reviewed input or the confirmed Kitchen default. Menu placement stays a reference,
-and single-currency publication/ordering must reject mixed or unresolved offers.
+Historical Kitchen Items and choices retain bare-number prices. The cutover
+must preserve verified denomination and avoid relabelling retained prices.
+Historical Orders, Sales and other monetary facts retain their saved currency.
+The canonical `kitchen/models/item.model.ts` owns the Item's denomination.
+New priced Item writes require explicit `currency_code` covering the base and
+all choice prices. Menu placement stays a reference. Existing Menu publication
+and ordering still resolve currency through their historical paths. A future
+cutover must reject mixed or unresolved offers.
 Default-change guards must cover all retained dependent bare terms, including
 concurrent writes, rather than only active/visible Menus. See
 `docs/concepts/family-menu.md#item-offer-denomination`. No parallel Sellable layer,
@@ -2241,17 +2239,11 @@ consumers against Nuxt registration, Vue compilation and App typechecking.
 
 ## Item identity and selling defaults
 
-`kitchen/models/item.model.ts` owns only reusable Item identity and provenance.
-`utils/item-identity.ts` selects those fields for the document and collection readers;
-no invented timestamps or copied Kitchen ownership are needed to read identity.
-`records/menus/items/item-offer.ts` owns the Item's separate selling-default value contract: optional
-normal price and choice groups. Selection state is a
-request value, not a persisted Item field. This capability is stored on the
-existing `dishes` document; it is not a new Entity or collection.
-
+`kitchen/models/item.model.ts` owns identity, provenance and selling terms
+on the Kitchen's `items` document. Selection state is a request value.
 The detail route acquires one `useKitchenItemRead` and provides its context.
-Identity and selling projections share that listener. Selling parse errors leave
-identity readable and block pricing editing rather than becoming empty defaults.
+That reader returns a canonical Item. Selling parse errors leave identity
+readable and block pricing editing rather than becoming empty defaults.
 The detail route does not acquire the entire Items collection for labels.
 `Menu/Items/Edit/Index.vue` exposes photo, name and description. Category and
 flagship controls are absent; Kitchen presentation remains a separate owner.
@@ -2262,7 +2254,7 @@ and calculation responsibility for Workspace preview, public projection,
 publication readiness and ordering. Legacy variants/extras project to groups;
 explicit groups win. Reading or saving groups does not silently delete the
 historical arrays. Missing normal prices stay unknown, while a full-price group's
-minimum is derived by the selling validator.
+minimum is derived for display. It is absent from canonical storage.
 
 Pricing drafts survive same-record refresh; Cancel uses the current source.
 Kitchen/Item/access changes invalidate pending UI completion, and editors never
@@ -2407,7 +2399,7 @@ flag is neither accepted by Dish creation nor emitted by catalogue/public
 projections or AI import schemas. Meal deals belong to Kitchen Promotions and
 can be placed on regular interactive Menus; Order pricing remains separate.
 
-`kitchen/records/menus/items/item-offer.ts` owns the Item selling-default contract. `choice_groups` is the
+`kitchen/models/item.model.ts` owns the Item selling terms. `choice_groups` is the
 authoritative embedded group contract: stable group/option IDs, names, minimum and
 maximum selections (null means any), and full-price or additional-charge pricing.
 At most one group sets full Item prices and it requires exactly one choice.
@@ -2991,17 +2983,17 @@ Apply the [Firestore document shape rule](../../../../../docs/concepts/firestore
 The paths below are source contracts. Child paths are relative to
 `kitchens/{kitchenId}` unless stated otherwise.
 
-| Workspace area | Root fields or independently owned data | Fixed child documents | Collections of records |
-| --- | --- | --- | --- |
-| Overview and Identity | `identity`, `context`, `guidance_ids`, `theme`, creation/update stamps. Venue facts and opening hours come from `places/{kitchenId}`. | | Overview projects existing sources. |
-| Team | App membership and Kitchen access are separately owned. | | `team`, `roles`, `member-invitations` |
-| Menus and Services | `services.title` and `services.item_images` are display settings. | | `menus`, `dishes`, `promotions`, `menu-uploads`, `offerings`. Menu documents own `sections/{sectionId}/items/{entryId}` placements. |
-| Orders and Tables | `orders.operation_hours`, `orders.printing`, `tables.count` | `order-counters/sequence` | `order-drafts`, `submitted-orders`, `table_tabs` with per-tab `rounds`. Driver dispatch also has an `orders` collection contract. |
-| Prep & Production | | | `stations`, `prep-items`, `recipes`, `ingredients` links to independently owned Ingredients. |
-| Stock & Purchasing | | | `suppliers`, `supplier-ingredients`, `waste-events`. Inventory, Purchasing and Receiving currently have disconnected screens. |
-| Food Safety | Checks and records are currently disconnected. | | |
-| Reports | Finance reads operational records. Waste reporting is disconnected. | | Finance reads `sales`. |
-| Settings | The root reader excludes server fields `currency`, `management`, and `integrations` from the Workspace model. | `fulfilment/policy`, `integrations/website-ordering`, `integrations/sproochli` | |
+| Workspace area        | Root fields or independently owned data                                                                                               | Fixed child documents                                                          | Collections of records                                                                                                              |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Overview and Identity | `identity`, `context`, `guidance_ids`, `theme`, creation/update stamps. Venue facts and opening hours come from `places/{kitchenId}`. |                                                                                | Overview projects existing sources.                                                                                                 |
+| Team                  | App membership and Kitchen access are separately owned.                                                                               |                                                                                | `team`, `roles`, `member-invitations`                                                                                               |
+| Menus and Services    | `services.title` and `services.item_images` are display settings.                                                                     |                                                                                | `menus`, `dishes`, `promotions`, `menu-uploads`, `offerings`. Menu documents own `sections/{sectionId}/items/{entryId}` placements. |
+| Orders and Tables     | `orders.operation_hours`, `orders.printing`, `tables.count`                                                                           | `order-counters/sequence`                                                      | `order-drafts`, `submitted-orders`, `table_tabs` with per-tab `rounds`. Driver dispatch also has an `orders` collection contract.   |
+| Prep & Production     |                                                                                                                                       |                                                                                | `stations`, `prep-items`, `recipes`, `ingredients` links to independently owned Ingredients.                                        |
+| Stock & Purchasing    |                                                                                                                                       |                                                                                | `suppliers`, `supplier-ingredients`, `waste-events`. Inventory, Purchasing and Receiving currently have disconnected screens.       |
+| Food Safety           | Checks and records are currently disconnected.                                                                                        |                                                                                |                                                                                                                                     |
+| Reports               | Finance reads operational records. Waste reporting is disconnected.                                                                   |                                                                                | Finance reads `sales`.                                                                                                              |
+| Settings              | The root reader excludes server fields `currency`, `management`, and `integrations` from the Workspace model.                         | `fulfilment/policy`, `integrations/website-ordering`, `integrations/sproochli` |                                                                                                                                     |
 
 Preserve the current names. `dishes` holds reusable Items, while nested
 Menu `items` holds placements. `prep-items` holds Preparations.

@@ -36,7 +36,7 @@ import MenuChoiceBubbles from './ChoiceBubbles.vue'
 import type {
   ItemChoiceGroup,
   ItemChoiceSelection,
-} from '../../kitchen/records/menus/items/item-offer'
+} from '../../kitchen/models/item.model'
 import {
   toggleItemChoice,
   itemChoiceRule,

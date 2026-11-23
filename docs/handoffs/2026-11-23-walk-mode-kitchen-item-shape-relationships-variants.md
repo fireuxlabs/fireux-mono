@@ -62,3 +62,23 @@ Food-specific **allergens/dietary details** are a desired extension. A base pizz
 - `2026-11-23-workspace-identity-location-contact-decision.md`: proposed Profile/Brand/Location/Publication navigation, Place-preferred display resolution, no universal required Place shape.
 
 These are distinct handoffs with differing statuses. **Do not treat unimplemented proposals as approved schema migrations.**
+
+## Stage 1 checkpoint
+
+The [canonical Item model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/item.model.ts)
+now includes the Item's kind, price, currency and choice groups. One Item read
+supplies identity and selling terms. New priced writes require explicit currency.
+Full-price groups persist the option prices and derive the starting price.
+Existing unpriced and historical records remain readable without a data rewrite.
+
+The isolated named Misebox emulator passed Item create, list, edit, reopen and
+delete with Menu, Services, Orders and Tables unregistered. Unauthorized reads,
+updates and deletes returned 403. The Margherita's CHF 18 and CHF 24 sizes and
+CHF 2.50 extra round-tripped without a separate base price. Focused tests, the
+Item TypeScript check, lint and full Misebox preparation passed. The wider
+Kitchen contracts check reproduced its 23 baseline diagnostics.
+
+Stage 2 still owns the Menu reference, route and Rules cutover and any eventual
+stored-reference migration. Menu publication and ordering still use their
+existing currency resolution. Historical denomination and allergen design
+remain open. Stage 1 made no live writes or storage-path changes.

@@ -1,17 +1,25 @@
 <template>
   <div id="item-price-choices" class="fx-card-body-stack">
     <UAlert
-      v-if="offerError"
+      v-if="pricingError"
       title="Price & choices unavailable"
       description="The saved selling configuration could not be read. Item details remain available."
       color="error"
       variant="soft"
     />
-    <form v-else-if="offer" class="fx-card-body-stack" @submit.prevent="save">
+    <form v-else-if="item" class="fx-card-body-stack" @submit.prevent="save">
       <p class="fx-type-caption">
         Menus use these defaults unless the item’s placement sets its own price
         or choices.
       </p>
+      <UFormField label="Currency code">
+        <UInput
+          v-model="currency"
+          maxlength="3"
+          placeholder="CHF"
+          :disabled="!canWrite || busy"
+        />
+      </UFormField>
       <UFormField
         v-if="!groups.some((group) => group.pricing === 'full')"
         :label="currency ? `Default price (${currency})` : 'Default price'"
@@ -64,26 +72,21 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useKitchenWorkspace } from '../../../../composables/workspace/useKitchenWorkspace'
-const workspace = useKitchenWorkspace()
-const selectedKitchen = workspace.data
 import { computed, ref, watch } from 'vue'
 import { useKitchenItemContext } from '../../../../composables/items/useKitchenItemContext'
 import { useItemActions } from '../../../../composables/items/useItemActions'
 import { useItemEditorScope } from '../../../../composables/items/useItemEditorScope'
-import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import type {
   ItemChoiceGroup,
   ItemChoiceSelection,
-} from '../../../../records/menus/items/item-offer'
+} from '../../../../models/item.model'
 import {
   normalizeItemChoiceGroups,
   priceItemChoices,
 } from '../../../../utils/item-choices'
-import { normalizeItemPricingPatch } from '../../../../utils/item-pricing'
-const { offer, offerError, itemId, kitchenId, canWrite } =
+const { item, pricingError, itemId, kitchenId, canWrite } =
   useKitchenItemContext()
-const currency = computed(() => readPlaceCurrencyCode(selectedKitchen.value))
+const currency = ref('')
 const price = ref<string | number>('')
 const groups = ref<ItemChoiceGroup[]>([])
 const previewChoices = ref<ItemChoiceSelection>({})
@@ -94,11 +97,14 @@ const validatedGroups = computed(() => {
     return null
   }
 })
+const currencyCode = computed(() => currency.value.trim().toUpperCase())
 const formatMoney = (value: number) =>
-  new Intl.NumberFormat('en', {
-    style: 'currency',
-    currency: currency.value,
-  }).format(value)
+  new Intl.NumberFormat(
+    'en',
+    /^[A-Z]{3}$/.test(currencyCode.value)
+      ? { style: 'currency', currency: currencyCode.value }
+      : { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+  ).format(value)
 const previewPrice = computed(() => {
   if (
     String(price.value).trim() === '' &&
@@ -108,7 +114,7 @@ const previewPrice = computed(() => {
   try {
     return formatMoney(
       priceItemChoices(
-        Number(price.value || 0),
+        String(price.value).trim() === '' ? undefined : Number(price.value),
         validatedGroups.value || [],
         previewChoices.value
       ).unitMinor / 100
@@ -121,14 +127,22 @@ const busy = ref(false),
   error = ref(''),
   message = ref('')
 const sourceKey = computed(() =>
-  JSON.stringify([kitchenId.value, itemId.value, offer.value, offerError.value])
+  JSON.stringify([
+    kitchenId.value,
+    itemId.value,
+    item.value,
+    pricingError.value,
+  ])
 )
 const baseline = ref('')
-const draftKey = computed(() => JSON.stringify([price.value, groups.value]))
+const draftKey = computed(() =>
+  JSON.stringify([price.value, currency.value, groups.value])
+)
 const dirty = computed(() => draftKey.value !== baseline.value)
 function resetDraft() {
-  price.value = offer.value?.price ?? ''
-  groups.value = normalizeItemChoiceGroups(offer.value?.choice_groups || [])
+  price.value = item.value?.price ?? ''
+  currency.value = item.value?.currency_code ?? ''
+  groups.value = normalizeItemChoiceGroups(item.value?.choice_groups || [])
   previewChoices.value = {}
   baseline.value = draftKey.value
 }
@@ -148,24 +162,28 @@ const amount = (value: string | number) => {
   return Number(value)
 }
 async function save() {
-  if (!canWrite.value || !offer.value || offerError.value || busy.value) return
+  if (!canWrite.value || !item.value || pricingError.value || busy.value) return
   const current = captureIntent()
   busy.value = true
   error.value = ''
   message.value = ''
   try {
-    const changes = normalizeItemPricingPatch({
-      price: groups.value.some((group) => group.pricing === 'full')
-        ? 0
-        : amount(price.value),
+    const fullPrices = groups.value.some((group) => group.pricing === 'full')
+    const changes = {
+      price:
+        fullPrices || String(price.value).trim() === ''
+          ? null
+          : amount(price.value),
+      currency_code: currencyCode.value,
       choice_groups: normalizeItemChoiceGroups(groups.value),
-    })
+    }
     await updateItem(itemId.value, changes, {
       kitchenId: kitchenId.value,
       isCurrent: current,
     })
     if (current()) {
-      price.value = changes.price ?? price.value
+      price.value = changes.price ?? ''
+      currency.value = changes.currency_code
       baseline.value = draftKey.value
       message.value = 'Pricing saved.'
     }

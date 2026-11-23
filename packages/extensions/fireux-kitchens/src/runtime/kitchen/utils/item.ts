@@ -1,32 +1,29 @@
 import { readItemReferenceIds } from './item-preparation'
 import { normalizeItemPricingPatch } from './item-pricing'
 // Concurrent edit — 2026-07-22 02:08 CEST — Item media ownership: name the food-owned field image, independent of its Storage transport.
-import type { Item } from '../models/item.model'
+import type { Item, ItemKind } from '../models/item.model'
 import type {
   ItemPricing,
   ItemPriceOption,
   ItemAddOnOption,
 } from './item-pricing'
-import type { ItemOffer } from '../records/menus/items/item-offer'
 import { readItemIdentity } from './item-identity'
 
-export type ItemCollectionRow = Item &
-  Partial<ItemOffer> & {
-    price_options: ItemPriceOption[]
-    add_ons: ItemAddOnOption[]
-    description: string
-    image: string
-    slug: string
-    kitchen_id: string
-    item_kind?: string
-    pricing_error?: string
-    is_flagship: boolean
-    group_ids: string[]
-    preparation_station_ids?: string[]
-  }
+export type ItemCollectionRow = Item & {
+  price_options: ItemPriceOption[]
+  add_ons: ItemAddOnOption[]
+  description: string
+  image: string
+  slug: string
+  kitchen_id: string
+  pricing_error?: string
+  is_flagship: boolean
+  group_ids: string[]
+  preparation_station_ids?: string[]
+}
 
 /** Historical collection presentation; this is not the canonical Item record. */
-export const readLegacyItemKind = (value: unknown): string => {
+export const readLegacyItemKind = (value: unknown): ItemKind | '' => {
   const kind = String(value ?? '')
     .trim()
     .toLowerCase()
@@ -38,7 +35,7 @@ export const readLegacyItemKind = (value: unknown): string => {
   return ''
 }
 
-export const normalizeLegacyItemKind = (value: unknown): string =>
+export const normalizeLegacyItemKind = (value: unknown): ItemKind =>
   readLegacyItemKind(value) || 'food'
 
 export const normalizeItemFlagshipFlag = (value: unknown) => value === true

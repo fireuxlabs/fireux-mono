@@ -5,6 +5,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
 import { normalizeItem, type ItemCollectionRow } from '../utils/item.ts'
+import { readItemSellingTerms } from '../utils/item-pricing'
 import { readItemIdentity } from '../utils/item-identity'
 import { resolveKitchenChildCollectionBasePath } from '../utils/kitchen-collection-path'
 
@@ -44,9 +45,14 @@ export function useKitchenItemCollection(
     Record<string, unknown> & { id: string }
   >(collectionPath)
   const items = computed(() =>
-    (collectionRef.value ?? []).map((entry) =>
-      readItemIdentity(entry.id, entry)
-    )
+    (collectionRef.value ?? []).map((entry) => {
+      const identity = readItemIdentity(entry.id, entry)
+      try {
+        return { ...identity, ...readItemSellingTerms(entry) }
+      } catch {
+        return identity
+      }
+    })
   )
   const dishes = computed<ItemCollectionRow[]>(() =>
     (collectionRef.value ?? []).map((entry) => normalizeItem(entry))

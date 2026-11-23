@@ -9,7 +9,7 @@ import {
   useKitchenItemContext,
 } from '../../../runtime/kitchen/composables/items/useKitchenItemContext.ts'
 import { readItemIdentity } from '../../../runtime/kitchen/utils/item-identity.ts'
-import { readItemOffer } from '../../../runtime/kitchen/utils/item-pricing.ts'
+import { readItemSellingTerms } from '../../../runtime/kitchen/utils/item-pricing.ts'
 import { ItemStorage } from '../../../runtime/kitchen/models/item.model.ts'
 import { serverKitchenItemsTarget } from '../../../runtime/kitchen/server/mutation-targets.ts'
 
@@ -43,10 +43,21 @@ test('historical Item identity is read without importing layers or trusting stor
   assert.deepEqual(item, {
     id: 'aioli',
     name: 'Aioli',
+    item_kind: 'food',
     description: 'Garlic mayonnaise',
     image: 'https://example.test/photo.webp',
     created: { at, by: 'operator', app_id: 'misebox' },
     updated: { at, by: 'operator' },
+    choice_groups: [
+      {
+        id: 'legacy-variants',
+        name: 'Variants',
+        min: 1,
+        max: 1,
+        pricing: 'full',
+        options: [{ id: 'large', label: 'Large', price: 12 }],
+      },
+    ],
   })
   assert.deepEqual(source, before)
   item.created.at.seconds = 999
@@ -107,7 +118,7 @@ function readerFixture() {
   const deps = {
     computed,
     readItemIdentity,
-    readItemOffer,
+    readItemSellingTerms,
     toValue,
     ItemStorage,
     useKitchenAccess: () => access,
@@ -239,7 +250,7 @@ test('Item keeps independently valid provenance without requiring a second recor
   assert.deepEqual(item.updated, { at, by: 'operator' })
 })
 
-test('selling defaults share the Item read without expanding identity or inventing a normal price', () => {
+test('selling terms share the canonical Item read without inventing a normal price', () => {
   const f = readerFixture()
   f.records.value['kitchens/k/items/aioli'] = {
     name: 'Aioli',
@@ -247,10 +258,11 @@ test('selling defaults share the Item read without expanding identity or inventi
     add_ons: [{ id: 'garlic', label: 'Garlic', price: 0 }],
   }
   assert.equal(f.bindings, 1)
-  assert.deepEqual(f.reader.item.value, { id: 'aioli', name: 'Aioli' })
-  assert.equal(f.reader.offer.value.price, undefined)
+  assert.equal(f.reader.item.value.id, 'aioli')
+  assert.equal(f.reader.item.value.name, 'Aioli')
+  assert.equal(f.reader.item.value.price, undefined)
   assert.deepEqual(
-    f.reader.offer.value.choice_groups.map((group) => [
+    f.reader.item.value.choice_groups.map((group) => [
       group.min,
       group.max,
       group.pricing,
@@ -260,9 +272,9 @@ test('selling defaults share the Item read without expanding identity or inventi
       [0, null, 'additional'],
     ]
   )
-  assert.equal(f.reader.offerError.value, null)
+  assert.equal(f.reader.pricingError.value, null)
   f.access.ids.value = []
-  assert.equal(f.reader.offer.value, null)
+  assert.equal(f.reader.item.value, null)
   f.scope.stop()
 })
 
@@ -274,8 +286,8 @@ test('malformed selling data does not hide Item identity or become editable empt
   }
   assert.equal(f.reader.outcome.value, 'ready')
   assert.equal(f.reader.item.value.name, 'Aioli')
-  assert.equal(f.reader.offer.value, null)
-  assert.ok(f.reader.offerError.value instanceof Error)
+  assert.equal(f.reader.item.value?.price, undefined)
+  assert.ok(f.reader.pricingError.value instanceof Error)
   assert.deepEqual(f.records.value['kitchens/k/items/aioli'].choice_groups, [
     { bad: true },
   ])

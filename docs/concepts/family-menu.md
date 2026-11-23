@@ -25,7 +25,7 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 | ---------------- | -------------- | ------------------------------------------------------------------------------ |
 | Menu             | Kitchen-scoped | One interactive or document Menu: name, slug, publication, audience and format |
 | MenuSection      | Menu-scoped    | Groups Item and meal-deal placements                                           |
-| MenuEntry         | Section-scoped | Item or meal-deal reference, availability and display order                    |
+| MenuEntry        | Section-scoped | Item or meal-deal reference, availability and display order                    |
 | Item             | Kitchen-scoped | Stable identity, name, optional description/photo and provenance               |
 | Promotion        | Kitchen-scoped | Item offers or meal deals with set price, choices and supplements              |
 | MenuSourceUpload | Kitchen-scoped | Source material awaiting review; not a published Menu                          |
@@ -42,15 +42,11 @@ Ingredient taxonomy, discovery categories and external menu-category imports
 retain their separate owners. Paid Menu distinctions concern additional/custom
 and Daily Menus, not Item category counts.
 
-The Item identity foundation is `kitchen/models/item.model.ts`. Its reader and
-context live under `kitchen/composables/items` in the Kitchen spine and retain
-the existing `dishes` collection path. The canonical model exposes only identity. The same document listener exposes
-selling defaults separately through `records/menus/items/item-offer.ts`; `utils/item-identity.ts` selects
-identity without adding those values to Item. Preparation and Kitchen-selected
-presentation retain separate ownership. Menu editors share this reader rather
-than acquiring the whole catalogue for labels. Historical editor
-fields do not expand this canonical model. See the foundation reader tests in
-`src/test/kitchen/item/foundation.test.mjs`.
+The [Kitchen Item model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/item.model.ts)
+owns identity and selling terms on `kitchens/{kitchenId}/items/{itemId}`.
+The exact Item reader resolves both from one document. Menu references the Item;
+the Item has no dependency on Menu placement. Preparation and Kitchen-selected
+presentation retain separate ownership.
 
 `menu/models/menu.model.ts` is the sole stored Menu model.
 `menu/models/menu-storage.model.ts` owns `kitchens/{kitchenId}/menus/{menuId}`.
@@ -420,24 +416,20 @@ Misebox context and `menu-record-controller.test.mjs` for this boundary.
 ## Item offer denomination
 
 The [Workspace operational currency rule](../../packages/extensions/fireux-finance/README.md#operational-default-currency)
-assigns the optional default to the selected Kitchen root. Retained selling
-terms belong to the existing
-[`ItemOffer`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/menus/items/item-offer.ts),
-not a new offer Entity, a Menu placement or a retired Sellable runtime.
+assigns the optional default to the selected Kitchen root. The canonical
+[Item model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/item.model.ts)
+stores one `currency_code` for the Item's base price and choice prices.
+New priced terms require an explicit denomination. A full-price group stores
+prices on its options and derives the starting price for display. A fixed-price
+Item stores a base price. Menu placement remains an Item reference.
 
-The accepted adoption contract adds explicit `currency_code` to those Item
-selling terms. One denomination covers the base price, all choice option prices,
-preserving their existing ordinary-amount units. New priced
-terms capture that denomination atomically from reviewed input or the confirmed
-Kitchen default. Menu placement remains an Item reference. Publication and
-ordering consume canonical offer denomination and retain the current
-single-currency Menu validation; mixed or unresolved offers cannot be relabelled
-to fit a default. Promotions, Orders, Sales and Payments retain their existing
-explicit currency contracts, which require separate policy review.
+The Item write and read boundary now supports this contract. Existing Menu
+publication and ordering still use their historical currency resolution.
+Their eventual cutover must retain single-currency Menu validation and reject
+mixed or unresolved offers. Promotions, Orders, Sales and Payments retain their
+existing explicit currency contracts, which require separate policy review.
 
-**Current implementation is not yet aligned:** `ItemOffer` has no currency field,
-and Kitchen/Menu readers and editors still consume Place-backed currency. Stored
-bare-number terms need reviewed denomination adoption with retained preimages;
+Stored bare-number terms need reviewed denomination adoption with retained preimages;
 country, current default or a new field alone cannot prove historical currency.
 Default changes must never reinterpret existing prices. The initial guard must
 transactionally reject clearing/changing an established default while retained
@@ -498,7 +490,7 @@ Start with:
 - Menu declaration and storage: `runtime/menu/models/menu.model.ts` and
   `runtime/menu/models/menu-storage.model.ts`.
 - Item identity: `runtime/kitchen/models/item.model.ts`.
-- Normal commercial terms: `runtime/kitchen/records/menus/items/item-offer.ts`
+- Normal commercial terms: `runtime/kitchen/models/item.model.ts`
   and `runtime/kitchen/utils/item-pricing.ts`.
 - Direct discovery: `runtime/menu/server/index/read.ts` and
   `src/test/menu-canonical-discovery.test.mjs`.

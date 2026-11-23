@@ -148,3 +148,11 @@ share the [Items page](src/runtime/kitchen/components/Workspace/Items/Page.vue).
 It reads the granted Kitchen's `items` collection, handles loading, empty and
 error states, and passes the loaded `kitchen.items` to the list and editor.
 Both modes use the existing protected create, update and delete commands.
+
+The [Item model](src/runtime/kitchen/models/item.model.ts) owns identity, food or
+drink kind, and selling terms on the same document. A name-only Item is valid.
+Priced terms use an explicit `currency_code`. A fixed-price Item stores `price`.
+A full-price group stores prices on its options, and the starting price is
+derived from them. Extras add to the base or selected price. The Item reader
+keeps identity usable if older selling data cannot be parsed. Menu placements
+continue to reference the Item through the existing contract.

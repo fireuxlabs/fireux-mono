@@ -4,7 +4,7 @@ import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/
 import { useKitchenAccess } from '../useKitchenAccess'
 import { ItemStorage } from '../../models/item.model'
 import { readItemIdentity } from '../../utils/item-identity'
-import { readItemOffer } from '../../utils/item-pricing'
+import { readItemSellingTerms } from '../../utils/item-pricing'
 
 /** Acquire one live Item in an accessible Kitchen; the caller owns its lifetime. */
 export function useKitchenItemRead(
@@ -42,19 +42,23 @@ export function useKitchenItemRead(
   const document = computed(() =>
     outcome.value === 'ready' ? (source.value ?? null) : null
   )
-  const item = computed(() =>
-    document.value ? readItemIdentity(itemId.value, document.value) : null
-  )
   const selling = computed(() => {
-    if (!document.value) return { offer: null, error: null }
+    if (!document.value) return { terms: null, error: null }
     try {
-      return { offer: readItemOffer(document.value), error: null }
+      return { terms: readItemSellingTerms(document.value), error: null }
     } catch (error) {
-      return { offer: null, error }
+      return { terms: null, error }
     }
   })
-  const offer = computed(() => selling.value.offer)
-  const offerError = computed(() => selling.value.error)
+  const item = computed(() =>
+    document.value
+      ? {
+          ...readItemIdentity(itemId.value, document.value),
+          ...selling.value.terms,
+        }
+      : null
+  )
+  const pricingError = computed(() => selling.value.error)
   const canWrite = computed(
     () => outcome.value === 'ready' && Boolean(item.value)
   )
@@ -68,8 +72,7 @@ export function useKitchenItemRead(
     databaseId,
     document,
     item,
-    offer,
-    offerError,
+    pricingError,
     outcome,
     canWrite,
     readOnly: computed(() => !canWrite.value),

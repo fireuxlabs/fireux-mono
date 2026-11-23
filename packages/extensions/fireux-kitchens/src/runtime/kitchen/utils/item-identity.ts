@@ -1,7 +1,9 @@
 import type { Item } from '../models/item.model'
 
 /** Authored identity changes; media uses the protected upload command. */
-export type ItemIdentityChanges = Partial<Pick<Item, 'name' | 'description'>>
+export type ItemIdentityChanges = Partial<
+  Pick<Item, 'name' | 'description' | 'item_kind'>
+>
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -40,6 +42,9 @@ export function readItemIdentity(id: string, value: unknown): Item {
   return {
     id,
     name: text(source.name),
+    ...(source.item_kind === 'food' || source.item_kind === 'drink'
+      ? { item_kind: source.item_kind }
+      : {}),
     ...(description ? { description } : {}),
     ...(image ? { image } : {}),
     ...(created ? { created } : {}),

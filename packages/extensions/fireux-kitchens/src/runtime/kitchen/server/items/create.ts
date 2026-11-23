@@ -1,6 +1,6 @@
 import { validateItemReferenceIds } from '../../utils/item-preparation'
 import { requireItemPreparationStations } from '../stations/item-references'
-import { normalizeItemPricingPatch } from '../../utils/item-pricing'
+import { normalizeItemSellingTerms } from '../../utils/item-pricing'
 import { createError, type H3Event } from 'h3'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -22,12 +22,11 @@ export async function createItem(event: H3Event, input: unknown) {
     'item_kind',
     'preparation_station_ids',
     'price',
-    'price_options',
-    'add_ons',
+    'currency_code',
     'choice_groups',
   ])
   const name = itemText(draft.name, true)
-  const id = requireFirestoreDocumentId(normalizeSlug(name), 'Item id')
+  const itemId = requireFirestoreDocumentId(normalizeSlug(name), 'Item id')
   const itemKind = draft.item_kind
   if (itemKind !== undefined && itemKind !== 'food' && itemKind !== 'drink')
     throw createError({
@@ -37,23 +36,11 @@ export async function createItem(event: H3Event, input: unknown) {
   const description = itemText(
     draft.description === undefined ? '' : draft.description
   )
-  const pricing = validateItemInput(() =>
-    normalizeItemPricingPatch({
-      ...(Object.hasOwn(draft, 'price') ? { price: draft.price } : {}),
-      ...(Object.hasOwn(draft, 'choice_groups')
-        ? { choice_groups: draft.choice_groups }
-        : {}),
-      ...(Object.hasOwn(draft, 'price_options')
-        ? { price_options: draft.price_options }
-        : {}),
-      ...(Object.hasOwn(draft, 'add_ons') ? { add_ons: draft.add_ons } : {}),
-      ...(!Object.hasOwn(draft, 'choice_groups') &&
-      !Object.hasOwn(draft, 'price_options') &&
-      !Object.hasOwn(draft, 'add_ons')
-        ? { choice_groups: [] }
-        : {}),
-    })
-  )
+  const pricing = validateItemInput(() => {
+    if (draft.price === null)
+      throw new Error('Omit the price for an unpriced Item.')
+    return normalizeItemSellingTerms(draft)
+  })
   const organisation = {
     ...(draft.preparation_station_ids !== undefined
       ? {
@@ -74,7 +61,7 @@ export async function createItem(event: H3Event, input: unknown) {
         kitchenId
       )
       const target = serverKitchenItemsTarget(kitchenId)
-      if ((await transaction.read(target, id)).exists)
+      if ((await transaction.read(target, itemId)).exists)
         throw createError({
           statusCode: 409,
           statusMessage: 'Item already exists.',
@@ -89,7 +76,7 @@ export async function createItem(event: H3Event, input: unknown) {
         by: actor.uid,
         appId: authority.ownerAppId,
       })
-      transaction.create(target, id, {
+      transaction.create(target, itemId, {
         name,
         ...pricing,
         description,
@@ -98,7 +85,7 @@ export async function createItem(event: H3Event, input: unknown) {
         created: stamp,
         updated: stamp,
       })
-      return { id }
+      return { id: itemId }
     }
   )
 }

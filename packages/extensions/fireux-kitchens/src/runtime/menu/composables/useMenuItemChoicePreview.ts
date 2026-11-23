@@ -3,7 +3,7 @@ import {
   readItemChoiceGroups,
   priceItemChoices,
 } from '../../kitchen/utils/item-choices'
-import type { ItemChoiceSelection } from '../../kitchen/records/menus/items/item-offer'
+import type { ItemChoiceSelection } from '../../kitchen/models/item.model'
 
 type ChoicePreviewItem = Parameters<typeof readItemChoiceGroups>[0] & {
   id: string
