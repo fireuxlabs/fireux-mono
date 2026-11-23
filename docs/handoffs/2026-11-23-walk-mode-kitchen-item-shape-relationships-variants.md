@@ -264,3 +264,99 @@ as the review baseline. Before approval:
    reference resolution and restricted access before reopening writes.
    Resolve any rollback decision within that window. A separate
    authorization is required for production execution.
+
+### Production migration readiness checkpoint
+
+The [migration runner](../../tools/misebox-migrations/kitchen-item-references.py)
+implements the previously missing operational tooling. The default is read-only.
+The production preflight at 20:56:24 CET on 23 November 2026 observed 520
+missing copies, 991 placement rewrites and one Promotion with 19 references,
+in 31 bounded write batches. This
+inventory was taken before any writer pause and is evidence only.
+
+The named emulator rehearsal seeded the audited scale of catalogue copies and
+Menu placements, plus 19 standalone and meal-deal choice references. It proved
+complete copy and rewrite, idempotent repeat, recovery after a lost commit
+reply, source-version and destination conflicts, historical document
+preservation, exact field rollback, and refusal after a later write even when
+the payload was restored. Plan files and journals stay outside Git. See the
+[operator instructions](../../tools/misebox-migrations/README.md#kitchen-item-references).
+
+#### Writer inventory and ownership
+
+| Boundary                     | Evidence and release responsibility                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Known App Functions          | Live metadata shows `miseboxApp`, `baerenRinggenberg`, `banginCoffee`, `friiites`, `interlakenEssen` and `laTapBerne` in `europe-west6`, all using the shared Misebox SSR service account. App release operators must cover Hosting, direct Function/Run ingress and old client bundles. Capture the active releases and traffic revisions.                                                                                                                                           |
+| Unmapped deployment          | `niederhorn` is an active Function and Hosting site in the same project with a different service account. Its database access and pause owner are unverified. The `la-tap-berne` site also exists alongside the repo-configured `tapberne` target. Verify its active rewrites and legacy ingress.                                                                                                                                                                                     |
+| Trusted mutation entrypoints | Inventory Item create/update/delete, image and flagship commands, promotion save, Menu placement create/update/remove/reorder, Menu daily publication and deletion, and import confirmation/draft replacement. These commands use Admin-backed transactions. Browser Rules cannot stop them once invoked. Drain traffic and fence their write identities for the maintenance window.                                                                                                  |
+| Direct and manual writers    | The currently documented development policy permits direct writes. The Rules operator must replace the permissive policy during the approved pause and verify denied writes with both cached legacy clients and unauthenticated requests. Freeze local previews and manual migration/import scripts, including `apply-dish-pricing.py`, `retire-baeren-drink-products.py` and older venue tools. Disable any invoker with independent write credentials or prove it is outside scope. |
+| Jobs and extensions          | No Cloud Run jobs were listed in `europe-west6`, and the Cloud Scheduler API reports disabled. The listed Stripe extension triggers target Auth and default-database customer paths. Before release, the project operator must confirm IAM principals, other regions, external automation, CI, and any Functions whose trigger or deployment ownership remains unclear.                                                                                                               |
+
+#### Coordinated release sequence for review
+
+1. The project owner maps every active writer to an operator, tests the
+   maintenance fence and records the active Hosting, Function, Run and Rules
+   versions. The App operators stage compatible builds for every affected
+   consumer. The Rules operator prepares the temporary pause policy and the
+   final restricted policy. The independent approver verifies the target and
+   manages release signatures.
+2. After authorization, hold all public and operator traffic that can reach
+   the affected writers. Stop or drain in-flight Admin requests and disable
+   old write principals. Verify the pause with negative write probes in
+   the exact named database. Keep only the migration principal able to
+   perform the reviewed catalogue work. Collect the managed export and typed
+   preimages, compare the post-pause inventory with expectations, and retain
+   the read-only historical Finance baseline. Issue action-specific signed
+   approval for the reviewed plan hash and export receipt.
+3. The migration operator applies and verifies the approved plan while all
+   writers remain paused. On an interruption, reuse the same private plan
+   and journal. Confirm every placement and Promotion resolves to the
+   intended Item in its Kitchen, and the field counts reconcile.
+4. The App and Rules operators activate the compatible runtime and restricted
+   policy while the maintenance fence still holds. Read back the restricted
+   policy for `misebox`. Check signed-out Menu and search, signed-in owner
+   navigation/edit authorization, cross-Kitchen denial, and deletion
+   protection for remaining Menu and paused Promotion references.
+5. From the same authorized Gross Sales report routes, replay the baseline
+   Kitchen IDs, fixed date ranges and timezones. Compare private JSON with
+   only `generated_at` removed, including daily and currency totals,
+   quantities and historical transaction rows. An empty or failed report
+   cannot satisfy a non-empty baseline. Check the original historical
+   document versions remain unchanged. Keep source records untouched.
+6. Decide whether to reopen or roll back while writers are paused. Obtain
+   separate rollback approval if needed, reverse only journaled changes,
+   restore the prior runtimes and policy as a unit, and verify the old
+   read and authority paths. After reopening, use a new reconciliation
+   plan for any recovery.
+
+The migration operator needs read and transaction permissions for the named
+database and export-operation read access. The backup operator needs export
+and destination access. Deployment, Rules release, and writer fencing require
+their own scoped project and App authority. Keeping those roles separate is
+an operational prerequisite, even when one person holds multiple roles.
+
+| Gate                             | Result at this checkpoint                                                                                                                                                     |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Writer pause                     | **Fail.** Unmapped deployment, legacy ingress, IAM coverage and the maintenance fence remain unproven.                                                                        |
+| Fresh post-pause inventory       | **Fail.** Read-only production dry run passed before the pause.                                                                                                               |
+| Backup and recoverability        | **Fail for live release.** Guarded restore passed locally. A completed production export and protected preimages are pending.                                                 |
+| Migration dry run                | **Pass.** The planner found 520 copies, 991 placements and 19 Promotion references without conflicts.                                                                         |
+| Full-size migration rehearsal    | **Pass on the named emulator.** Includes interruption and idempotent resume.                                                                                                  |
+| Compatible runtime               | **Pass locally.** Focused tests, Item and commerce typechecks and Misebox preparation passed. All deployed App artifacts still need staging and review.                       |
+| Restricted Rules                 | **Pass locally.** 29 named-database tests. Live policy and writer pause remain separate approved steps.                                                                       |
+| Reference integrity              | **Pass in the rehearsal.** Production verification requires post-migration readback before reopening.                                                                         |
+| Signed-in and signed-out browser | **Pass locally.** Signed-in editing and signed-out Menu passed in the in-app browser. The 16-inch selection showed CHF 24. Firefox and production browser checks remain open. |
+| Historical Finance parity        | **Pass in the rehearsal.** Live before/after comparison remains required.                                                                                                     |
+| Rollback                         | **Pass in the rehearsal.** Production checkpoint requires an approved export, signatures and old runtime/policy artifacts.                                                    |
+
+**BLOCKED for coordinated production release.** The runner and rehearsal are
+ready for independent review. Production still needs a verified writer fence,
+named owners for unmapped ingress, a fresh post-pause plan, a managed export
+and separate execution approval. Production records, Rules and traffic were
+untouched during this preparation.
+
+Verification passed for all 7 migration tests, 169 focused runtime tests,
+and 29 restricted Rules tests. Lint, Python compilation, Item and commerce
+typechecks, and Misebox Nuxt preparation passed. The wider 400-test run
+reproduced the same three presentation failures. The wider Kitchen contracts
+check reproduced the same 23 diagnostics.

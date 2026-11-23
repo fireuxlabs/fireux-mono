@@ -261,3 +261,58 @@ La Tap's retained `menu-uploads/main` source images establish Menu names and
 customer descriptions. They do not establish complete recipes, quantities,
 methods, yields or allergen-free claims. Venue-approved recipes are required
 before configuring those facts. No App runtime reads these migration inputs.
+
+## Kitchen Item references
+
+[`kitchen-item-references.py`](kitchen-item-references.py) targets
+`misebox-78f9c/misebox`. The default mode is read-only. It writes a source-bound
+plan with typed Firestore fields, document paths and version preconditions into
+a fresh private directory outside the repository. An explicit
+`--emulator 127.0.0.1:PORT` restricts the tool to the named `misebox` database in
+the `demo-misebox-item-references` project.
+
+```sh
+python3 tools/misebox-migrations/kitchen-item-references.py --directory "$private_plan"
+```
+
+Review the hash and counts. Create an exact-database managed export after all
+affected writers are paused. The review must account for every catalogue
+destination, placement and Promotion. The tool copies missing catalogue
+documents under their original IDs, rewrites only the affected operational
+references and keeps the legacy catalogue for rollback. Stored audit stamps
+remain exact. Firestore assigns new system versions when documents change.
+
+A separate release approver must sign a private JSON file binding `target`,
+`plan` (SHA-256), `action` (`apply` or `rollback`), `writersPaused: true`,
+`pausedAt`, `expiresAt` and `exportOperation`. Use the SSH signature namespace
+`fireux-item-references` and the `misebox-release` identity. Provision the
+trusted approver's public key out of band in the operator's
+`~/.config/fireux/misebox-release-allowed-signers`. The approver owns the signing
+key independently of the migration operator. A valid signature complements
+Firestore IAM. Keep the allowlist, authorization, backup and journals out of Git.
+
+After separate execution approval, the migration operator supplies the
+reviewed hash with `--confirm`, the signed JSON with `--authorization` and its
+detached signature with `--signature`. Use the same private directory for
+retries, `verify` and separately authorized `rollback`. The tool validates the
+completed export against the exact database, affected collection groups and the
+Misebox migration bucket before apply or rollback.
+
+Each bounded transaction checks its source and destination versions. A
+fsynced journal records the pending batch before the commit request and the
+verified postimage versions afterward. If the response is lost, keep writers
+paused. Recovery accepts a complete matching batch with consistent versions
+after the recorded intent. If preimages are still present, wait for the
+transaction to expire before retrying. Any mixed or unexpected state requires
+operator review. Resume with the same source and plan. Never reconstruct a
+journal from memory or reopen writers while a batch remains pending.
+[Firestore transaction limits](https://firebase.google.com/docs/firestore/quotas)
+
+`verify` compares the full in-scope inventory and confirms that all references
+resolve to their own Kitchen's Items. Rollback restores original references in
+reverse batch order and removes only the copies recorded by this migration.
+A later document version blocks rollback even if its field values match.
+After reopening writes, recovery requires a separately reviewed reconciliation.
+
+See the [Kitchen Items release handoff](../../docs/handoffs/2026-11-23-walk-mode-kitchen-item-shape-relationships-variants.md)
+for the writer pause and release sequence.
