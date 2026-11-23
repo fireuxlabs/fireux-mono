@@ -55,6 +55,8 @@
 </template>
 
 <script setup lang="ts">
+import MenuBrowseCatalogueSectionNav from './SectionNav.vue'
+import MenuBrowseItem from '../Item.vue'
 import { computed } from 'vue'
 import type { CurrencyDisplayFormat } from '../../../../models/shared/currency-display.model.ts'
 import type { MenuManifestSection } from '../../../models/menu-detail.model.ts'

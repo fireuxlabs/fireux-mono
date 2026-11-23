@@ -33,6 +33,7 @@
 </template>
 
 <script setup lang="ts">
+import MenuItemImage from './ItemImage.vue'
 import type { RouteLocationRaw } from 'vue-router'
 
 defineProps<{

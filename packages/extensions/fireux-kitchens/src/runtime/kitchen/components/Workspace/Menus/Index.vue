@@ -1,9 +1,20 @@
 <template>
   <WorkspacePageHeader
-    :title="menu?.name || 'Draft Menus'"
-    :description="menu ? 'Unpublished' : undefined"
+    :title="menu?.name || (publicMenus ? 'Menus' : 'Draft Menus')"
+    :description="menu ? (isDraft ? 'Unpublished' : 'Published') : undefined"
   >
     <template #actions>
+      <UButton v-if="publicPath && !isDraft" :to="publicPath"
+        >View public Menu</UButton
+      >
+      <UButton
+        v-if="publicPath && isDraft"
+        :disabled="busy"
+        :loading="publishing"
+        @click="publish"
+      >
+        Publish Menu
+      </UButton>
       <UButton
         variant="ghost"
         :to="menuSlug ? '/workspace/kitchen/menus' : '/workspace/kitchen'"
@@ -20,17 +31,21 @@
     :error="error"
   />
   <p v-else-if="menuSlug && !menu">
-    This draft is unavailable in the selected Kitchen.
+    This Menu is unavailable in the selected Kitchen.
   </p>
   <template v-else>
-    <form class="space-y-3" @submit.prevent="save">
+    <UAlert v-if="failure" color="error" :title="failure" />
+    <form v-if="!menu || isDraft" class="space-y-3" @submit.prevent="save">
       <UFormField :label="menu ? 'Section name' : 'Menu name'" name="name">
-        <UInput v-model="name" required :disabled="busy" />
+        <UInput v-model="name" required :disabled="busy || publishing" />
       </UFormField>
-      <UButton type="submit" :loading="busy" :disabled="!name.trim()">
+      <UButton
+        type="submit"
+        :loading="busy"
+        :disabled="!name.trim() || publishing"
+      >
         {{ menu ? 'Add section' : 'Create draft' }}
       </UButton>
-      <UAlert v-if="failure" color="error" :title="failure" />
     </form>
 
     <template v-if="menu">
@@ -49,26 +64,28 @@
         :catalogue="catalogue"
         :catalogue-outcome="catalogueOutcome"
         :catalogue-error="catalogueError"
+        :read-only="!isDraft || publishing"
       />
     </template>
-    <ul v-else-if="drafts.length">
-      <li v-for="draft in drafts" :key="draft.id">
+    <ul v-else-if="menus.length">
+      <li v-for="entry in menus" :key="entry.id">
         <ULink
           :to="{
             name: 'workspace-kitchen-menus',
-            params: { menuSlug: draft.slug },
+            params: { menuSlug: entry.slug },
           }"
         >
-          {{ draft.name }}
+          {{ entry.name }}
         </ULink>
       </li>
     </ul>
-    <p v-else>No drafts yet.</p>
+    <p v-else>{{ publicMenus ? 'No Menus yet.' : 'No drafts yet.' }}</p>
   </template>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from '#imports'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useMenuCreate } from '../../../../menu/composables/firestore/mutations/useMenuCreate'
 import { useMenuSectionMutations } from '../../../../menu/composables/firestore/mutations/useMenuSectionMutations'
@@ -76,13 +93,22 @@ import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorSc
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
 import { useKitchenMenuRead } from '../../../../menu/composables/useKitchenMenuRead'
 import { useMenuSectionCollection } from '../../../../menu/composables/useMenuSectionCollection'
+import { useMenuPublication } from '../../../../menu/composables/publication/useMenuPublication'
+import {
+  directoryMenuRouteScope,
+  menuRoutePath,
+} from '../../../../menu/utils/navigation/route'
+import { isPublicBrowseMenu } from '../../../../menu/utils/publication-readiness'
+import type { Menu } from '../../../../menu/models/menu.model'
 import { useKitchenItemCollection } from '../../../composables/useKitchenItemCollection'
 import MenuSection from './Section.vue'
 
-const { kitchenId, menuSlug } = defineProps<{
+const { kitchenId, kitchenSlug, menuSlug } = defineProps<{
   kitchenId: string
+  kitchenSlug: string
   menuSlug: string
 }>()
+const publicMenus = useRouter().hasRoute('KitchenMenuPage')
 const storage = {
   kitchenCollectionPath: 'kitchens',
   databaseId: readRuntimeFirestoreDatabaseId() || '',
@@ -93,11 +119,22 @@ const detail = useKitchenMenuRead(kitchenId, menuSlug, {
   scope: kitchenId,
 })
 const { outcome, error } = menuSlug ? detail : list
-const menu = computed(() =>
-  detail.menu.value?.status === 'draft' ? detail.menu.value : null
-)
-const drafts = computed(() =>
-  list.activeMenus.value.filter((entry) => entry.status === 'draft')
+const canReview = (entry: Menu) =>
+  entry.status === 'draft' ||
+  (publicMenus && entry.status === 'published' && isPublicBrowseMenu(entry))
+const menu = computed(() => {
+  const entry = detail.menu.value
+  return entry && canReview(entry) ? entry : null
+})
+const menus = computed(() => list.activeMenus.value.filter(canReview))
+const isDraft = computed(() => menu.value?.status === 'draft')
+const publicPath = computed(() =>
+  publicMenus && menu.value && isPublicBrowseMenu(menu.value)
+    ? menuRoutePath({
+        scope: directoryMenuRouteScope(kitchenSlug),
+        menuId: menu.value.slug,
+      })
+    : ''
 )
 const menuId = computed(() => menu.value?.id || '')
 const {
@@ -116,14 +153,35 @@ const {
 
 const name = ref('')
 const busy = ref(false)
+const publishing = ref(false)
 const failure = ref('')
 const captureIntent = useMenuEditorScope([menuId])
 const { createMenu } = useMenuCreate({ kitchenId })
 const { createSection } = useMenuSectionMutations()
+const { publishMenu } = useMenuPublication([menuId])
+
+async function publish() {
+  if (!isDraft.value || !publicPath.value || publishing.value || busy.value)
+    return
+  const isCurrent = captureIntent()
+  publishing.value = true
+  failure.value = ''
+  try {
+    await publishMenu(kitchenId, menuId.value)
+  } catch (error) {
+    if (isCurrent())
+      failure.value =
+        (error as { data?: { statusMessage?: string } })?.data?.statusMessage ||
+        (error instanceof Error ? error.message : 'Could not publish the Menu.')
+  } finally {
+    publishing.value = false
+  }
+}
 
 async function save() {
   const value = name.value.trim()
-  if (!value || busy.value || (menuSlug && !menuId.value)) return
+  if (!value || busy.value || publishing.value || (menuSlug && !isDraft.value))
+    return
   const isCurrent = captureIntent()
   busy.value = true
   failure.value = ''

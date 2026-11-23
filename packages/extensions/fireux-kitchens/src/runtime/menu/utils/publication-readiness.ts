@@ -92,3 +92,14 @@ export function menuPublicationReadiness(
     }
   return result
 }
+export function isPublicBrowseMenu(menu: {
+  audience?: unknown
+  format?: unknown
+  schedule?: unknown
+}) {
+  return (
+    (menu.audience === undefined || menu.audience === 'public') &&
+    (menu.format === undefined || menu.format === 'interactive') &&
+    (menu.schedule === undefined || menu.schedule === 'regular')
+  )
+}

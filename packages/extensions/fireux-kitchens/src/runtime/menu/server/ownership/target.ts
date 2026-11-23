@@ -15,7 +15,8 @@ const isFirestoreDocumentId = (value: string) =>
 export async function resolveMenuTarget(
   menuIdValue: unknown,
   kitchenSlugValue?: unknown,
-  sources?: LiveProjectionSources
+  sources?: LiveProjectionSources,
+  browseOnly = false
 ): Promise<MenuTarget> {
   const menuId = text(menuIdValue)
   const kitchenSlug = text(kitchenSlugValue)
@@ -41,13 +42,19 @@ export async function resolveMenuTarget(
       })
     }
 
-    return scopedTarget('tenant-menu', menuId, tenantScope, sources)
+    return scopedTarget('tenant-menu', menuId, tenantScope, sources, browseOnly)
   }
 
   if (kitchenSlug) {
     const directoryScope = await resolveDirectoryMenuScope(kitchenSlug, sources)
 
-    return scopedTarget('directory-menu', menuId, directoryScope, sources)
+    return scopedTarget(
+      'directory-menu',
+      menuId,
+      directoryScope,
+      sources,
+      browseOnly
+    )
   }
 
   throw createError({

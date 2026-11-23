@@ -7,6 +7,7 @@ import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { readKitchenSproochliAttachment } from '../../../kitchen/server/core/sproochli-attachment'
 import { readMenuKitchenPlaceData } from './kitchen-scope'
 import type { ScopedMenuTarget, ScopedTargetKind } from './target-types'
+import { isPublicBrowseMenu } from '../../utils/publication-readiness'
 export const scopedTarget = async (
   kind: ScopedTargetKind,
   menuId: string,
@@ -16,7 +17,8 @@ export const scopedTarget = async (
     kitchenSlug: string
     rootKitchenData: Record<string, unknown>
   },
-  sources?: LiveProjectionSources
+  sources?: LiveProjectionSources,
+  browseOnly = false
 ): Promise<ScopedMenuTarget> => {
   const menuQuery = getRuntimeFirestore()
     .collection(`kitchens/${input.kitchenId}/menus`)
@@ -36,6 +38,8 @@ export const scopedTarget = async (
   }
   const menuDocument = menuSnapshot.docs[0]!
   const menuData = menuDocument.data()
+  if (browseOnly && !isPublicBrowseMenu(menuData))
+    throw createError({ statusCode: 404, statusMessage: 'Menu not found.' })
   if (
     menuData.audience !== undefined &&
     !['public', 'private_link'].includes(String(menuData.audience))
@@ -53,12 +57,14 @@ export const scopedTarget = async (
     sources
   )
 
-  const offerings = await readKitchenOfferings(
-    getRuntimeFirestore(),
-    input.kitchenId,
-    { kitchen: input.rootKitchenData, place: placeData },
-    sources
-  )
+  const offerings = browseOnly
+    ? []
+    : await readKitchenOfferings(
+        getRuntimeFirestore(),
+        input.kitchenId,
+        { kitchen: input.rootKitchenData, place: placeData },
+        sources
+      )
   return {
     orderingSource: {
       kitchen: input.rootKitchenData,

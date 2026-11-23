@@ -3,6 +3,7 @@
     v-if="kitchen"
     :key="JSON.stringify([kitchen.id, menuSlug])"
     :kitchen-id="kitchen.id"
+    :kitchen-slug="kitchen.identity.slug"
     :menu-slug="menuSlug"
   />
   <template v-else>

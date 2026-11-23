@@ -22,7 +22,9 @@
     />
     <form
       v-else-if="
-        availableItems.length && ['ready', 'empty'].includes(read.outcome.value)
+        !readOnly &&
+        availableItems.length &&
+        ['ready', 'empty'].includes(read.outcome.value)
       "
       class="space-y-3"
       @submit.prevent="add"
@@ -59,6 +61,7 @@ const props = defineProps<{
   catalogue: { id: string; name: string }[]
   catalogueOutcome: ReadOutcome
   catalogueError?: unknown
+  readOnly?: boolean
 }>()
 const read = useMenuEntryCollection(
   props.kitchenId,
@@ -88,6 +91,7 @@ const { createItem } = useMenuItemMutations()
 async function add() {
   const selected = dishId.value
   if (
+    props.readOnly ||
     busy.value ||
     !availableItems.value.some((item) => item.value === selected)
   )

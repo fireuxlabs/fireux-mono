@@ -7,6 +7,7 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import { serverKitchenMenusTarget } from '../../../kitchen/server/mutation-targets'
 import { requireKitchenWriterAccount } from '../../../kitchen/server/core/operator-access'
 import { assertKitchenMenuCanPublish } from './validation'
+import { isPublicBrowseMenu } from '../../utils/publication-readiness'
 import {
   requireMenuDocumentAuthority,
   assertMenuAcceptsDocument,
@@ -21,6 +22,7 @@ type PublishKitchenMenuInput = {
   uid: string
   document?: MenuDocument
   claimSecret?: string
+  browseOnly?: boolean
 }
 
 export function publishKitchenMenu(input: PublishKitchenMenuInput) {
@@ -48,6 +50,12 @@ export async function stagePublishKitchenMenu(
     ...(input.document ? { format: 'document', doc: input.document } : {}),
     ...(documentTarget?.guest ? { audience: 'private_link' } : {}),
   }
+  if (input.browseOnly && !isPublicBrowseMenu(menuData))
+    throw createError({
+      statusCode: 409,
+      statusMessage:
+        'Only regular, interactive public Menus can be published here.',
+    })
   if (menuData.status === 'archived')
     throw createError({
       statusCode: 409,

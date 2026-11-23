@@ -1,6 +1,7 @@
 import { defineLiveProjection } from 'fireux-core/runtime/server/utils/live-projection'
 import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { createError, getQuery, getRouterParam } from 'h3'
+import { useRuntimeConfig } from '#imports'
 import { dailyMenuSelection } from '../../../menu/utils/calendar/daily'
 
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -60,7 +61,8 @@ async function readKitchenMenu(
   menuContext: ReturnType<typeof normalizeMenuRouteContext>,
   sproochliLanguage: SproochliLanguageCode,
   kitchenOfferingId: string,
-  sources: LiveProjectionSources
+  sources: LiveProjectionSources,
+  browseOnly: boolean
 ) {
   const db = getRuntimeFirestore()
   const data = target.menuData
@@ -79,7 +81,7 @@ async function readKitchenMenu(
           currencyCode: target.scope.currencyCode,
           sources,
         }),
-    daily
+    daily || browseOnly
       ? []
       : readKitchenMenuChoices(db, {
           sources,
@@ -131,7 +133,16 @@ export default defineLiveProjection({
         })
       }
 
-      const target = await resolveMenuTarget(menuId, kitchenSlug, sources)
+      const browseOnly = useRuntimeConfig(event).kitchensWorkspaceOnly === true
+      if (browseOnly && (menuContext !== 'generic' || kitchenOfferingId)) {
+        throw createError({ statusCode: 404, statusMessage: 'Menu not found.' })
+      }
+      const target = await resolveMenuTarget(
+        menuId,
+        kitchenSlug,
+        sources,
+        browseOnly
+      )
       const content = target.menuData
       if (content.schedule === 'daily' && menuContext !== 'generic')
         throw createError({
@@ -149,7 +160,8 @@ export default defineLiveProjection({
         menuContext,
         sproochliLanguage,
         kitchenOfferingId,
-        sources
+        sources,
+        browseOnly
       )
     } catch (error) {
       throw safeMenuError(error)

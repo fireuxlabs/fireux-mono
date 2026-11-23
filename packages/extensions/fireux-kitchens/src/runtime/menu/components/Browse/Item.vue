@@ -27,6 +27,9 @@
 </template>
 
 <script setup lang="ts">
+import MenuItemDisplay from '../ItemDisplay.vue'
+import MenuMealDeal from '../MealDeal.vue'
+import MenuItemChoices from '../ItemChoices.vue'
 import { computed } from 'vue'
 import { useMenuItemChoicePreview } from '../../composables/useMenuItemChoicePreview'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'

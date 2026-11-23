@@ -5,7 +5,7 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { publishKitchenMenu } from '../../../../../menu/server/publication/publish'
 
 export default defineEventHandler(async (event) => {
-  const runtime = useRuntimeConfig()
+  const runtime = useRuntimeConfig(event)
   const appId = requirePathSegment(runtime.public?.fireux?.id, 'Runtime App id')
   const body = await readBody<{ kitchenId?: unknown; menuId?: unknown }>(event)
   const kitchenId = requirePathSegment(body?.kitchenId, 'Kitchen id')
@@ -20,6 +20,7 @@ export default defineEventHandler(async (event) => {
     kitchenId,
     menuId,
     uid,
+    browseOnly: runtime.kitchensWorkspaceOnly === true,
   })
 
   return {

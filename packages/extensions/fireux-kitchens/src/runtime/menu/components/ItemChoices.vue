@@ -32,6 +32,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import MenuChoiceBubbles from './ChoiceBubbles.vue'
 import type {
   ItemChoiceGroup,
   ItemChoiceSelection,

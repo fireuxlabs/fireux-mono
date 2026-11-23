@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { menuCanonicalPath } from '../runtime/menu/utils/navigation/route.ts'
+import { isPublicBrowseMenu } from '../runtime/menu/utils/publication-readiness.ts'
 
 const load = (path, name, dependencies) => {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -102,6 +103,7 @@ test('public directory and tenant Menu links follow the owning Kitchen identity'
 
 test('public scoped Menu resolves slug to stable ID without an ID alias', async () => {
   let lookup
+  let serviceReads = 0
   let docs = [
     { id: 'stable-123', data: () => ({ slug: 'food', status: 'published' }) },
   ]
@@ -123,7 +125,11 @@ test('public scoped Menu resolves slug to stable ID without an ID alias', async 
         throw new Error('Catalogue resolution must not read fulfilment policy')
       },
       menuKitchenOperationHours: () => ({ windows: [] }),
-      readKitchenOfferings: async () => [],
+      readKitchenOfferings: async () => {
+        serviceReads += 1
+        return []
+      },
+      isPublicBrowseMenu,
       readKitchenSproochliAttachment: async () => ({ enabled: false }),
       readRecordString: text,
       createError: (input) =>
@@ -149,6 +155,31 @@ test('public scoped Menu resolves slug to stable ID without an ID alias', async 
   assert.equal(target.scope.kitchenMenuSlug, 'food')
   assert.equal(target.scope.kitchenSlug, 'venue')
   assert.equal('fulfilment' in target.scope, false)
+  const browseOnly = await scopedTarget(
+    'directory-menu',
+    'food',
+    scope,
+    undefined,
+    true
+  )
+  assert.deepEqual(browseOnly.scope.kitchen_offerings, [])
+  assert.equal(serviceReads, 1)
+  docs = [
+    {
+      id: 'stable-123',
+      data: () => ({
+        slug: 'food',
+        status: 'published',
+        audience: 'private_link',
+      }),
+    },
+  ]
+  await assert.rejects(
+    scopedTarget('directory-menu', 'food', scope, undefined, true),
+    {
+      statusCode: 404,
+    }
+  )
   docs = []
   await assert.rejects(scopedTarget('directory-menu', 'stable-123', scope), {
     statusCode: 404,

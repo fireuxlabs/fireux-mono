@@ -32,6 +32,7 @@ export interface ModuleOptions {
   workspaceOnly?: boolean
   workspaceItems?: boolean
   workspaceMenus?: boolean
+  publicMenus?: boolean
   ordering?: OrderingConfiguration
 }
 
@@ -67,6 +68,9 @@ export default defineNuxtModule<ModuleOptions>({
         '[fireux-kitchens] workspaceMenus requires workspaceItems.'
       )
     }
+    if (options.publicMenus && !options.workspaceMenus) {
+      throw new Error('[fireux-kitchens] publicMenus requires workspaceMenus.')
+    }
     if (options.workspaceOnly) {
       if (
         options.ordering ||
@@ -98,6 +102,13 @@ export default defineNuxtModule<ModuleOptions>({
             name: 'workspace-kitchen-menus',
             path: '/workspace/kitchen/menus/:menuSlug?',
             file: resolver.resolve('./runtime/kitchen/pages/menus.vue'),
+          })
+        }
+        if (options.publicMenus) {
+          pages.push({
+            name: 'KitchenMenuPage',
+            path: '/kitchens/:slug/menus/:menuId',
+            file: resolver.resolve('./runtime/menu/pages/browse.vue'),
           })
         }
       })
@@ -140,6 +151,22 @@ export default defineNuxtModule<ModuleOptions>({
             ),
           })
         }
+      }
+      if (options.publicMenus) {
+        addServerHandler({
+          route: '/api/workspace/kitchen/menus/publish',
+          method: 'post',
+          handler: resolver.resolve(
+            './runtime/server/api/workspace/kitchen/menus/publish.post.ts'
+          ),
+        })
+        addServerHandler({
+          route: '/api/menus/:menuId',
+          method: 'get',
+          handler: resolver.resolve(
+            './runtime/server/api/menus/[menuId].get.ts'
+          ),
+        })
       }
       return
     }

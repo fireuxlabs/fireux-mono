@@ -175,6 +175,7 @@ test('manually constructed order contexts reject daily Menus before content is a
         'handler',
         {
           defineEventHandler: (fn) => fn,
+          useRuntimeConfig: () => ({}),
           setCorsHeaders: () => {},
           getRouterParam: () => 'specials',
           getQuery: () => ({ context }),
@@ -200,4 +201,26 @@ test('manually constructed order contexts reject daily Menus before content is a
       await assert.rejects(handler({}), { statusCode: 409 })
       assert.equal(acquired, false)
     }
+})
+
+test('standalone public browsing rejects Service contexts before reading the Menu', async () => {
+  for (const query of [{ context: 'delivery' }, { offering: 'room-service' }]) {
+    const { handler } = load(
+      '../runtime/server/api/menus/[menuId].get.ts',
+      'handler',
+      {
+        useRuntimeConfig: () => ({ kitchensWorkspaceOnly: true }),
+        setCorsHeaders: () => {},
+        getRouterParam: () => 'lunch',
+        getQuery: () => query,
+        parseMenuRouteTarget: () => ({ menuId: 'lunch', context: 'generic' }),
+        normalizeMenuRouteContext: (value) => value,
+        normalizeSproochliLanguage: () => '',
+        resolveMenuTarget: async () => assert.fail('Unexpected Menu read'),
+        createError: (value) =>
+          Object.assign(new Error(value.statusMessage), value),
+      }
+    )
+    await assert.rejects(handler({}), { statusCode: 404 })
+  }
 })

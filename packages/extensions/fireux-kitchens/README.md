@@ -84,8 +84,13 @@ Add `workspaceMenus: true` when Items are enabled to build and review
 commands require a Place with a currency and retain the App membership,
 Kitchen grant and subscription checks. Section placements reference existing
 Kitchen Items. This installation registers draft creation, section creation
-and Item placement. Publishing, public Menu routes, Services and Orders are
-outside its scope.
+and Item placement.
+
+Add `publicMenus: true` to publish a ready regular interactive Menu and serve
+its [guest catalogue](src/runtime/menu/pages/browse.vue) at
+`/kitchens/:slug/menus/:menuId`. The trusted publication command checks
+Kitchen access and readiness. The guest route reads only published public
+Menus and skips Service resolution. Services and Orders are unregistered.
 
 ## Ownership and execution
 

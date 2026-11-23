@@ -80,6 +80,16 @@ This check used the existing Place and currency prerequisite.
 - [ ] **11. Establish operating routines and readiness.** Decide opening/production times, prep lists, stations, equipment, allergens and food-safety responsibilities, stock handling and how orders will be prepared. Applicable compliance is real-world business responsibility; a software checkbox is **not** proof of legal compliance. **Done when:** the operator knows how the proposed service can actually fulfil its offer.
 - [ ] **12. Review and publish the customer-facing Menu.** Finalise sections, prices, descriptions, availability and presentation; test a customer view. A public viewable Menu can exist without taking digital Orders. **Done when:** published visibility is controlled by Menu rules; changes to an Item do not silently grant public availability.
 
+**Public Menu local checkpoint.** With `publicMenus: true` and no Services or
+Orders registered, the Kitchen operator published “Kitchen Lunch” after the
+existing Item command supplied its missing price. The unpriced draft remained
+private, and the publish command denied an unrelated App member. After Core
+sign-out, the canonical Kitchen Menu URL showed both Items and their prices,
+including after refresh. The named emulator confirmed the same Menu document
+and section placement references. The public API served a browse-only
+projection, rejected Service-specific requests, and required no guest access
+to the underlying Firestore document.
+
 ### Phase E — Decide how customers are served
 
 - [ ] **13. Configure Services and channels.** Choose relevant modes: table/QR, counter or staff POS, kiosk, collection, delivery, room service, etc. Separate **how an order is taken** (channel) from **how food is received** (fulfilment). Configure actual service/menu relationships, local serving times, and required operational details. A vending operation can have a different set of Services from a fine-dining restaurant. **Done when:** each configured Service can determine which published Menu it offers, when, and by what rules.
