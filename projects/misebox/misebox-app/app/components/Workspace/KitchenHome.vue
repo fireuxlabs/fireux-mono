@@ -1,43 +1,38 @@
 <template>
-  <WorkspaceIntroInfo
-    :intro="intro"
-    workspace="kitchen"
-    :show-structured-details="false"
+  <WorkspacePageHeader :title="kitchen?.name || 'Kitchen'" />
+  <FireState
+    v-if="state === 'pending' || state === 'error'"
+    :outcome="state"
+    :error="error"
+    entity="Kitchen"
   />
-  <UDashboardToolbar
-    v-if="
-      workspace.multipleKitchenView.value &&
-      workspace.collection.value.length > 1
-    "
-  >
-    <WorkspaceKitchenSelectorChoices
-      :collection="workspace.collection.value"
-      :selected-id="workspace.id.value"
-      @select="workspace.select"
-    /> </UDashboardToolbar
-  ><WorkspaceGuestWelcome />
-  <WorkspaceKitchenHomeAI :perform-action="performLandingAction" />
-  <WorkspaceKitchen ref="workspaceSurface" />
+  <template v-else-if="kitchen">
+    <KitchenChoices
+      v-if="multipleKitchenView && collection.length > 1"
+      :collection="collection"
+      :selected-id="id"
+      @select="select"
+    />
+  </template>
+  <p v-else>No Kitchen is available to this account.</p>
 </template>
-<script setup lang="ts">
-import { computed, ref } from 'vue'
-import WorkspaceGuestWelcome from 'fireux-workspace/runtime/workspace/components/GuestWelcome.vue'
-import WorkspaceIntroInfo from 'fireux-workspace/runtime/workspace/components/IntroInfo.vue'
-import { useWorkspacePageState } from 'fireux-workspace/runtime/workspace/composables/useWorkspacePageState'
-import type { WorkspaceIntro } from 'fireux-workspace/runtime/workspace/models/capability-context'
-import WorkspaceKitchen from 'fireux-kitchens/runtime/kitchen/components/Workspace/Index.vue'
-import { useKitchenWorkspace } from 'fireux-kitchens/runtime/kitchen/composables/workspace/useKitchenWorkspace'
-import type { KitchenLandingIntent } from 'fireux-kitchens/runtime/kitchen/content/landing-intent'
-import { kitchenWorkspaceIntro } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-workspace-intro'
 
-const workspace = useKitchenWorkspace()
-const workspaceSurface = ref<InstanceType<typeof WorkspaceKitchen> | null>(null)
-const { state: pageState } = useWorkspacePageState('kitchen')
-const intro = computed(
-  () =>
-    (pageState.value?.intro as WorkspaceIntro | undefined) ??
-    kitchenWorkspaceIntro()
+<script setup lang="ts">
+import { computed } from 'vue'
+import KitchenChoices from 'fireux-kitchens/runtime/kitchen/components/Workspace/Selector/Choices.vue'
+import { useKitchenWorkspace } from 'fireux-kitchens/runtime/kitchen/composables/workspace/useKitchenWorkspace'
+
+const {
+  data: kitchen,
+  outcome,
+  collection,
+  collectionOutcome,
+  error,
+  id,
+  multipleKitchenView,
+  select,
+} = useKitchenWorkspace()
+const state = computed(() =>
+  collectionOutcome.value === 'ready' ? outcome.value : collectionOutcome.value
 )
-const performLandingAction = (intent: KitchenLandingIntent) =>
-  workspaceSurface.value?.performAction(intent) ?? false
 </script>

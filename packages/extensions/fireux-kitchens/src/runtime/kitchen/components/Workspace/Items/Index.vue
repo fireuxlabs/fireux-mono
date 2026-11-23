@@ -1,21 +1,12 @@
 <template>
   <WorkspacePageHeader :title="dishId ? item?.name || 'Item' : 'Items'">
     <template #actions>
-      <UButton
-        variant="ghost"
-        :to="dishId ? '/workspace/kitchen/items' : '/workspace/kitchen'"
-      >
+      <UButton variant="ghost" :to="dishId ? itemsPath : '/workspace/kitchen'">
         {{ dishId ? 'Back to Items' : 'Back to Kitchen' }}
       </UButton>
     </template>
   </WorkspacePageHeader>
-  <FireState
-    v-if="outcome === 'pending' || outcome === 'error'"
-    :outcome="outcome"
-    entity="Item"
-    :error="error"
-  />
-  <p v-else-if="dishId && !item">
+  <p v-if="dishId && !item">
     This Item is unavailable in the selected Kitchen.
   </p>
   <template v-else>
@@ -26,16 +17,34 @@
       <UButton type="submit" :loading="busy" :disabled="!canSave">
         {{ dishId ? 'Save item' : 'Add item' }}
       </UButton>
+      <UButton
+        v-if="item && !confirmDelete"
+        type="button"
+        color="error"
+        variant="outline"
+        :disabled="busy"
+        @click="confirmDelete = true"
+      >
+        Delete item
+      </UButton>
+      <template v-else-if="item">
+        <UButton type="button" color="error" :loading="busy" @click="remove">
+          Confirm delete
+        </UButton>
+        <UButton
+          type="button"
+          variant="ghost"
+          :disabled="busy"
+          @click="confirmDelete = false"
+        >
+          Cancel
+        </UButton>
+      </template>
       <UAlert v-if="failure" color="error" :title="failure" />
     </form>
     <ul v-if="!dishId && items.length">
       <li v-for="entry in items" :key="entry.id">
-        <ULink
-          :to="{
-            name: 'workspace-kitchen-items',
-            params: { dishId: entry.id },
-          }"
-        >
+        <ULink :to="`${itemsPath}/${encodeURIComponent(entry.id)}`">
           {{ entry.name }}
         </ULink>
       </li>
@@ -46,34 +55,31 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useKitchenItemCollection } from '../../../composables/useKitchenItemCollection'
-import { useKitchenItemRead } from '../../../composables/items/useKitchenItemRead'
+import { navigateTo } from '#imports'
+import type { Item } from '../../../models/item.model'
 import { useItemActions } from '../../../composables/items/useItemActions'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 
-const { kitchenId, dishId } = defineProps<{
+const props = defineProps<{
   kitchenId: string
   dishId: string
+  items: Item[]
+  itemsPath: string
 }>()
-const collection = useKitchenItemCollection(dishId ? '' : kitchenId, {
-  kitchenCollectionPath: 'kitchens',
-  databaseId: computed(() => readRuntimeFirestoreDatabaseId()),
-})
-const detail = useKitchenItemRead(kitchenId, dishId)
-const item = detail.item
+const { kitchenId, dishId } = props
+const item = computed(() => props.items.find((entry) => entry.id === dishId))
 const items = computed(() =>
-  [...collection.dishes.value].sort((a, b) => a.name.localeCompare(b.name))
+  [...props.items].sort((a, b) => a.name.localeCompare(b.name))
 )
-const { outcome, error } = dishId ? detail : collection
 
 const name = ref('')
 const failure = ref('')
 const busy = ref(false)
+const confirmDelete = ref(false)
 const { currentUser } = useAuth()
 const captureIntent = useCommandScope([() => currentUser.value?.uid])
-const { createItem, updateItem } = useItemActions()
+const { createItem, updateItem, deleteItem } = useItemActions()
 watch(
   () => item.value?.name,
   (value) => {
@@ -81,12 +87,11 @@ watch(
   },
   { immediate: true }
 )
-const canSave = computed(
-  () =>
-    Boolean(
-      name.value.trim() &&
-        (!dishId || (item.value && name.value.trim() !== item.value.name))
-    ) && ['empty', 'ready'].includes(outcome.value)
+const canSave = computed(() =>
+  Boolean(
+    name.value.trim() &&
+      (!dishId || (item.value && name.value.trim() !== item.value.name))
+  )
 )
 
 async function save() {
@@ -106,6 +111,23 @@ async function save() {
     if (isCurrent())
       failure.value =
         error instanceof Error ? error.message : 'Could not save the Item.'
+  } finally {
+    busy.value = false
+  }
+}
+
+async function remove() {
+  if (!item.value || busy.value) return
+  const isCurrent = captureIntent()
+  busy.value = true
+  failure.value = ''
+  try {
+    await deleteItem(dishId, { kitchenId })
+    if (isCurrent()) await navigateTo(props.itemsPath)
+  } catch (error) {
+    if (isCurrent())
+      failure.value =
+        error instanceof Error ? error.message : 'Could not delete the Item.'
   } finally {
     busy.value = false
   }

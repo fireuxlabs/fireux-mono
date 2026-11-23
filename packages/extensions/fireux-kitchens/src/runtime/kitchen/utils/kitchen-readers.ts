@@ -29,9 +29,20 @@ export const kitchenPaymentMethodsForOrderType = (
   (fulfilment?.payment_methods || [])
     .filter((policy) => policy.order_types.includes(orderType))
     .map((policy) => policy.method)
-export const readKitchenVisibility = (value: KitchenRecord) => {
+export const readKitchenVisibility = (
+  value: KitchenRecord,
+  allowUnlisted = false
+) => {
   const source = record(value)
-  return record(source.identity).visibility === true
+  if ('status' in source || typeof source.visibility === 'string') {
+    return (
+      source.status === 'active' &&
+      (source.visibility === 'public' ||
+        (allowUnlisted && source.visibility === 'unlisted'))
+    )
+  }
+  const identity = record(source.identity)
+  return identity.status === 'active' && identity.visibility === true
 }
 
 export const readKitchenThemePalette = (

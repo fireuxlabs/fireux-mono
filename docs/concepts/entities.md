@@ -245,8 +245,9 @@ and `menu/models/menu-storage.model.ts` in `fireux-kitchens`.
 Kitchen Item is an owned Record, not a standalone Entity. Its canonical record definition and
 storage metadata are in `kitchen/models/item.model.ts`; readers, context and mutation
 adapters use `kitchen/composables/items`, and normalization uses Kitchen utils.
-Its persisted `dishes` path is unchanged. Removing a Menu placement must not
-delete or replace the canonical Kitchen Item. Preparation is also a Kitchen-owned
+The reset uses `kitchens/{kitchenId}/items/{dishId}`. Earlier Items under
+`dishes` remain in place. Removing a Menu placement does not delete or
+replace the canonical Kitchen Item. Preparation is also a Kitchen-owned
 Record: it identifies the Kitchen's reusable output and can be referenced by
 several Recipes without acquiring independent authority. Recipe remains an Entity.
 
@@ -374,11 +375,12 @@ an inactive provider-imported Product that has no public route.
 These Product and Supplier relationships describe source contracts, not a live
 integrity audit of the Misebox database.
 
-Kitchen's stored root, identity and admitted configuration contract is declared
-in [models/kitchen.model.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts).
-[readKitchenDocument](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/read-kitchen-document.ts)
-validates stored values; trusted domain commands retain target, permission and
-write authority. Public projections and UI shapes do not replace that contract.
+The [Kitchen application model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts)
+contains the document ID and the separately loaded Items. The
+[root reader](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/read-kitchen-document.ts)
+projects the ID from the stored root. Trusted domain commands retain target,
+permission and write authority. Public projections have their own contracts and
+remain outside the Kitchen reset.
 
 [types/public.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/types/public.ts)
 owns the normalized public summary, required-enriched directory entry and exact
@@ -485,7 +487,7 @@ Directory and Entity Detail family maps.
 | Existing domain concepts exceed this descriptive map           | `drift`     | Review one owning package when a concrete feature needs the distinction; use source behavior to name its role                                                                                            |
 | Independent Business with optional Place links                 | `accepted`  | Business owns organisation identity and Workspace; Place owns each linked location                                                                                                                       |
 | Place read transport                                           | `accepted`  | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth               |
-| Kitchen root + Place + Team composition                        | `accepted`  | Kitchen owns nested identity, configuration and audit/private metadata; its public projection joins the same-id Place. Team roster and membership-bound Workspace access retain separate authority.      |
+| Kitchen root + Place + Team composition                        | `accepted`  | Kitchen has ID, name and loaded Items. Place may supply a display name for older records. Team and membership-bound access retain separate authority.      |
 | Kitchen Item ownership                                         | `accepted`  | Item is a Kitchen-owned Record; MenuEntry owns placement, not copied canonical Item truth. Item source uses Kitchen record and technical roles.                                                           |
 | Recipe independent-domain target                               | `migration` | Recipe is an Entity; current Kitchen-scoped source, readers and commands remain until a bounded transition proves the target.                                                                            |
 | Recipe ownership and approved Kitchen use                      | `accepted`  | Every Recipe has one User owner; Kitchen explicitly adopts a version and retains that internal use after owner departure or unpublishing. Implementation and legacy owner mapping remain migration work. |

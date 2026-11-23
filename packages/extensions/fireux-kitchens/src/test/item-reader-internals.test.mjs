@@ -224,7 +224,7 @@ function kindContext(f, kind) {
 
 test('Item collection binds only exact ready Kitchen and clears retained rows immediately across owner changes', () => {
   const f = workspaceFixture()
-  assert.equal(f.path, 'kitchens/mine/dishes')
+  assert.equal(f.path, 'kitchens/mine/items')
   assert.equal(f.state.dishes.value.length, 2)
   for (const outcome of ['pending', 'error', 'empty', 'idle']) {
     f.workspace.outcome.value = outcome
@@ -244,7 +244,7 @@ test('Item collection binds only exact ready Kitchen and clears retained rows im
   assert.deepEqual(f.state.dishes.value, [])
   f.workspace.data.value = { id: 'other' }
   f.access.ids.value = ['other']
-  assert.equal(f.path, 'kitchens/other/dishes')
+  assert.equal(f.path, 'kitchens/other/items')
   assert.equal(f.state.outcome.value, 'pending')
   f.settle([{ id: 'other-soup', name: 'Other soup' }])
   assert.equal(f.state.dishes.value[0].name, 'Other soup')
@@ -381,7 +381,7 @@ test('Item record route stays reactive across both kinds while catalogues retain
       id
     )
   )
-  assert.equal(f.path, 'kitchens/mine/dishes/soup')
+  assert.equal(f.path, 'kitchens/mine/items/soup')
   assert.equal(record.item.value.name, 'Soup')
   assert.equal(
     context.dishes.value.some((dish) => dish.id === 'tea'),
@@ -761,8 +761,50 @@ test('Item usage ignores retained placements when the Kitchen or Item changes', 
   assert.equal(usage.ready.value, false)
 })
 
-test('the Item route reads once for the read surfaces', async () => {
-  const route = 'pages/workspace/kitchen/menu/items/[dishId].vue'
+test('the Workspace Items page loads one granted Kitchen collection and drops it when access changes', () => {
+  const workspace = {
+    data: ref({ id: 'a', name: 'Kitchen A', items: [] }),
+    outcome: ref('ready'),
+    error: ref(),
+  }
+  const items = ref([{ id: 'soup', name: 'Soup' }])
+  const outcome = ref('ready')
+  const error = ref()
+  let scope
+  const page = load(
+    'kitchen/components/Workspace/Items/Page.vue',
+    '({ kitchen, outcome, error })',
+    {
+      computed,
+      defineProps: () => ({ workspace }),
+      useRouteParam: () => ref('soup'),
+      useKitchenItemCollection: (kitchenId) => {
+        assert.equal(scope, undefined)
+        scope = kitchenId
+        return { items, outcome, error }
+      },
+    }
+  )
+  assert.equal(scope.value, 'a')
+  assert.deepEqual(page.kitchen.value, {
+    ...workspace.data.value,
+    items: items.value,
+  })
+  outcome.value = 'empty'
+  items.value = []
+  assert.equal(page.outcome.value, 'ready')
+  assert.deepEqual(page.kitchen.value.items, [])
+  outcome.value = 'error'
+  error.value = new Error('Read denied')
+  assert.equal(page.outcome.value, 'error')
+  assert.equal(page.error.value, error.value)
+  assert.equal(page.kitchen.value, null)
+  workspace.outcome.value = 'empty'
+  assert.equal(scope.value, '')
+  assert.equal(page.kitchen.value, null)
+})
+
+test('the legacy Item preview renders its supplied read surfaces', async () => {
   const path = 'kitchen/components/Workspace/Menu/Items/Detail/Index.vue'
   const publicItem = 'menu/components/ItemDetail.vue'
   const renderRecord = (
@@ -773,35 +815,19 @@ test('the Item route reads once for the read surfaces', async () => {
     itemOutcome = item ? 'ready' : 'empty',
     workspaceOutcome = 'ready'
   ) => {
-    let reads = 0
+    const outcome = ['pending', 'error'].includes(workspaceOutcome)
+      ? workspaceOutcome
+      : itemOutcome === 'ready' && !item
+        ? 'error'
+        : itemOutcome
     const app = createSSRApp({
-      setup: () =>
-        load(route, '({ item, route, data, outcome })', {
-          computed,
-          definePageMeta: () => {},
-          provideKitchenItemContext: (reader) => reader,
-          useRoute: () => ({ query: { menu } }),
-          useRouteParam: () => ref('octopus-roll'),
-          useKitchenWorkspace: () => ({
-            outcome: ref(workspaceOutcome),
-            id: ref('la-tapberne'),
-            data: ref({ slug: 'la-tapberne' }),
-          }),
-          useKitchenItemRead: (kitchenId, itemId) => {
-            reads += 1
-            assert.equal(
-              kitchenId(),
-              workspaceOutcome === 'ready' ? 'la-tapberne' : ''
-            )
-            assert.equal(itemId.value, 'octopus-roll')
-            return { item: ref(item), outcome: ref(itemOutcome) }
-          },
-        }),
-      render: template(route),
-    })
-    app.component('KitchenWorkspaceMenuItemsDetail', {
-      props: ['item', 'menu', 'kitchenSlug', 'outcome'],
-      setup: () => ({ dev: false }),
+      setup: () => ({
+        item,
+        outcome,
+        menu,
+        kitchenSlug: 'la-tapberne',
+        dev: false,
+      }),
       render: template(path),
     })
     app.component('UAlert', {
@@ -928,10 +954,7 @@ test('the Item route reads once for the read surfaces', async () => {
       ],
       render: template('menu/components/ItemDisplay.vue'),
     })
-    return renderToString(app).then((html) => {
-      assert.equal(reads, 1)
-      return html
-    })
+    return renderToString(app)
   }
   const missing = await renderRecord(null)
   assert.match(missing, /Item not found/)

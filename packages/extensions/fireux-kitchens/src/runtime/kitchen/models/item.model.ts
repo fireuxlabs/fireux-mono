@@ -15,11 +15,10 @@ export type Item = {
   updated?: FireuxUpdatedStamp
 }
 
-/** Existing persisted path; code ownership does not rename stored records. */
 export const ItemStorage = {
   shape: 'scoped',
-  path: 'kitchens/{kitchenId}/dishes/{dishId}',
-  collection: 'dishes',
+  path: 'kitchens/{kitchenId}/items/{dishId}',
+  collection: 'items',
   parent: 'kitchen',
   idParam: 'dishId',
 } as const

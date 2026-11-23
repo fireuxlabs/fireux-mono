@@ -1,31 +1,12 @@
 <template>
-  <KitchenItems
-    v-if="kitchen"
-    :key="JSON.stringify([kitchen.id, dishId])"
-    :kitchen-id="kitchen.id"
-    :dish-id="dishId"
+  <KitchenItemsPage
+    :workspace="workspace"
+    items-path="/workspace/kitchen/items"
   />
-  <template v-else>
-    <WorkspacePageHeader title="Items">
-      <template #actions>
-        <UButton variant="ghost" to="/workspace/kitchen"
-          >Back to Kitchen</UButton
-        >
-      </template>
-    </WorkspacePageHeader>
-    <FireState
-      v-if="outcome === 'pending' || outcome === 'error'"
-      :outcome="outcome"
-      entity="Kitchen"
-      :error="access.error.value || source.error.value"
-    />
-    <p v-else>Open an accessible Kitchen to manage Items.</p>
-  </template>
 </template>
 
 <script setup lang="ts">
-import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import KitchenItems from '../components/Workspace/Items/Index.vue'
+import KitchenItemsPage from '../components/Workspace/Items/Page.vue'
 import { useKitchenOnlyWorkspace } from '../composables/workspace/useKitchenOnlyWorkspace'
 
 definePageMeta({
@@ -36,6 +17,5 @@ definePageMeta({
   requiresSelection: false,
 })
 
-const dishId = useRouteParam('dishId')
-const { data: kitchen, outcome, access, source } = useKitchenOnlyWorkspace()
+const workspace = useKitchenOnlyWorkspace()
 </script>

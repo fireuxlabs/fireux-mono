@@ -1,7 +1,10 @@
 import { useWorkspaceRecord } from '../../../../fireux-workspace/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/utils/membership/validation.ts'
 import { resolveAppUserAccess } from '../../../../../core/fireux-core/src/runtime/app/utils/membership/access.ts'
-import { readKitchenDocument } from '../../runtime/kitchen/utils/read-kitchen-document.ts'
+import {
+  readKitchenDocument,
+  resolveKitchenPlaceId,
+} from '../../runtime/kitchen/utils/read-kitchen-document.ts'
 import { useCommandScope } from '../../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
 import assert from 'node:assert/strict'
 import { createHash, timingSafeEqual, webcrypto } from 'node:crypto'
@@ -449,7 +452,7 @@ test('shell creation commits only Kitchen, Place and scoped access without chang
   )
 })
 
-test('Kitchen-only shell persists its own name and retries without reading or writing Place', async () => {
+test('Kitchen-only shell persists only its name and retries without reading or writing Place', async () => {
   const h = shellHarness()
   const result = await h.create(false)
   assert.equal(result.place_id, undefined)
@@ -457,19 +460,15 @@ test('Kitchen-only shell persists its own name and retries without reading or wr
     h.writes.map(({ path }) => path),
     ['kitchens/user', 'kitchen_access/user']
   )
-  const identity = readKitchenDocument(
-    h.records.get('kitchens/user'),
-    'user'
-  )?.identity
-  assert.deepEqual(identity, {
-    source: 'user',
+  const root = h.records.get('kitchens/user')
+  assert.deepEqual(root, { name: 'My Kitchen' })
+  assert.deepEqual(readKitchenDocument(root, 'user'), {
+    id: 'user',
     name: 'My Kitchen',
-    slug: 'my-kitchen',
-    status: 'active',
-    visibility: false,
+    items: [],
   })
-  assert.equal((await h.create(false, 'Ignored retry name')).action, 'open')
-  assert.equal(h.records.get('kitchens/user').identity.name, 'My Kitchen')
+  assert.equal((await h.create(false, 'Another name')).action, 'open')
+  assert.equal(h.records.get('kitchens/user'), root)
   assert.equal(h.writes.length, 2)
   assert.ok(h.reads.every((path) => !path.startsWith('places/')))
 })
@@ -493,8 +492,9 @@ test('reopening a historical shell does not backfill or replace its root stamps'
     false
   )
   assert.deepEqual(readKitchenDocument(historical, 'user'), {
-    ...historical,
     id: 'user',
+    name: 'user',
+    items: [],
   })
 })
 
@@ -691,6 +691,7 @@ test('all 50 Kitchen and Place bindings stay live and revoke without retaining s
       toValue,
       useKitchenAccess: () => access,
       readKitchenDocument,
+      resolveKitchenPlaceId,
       useFirestoreRead: () => ({
         firestoreLoadDocsByIds: (input) => {
           options.push(input)
@@ -737,8 +738,9 @@ test('all 50 Kitchen and Place bindings stay live and revoke without retaining s
       'Place read failed'
     )
     await nextTick()
-    assert.equal(state.outcome.value, 'error')
-    assert.equal(state.count.value, 0)
+    assert.equal(state.outcome.value, 'ready')
+    assert.equal(state.count.value, 1)
+    assert.equal(state.kitchens.value[0].name, 'kitchen-49')
     bindings.get('places/kitchen-49').error.value = undefined
     await nextTick()
     assert.equal(state.count.value, 1)

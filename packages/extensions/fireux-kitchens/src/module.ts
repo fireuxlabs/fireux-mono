@@ -119,13 +119,6 @@ export default defineNuxtModule<ModuleOptions>({
           './runtime/server/api/kitchens/onboarding/shell.post.ts'
         ),
       })
-      addServerHandler({
-        route: '/api/workspace/kitchen/update',
-        method: 'patch',
-        handler: resolver.resolve(
-          './runtime/server/api/workspace/kitchen/update.patch.ts'
-        ),
-      })
       if (options.workspaceItems) {
         for (const method of ['post', 'patch', 'delete'] as const) {
           addServerHandler({

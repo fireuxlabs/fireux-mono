@@ -8,13 +8,12 @@ import { computed, effectScope, ref, toValue, watch } from 'vue'
 import { useCommandScope } from '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
 import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/utils/membership/access.ts'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
-import { readKitchenDocument } from '../runtime/kitchen/utils/read-kitchen-document.ts'
+import {
+  readKitchenDocument,
+  resolveKitchenPlaceId,
+} from '../runtime/kitchen/utils/read-kitchen-document.ts'
 
-const canonical = (id) => ({
-  id,
-  identity: { slug: id, status: 'active', visibility: false },
-  created: { at: { seconds: 123, nanoseconds: 0 }, by: 'user' },
-})
+const canonical = (id) => ({ id, name: id, items: [] })
 
 function loadComposable(path, name, bindings) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -44,6 +43,7 @@ function setup(options = {}, id = ref('a')) {
       toValue,
       resolveReadOutcome,
       readKitchenDocument,
+      resolveKitchenPlaceId,
       useFirestoreRead: () => ({
         firestoreFetchDoc: (path, id) => {
           calls.push({ path, id })
@@ -55,7 +55,7 @@ function setup(options = {}, id = ref('a')) {
   return { id, kitchen, place, calls, read: factory(id, options) }
 }
 
-test('Workspace retains only the granted canonical root through joined Place failure or loading', () => {
+test('Workspace retains only the granted canonical root through optional Place failure or loading', () => {
   const scope = effectScope()
   const selectedId = ref('a')
   const access = { ids: ref(['a', 'b']), outcome: ref('ready') }
@@ -124,9 +124,8 @@ test('Workspace retains only the granted canonical root through joined Place fai
     source.kitchen.outcome.value = 'ready'
     source.place.error.value = new Error('Place failed')
     assert.deepEqual(workspace.root.value, canonical('a'))
-    assert.equal(workspace.root.value.identity.visibility, false)
-    assert.equal(workspace.data.value, null)
-    assert.equal(workspace.outcome.value, 'error')
+    assert.deepEqual(workspace.data.value, canonical('a'))
+    assert.equal(workspace.outcome.value, 'ready')
     assert.equal(workspace.collectionOutcome.value, 'error')
     assert.deepEqual(workspace.collection.value, [])
 
@@ -134,8 +133,8 @@ test('Workspace retains only the granted canonical root through joined Place fai
     source.place.pending.value = true
     source.place.outcome.value = 'pending'
     assert.deepEqual(workspace.root.value, canonical('a'))
-    assert.equal(workspace.data.value, null)
-    assert.equal(workspace.outcome.value, 'pending')
+    assert.deepEqual(workspace.data.value, canonical('a'))
+    assert.equal(workspace.outcome.value, 'ready')
 
     selectedId.value = 'b'
     assert.equal(
@@ -148,7 +147,7 @@ test('Workspace retains only the granted canonical root through joined Place fai
     assert.deepEqual(workspace.root.value, canonical('b'))
     source.kitchen.value = canonical('wrong')
     assert.equal(workspace.root.value, null, 'a mismatched root is unavailable')
-    source.kitchen.value = { ...canonical('b'), identity: {} }
+    source.kitchen.value = []
     assert.equal(workspace.root.value, null, 'a malformed root is unavailable')
     assert.equal(workspace.outcome.value, 'error')
     source.kitchen.value = canonical('b')
@@ -199,13 +198,14 @@ test('Kitchen read returns canonical records, tracks identity and hides failed d
   s.kitchen.outcome.value = 'ready'
   s.place.value = { id: 'a', name: 'Place name' }
   assert.deepEqual(s.read.kitchen.value, canonical('a'))
-  assert.equal(s.read.kitchen.value.name, undefined)
+  assert.equal(s.read.kitchen.value.name, 'a')
   assert.equal(s.read.place.value.name, 'Place name')
   assert.equal(s.calls[1].id.value, 'a')
   s.place.pending.value = true
   s.place.error.value = new Error('Place failed')
-  assert.equal(s.read.outcome.value, 'error')
-  assert.equal(s.read.kitchen.value, null)
+  assert.equal(s.read.outcome.value, 'ready')
+  assert.deepEqual(s.read.kitchen.value, canonical('a'))
+  assert.equal(s.read.place.value, null)
   s.place.pending.value = false
   s.place.error.value = null
   s.id.value = 'b'
@@ -232,7 +232,7 @@ test('Access-only reads disable Place and explicit empty scope disables Kitchen'
 test('Malformed ready Kitchen data is an error, disables Place and recovers from a valid replacement', () => {
   const s = setup()
   s.kitchen.outcome.value = 'ready'
-  s.kitchen.value = { ...canonical('a'), identity: {} }
+  s.kitchen.value = []
   assert.equal(s.read.outcome.value, 'error')
   assert.equal(s.read.kitchen.value, null)
   assert.equal(s.read.place.value, null)
@@ -246,8 +246,8 @@ test('Malformed ready Kitchen data is an error, disables Place and recovers from
   assert.equal(s.read.error.value, undefined)
 
   s.kitchen.value = { ...canonical('a'), created: { at: 'yesterday' } }
-  assert.equal(s.read.outcome.value, 'error')
-  assert.equal(s.read.kitchen.value, null)
+  assert.equal(s.read.outcome.value, 'ready')
+  assert.deepEqual(s.read.kitchen.value, canonical('a'))
 })
 
 test('Exact Kitchen reads mask old identities and release errors when their scope is disabled', () => {

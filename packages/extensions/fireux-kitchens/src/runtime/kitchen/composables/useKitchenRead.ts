@@ -2,14 +2,17 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
-import { readKitchenDocument } from '../utils/read-kitchen-document'
+import {
+  readKitchenDocument,
+  resolveKitchenPlaceId,
+} from '../utils/read-kitchen-document'
 
 type UseKitchenReadOptions = {
   collectionPath?: MaybeRefOrGetter<string>
   hydrate?: boolean
 }
 
-/** Canonical Kitchen and optional same-ID Place. Presentation belongs to the consumer. */
+/** Canonical Kitchen with an optional Place lookup. */
 export function useKitchenRead(
   id: MaybeRefOrGetter<string>,
   options: UseKitchenReadOptions = {}
@@ -31,7 +34,11 @@ export function useKitchenRead(
       source.value.id !== kitchenId.value
   )
   const parsed = computed(() =>
-    enabled.value && source.outcome.value === 'ready' && !stale.value
+    enabled.value &&
+    !source.pending.value &&
+    !source.error.value &&
+    source.outcome.value === 'ready' &&
+    !stale.value
       ? readKitchenDocument(source.value, kitchenId.value)
       : null
   )
@@ -39,20 +46,20 @@ export function useKitchenRead(
     enabled.value &&
     source.outcome.value === 'ready' &&
     !stale.value &&
+    !source.pending.value &&
+    !source.error.value &&
     !parsed.value
       ? new Error(`Invalid canonical Kitchen: ${path.value}/${kitchenId.value}`)
       : undefined
   )
   const placeId = computed(() =>
-    options.hydrate !== false && parsed.value ? kitchenId.value : ''
+    options.hydrate !== false && parsed.value && source.value
+      ? resolveKitchenPlaceId(source.value, kitchenId.value)
+      : ''
   )
   const related = firestoreFetchDoc<Place>('places', placeId)
   const error = computed(() =>
-    enabled.value
-      ? (source.error.value ??
-        schemaError.value ??
-        (placeId.value ? (related.error.value ?? undefined) : undefined))
-      : undefined
+    enabled.value ? (source.error.value ?? schemaError.value) : undefined
   )
   const outcome = computed(() =>
     resolveReadOutcome({
@@ -60,11 +67,7 @@ export function useKitchenRead(
       pending:
         ['idle', 'pending'].includes(source.outcome.value) ||
         source.pending.value ||
-        stale.value ||
-        Boolean(
-          placeId.value &&
-            (related.pending.value || related.outcome.value === 'pending')
-        ),
+        stale.value,
       failed: Boolean(error.value),
       present: Boolean(parsed.value),
     })
@@ -77,6 +80,8 @@ export function useKitchenRead(
     place: computed(() =>
       outcome.value === 'ready' &&
       placeId.value &&
+      !related.error.value &&
+      !related.pending.value &&
       related.value?.id === placeId.value
         ? related.value
         : null

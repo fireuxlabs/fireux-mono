@@ -1,5 +1,64 @@
 # Workspace Entity alignment
 
+## Kitchen Identity & brand
+
+The Workspace Identity editor now saves flat fields through the existing
+protected Kitchen update command. A name-only Kitchen can open the editor.
+The scoped reader exposes root fields and optional Place without requiring
+legacy nested Identity. Both slug layouts are checked in the shared namespace.
+This checkpoint leaves the public directory rendering and relationships outside
+the editor with their existing owners.
+
+The emulator-backed Workspace saved and reloaded a name, slug and description.
+The running named-emulator endpoint also verified unauthenticated and
+ungranted write denials, duplicate slugs, renaming with a stable slug, and Place
+linking and unlinking. The real Misebox route returned HTTP 200. Firefox
+automation did not expose its signed-in form.
+
+## Minimal Kitchen and Items
+
+The current [Kitchen model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts)
+requires `id`, `name` and `items` and declares optional slots for the Misebox
+sidebar. Existing capability types are reused where the owner and shape are
+clear. The optional slots introduce no new readers or storage. Name-only
+creation writes `name` at
+`kitchens/{kitchenId}`. The document path supplies the ID. The Misebox
+Workspace selects granted Kitchen records directly and uses legacy names or
+an optional Place name for records without a root name.
+The existing App membership and Kitchen grant transaction still controls
+creation, retry and access. The Items page loads `kitchen.items` from
+`kitchens/{kitchenId}/items` and uses the existing protected CRUD commands.
+The Item type is unchanged. The restricted Rules candidate allows
+grant-scoped Item reads and keeps writes server-only.
+
+The initial reset verified ID-only creation and reopen, plus Item create, list, detail, update,
+and delete in the local named emulator. An unrelated App member received
+`403`. A saved Menu reference still blocked deletion with `409`. Browser
+sign-in, Kitchen creation, Item creation, editing and reopen passed. Browser
+Delete confirmation was inconclusive. 102 focused tests, 29 Rules tests,
+and a scoped strict TypeScript check passed.
+
+The Misebox route was then verified in a local browser with its actual
+Workspace components against the named emulator. A legacy Place-named Kitchen
+and a name-only Kitchen loaded and could be switched. Item create, edit,
+reload and delete passed. A second App member could not open the editor and
+received 403 for Kitchen and Item reads, PATCH, and DELETE. The normal
+Misebox dev server served the route, but its signed-in content could not be
+inspected in Firefox. No writes were sent to that server.
+
+La Tap Bern's 35 Items were copied from `dishes` to `items` in the named
+Misebox database after a managed backup. Readback matched every copied ID and
+field, and all 35 reviewed Menu references resolved to those IDs. The original
+`dishes` records were retained. Signed-in Firefox navigation reached the Items
+URL, but the tool could not inspect the rendered Items list.
+
+Full Kitchen identity and publication, Place-backed surfaces, themes, Menus
+and selling, Services,
+Orders, and Tables still contain consumers of the old fields or path. The
+full package and commerce typechecks flag that boundary. These capabilities
+are outside the reset. The Rules source was tested locally and remains
+undeployed.
+
 ## First checkpoint
 
 Established the Data, Shared, and Domain convention in the

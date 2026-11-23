@@ -1,32 +1,26 @@
 <template>
-  <WorkspacePageHeader :title="kitchen?.identity.name || 'Kitchen'" />
+  <WorkspacePageHeader :title="kitchen ? kitchen.name : 'Kitchen'" />
   <FireState
     v-if="outcome === 'pending' || outcome === 'error'"
     :outcome="outcome"
     entity="Kitchen"
-    :error="access.error.value || source.error.value"
+    :error="error"
   />
-  <form v-else-if="canCreate || kitchen?.identity.name" @submit.prevent="save">
-    <UFormField label="Kitchen name" name="name">
-      <UInput v-model="name" required :maxlength="120" :disabled="busy" />
-    </UFormField>
-    <UButton
-      type="submit"
-      :loading="busy"
-      :disabled="!name.trim() || name.trim() === kitchen?.identity.name"
-    >
-      {{ kitchen ? 'Rename Kitchen' : 'Create Kitchen' }}
-    </UButton>
-    <UAlert v-if="failure" color="error" :title="failure" />
-  </form>
-  <p v-else-if="kitchen">{{ kitchen.identity.slug }}</p>
-  <p v-else>No Kitchen is available to this account.</p>
-  <UButton v-if="kitchen && hasItems" to="/workspace/kitchen/items">
+  <UButton v-else-if="kitchen && hasItems" to="/workspace/kitchen/items">
     Items
   </UButton>
-  <UButton v-if="kitchen && hasMenus" to="/workspace/kitchen/menus"
-    >Menus</UButton
-  >
+  <template v-else-if="canCreate">
+    <form @submit.prevent="create">
+      <UFormField label="Kitchen name" name="name">
+        <UInput v-model="name" required maxlength="120" :disabled="busy" />
+      </UFormField>
+      <UButton type="submit" :loading="busy" :disabled="!name.trim()">
+        Create Kitchen
+      </UButton>
+    </form>
+    <UAlert v-if="failure" color="error" :title="failure" />
+  </template>
+  <p v-else-if="!kitchen">No Kitchen is available to this account.</p>
 </template>
 
 <script setup lang="ts">
@@ -37,7 +31,6 @@ import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands
 import { useRouter } from '#imports'
 import { resolveWorkspaceCanCreate } from 'fireux-workspace/runtime/workspace/utils/policy'
 import { useKitchenOnlyWorkspace } from '../composables/workspace/useKitchenOnlyWorkspace'
-import { useKitchenUpdate } from '../composables/useKitchenUpdate'
 import type { KitchenShellCreateResult } from '../server/index/onboarding/kitchen-onboarding'
 
 definePageMeta({
@@ -50,16 +43,8 @@ definePageMeta({
 
 const { currentUser, isAuthenticated } = useAuth()
 const config = useFireUXConfig()
-const router = useRouter()
-const hasItems = router.hasRoute('workspace-kitchen-items')
-const hasMenus = router.hasRoute('workspace-kitchen-menus')
-const {
-  data: kitchen,
-  outcome,
-  source,
-  selectedId,
-  access,
-} = useKitchenOnlyWorkspace()
+const hasItems = useRouter().hasRoute('workspace-kitchen-items')
+const { data: kitchen, outcome, error, selectedId } = useKitchenOnlyWorkspace()
 const canCreate = computed(
   () =>
     isAuthenticated.value &&
@@ -70,60 +55,43 @@ const canCreate = computed(
 const name = ref('')
 const failure = ref('')
 const busy = ref(false)
+const accountId = () => currentUser.value?.uid
 watch(
-  [
-    () => currentUser.value?.uid,
-    selectedId,
-    () => kitchen.value?.identity.name,
-  ],
+  accountId,
   () => {
-    name.value = kitchen.value?.identity.name || ''
     failure.value = ''
   },
-  { immediate: true, flush: 'sync' }
+  { flush: 'sync' }
 )
+const captureAccount = useCommandScope([accountId])
 
-const captureAccount = useCommandScope([() => currentUser.value?.uid])
-const { updateKitchen } = useKitchenUpdate([selectedId, access.outcome])
-
-async function save() {
-  const value = name.value.trim()
+async function create() {
   const user = currentUser.value
-  const current = kitchen.value
-  if (!value || !user || busy.value || (!current && !canCreate.value)) return
+  const submittedName = name.value.trim()
+  if (!user || busy.value || !canCreate.value || !submittedName) return
   const isCurrent = captureAccount()
   busy.value = true
   failure.value = ''
   try {
-    if (current) {
-      await updateKitchen({
-        kitchenId: current.id,
-        changes: { 'identity.name': value },
-      })
-    } else {
-      const token = await user.getIdToken()
-      if (!isCurrent() || !canCreate.value) return
-      const result = await $fetch<KitchenShellCreateResult>(
-        '/api/kitchens/onboarding/shell',
-        {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
-          body: { intent: 'create_shell', name: value },
-        }
-      )
-      if (
-        !result?.ok ||
-        !result.kitchen_id ||
-        result.owner_user_id !== user.uid
-      )
-        throw new Error('Kitchen creation returned an unexpected result.')
-    }
+    const token = await user.getIdToken()
+    if (!isCurrent() || !canCreate.value) return
+    const result = await $fetch<KitchenShellCreateResult>(
+      '/api/kitchens/onboarding/shell',
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: { intent: 'create_shell', name: submittedName },
+      }
+    )
+    if (!result?.ok || !result.kitchen_id || result.owner_user_id !== user.uid)
+      throw new Error('Kitchen creation returned an unexpected result.')
   } catch (error) {
-    if (isCurrent() && (!current || current.id === selectedId.value))
+    if (isCurrent())
       failure.value =
-        (error as { data?: { statusMessage?: string }; message?: string })?.data
-          ?.statusMessage ||
-        (error instanceof Error ? error.message : 'Could not save the Kitchen.')
+        (error as { data?: { statusMessage?: string } })?.data?.statusMessage ||
+        (error instanceof Error
+          ? error.message
+          : 'Could not create the Kitchen.')
   } finally {
     busy.value = false
   }

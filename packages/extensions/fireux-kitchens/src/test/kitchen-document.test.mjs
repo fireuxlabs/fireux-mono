@@ -4,177 +4,49 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, toValue } from 'vue'
-import { readKitchenDocument } from '../runtime/kitchen/utils/read-kitchen-document.ts'
+import {
+  readKitchenDocument,
+  resolveKitchenPlaceId,
+} from '../runtime/kitchen/utils/read-kitchen-document.ts'
 
-const stamp = {
-  at: { seconds: 123, nanoseconds: 456 },
-  by: 'operator',
-  app_id: 'app',
-}
-const canonical = (id = 'kitchen') => ({
-  id,
-  identity: { slug: id, status: 'active', visibility: true },
-  created: structuredClone(stamp),
-})
+const canonical = (id) => ({ id })
 
-const storedKitchenWithServerFields = (id) => ({
-  ...canonical(id),
-  currency: 'CHF',
-  management: { mode: 'app', app_id: 'app' },
-  integrations: {},
-})
-
-test('Stored Kitchen preserves audited creation, optional update/source and declared capability configuration', () => {
-  const kitchen = {
-    ...canonical(),
-    context: 'Operator context',
-    updated: structuredClone(stamp),
-    theme: {
-      palette: {
-        canvas: '#ffffff',
-        text: '#000000',
-        accent: '#ff0000',
-        accent_contrast: '#ffffff',
-      },
-    },
-    orders: {
-      operation_hours: {
-        source: 'custom',
-        timezone: 'Europe/Zurich',
-        windows: [{ days: ['monday'], open: '22:00', close: '02:00' }],
-      },
-      printing: { ticket_device_id: '' },
-    },
-    services: { title: 'Food & drinks', item_images: false },
-    tables: { count: 0 },
+test('Kitchen projects path identity and loads no embedded or optional data', () => {
+  const stored = {
+    id: 'kitchen',
+    identity: { name: 'Previous name' },
+    items: [{ id: 'embedded', name: 'Ignore me' }],
+    orders: { malformed: true },
   }
-  assert.deepEqual(readKitchenDocument(kitchen, 'kitchen'), kitchen)
-  for (const status of ['active', 'inactive', 'archived']) {
-    const value = canonical()
-    value.identity.status = status
-    assert.deepEqual(readKitchenDocument(value, value.id), value)
-    assert.equal(
-      Object.hasOwn(readKitchenDocument(value, value.id).identity, 'source'),
-      false
-    )
-    for (const source of ['user', 'place']) {
-      value.identity.source = source
-      assert.equal(readKitchenDocument(value, value.id).identity.source, source)
-    }
-  }
-  const { id, ...stored } = canonical()
-  assert.equal(readKitchenDocument(stored, id).id, id)
-  assert.equal(Object.hasOwn(readKitchenDocument(stored, id), 'updated'), false)
-})
-
-test('Workspace reads exclude server-owned fields and reject retired storage fields', () => {
-  const raw = storedKitchenWithServerFields('kitchen')
-  const original = structuredClone(raw)
-  assert.deepEqual(readKitchenDocument(raw, raw.id), canonical(raw.id))
-  assert.deepEqual(raw, original)
-  const services = { title: 'Dining', item_images: false }
-  assert.deepEqual(readKitchenDocument({ ...raw, services }, raw.id), {
-    ...canonical(raw.id),
-    services,
+  const original = structuredClone(stored)
+  assert.deepEqual(readKitchenDocument(stored, 'kitchen'), {
+    id: 'kitchen',
+    name: 'Previous name',
+    items: [],
   })
-  for (const invalid of [
-    { ...raw, identity: undefined },
-    { ...raw, identity: { ...raw.identity, visibility: null } },
-    { ...raw, unknown: true },
-    { ...raw, slug: raw.identity.slug },
-    { ...raw, status: raw.identity.status },
-    { ...raw, visibility: raw.identity.visibility },
-    { ...raw, identity_source: 'place' },
-  ])
-    assert.equal(readKitchenDocument(invalid, raw.id), null)
-})
-
-test('Missing or malformed capability maps leave the canonical Kitchen readable', () => {
-  const kitchen = canonical()
-  for (const configuration of [
-    {},
-    {
-      orders: null,
-      services: [{ name: 'Old service' }],
-      tables: { count: 501 },
-    },
-    {
-      orders: { printing: { ticket_device_id: 1 } },
-      services: { item_images: 'no' },
-    },
-    {
-      orders: {
-        operation_hours: {
-          source: 'custom',
-          timezone: '',
-          windows: [{ days: ['funday'], open: '12:00', close: '13:00' }],
-        },
-      },
-    },
-  ]) {
-    const stored = { ...kitchen, ...configuration }
-    const before = structuredClone(stored)
-    assert.deepEqual(readKitchenDocument(stored, kitchen.id), kitchen)
-    assert.deepEqual(stored, before)
-  }
-  const services = { title: 'Dining', item_images: false }
-  const tables = { count: 7 }
-  assert.deepEqual(
-    readKitchenDocument(
-      { ...kitchen, orders: false, services, tables },
-      kitchen.id
-    ),
-    { ...kitchen, services, tables }
+  assert.deepEqual(stored, original)
+  assert.equal(
+    readKitchenDocument({ ...stored, name: ' New name ' }, 'kitchen', 'Place')
+      .name,
+    'New name'
   )
+  assert.deepEqual(readKitchenDocument({}, 'kitchen'), {
+    id: 'kitchen',
+    name: 'kitchen',
+    items: [],
+  })
 })
 
-test('Stored Kitchen rejects invalid identity, stamps, borrowed Place facts and unknown fields', () => {
-  const cases = [
-    null,
-    [],
-    { ...canonical(), id: 'other' },
-    { ...canonical(), identity: {} },
-    {
-      ...canonical(),
-      identity: { ...canonical().identity, source: 'unknown' },
-    },
-    {
-      ...canonical(),
-      identity: { ...canonical().identity, status: 'published' },
-    },
-    {
-      ...canonical(),
-      identity: { ...canonical().identity, visibility: 'true' },
-    },
-    { ...canonical(), identity: { ...canonical().identity, slug: '' } },
-    {
-      ...canonical(),
-      identity: { ...canonical().identity, name: 'Place-owned' },
-    },
-    { ...canonical(), created: undefined },
-    { ...canonical(), created: { at: '2026-11-07' } },
-    {
-      ...canonical(),
-      created: { ...stamp, at: { seconds: NaN, nanoseconds: 0 } },
-    },
-    {
-      ...canonical(),
-      created: { ...stamp, at: { seconds: 0, nanoseconds: 1_000_000_000 } },
-    },
-    { ...canonical(), updated: { ...stamp, app_id: 123 } },
-    { ...canonical(), context: {} },
-    { ...canonical(), name: 'Borrowed Place' },
-    { ...canonical(), fulfilment: { modes: ['collection'] } },
-    { ...canonical(), theme: { palette: {} } },
-  ]
-  for (const value of cases)
-    assert.equal(readKitchenDocument(value, 'kitchen'), null)
-  assert.equal(readKitchenDocument(canonical(), 'bad/path'), null)
+test('Kitchen requires a valid path ID and an existing matching document', () => {
+  assert.equal(readKitchenDocument(undefined, 'kitchen'), null)
+  assert.equal(readKitchenDocument([], 'kitchen'), null)
+  assert.equal(readKitchenDocument({}, 'invalid/id'), null)
+  assert.equal(readKitchenDocument({ id: 'elsewhere' }, 'kitchen'), null)
 })
 
 function targetsHarness() {
   const access = {
-    ids: ref(['a', 'b']),
+    ids: ref(['a', 'b', 'bad/id']),
     outcome: ref('ready'),
     pending: ref(false),
     error: ref(),
@@ -207,18 +79,13 @@ function targetsHarness() {
     computed,
     toValue,
     readKitchenDocument,
+    resolveKitchenPlaceId,
     useKitchenAccess: () => access,
     useFirestoreRead: () => ({
       firestoreLoadDocsByIds: (input) => {
         options.push(input)
         return options.length === 1 ? kitchen : place
       },
-    }),
-    useKitchenInterface: () => ({
-      surface: ({ kitchen, place }) => ({
-        ...kitchen,
-        presentation: { display_name: place?.name || '' },
-      }),
     }),
   }
   const factory = compileFunction(
@@ -235,14 +102,14 @@ function targetsHarness() {
   }
 }
 
-test('Membership Kitchen collection masks malformed roots, recovers and ignores revoked bindings', () => {
+test('Membership Kitchen collection rejects invalid IDs and hides revoked bindings', () => {
   const h = targetsHarness()
-  h.kitchen.docs.value = [storedKitchenWithServerFields('a'), canonical('b')]
+  h.kitchen.docs.value = [canonical('a'), canonical('b')]
   assert.equal(h.state.outcome.value, 'ready')
   assert.equal(h.state.count.value, 2)
   assert.deepEqual(h.options[1].ids.value, ['a', 'b'])
-  assert.equal(h.state.kitchens.value[0].presentation.display_name, 'A')
-  h.kitchen.docs.value = [canonical('a'), { ...canonical('b'), identity: {} }]
+  assert.equal(h.state.kitchens.value[0].name, 'A')
+  h.kitchen.docs.value = [canonical('a'), { id: 'bad/id' }]
   assert.equal(h.state.outcome.value, 'error')
   assert.equal(h.state.count.value, 0)
   assert.deepEqual(h.state.kitchens.value, [])
@@ -252,15 +119,18 @@ test('Membership Kitchen collection masks malformed roots, recovers and ignores 
   assert.equal(h.state.error.value, undefined)
 
   h.access.ids.value = ['a']
-  h.kitchen.docs.value = [canonical('a'), { ...canonical('b'), identity: {} }]
+  h.kitchen.docs.value = [canonical('a'), { id: 'bad/id' }]
   assert.deepEqual(
     h.state.kitchens.value.map(({ id }) => id),
     ['a']
   )
   assert.equal(h.state.outcome.value, 'ready')
   h.place.error.value = new Error('Place failed')
-  assert.equal(h.state.outcome.value, 'error')
-  assert.equal(h.state.count.value, 0)
+  h.place.docs.value = []
+  h.place.outcome.value = 'error'
+  assert.equal(h.state.outcome.value, 'ready')
+  assert.equal(h.state.count.value, 1)
+  assert.equal(h.state.kitchens.value[0].name, 'a')
   h.enabled.value = false
   assert.equal(h.state.outcome.value, 'idle')
   assert.equal(h.state.error.value, undefined)

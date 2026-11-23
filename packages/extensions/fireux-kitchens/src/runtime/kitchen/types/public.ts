@@ -5,10 +5,21 @@ import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sprooch
 import type { Kitchen } from '../models/kitchen.model'
 import type { KitchenPublicOffering } from '../utils/public-offerings'
 
+/** Flat projection for the next public Kitchen surface. */
+export type PublicKitchenSummary = Pick<
+  Kitchen,
+  'id' | 'name' | 'description' | 'imageUrl'
+> & { slug: string }
+
 /** Normalized public Kitchen and its required same-ID Place; no root metadata. */
 export type KitchenPublicSummary = {
   id: Kitchen['id']
-  identity: Kitchen['identity']
+  identity: {
+    source?: 'user' | 'place'
+    slug: string
+    status: 'active' | 'inactive' | 'archived'
+    visibility: boolean
+  }
   services: { title: string; item_images?: true }
   place: Place
 }

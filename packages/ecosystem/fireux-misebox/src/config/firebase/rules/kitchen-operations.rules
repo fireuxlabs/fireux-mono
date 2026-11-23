@@ -83,6 +83,11 @@
           allow create, update, delete: if false;
         }
 
+        match /items/{itemId} {
+          allow get, list: if canReadKitchenWorkspace(kitchenId);
+          allow create, update, delete: if false;
+        }
+
         match /dishes/{dishId} {
           function isValidDish(data) {
             return data is map &&
@@ -236,6 +241,7 @@
               'ingredients',
               'integrations',
               'kiosks',
+              'items',
               'dishes',
               'recipes',
               'prep-items',

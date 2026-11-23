@@ -423,6 +423,34 @@ test('each Kitchen App reads its Item but cannot bypass trusted create, update o
     )
   )
 })
+test('ID-only Kitchen Items require a current grant and trusted writes', async () => {
+  const uid = 'minimal-items-operator'
+  const kitchen = 'kitchens/minimal-items-kitchen'
+  await seed(`apps/misebox-app/users/${uid}`, {
+    role: 'user',
+    created: { at: time },
+  })
+  await seedAccess('misebox-app', uid, {
+    ids: ['minimal-items-kitchen'],
+    membership_created_at: time,
+  })
+  await seed(kitchen, { id: 'minimal-items-kitchen' })
+  const item = `${kitchen}/items/soup`
+  await seed(item, { name: 'Soup' })
+  allowed(await get(item, uid))
+  allowed(await query('items', uid, kitchen))
+  denied(await get(item, 'operator-0'))
+  denied(await get(item))
+  denied(
+    await write(`${kitchen}/items/second`, { name: 'Salad' }, uid, {
+      create: true,
+      stamped: false,
+    })
+  )
+  denied(await write(item, { name: 'Other soup' }, uid, { stamped: false }))
+  denied(await write(item, {}, uid, { remove: true }))
+})
+
 test('Menu metadata and nested content stay readable but require commands for all mutations', async () => {
   const base = 'kitchens/kitchen-0/menus/food'
   await seed(`${base}/sections/lunch`, {

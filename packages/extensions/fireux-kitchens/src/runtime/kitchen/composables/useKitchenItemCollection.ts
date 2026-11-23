@@ -5,6 +5,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
 import { normalizeItem, type ItemCollectionRow } from '../utils/item.ts'
+import { readItemIdentity } from '../utils/item-identity'
 import { resolveKitchenChildCollectionBasePath } from '../utils/kitchen-collection-path'
 
 const resolveItemsPath = (kitchenCollectionPath: string, kitchenId: string) =>
@@ -39,12 +40,18 @@ export function useKitchenItemCollection(
       ? resolveItemsPath(kitchenCollectionPath.value, resolvedKitchenId.value)
       : ''
   )
-  const collectionRef =
-    firestoreFetchCollection<Record<string, unknown>>(collectionPath)
+  const collectionRef = firestoreFetchCollection<
+    Record<string, unknown> & { id: string }
+  >(collectionPath)
+  const items = computed(() =>
+    (collectionRef.value ?? []).map((entry) =>
+      readItemIdentity(entry.id, entry)
+    )
+  )
   const dishes = computed<ItemCollectionRow[]>(() =>
     (collectionRef.value ?? []).map((entry) => normalizeItem(entry))
   )
-  const count = computed(() => dishes.value.length)
+  const count = computed(() => collectionRef.value?.length ?? 0)
   const pending = computed(() => collectionRef.pending.value)
   const error = computed(() => collectionRef.error.value)
   const { outcome } = useFirestoreCollectionState({
@@ -58,6 +65,7 @@ export function useKitchenItemCollection(
     kitchenId: resolvedKitchenId,
     kitchenCollectionPath,
     collectionPath,
+    items,
     dishes,
     count,
     pending,

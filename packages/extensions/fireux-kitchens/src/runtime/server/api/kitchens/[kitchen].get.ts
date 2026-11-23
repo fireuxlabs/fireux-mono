@@ -16,6 +16,7 @@ import {
 } from '../../../kitchen/server/identity/read.ts'
 import { readKitchenByRouteSlug } from '../../../kitchen/server/identity/route-identity.ts'
 import { readKitchenSproochliAttachment } from '../../../kitchen/server/core/sproochli-attachment.ts'
+import { readKitchenVisibility } from '../../../kitchen/utils/kitchen-readers'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -44,7 +45,7 @@ export default defineEventHandler(
       })
     })
     const data = kitchen?.data || {}
-    if (!kitchen) {
+    if (!kitchen || !readKitchenVisibility(data, true)) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Kitchen not found.',

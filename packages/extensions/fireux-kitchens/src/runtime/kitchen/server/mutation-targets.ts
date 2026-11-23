@@ -44,7 +44,7 @@ export const serverKitchenMenusTarget = (kitchenId: string) =>
   serverKitchenChildTarget(kitchenId, 'kitchens.menus', 'menus')
 
 export const serverKitchenItemsTarget = (kitchenId: string) =>
-  serverKitchenChildTarget(kitchenId, 'kitchens.dishes', ItemStorage.collection)
+  serverKitchenChildTarget(kitchenId, 'kitchens.items', ItemStorage.collection)
 
 export const kitchenStationsTarget = (kitchenId: string) =>
   defineFirestoreMutationTarget({

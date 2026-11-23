@@ -168,7 +168,7 @@ service cloud.firestore {
       // Kitchen mutations belong to trusted commands. No browser root deletion.
       // Browser permissions must not bypass their authority or invariants.
       match /{collection}/{record} {
-        allow read: if collection in ['dishes', 'recipes', 'prep-items', 'stations',
+        allow read: if collection in ['items', 'dishes', 'recipes', 'prep-items', 'stations',
           'ingredients', 'suppliers', 'supplier-ingredients', 'menus', 'orders',
           'sales', 'team', 'roles', 'waste-events', 'tests', 'offerings', 'menu-uploads', 'order-drafts', 'table_tabs', 'promotions'] && kitchenOperator(kitchen);
       }

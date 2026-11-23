@@ -112,12 +112,12 @@ export async function createKitchenShell(
           membership.data
         )
       )
-      const slug = normalizeSlug(name) || kitchenId.toLowerCase()
-      const created = serverAuditStamp({
-        by: current.uid,
-        appId: current.appId,
-      })
       if (withPlace) {
+        const slug = normalizeSlug(name) || kitchenId.toLowerCase()
+        const created = serverAuditStamp({
+          by: current.uid,
+          appId: current.appId,
+        })
         mutations.create(PLACE_MUTATION_TARGETS.places, kitchenId, {
           name,
           slug,
@@ -125,18 +125,19 @@ export async function createKitchenShell(
           entity_families: ['kitchen'],
           created,
         })
+        mutations.create(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId, {
+          identity: {
+            source: 'user',
+            slug,
+            status: 'active',
+            visibility: true,
+          },
+          created,
+          updated: serverAuditStamp({ by: current.uid }),
+        })
+      } else {
+        mutations.create(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId, { name })
       }
-      mutations.create(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId, {
-        identity: {
-          source: 'user',
-          ...(withPlace ? {} : { name }),
-          slug,
-          status: 'active',
-          visibility: withPlace,
-        },
-        created,
-        updated: serverAuditStamp({ by: current.uid }),
-      })
       if (access.exists) {
         mutations.update<Record<string, unknown>>(
           accessTarget,
@@ -148,7 +149,7 @@ export async function createKitchenShell(
       }
     }
 
-    const slug = text(identity?.slug) || normalizeSlug(name)
+    const slug = withPlace ? text(identity?.slug) || normalizeSlug(name) : ''
     return {
       ok: true as const,
       kitchen_id: kitchenId,

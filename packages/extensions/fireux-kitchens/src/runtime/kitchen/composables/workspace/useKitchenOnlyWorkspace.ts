@@ -1,4 +1,4 @@
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import { useWorkspaceRecord } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceRecord'
 import { useKitchenAccess } from '../useKitchenAccess'
@@ -18,5 +18,10 @@ export function useKitchenOnlyWorkspace() {
     (id) => useKitchenRead(id, { hydrate: false }),
     (state) => state.kitchen
   )
-  return { ...record, selectedId, access }
+  return {
+    ...record,
+    error: computed(() => access.error.value ?? record.source.error.value),
+    selectedId,
+    access,
+  }
 }

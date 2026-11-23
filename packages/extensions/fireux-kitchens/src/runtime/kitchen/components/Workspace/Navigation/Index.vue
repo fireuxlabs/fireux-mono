@@ -1,38 +1,13 @@
 <template>
-  <template v-if="backdropOnly">
-    <img
-      v-if="backdropImage"
-      :src="backdropImage"
-      alt=""
-      aria-hidden="true"
-      class="pointer-events-none absolute inset-0 h-full w-full object-cover"
-      style="opacity: 0.35; filter: blur(3px); transform: scale(1.25)"
-    />
-    <div
-      v-if="backdropImage"
-      aria-hidden="true"
-      class="pointer-events-none absolute inset-0"
-      style="
-        background: linear-gradient(
-          90deg,
-          color-mix(in srgb, var(--ui-bg) 80%, transparent),
-          color-mix(in srgb, var(--ui-bg) 45%, transparent),
-          color-mix(in srgb, var(--ui-bg) 90%, transparent)
-        );
-      "
-    />
-  </template>
-  <div v-else-if="identityOnly && selected" class="workspace-navbar__identity">
-    <UAvatar
-      v-bind="item.avatar"
-      :alt="item.label"
-      :icon="item.icon"
-      size="2xs"
-    />
+  <div
+    v-if="!backdropOnly && identityOnly && selected"
+    class="workspace-navbar__identity"
+  >
+    <UAvatar :alt="item.label" :icon="item.icon" size="2xs" />
     <span class="fx-truncate">{{ item.label }}</span>
   </div>
   <WorkspaceEntitySwitcher
-    v-else-if="!identityOnly"
+    v-else-if="!backdropOnly && !identityOnly"
     :item="item"
     :to="workspaceEntryPath"
     :collapsed="collapsed"
@@ -49,7 +24,6 @@ import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composa
 import { computed } from 'vue'
 import WorkspaceEntitySwitcher from 'fireux-workspace/runtime/workspace/components/EntitySwitcher.vue'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
-import { kitchenWorkspaceAvatar } from '../../../utils/kitchen-workspace-avatar'
 
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 
@@ -71,24 +45,11 @@ const selected = computed(() =>
     (kitchen) => kitchen.id === workspace.id.value
   )
 )
-const backdropImage = computed(
-  () =>
-    selected.value?.cover_image ||
-    (selected.value?.image_kind === 'photograph'
-      ? selected.value?.display_image_url
-      : '')
-)
 const item = computed(() => ({
   label:
     workspace.collectionOutcome.value === 'error'
       ? 'Kitchens unavailable'
-      : selected.value?.display_name ||
-        selected.value?.id ||
-        'Kitchen Workspace',
-  avatar:
-    workspace.collectionOutcome.value === 'ready'
-      ? kitchenWorkspaceAvatar(selected.value)
-      : undefined,
+      : selected.value?.name || 'Kitchen Workspace',
   icon:
     workspace.collectionOutcome.value === 'error'
       ? 'i-lucide-triangle-alert'
@@ -98,9 +59,8 @@ const item = computed(() => ({
     workspace.collectionOutcome.value === 'ready' &&
     workspace.collection.value.length > 1
       ? workspace.collection.value.map((kitchen) => ({
-          label: kitchen.display_name || kitchen.id,
-          avatar: kitchenWorkspaceAvatar(kitchen),
-          onSelect: () => workspace.select(kitchen.id || ''),
+          label: kitchen.name,
+          onSelect: () => workspace.select(kitchen.id),
         }))
       : [],
 }))

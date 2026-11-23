@@ -5,7 +5,7 @@ import type {
 } from 'fireux-places/runtime/place/utils/place-spine'
 import type { Kitchen } from '../models/kitchen.model'
 import type { KitchenCollectionCard } from '../utils/kitchen-interface-projection'
-import type { KitchenDirectoryEntry } from './public'
+import type { KitchenDirectoryEntry, KitchenPublicSummary } from './public'
 
 export type KitchenIdentityPresentation = {
   display_name: string
@@ -15,7 +15,7 @@ export type KitchenIdentityPresentation = {
 }
 
 /** Supplied Kitchen/Place presentation, never a raw document or access grant. */
-export type KitchenSurface = Partial<Kitchen> &
+export type KitchenSurface = Partial<Omit<Kitchen, 'status' | 'visibility'>> &
   Partial<
     Pick<
       Place,
@@ -49,7 +49,7 @@ export type KitchenSurface = Partial<Kitchen> &
     id: string
     identity: Kitchen['identity']
     slug: string
-    status: Kitchen['identity']['status']
+    status: KitchenPublicSummary['identity']['status']
     visibility: boolean
     presentation: KitchenIdentityPresentation
     display_name: string

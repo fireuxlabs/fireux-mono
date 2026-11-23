@@ -30,67 +30,61 @@ Kitchen implementation lives in `src/runtime/kitchen/` beneath technical roles:
 and `tools` roles. Conventional Nuxt entrypoints remain at the runtime root.
 There is no aggregate `useKitchen` CRUD facade or supported root Delete action.
 
-- `models/kitchen.model.ts`: the stored Kitchen root, composing capability
-  configuration once, with creation and optional update stamps.
-- `utils/read-kitchen-document.ts`: strict validation of Kitchen identity and
-  root fields. Malformed Orders, Services or Tables maps are omitted from the
-  read result. Valid maps remain available to their consumers.
-- `composables/useKitchens.ts`: public HTTP directory.
-- `composables/useKitchenCollection.ts`: live membership-bound roots and Place
-  presentation; invalid roots fail the collection without a partial list.
-- `composables/useKitchenRead.ts`: validated live root and same-ID Place read.
-- `composables/useKitchenCreate.ts`: named directory/onboarding client entrances.
-- `composables/useKitchenUpdate.ts`: typed update/publication adapter
-  to `/api/workspace/kitchen/update`, with captured input and account/App scope.
-- `composables/workspace/useKitchenWorkspace.ts`: selection, access-bounded
-  current root and its collection-owned access. Creation and named updates retain
-  their separate adapters; Workspace owns no alternate CRUD lane.
-- `components/Identity/ListingEdit.vue`: one listing editor shared by Identity
-  and Home. Identity route context belongs to its route; Overview consumes the
-  supplied identity projection without a Team acquisition.
-- `server/identity/update.ts`: sparse trusted root edits, atomic slug uniqueness
-  and server audit stamps. `archived` remains supported.
-- `server/index/onboarding/`: directory, account, guest and adoption workflows.
-- `tools/`: consumed Tool definitions; protected executors live under `server/`.
+The Kitchen application model exposes owned data directly. A capability's
+canonical type lives in its owner's `models/`. Use `records/` for
+record-specific implementation when it has a distinct responsibility. Keep
+readers and actions in `composables/`, trusted commands and persistence in
+`server/`, presentation in `components/`, and pure helpers in `utils/`.
+The Misebox sidebar supplies the inventory for the flat model's optional
+slots. Readers supply each capability's data when implemented. View slots may
+be derived, and a slot does not define a Firestore field or collection.
+
+- The [Kitchen application model](src/runtime/kitchen/models/kitchen.model.ts)
+  requires `id`, `name` and `items`. The [root reader](src/runtime/kitchen/utils/read-kitchen-document.ts)
+  gets the ID from the document path. A name-only Kitchen stores `name`.
+- [Item model](src/runtime/kitchen/models/item.model.ts) retains its own
+  identity and is loaded from `kitchens/{kitchenId}/items/{dishId}`.
+  The Kitchen never stores its Item array in the document.
+
+## Identity & brand
+
+The [Workspace editor](src/runtime/kitchen/components/Workspace/Identity/Index.vue)
+edits the selected Kitchen's root name, slug, status, visibility, description,
+primary image URL and optional Place ID. The
+[trusted update](src/runtime/kitchen/server/identity/update.ts) checks the App
+membership and Kitchen grant in the write transaction. It checks flat and
+legacy slugs in the shared Kitchen URL namespace. Renaming leaves the slug
+intact. A Place link refers to an existing Place and does not update it.
+
+Context remains internal. The flat public summary requires an explicit active
+status, public visibility and a slug. Existing directory and detail reads
+enforce visibility. The flat summary is available for the later Public Kitchen
+implementation.
 
 ## Kitchen-only Workspace
 
-The [local independence checkpoint](../../../docs/reviews/2026-11-22-kitchen-items-architecture.md#independence-proof-closeout)
-verifies this opt-in composition. Checked-in Apps use their existing Kitchen
-composition. Adoption of the narrow mode as a supported App configuration
-still needs a product decision.
-
 Install `['fireux-kitchens', { workspaceOnly: true }]` with the
 [Workspace module and layer](../fireux-workspace/README.md#registration), and
-declare `kitchen` in the App's `workspaces`. This mode adds the Kitchen
-Workspace route and its create and update endpoints. It omits the full
-Kitchens layer and ordering options. Core owns sign-in.
+declare `kitchen` in the App's `workspaces`. The
+[Kitchen page](src/runtime/kitchen/pages/workspace.vue) creates a Kitchen and
+shows its name after creation. Core owns sign-in. The existing App membership and
+Kitchen grants continue to control access.
 
-The [Kitchen page](src/runtime/kitchen/pages/workspace.vue) reads the selected
-Kitchen without Place hydration and reconciles the saved selection against
-settled grants. The name lives on `Kitchen.identity.name`. The standard
-Misebox installation retains its Place-backed onboarding path.
-The base update endpoint accepts identity fields in Kitchen-only mode. The
-full installation retains its validated Services and Tables settings writes.
+Add `workspaceItems: true` to load the selected Kitchen's Items on the
+[Items route](src/runtime/kitchen/pages/items.vue). The page passes
+`kitchen.items` to the list and detail surfaces. Create, edit, and delete use
+the existing protected Item commands. Delete still checks saved references.
 
-Add `workspaceItems: true` alongside `workspaceOnly: true` to opt into
-the [Items route](src/runtime/kitchen/pages/items.vue). It lists Items from the
-selected Kitchen, supports name-only creation and editing, and opens each Item
-at `/workspace/kitchen/items/:dishId`. Items use the existing protected commands
-and stay at `kitchens/{kitchenId}/dishes/{dishId}`.
+### Reset boundaries
 
-Add `workspaceMenus: true` when Items are enabled to build and review
-[private drafts](src/runtime/kitchen/pages/menus.vue). The existing Menu
-commands require a Place with a currency and retain the App membership,
-Kitchen grant and subscription checks. Section placements reference existing
-Kitchen Items. This installation registers draft creation, section creation
-and Item placement.
-
-Add `publicMenus: true` to publish a ready regular interactive Menu and serve
-its [guest catalogue](src/runtime/menu/pages/browse.vue) at
-`/kitchens/:slug/menus/:menuId`. The trusted publication command checks
-Kitchen access and readiness. The guest route reads only published public
-Menus and skips Service resolution. Services and Orders are unregistered.
+The reset covers Kitchen creation, identification and Items CRUD. La Tap Bern's
+Items have been copied into `items`. The existing `dishes` data is retained.
+Other Kitchens need their own migration decision.
+The root reader projects only the required fields. Place-backed identity
+workflows, Menus and
+publication, Services, Orders, and Tables still depend
+on parts of the former model or path and require separate alignment. The
+restricted Firestore Rules changes are local source for emulator verification.
 
 ## Ownership and execution
 
@@ -141,32 +135,16 @@ The canonical Menu owns Default content. Aligned extracted language copies
 use Sproochli's host-local translation storage after confirmation. Optional
 extras and required variants remain distinct. See the [Menu family](../../../docs/concepts/family-menu.md).
 
-## Items collection
+## Workspace Kitchen and Items
 
-The [Items route](src/runtime/pages/workspace/kitchen/menu/items/index.vue)
-renders a [simple list](src/runtime/kitchen/components/Workspace/Menu/Items/Index.vue).
-Its [collection reader](src/runtime/kitchen/composables/workspace/menu/items/useKitchenWorkspaceItems.ts)
-waits for the selected Kitchen to be ready.
+The [Kitchen collection](src/runtime/kitchen/composables/useKitchenCollection.ts)
+lists only granted Kitchen roots. Older documents can use their stored
+`identity.name` or a same-ID Place name as a display fallback. A missing or
+failed Place read leaves the Kitchen accessible under its document ID.
 
-Keep empty, failed, and pending reads distinct. Decide any further filtering,
-card presentation, or related-record hydration from an actual Kitchen
-workflow. A join needs its own authorized domain reader or projection.
-A matching ID alone does not justify fetching another record.
-
-## Item detail
-
-The [detail route](src/runtime/pages/workspace/kitchen/menu/items/%5BdishId%5D.vue)
-uses the current Kitchen grant to [read one Item](src/runtime/kitchen/composables/items/useKitchenItemRead.ts)
-at `kitchens/{kitchenId}/dishes/{dishId}`. It shares that read with the
-[Workspace detail](src/runtime/kitchen/components/Workspace/Menu/Items/Detail/Index.vue),
-which shows Item basics and editing alongside the
-[Menu-owned guest presentation](src/runtime/menu/components/ItemDetail.vue).
-That presentation uses an explicitly linked Menu or looks up a published
-public placement in the selected Kitchen. Without a matching Menu it shows
-the Item's basic presentation.
-
-The same document supplies [Item identity](src/runtime/kitchen/models/item.model.ts)
-and [selling defaults](src/runtime/kitchen/records/menus/items/item-offer.ts)
-as separate projections and provides the raw document for development diagnostics.
-Menus, Prep and Team relationship panels are placeholders. Verify read reuse
-and route scope with the [Item reader tests](src/test/item-reader-internals.test.mjs).
+The [Items list](src/runtime/pages/workspace/kitchen/menu/items/index.vue) and
+[Item detail](src/runtime/pages/workspace/kitchen/menu/items/%5BdishId%5D.vue)
+share the [Items page](src/runtime/kitchen/components/Workspace/Items/Page.vue).
+It reads the granted Kitchen's `items` collection, handles loading, empty and
+error states, and passes the loaded `kitchen.items` to the list and editor.
+Both modes use the existing protected create, update and delete commands.

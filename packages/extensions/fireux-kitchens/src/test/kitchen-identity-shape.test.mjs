@@ -3,6 +3,15 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import {
+  KitchenStatuses,
+  KitchenVisibilities,
+} from '../runtime/kitchen/models/kitchen.model.ts'
+import {
+  projectPublicKitchenSummary,
+  readKitchenDocument,
+  resolveKitchenPlaceId,
+} from '../runtime/kitchen/utils/read-kitchen-document.ts'
 const base = new URL('../runtime/', import.meta.url)
 function load(path, names, dependencies = {}) {
   const source = readFileSync(new URL(path, base), 'utf8')
@@ -57,6 +66,8 @@ test('Kitchen editor accepts only supported dot paths and preserves sibling Iden
     'parseKitchenUpdate',
     {
       createError: (v) => new Error(v.statusMessage),
+      KitchenStatuses,
+      KitchenVisibilities,
       validatePublicSlug: (v) => ({
         isValid: typeof v === 'string' && !!v,
         slug: v,
@@ -79,12 +90,12 @@ test('Kitchen editor accepts only supported dot paths and preserves sibling Iden
     parseKitchenUpdate({ 'identity.slug': 'new', 'tables.count': 12 }),
     { 'identity.slug': 'new', 'tables.count': 12 }
   )
+  assert.deepEqual(parseKitchenUpdate({ name: ' Venue ' }), { name: 'Venue' })
+  assert.throws(() => parseKitchenUpdate({ visibility: true }), /unlisted/)
   for (const patch of [
     { currency: 'CHF' },
-    { visibility: true },
     { identity: { visibility: true } },
     { 'identity.source': 'place' },
-    { name: 'Venue' },
   ]) {
     assert.throws(() => parseKitchenUpdate(patch), /unsupported field/)
   }
@@ -267,4 +278,75 @@ test('Kitchen presentation reads shared Place currency, with no Kitchen fallback
       .currencyCode,
     ''
   )
+})
+
+test('flat Kitchen Identity is readable without Place or implicit publication', () => {
+  assert.deepEqual(readKitchenDocument({ name: 'Name only' }, 'a'), {
+    id: 'a',
+    name: 'Name only',
+    items: [],
+  })
+  const input = {
+    name: 'Flat Kitchen',
+    slug: 'flat-kitchen',
+    status: 'active',
+    visibility: 'public',
+    description: 'Public introduction',
+    imageUrl: 'https://example.test/kitchen.jpg',
+    placeId: 'venue',
+    context: 'Internal notes',
+    identity: { status: 'archived', visibility: false, name: 'Old name' },
+    items: [{ name: 'ignore embedded Items' }],
+  }
+  const kitchen = readKitchenDocument(input, 'a')
+  assert.deepEqual(kitchen, {
+    id: 'a',
+    name: input.name,
+    slug: input.slug,
+    status: input.status,
+    visibility: input.visibility,
+    description: input.description,
+    imageUrl: input.imageUrl,
+    context: input.context,
+    placeId: 'venue',
+    items: [],
+  })
+  assert.deepEqual(projectPublicKitchenSummary(kitchen), {
+    id: 'a',
+    name: input.name,
+    slug: input.slug,
+    description: input.description,
+    imageUrl: input.imageUrl,
+  })
+  for (const patch of [
+    { status: undefined },
+    { visibility: undefined },
+    { status: 'archived' },
+    { visibility: 'private' },
+    { visibility: 'unlisted' },
+    { slug: undefined },
+  ])
+    assert.equal(projectPublicKitchenSummary({ ...kitchen, ...patch }), null)
+  assert.equal(readKitchenVisibility({ identity: { visibility: true } }), false)
+  assert.equal(readKitchenVisibility({ visibility: 'public' }), false)
+  assert.equal(readKitchenVisibility({ status: 'active' }), false)
+  assert.equal(
+    readKitchenVisibility({
+      status: 'active',
+      visibility: 'private',
+      identity: { status: 'active', visibility: true },
+    }),
+    false
+  )
+  assert.equal(
+    readKitchenVisibility({ status: 'active', visibility: 'unlisted' }),
+    false
+  )
+  assert.equal(
+    readKitchenVisibility({ status: 'active', visibility: 'unlisted' }, true),
+    true
+  )
+  assert.equal(resolveKitchenPlaceId({}, 'a'), 'a')
+  assert.equal(resolveKitchenPlaceId({ placeId: 'venue' }, 'a'), 'venue')
+  assert.equal(resolveKitchenPlaceId({ placeId: null }, 'a'), '')
 })

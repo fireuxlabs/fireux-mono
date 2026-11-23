@@ -13,11 +13,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { kitchenWorkspaceAvatar } from '../../../utils/kitchen-workspace-avatar'
-import type { KitchenSurface } from '../../../types/presentation'
+import type { Kitchen } from '../../../models/kitchen.model'
 
 const props = defineProps<{
-  collection: readonly KitchenSurface[]
+  collection: readonly Kitchen[]
   selectedId: string
 }>()
 const emit = defineEmits<{ select: [id: string] }>()
@@ -25,9 +24,8 @@ const items = computed(() =>
   props.collection
     .filter((item) => Boolean(item.id))
     .map((item) => ({
-      label: item.display_name || item.id,
+      label: item.name,
       value: item.id,
-      avatar: kitchenWorkspaceAvatar(item),
     }))
 )
 </script>

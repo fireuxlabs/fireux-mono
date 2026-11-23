@@ -11,7 +11,6 @@ import {
 } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import { useKitchenCollection } from '../useKitchenCollection'
 import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceEntryCta'
-import { useKitchenInterface } from '../useKitchenInterface'
 import { useKitchenRead } from '../useKitchenRead'
 
 export const useKitchenWorkspace = defineWorkspace(() => {
@@ -20,6 +19,7 @@ export const useKitchenWorkspace = defineWorkspace(() => {
   const {
     kitchens: collection,
     outcome: collectionOutcome,
+    error: collectionError,
     access,
   } = useKitchenCollection()
   const session = useAppSession()
@@ -77,16 +77,12 @@ export const useKitchenWorkspace = defineWorkspace(() => {
     source,
   } = useWorkspaceRecord(id, access, useKitchenRead, (source) => source.kitchen)
   const { place } = source
-  const { surface } = useKitchenInterface()
-  const data = computed(() =>
-    kitchen.value
-      ? surface({
-          kitchen: kitchen.value,
-          place: place.value,
-          routeScope: 'live',
-        })
-      : null
-  )
+  const data = computed(() => {
+    const record = kitchen.value
+    if (!record || record.name !== record.id) return record
+    const name = collection.value.find(({ id }) => id === record.id)?.name
+    return name ? { ...record, name } : record
+  })
 
   // Subscription changes presentation only. Selection uses the full collection.
   const multipleKitchenView = computed(
@@ -103,11 +99,7 @@ export const useKitchenWorkspace = defineWorkspace(() => {
         ? source.root.value
         : null
     ),
-    place: computed(() =>
-      outcome.value === 'ready' && place.value?.id === readId.value
-        ? place.value
-        : null
-    ),
+    place: computed(() => (outcome.value === 'ready' ? place.value : null)),
     placeOutcome: computed(() =>
       outcome.value === 'ready' ? source.placeOutcome.value : outcome.value
     ),
@@ -116,6 +108,7 @@ export const useKitchenWorkspace = defineWorkspace(() => {
     collection,
     multipleKitchenView,
     collectionOutcome,
+    error: computed(() => collectionError.value ?? source.error.value),
     select: useWorkspaceSwitch('kitchen', selection, {
       collection,
       collectionOutcome,

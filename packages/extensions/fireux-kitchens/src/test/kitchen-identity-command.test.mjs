@@ -4,6 +4,11 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/utils/membership/validation.ts'
+import {
+  KitchenStatuses,
+  KitchenVisibilities,
+} from '../runtime/kitchen/models/kitchen.model.ts'
+import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestore-document-id.ts'
 import { readMembershipAccessIds } from '../../../../core/fireux-core/src/runtime/app/utils/membership/membership-access.ts'
 
 const runtime = new URL('../runtime/', import.meta.url)
@@ -20,6 +25,8 @@ function load(path, result, dependencies) {
 const createError = (value) =>
   Object.assign(new Error(value.statusMessage), value)
 const kitchens = { collectionPath: 'kitchens' }
+const removed = Symbol('delete field')
+const places = { collectionPath: 'places' }
 const access = { collectionPath: 'kitchen_access' }
 const { KITCHEN_USER_LIMIT } = load(
   'kitchen/utils/kitchen-capacity.ts',
@@ -50,6 +57,9 @@ const parseKitchenUpdate = load(
   'parseKitchenUpdate',
   {
     createError,
+    KitchenStatuses,
+    KitchenVisibilities,
+    isFirestoreDocumentId,
     validatePublicSlug: (slug) => ({
       isValid: typeof slug === 'string' && /^[a-z0-9-]+$/.test(slug),
       slug,
@@ -97,11 +107,12 @@ function harness(kitchensWorkspaceOnly = false) {
   let beforeTransaction = () => {},
     queue = Promise.resolve(),
     preflights = 0
-  const matching = (slug) =>
+  const matching = (slug, field = 'identity.slug') =>
     [...records.entries()]
       .filter(
         ([path, value]) =>
-          path.startsWith('kitchens/') && value.identity.slug === slug
+          path.startsWith('kitchens/') &&
+          (field === 'slug' ? value.slug : value.identity?.slug) === slug
       )
       .slice(0, 2)
       .map(([path, data]) => ({ id: path.slice('kitchens/'.length), data }))
@@ -126,6 +137,8 @@ function harness(kitchensWorkspaceOnly = false) {
     createError,
     parseKitchenUpdate,
     serverAuditStamp,
+    FieldValue: { delete: () => removed },
+    PLACE_MUTATION_TARGETS: { places },
     requireKitchenRecordMutationAuthority,
     requireFirestoreDocumentId: (value) => value,
     readKitchenMutationActor: async () => ({
@@ -153,11 +166,11 @@ function harness(kitchensWorkspaceOnly = false) {
           query: async (target, input) => {
             assert.equal(staged.length, 0, 'slug query precedes writes')
             assert.equal(target, kitchens)
-            assert.equal(input.field, 'identity.slug')
+            assert.ok(['slug', 'identity.slug'].includes(input.field))
             assert.equal(input.op, '==')
             assert.equal(input.limit, 2)
             queries.push(input.value)
-            return matching(input.value)
+            return matching(input.value, input.field)
           },
           update: (target, id, patch) => staged.push({ target, id, patch }),
         })
@@ -168,6 +181,7 @@ function harness(kitchensWorkspaceOnly = false) {
           for (const [key, value] of Object.entries(write.patch)) {
             if (key.startsWith('identity.'))
               record.identity[key.slice('identity.'.length)] = value
+            else if (value === removed) delete record[key]
             else record[key] = value
           }
           writes.push(write)
@@ -211,7 +225,7 @@ test('Concurrent Kitchen slug edits allow one claimant and reject the competing 
   assert.equal(rejected.reason.statusCode, 409)
   assert.match(rejected.reason.message, /already taken/)
   assert.equal(h.writes.length, 1)
-  assert.deepEqual(h.queries, ['shared', 'shared'])
+  assert.deepEqual(h.queries, ['shared', 'shared', 'shared', 'shared'])
   assert.equal(h.preflights(), 0)
 })
 
@@ -334,6 +348,78 @@ test('Another App grant cannot authorize a Kitchen update', async () => {
         patch: { 'identity.visibility': false },
       }
     ),
+    { statusCode: 403 }
+  )
+  assert.deepEqual(h.writes, [])
+})
+
+test('flat Identity accepts a name-only root and preserves unrelated data and the published slug', async () => {
+  const h = harness()
+  const initial = {
+    name: 'Minimal',
+    slug: 'stable-url',
+    status: 'active',
+    visibility: 'public',
+    description: 'Earlier public intro',
+    theme: { legacy: true },
+  }
+  h.records.set('kitchens/first', initial)
+  h.records.set('places/real-place', { name: 'Venue unchanged' })
+  await h.update(
+    {},
+    {
+      kitchen_id: 'first',
+      patch: {
+        name: 'Renamed',
+        description: null,
+        imageUrl: 'https://example.test/image.png',
+        placeId: 'real-place',
+      },
+    }
+  )
+  assert.equal(initial.name, 'Renamed')
+  assert.equal(initial.slug, 'stable-url')
+  assert.equal(initial.visibility, 'public')
+  assert.equal(initial.description, undefined)
+  assert.equal(initial.imageUrl, 'https://example.test/image.png')
+  assert.equal(initial.placeId, 'real-place')
+  assert.deepEqual(initial.theme, { legacy: true })
+  assert.deepEqual(h.records.get('places/real-place'), {
+    name: 'Venue unchanged',
+  })
+  assert.equal(h.queries.length, 0)
+  await h.update({}, { kitchen_id: 'first', patch: { placeId: null } })
+  assert.equal(initial.placeId, null)
+  h.records.set('kitchens/second', { name: 'Name only' })
+  await h.update(
+    {},
+    { kitchen_id: 'second', patch: { name: 'Updated name only' } }
+  )
+  assert.equal(h.records.get('kitchens/second').name, 'Updated name only')
+  assert.equal(h.records.get('kitchens/second').status, undefined)
+})
+
+test('flat Identity rejects unsafe or conflicting changes without writing', async () => {
+  const h = harness()
+  h.records.set('kitchens/first', { name: 'Name only' })
+  h.records.get('kitchens/second').slug = 'flat-claimed'
+  for (const [patch, statusCode] of [
+    [{ slug: 'flat-claimed' }, 409],
+    [{ slug: 'second' }, 409],
+    [{ status: 'active', visibility: 'public' }, 400],
+    [{ visibility: true }, 400],
+    [{ status: 'inactive' }, 400],
+    [{ imageUrl: 'javascript:alert(1)' }, 400],
+    [{ placeId: 'unknown-place' }, 400],
+    [{ placeId: 'places/id' }, 400],
+    [{ items: [] }, 400],
+  ]) {
+    await assert.rejects(h.update({}, { kitchen_id: 'first', patch }), {
+      statusCode,
+    })
+  }
+  await assert.rejects(
+    h.update({}, { kitchen_id: 'foreign', patch: { name: 'Unauthorised' } }),
     { statusCode: 403 }
   )
   assert.deepEqual(h.writes, [])

@@ -1,16 +1,20 @@
 <template>
-  <KitchenWorkspaceMenuItems />
+  <KitchenItemsPage
+    :workspace="workspace"
+    items-path="/workspace/kitchen/menu/items"
+  />
 </template>
 
 <script setup lang="ts">
-import KitchenWorkspaceMenuItems from '../../../../../kitchen/components/Workspace/Menu/Items/Index.vue'
+import KitchenItemsPage from '../../../../../kitchen/components/Workspace/Items/Page.vue'
+import { useKitchenWorkspace } from '../../../../../kitchen/composables/workspace/useKitchenWorkspace'
 
 definePageMeta({
   layout: 'workspace',
+  workspace: 'kitchen',
 
   workspaceHeader: 'content',
   workspaceSurface: 'browse',
-  workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     hidden: true,
@@ -25,7 +29,9 @@ definePageMeta({
     mobile: true,
     menus: ['workspace'],
   },
-  requiresAuth: false,
+  requiresAuth: true,
   requiresSelection: false,
 })
+
+const workspace = useKitchenWorkspace()
 </script>

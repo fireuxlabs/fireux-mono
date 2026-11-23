@@ -716,165 +716,79 @@ test('Kitchen-only updates use record authority inside their transaction and rej
   assert.equal(writes.length, 1)
 })
 
-test('venue failure preserves Kitchen settings, while absent Kitchen hides them', async () => {
-  const source = readFileSync(
-    new URL('kitchen/components/Workspace/Identity/Index.vue', runtime),
-    'utf8'
-  )
-  const template = source.slice(
-    source.indexOf('<template>') + 10,
-    source.lastIndexOf('</template>')
-  )
-  async function render(status, kitchenReady) {
-    const identity = {
-      status: ref(status),
-      outcome: ref(status),
-      selectedKitchen: ref(null),
-      listing: ref(
-        kitchenReady
-          ? {
-              id: 'a',
-              name: 'Kitchen',
-              identity: { slug: 'kitchen', status: 'active' },
-            }
-          : null
-      ),
-      kitchenId: ref(kitchenReady ? 'a' : ''),
-      placeId: ref(kitchenReady ? 'a' : ''),
-      currencyCode: ref(''),
-      canWriteKitchen: ref(kitchenReady),
-      canWrite: ref(false),
-      fields: ref({}),
-      place: ref(null),
-      mutationAuthority: ref(null),
-    }
+test('Identity route renders a flat edit form without a Place and hides it without Kitchen access', async () => {
+  const routePath = 'pages/workspace/kitchen/identity/index.vue'
+  const editorPath = 'kitchen/components/Workspace/Identity/Index.vue'
+  const template = (path) => {
+    const source = readFileSync(new URL(path, runtime), 'utf8')
+    return compile(
+      source.slice(
+        source.indexOf('<template>') + 10,
+        source.lastIndexOf('</template>')
+      )
+    )
+  }
+  async function render(kitchen) {
     const app = createSSRApp({
       setup: () => ({
-        identity,
-        workspaceEntryPath: '/workspace/kitchen',
-        section: null,
-        publicTo: '',
-        debug: {},
-        kitchenPath: '/kitchens/kitchen',
-        kitchenStatus: 'Active',
-        kitchenEditorOpen: false,
-        sectionTitle: 'Venue details',
-        sections: [],
-        children: [],
+        kitchen,
+        outcome: kitchen ? 'ready' : 'empty',
+        error: undefined,
       }),
-      render: compile(template),
+      render: template(routePath),
+    })
+    app.component('KitchenIdentity', {
+      props: ['kitchen'],
+      setup: (props) =>
+        load(
+          editorPath,
+          '({ draft,saving,saved,error,dirty,statusOptions,visibilityOptions,save })',
+          {
+            computed,
+            reactive,
+            ref,
+            watch,
+            defineProps: () => props,
+            KitchenStatuses: ['draft', 'active', 'archived'],
+            KitchenVisibilities: ['public', 'unlisted', 'private'],
+            useKitchenUpdate: () => ({
+              updateKitchen: async () => {},
+              captureIntent: () => () => true,
+            }),
+          }
+        ),
+      render: template(editorPath),
+    })
+    for (const name of ['UFormField', 'UButton']) {
+      app.component(name, {
+        props: ['label'],
+        setup:
+          (props, { slots }) =>
+          () =>
+            h('div', [props.label, ...(slots.default?.() ?? [])]),
+      })
+    }
+    app.component('UInput', {
+      props: ['modelValue'],
+      setup: (props) => () => h('input', { value: props.modelValue }),
     })
     for (const name of [
-      'UBreadcrumb',
-      'UButton',
-      'USkeleton',
-      'PlaceEditIdentity',
-      'ClientOnly',
-      'USlideover',
-      'PlaceEditGoogleReview',
-      'PlaceDetail',
-      'WorkspaceKitchenContext',
-      'UAvatar',
-      'UBadge',
-      'UIcon',
-      'FireCopyError',
-      'PlaceEdit',
-      'FireDiagnosticsDebugPanel',
+      'WorkspacePageHeader',
+      'FireState',
+      'USelect',
+      'UTextarea',
+      'UAlert',
     ])
       app.component(name, { render: () => null })
-    const listingSource = readFileSync(
-      new URL('kitchen/components/Workspace/Identity/Listing.vue', runtime),
-      'utf8'
-    )
-    app.component('WorkspaceKitchenIdentityListing', {
-      props: ['identity'],
-      setup: (props) =>
-        load(
-          'kitchen/components/Workspace/Identity/Listing.vue',
-          '({kitchenPath,kitchenStatus,kitchenEditorOpen})',
-          {
-            computed,
-            ref,
-            watch,
-            defineProps: () => props,
-          }
-        ),
-      render: compile(
-        listingSource.match(/<template>([\s\S]*?)<\/template>\s*<script/)[1]
-      ),
-    })
-    const profileSource = readFileSync(
-      new URL('kitchen/components/Workspace/Identity/Profile.vue', runtime),
-      'utf8'
-    )
-    app.component('WorkspaceKitchenIdentityProfile', {
-      props: ['identity'],
-      setup: (props) =>
-        load(
-          'kitchen/components/Workspace/Identity/Profile.vue',
-          '({sections,section,sectionTitle,kitchenPath,publicTo,editor})',
-          {
-            computed,
-            ref,
-            watch,
-            defineProps: () => props,
-            defineExpose: () => {},
-            readKitchenVisibility: (kitchen) => kitchen?.identity?.visibility,
-          }
-        ),
-      render: compile(
-        profileSource.match(/<template>([\s\S]*?)<\/template>\s*<script/)[1]
-      ),
-    })
-    app.component('FireState', {
-      props: ['outcome'],
-      setup: (p) => () => h('p', p.outcome),
-    })
-    app.component('UCard', {
-      setup:
-        (_, { slots }) =>
-        () =>
-          h('section', [slots.header?.(), slots.default?.(), slots.footer?.()]),
-    })
-    app.component('WorkspaceKitchenIdentityEditPublication', {
-      render: () => h('span', 'Show in directory'),
-    })
-    app.component('WorkspaceKitchenIdentityEditCurrency', {
-      render: () => h('span', 'Currency'),
-    })
-    app.component('UAlert', {
-      props: ['title'],
-      setup: (props) => () => h('p', props.title),
-    })
-    let suppliedToEditor = false
-    app.component('WorkspaceKitchenIdentityListingEdit', {
-      props: ['identity', 'open'],
-      setup: (supplied) => {
-        assert.equal(supplied.identity, identity)
-        suppliedToEditor = true
-        return () => null
-      },
-    })
-    const html = await renderToString(app)
-    assert.equal(
-      suppliedToEditor,
-      true,
-      'Identity Listing passes its existing controller to the editor'
-    )
-    return html
+    return renderToString(app)
   }
-  for (const status of ['empty', 'error', 'pending']) {
-    const html = await render(status, true)
-    assert.match(html, /Show in directory/)
-    assert.match(
-      html,
-      new RegExp(status === 'empty' ? 'Choose a Kitchen' : status)
-    )
-    assert.doesNotMatch(html, /Currency|Venue details unavailable/)
-  }
-  const empty = await render('empty', false)
-  assert.doesNotMatch(empty, /Show in directory|Currency/)
-  assert.match(empty, /Choose a Kitchen/)
+  const identity = await render({ id: 'a', name: 'Minimal Kitchen', items: [] })
+  assert.match(identity, /value="Minimal Kitchen"/)
+  assert.match(identity, /Public URL slug/)
+  assert.match(identity, /Linked Place ID/)
+  assert.match(identity, /Save identity/)
+  const inaccessible = await render(null)
+  assert.doesNotMatch(inaccessible, /Save identity|Kitchen name/)
 })
 
 test('Identity sections use Place facts, keep nested Kitchen identity and close editors on scope changes', () => {

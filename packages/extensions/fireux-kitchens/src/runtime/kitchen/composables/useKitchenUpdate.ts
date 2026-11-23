@@ -54,6 +54,7 @@ export function useKitchenUpdate(sources: WatchSource[] = []) {
         onResponse: async ({ options, response }) => {
           if (
             response.ok &&
+            Object.keys(changes).some((field) => field.includes('.')) &&
             !['GET', 'HEAD'].includes(
               String(options.method || 'GET').toUpperCase()
             )

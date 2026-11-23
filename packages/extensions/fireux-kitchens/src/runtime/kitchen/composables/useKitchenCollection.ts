@@ -4,26 +4,26 @@ import { useKitchenAccess } from './useKitchenAccess'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { Kitchen } from '../models/kitchen.model'
-import type { KitchenSurface } from '../types/presentation'
-import { useKitchenInterface } from './useKitchenInterface'
-import { readKitchenDocument } from '../utils/read-kitchen-document'
+import {
+  readKitchenDocument,
+  resolveKitchenPlaceId,
+} from '../utils/read-kitchen-document'
 
 export type UseKitchenCollectionReturn = {
   access: ReturnType<typeof useKitchenAccess>
-  kitchens: ComputedRef<KitchenSurface[]>
+  kitchens: ComputedRef<Kitchen[]>
   count: ComputedRef<number>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
   outcome: ComputedRef<ReadOutcome>
 }
 
-/** Live, membership-bounded Kitchen targets and their Place presentation. */
+/** Granted Kitchens, with optional Place labels for older documents. */
 export function useKitchenCollection(
   options: { enabled?: MaybeRefOrGetter<boolean> } = {}
 ): UseKitchenCollectionReturn {
   const access = useKitchenAccess()
   const { firestoreLoadDocsByIds } = useFirestoreRead()
-  const { surface } = useKitchenInterface()
   const enabled = computed(
     () => options.enabled === undefined || Boolean(toValue(options.enabled))
   )
@@ -39,23 +39,25 @@ export function useKitchenCollection(
     ids: kitchenIds,
   })
   const parsed = computed(() => {
-    const items: Kitchen[] = []
+    const records: (Record<string, unknown> & { id: string })[] = []
     if (
       access.outcome.value !== 'ready' ||
       kitchenSource.outcome.value !== 'ready'
     )
-      return { items, invalid: false }
+      return { records, invalid: false }
     const allowed = new Set(kitchenIds.value)
     for (const record of kitchenSource.docs.value ?? []) {
       if (!allowed.has(record.id)) continue
-      const kitchen = readKitchenDocument(record, record.id)
-      if (!kitchen) return { items: [], invalid: true }
-      items.push(kitchen)
+      if (!readKitchenDocument(record, record.id))
+        return { records: [], invalid: true }
+      records.push(record)
     }
-    return { items, invalid: false }
+    return { records, invalid: false }
   })
   const placeIds = computed(() =>
-    parsed.value.items.map((kitchen) => kitchen.id)
+    parsed.value.records
+      .map((record) => resolveKitchenPlaceId(record, record.id))
+      .filter(Boolean)
   )
   const placeSource = firestoreLoadDocsByIds<Place>({
     collectionPath: 'places',
@@ -65,28 +67,25 @@ export function useKitchenCollection(
     () =>
       new Map((placeSource.docs.value ?? []).map((place) => [place.id, place]))
   )
-  const kitchens = computed<KitchenSurface[]>(() =>
-    (access.outcome.value !== 'ready' || pending.value || error.value
-      ? []
-      : parsed.value.items
-    ).flatMap((kitchen) => {
-      const value = surface({
-        kitchen: { ...kitchen, can_write: true },
-        place: places.value.get(kitchen.id) ?? null,
-        routeScope: 'live',
-      })
-      return value ? [value] : []
+  const kitchens = computed(() => {
+    if (access.outcome.value !== 'ready' || pending.value || error.value)
+      return []
+    return parsed.value.records.flatMap((record) => {
+      const kitchen = readKitchenDocument(
+        record,
+        record.id,
+        places.value.get(resolveKitchenPlaceId(record, record.id))?.name
+      )
+      return kitchen ? [kitchen] : []
     })
-  )
+  })
   const pending = computed(
     () =>
       enabled.value &&
       (access.pending.value ||
         access.outcome.value === 'pending' ||
         (kitchenIds.value.length > 0 &&
-          ['idle', 'pending'].includes(kitchenSource.outcome.value)) ||
-        (placeIds.value.length > 0 &&
-          ['idle', 'pending'].includes(placeSource.outcome.value)))
+          ['idle', 'pending'].includes(kitchenSource.outcome.value)))
   )
   const error = computed(() => {
     if (!enabled.value) return undefined
@@ -97,8 +96,7 @@ export function useKitchenCollection(
       kitchenSource.error.value ??
       (parsed.value.invalid
         ? new Error('Kitchen source is invalid.')
-        : undefined) ??
-      (placeIds.value.length ? placeSource.error.value : undefined)
+        : undefined)
     )
   })
 

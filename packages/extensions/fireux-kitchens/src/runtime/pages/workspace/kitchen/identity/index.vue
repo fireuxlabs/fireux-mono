@@ -1,30 +1,18 @@
 <template>
-  <WorkspaceIntroInfo :intro="identity.intro.value" />
-  <WorkspaceKitchenAIFocus
-    focus="kitchen-ai.identity"
-    label="Identity &amp; brand"
-  />
-  <WorkspaceKitchenIdentity :identity="identity" />
+  <WorkspacePageHeader title="Identity & brand" />
+  <KitchenIdentity v-if="kitchen" :key="kitchen.id" :kitchen="kitchen" />
+  <FireState v-else :outcome="outcome" :error="error" entity="Kitchen" />
 </template>
 
 <script setup lang="ts">
-import { useKitchenWorkspaceIdentity } from '../../../../kitchen/composables/workspace/identity/useKitchenWorkspaceIdentity'
-import { watchEffect } from 'vue'
-import { useWorkspacePageState } from 'fireux-workspace/runtime/workspace/composables/useWorkspacePageState'
-const identity = useKitchenWorkspaceIdentity()
-const page = useWorkspacePageState('kitchen')
-watchEffect(() =>
-  page.publish({
-    identity: { placeId: identity.placeId.value, ...identity.fields.value },
-    derived: {
-      status: identity.status.value,
-      availableActions: identity.availableActions.value,
-    },
-  })
-)
+import KitchenIdentity from '../../../../kitchen/components/Workspace/Identity/Index.vue'
+import { useKitchenWorkspace } from '../../../../kitchen/composables/workspace/useKitchenWorkspace'
+
+const { data: kitchen, outcome, error } = useKitchenWorkspace()
 
 definePageMeta({
   layout: 'workspace',
+  workspace: 'kitchen',
 
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },

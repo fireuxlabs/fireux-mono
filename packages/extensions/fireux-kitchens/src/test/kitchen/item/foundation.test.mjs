@@ -15,11 +15,11 @@ import { serverKitchenItemsTarget } from '../../../runtime/kitchen/server/mutati
 
 const at = { seconds: 100, nanoseconds: 20 }
 
-test('Item storage and trusted target retain the exact existing collection', () => {
+test('Item storage and trusted target use the same Item collection', () => {
   const target = serverKitchenItemsTarget('k')
-  assert.equal(ItemStorage.path, 'kitchens/{kitchenId}/dishes/{dishId}')
-  assert.equal(target.collectionPath, 'kitchens/k/dishes')
-  assert.equal(target.key, 'kitchens.dishes')
+  assert.equal(ItemStorage.path, 'kitchens/{kitchenId}/items/{dishId}')
+  assert.equal(target.collectionPath, 'kitchens/k/items')
+  assert.equal(target.key, 'kitchens.items')
 })
 
 test('historical Item identity is read without importing layers or trusting stored ownership', () => {
@@ -89,8 +89,8 @@ function readerFixture() {
   const state = ref('ready'),
     error = ref()
   const records = ref({
-    'kitchens/k/dishes/aioli': { id: 'forged', name: 'Aioli' },
-    'kitchens/other/dishes/aioli': { name: 'Other Aioli' },
+    'kitchens/k/items/aioli': { id: 'forged', name: 'Aioli' },
+    'kitchens/other/items/aioli': { name: 'Other Aioli' },
   })
   let bindings = 0,
     path
@@ -154,13 +154,13 @@ function readerFixture() {
   }
 }
 
-test('one Item reader preserves the dishes path and rebinds exact Kitchen/Item scope', () => {
+test('one Item reader uses the Items path and rebinds exact Kitchen/Item scope', () => {
   const f = readerFixture()
   assert.equal(f.bindings, 1)
-  assert.equal(f.path.value, 'kitchens/k/dishes/aioli')
+  assert.equal(f.path.value, 'kitchens/k/items/aioli')
   assert.equal(f.reader.item.value.id, 'aioli')
   f.kitchenId.value = 'other'
-  assert.equal(f.path.value, 'kitchens/other/dishes/aioli')
+  assert.equal(f.path.value, 'kitchens/other/items/aioli')
   assert.equal(f.reader.item.value.name, 'Other Aioli')
   f.itemId.value = 'missing'
   assert.equal(f.reader.outcome.value, 'empty')
@@ -190,7 +190,7 @@ test('Item reader preserves pending/error/idle and withholds retained identity',
 
 function readStoredItem(id, data) {
   const f = readerFixture()
-  f.records.value = { [`kitchens/k/dishes/${id}`]: data }
+  f.records.value = { [`kitchens/k/items/${id}`]: data }
   f.itemId.value = id
   const item = f.reader.item.value
   f.scope.stop()
@@ -241,7 +241,7 @@ test('Item keeps independently valid provenance without requiring a second recor
 
 test('selling defaults share the Item read without expanding identity or inventing a normal price', () => {
   const f = readerFixture()
-  f.records.value['kitchens/k/dishes/aioli'] = {
+  f.records.value['kitchens/k/items/aioli'] = {
     name: 'Aioli',
     price_options: [{ label: 'Large', quantity: 0, unit: '', price: 12 }],
     add_ons: [{ id: 'garlic', label: 'Garlic', price: 0 }],
@@ -268,7 +268,7 @@ test('selling defaults share the Item read without expanding identity or inventi
 
 test('malformed selling data does not hide Item identity or become editable empty defaults', () => {
   const f = readerFixture()
-  f.records.value['kitchens/k/dishes/aioli'] = {
+  f.records.value['kitchens/k/items/aioli'] = {
     name: 'Aioli',
     choice_groups: [{ bad: true }],
   }
@@ -276,7 +276,7 @@ test('malformed selling data does not hide Item identity or become editable empt
   assert.equal(f.reader.item.value.name, 'Aioli')
   assert.equal(f.reader.offer.value, null)
   assert.ok(f.reader.offerError.value instanceof Error)
-  assert.deepEqual(f.records.value['kitchens/k/dishes/aioli'].choice_groups, [
+  assert.deepEqual(f.records.value['kitchens/k/items/aioli'].choice_groups, [
     { bad: true },
   ])
   f.scope.stop()
