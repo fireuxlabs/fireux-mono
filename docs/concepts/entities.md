@@ -396,8 +396,10 @@ owns supplied presentation surfaces and cards consumed by
 The narrow `KitchenCollectionCard` contract remains beside
 `toKitchenCollectionCell` in [kitchen-interface-projection.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-interface-projection.ts).
 [Collection List](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Collection/List.vue)
-maps supplied cards to Core `CollectionCellData` without acquiring records or
-invoking mutations. Team roster and Workspace access retain separate records
+renders supplied cards. Its diagnostics also derive cell-shaped values. This
+is current Kitchen presentation. See the
+[Collection Page presentation choices](family-entity-collection-page.md#presentation-choices)
+for the shared boundary. Team roster and Workspace access retain separate records
 and authority; Kitchen root IDs remain stable operational identity and authored
 slugs resolve through the owning server reader.
 
@@ -462,8 +464,7 @@ these decisions do not implement or expose a public Recipe service.
 - Parent-scoped records follow their parent owner and are not implied by root
   readability.
 - Root Entities may have parent-owned operational children.
-- Scoped Records should not receive root Collection Manager or page ceremony
-  merely to reuse UI.
+- Scoped Records keep their parent ownership when rendered in a collection.
 - Model and composable folder placement follows the declared owner; folders do
   not create ownership.
 - Workspace availability does not imply a universal stored `management` field.
