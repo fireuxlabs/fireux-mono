@@ -57,10 +57,25 @@ evidence. Check deployed policy through authorized readback.
   `pnpm gitsave`, then verify the commit and synchronization. Use the
   [Walking Bridge guide](../../tools/walking-bridge/README.md) for its separate
   controller and worker rules.
-- For cross-owner work, make the responsible owner and real consumers clear.
-  Name bounded Codex chats for the manifest and outcome when coordination is
-  requested. [Codex Map](../../tools/ide/README.md#repository-and-codex-map)
-  derives the inventory from current source.
+
+## Coordination and handoffs
+
+Before starting, check the [handoffs](../handoffs/) for the task or owner.
+Reconcile relevant decisions and checkpoints with the current checkout and source.
+
+The main Codex chat leads implementation. It tracks decisions with the user,
+delegates bounded work when specialist input helps, and owns integration,
+verification and the final report. For cross-owner work, identify the responsible
+owner and affected consumers. Ask for authority, verification or documentation
+input when the scope calls for it. Use the [Codex Map](../../tools/ide/README.md#repository-and-codex-map)
+to find pinned specialist chats. Executable subagents are separate from those chats.
+
+After a meaningful checkpoint, update the relevant handoff or add a short one
+if the work needs a shared record. Include what changed, what was verified,
+what remains open and the next bounded action. Link the checkpoint when its
+commit is available. Include the handoff in the authorized GitHub save when
+the work is ready for review. For cross-machine ownership transfers, use the
+[FireUX handoff skill](../../.agents/skills/fireux-handoff/SKILL.md).
 
 ## Evidence claims
 
