@@ -46,12 +46,20 @@ export default defineNuxtModule({
       // Independent Core consumers do not declare an App asset family.
       if (nuxt.options.dev || !nuxt.options.runtimeConfig.public.fireux?.id)
         return
-      const { assertAppBrandAssets } = await createJiti(
+      // Missing or provisional artwork must not prevent a working App build.
+      // Keep strict asset validation as an explicit review/release check.
+      const { inspectAppBrandAssets } = await createJiti(
         import.meta.url
       ).import<{
-        assertAppBrandAssets(publicDir: string): Promise<unknown>
+        inspectAppBrandAssets(publicDir: string): Promise<Array<{ ok: boolean; path: string; reason?: string }>>
       }>(resolver.resolve('./runtime/app/server/onboarding/brand-assets'))
-      await assertAppBrandAssets(join(nuxt.options.rootDir, 'public'))
+      try {
+        const missing = (await inspectAppBrandAssets(join(nuxt.options.rootDir, 'public'))).filter((asset) => !asset.ok)
+        if (missing.length)
+          console.warn('[FireUX] App assets need attention (non-blocking):\n' + missing.map((asset) => '- ' + asset.path + ': ' + asset.reason).join('\n'))
+      } catch (error) {
+        console.warn('[FireUX] Unable to inspect app artwork (non-blocking):', error)
+      }
     })
     // External Apps receive the same public runtime types without repo aliases.
     nuxt.hook('prepare:types', ({ references }) => {

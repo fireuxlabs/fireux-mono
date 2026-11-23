@@ -1,0 +1,77 @@
+name: Hello Luki prototype
+
+on:
+  push:
+    branches:
+      - demo/hello-luki-20261121
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hello-luki:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FIREUX || secrets.FIREBASE_SERVICE_ACCOUNT }}
+    steps:
+      - name: Checkout demo branch
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install workspace dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Generate Hello Luki static app
+        run: pnpm --filter hello-luki generate
+
+      - name: Verify generated greeting
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f projects/fireux/hello-luki/.output/public/index.html
+          grep -q 'Hello Luki!' projects/fireux/hello-luki/.output/public/index.html
+
+      - name: Confirm Firebase deployment access
+        shell: bash
+        run: |
+          if [ -z "$FIREBASE_SA" ]; then
+            echo "::error::Firebase service account is not configured in GitHub Actions secrets (FIREBASE_SERVICE_ACCOUNT_FIREUX or FIREBASE_SERVICE_ACCOUNT). The build may be valid, but deployment is blocked."
+            exit 1
+          fi
+
+      - name: Deploy isolated Firebase Hosting prototype
+        shell: bash
+        working-directory: projects/fireux/hello-luki
+        env:
+          FIREBASE_CLI_EXPERIMENTS: webframeworks
+        run: |
+          set -euo pipefail
+          printf '%s' "$FIREBASE_SA" > "$RUNNER_TEMP/firebase-sa.json"
+          chmod 600 "$RUNNER_TEMP/firebase-sa.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-sa.json"
+          trap 'rm -f "$RUNNER_TEMP/firebase-sa.json"' EXIT
+          npx --yes firebase-tools@latest hosting:sites:list --project fireux-2005 --json > "$RUNNER_TEMP/hosting-sites.json"
+          if ! jq -e 'any(.result.sites[]?; .name == "projects/fireux-2005/sites/prototype-hello-luki")' "$RUNNER_TEMP/hosting-sites.json" >/dev/null; then
+            npx --yes firebase-tools@latest hosting:sites:create prototype-hello-luki --project fireux-2005
+          fi
+          npx --yes firebase-tools@latest deploy --only hosting --project fireux-2005 --config firebase.json --non-interactive
+
+      - name: Verify live URL
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 5 --retry-delay 2 https://prototype-hello-luki.web.app/ -o "$RUNNER_TEMP/hello-luki.html"
+          grep -q 'Hello Luki!' "$RUNNER_TEMP/hello-luki.html"
+          echo 'Verified https://prototype-hello-luki.web.app/'
