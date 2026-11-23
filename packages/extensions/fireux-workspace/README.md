@@ -20,6 +20,20 @@ for the division between Workspace, Core Dashboard, Apps, and domain owners.
   for a domain consumer. [Go QR](../../../projects/fireux/go-qr/nuxt.config.ts)
   uses Core without Workspace.
 
+## Entity integration
+
+Keep the Entity's model, readers and trusted commands with its domain package.
+Use the existing module, layer and App `workspaces` registration to expose what
+the App supports. Apply the [Data, Shared, and Domain contract](../../../docs/concepts/workspace.md#entity-integration)
+to existing routes and pages. An Identity or Team surface may live on the
+Entity's entrance when the App already presents it there.
+
+Reuse the shared page frame and route navigation metadata. For Overview, read
+the selected Entity through its existing reader and link to available work.
+For Calendar, let the owning capability supply its events. For optional
+capabilities, check the App's actual module and route registration before
+presenting their destinations. Preserve the domain's access and command checks.
+
 ## Selection
 
 [`useWorkspace(family)`](src/runtime/workspace/composables/useWorkspace.ts)
