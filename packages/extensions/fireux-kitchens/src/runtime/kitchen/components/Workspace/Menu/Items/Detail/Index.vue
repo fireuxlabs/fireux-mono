@@ -19,7 +19,7 @@
 import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import * as Detail from './index'
 import KitchenMenuItemDetail from '../../../../../../menu/components/ItemDetail.vue'
-import type { Item } from '../../../../../records/menus/items/item'
+import type { Item } from '../../../../../models/item.model'
 
 defineProps<{
   item: Item | null

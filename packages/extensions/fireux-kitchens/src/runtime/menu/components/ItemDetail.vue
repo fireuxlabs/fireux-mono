@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useApiRead } from 'fireux-core/runtime/composables/http/useApiRead'
-import type { Item } from '../../kitchen/records/menus/items/item'
+import type { Item } from '../../kitchen/models/item.model'
 import type { MenuDirectoryPage } from '../models/menu-directory.response'
 import ItemPlacement from './ItemPlacement.vue'
 

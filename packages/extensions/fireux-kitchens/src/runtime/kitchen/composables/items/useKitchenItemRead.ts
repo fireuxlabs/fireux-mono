@@ -2,7 +2,7 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useKitchenAccess } from '../useKitchenAccess'
-import { ItemStorage } from '../../records/menus/items/item'
+import { ItemStorage } from '../../models/item.model'
 import { readItemIdentity } from '../../utils/item-identity'
 import { readItemOffer } from '../../utils/item-pricing'
 

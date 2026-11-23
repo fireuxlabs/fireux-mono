@@ -165,7 +165,7 @@ That presentation uses an explicitly linked Menu or looks up a published
 public placement in the selected Kitchen. Without a matching Menu it shows
 the Item's basic presentation.
 
-The same document supplies [Item identity](src/runtime/kitchen/records/menus/items/item.ts)
+The same document supplies [Item identity](src/runtime/kitchen/models/item.model.ts)
 and [selling defaults](src/runtime/kitchen/records/menus/items/item-offer.ts)
 as separate projections and provides the raw document for development diagnostics.
 Menus, Prep and Team relationship panels are placeholders. Verify read reuse

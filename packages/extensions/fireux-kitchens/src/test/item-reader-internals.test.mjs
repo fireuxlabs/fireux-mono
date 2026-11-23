@@ -1,5 +1,5 @@
 import { readItemIdentity } from '../runtime/kitchen/utils/item-identity.ts'
-import { ItemStorage } from '../runtime/kitchen/records/menus/items/item.ts'
+import { ItemStorage } from '../runtime/kitchen/models/item.model.ts'
 import { readItemReferenceIds } from '../runtime/kitchen/utils/item-preparation.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import {

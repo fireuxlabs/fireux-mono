@@ -8,7 +8,7 @@ project. The pending public Menu edits were outside this check.
   for Margherita Pizza. A name-only Kitchen with no Place had `dishes` as its
   only child collection. An authenticated list and a fresh detail read
   confirmed the changes at `kitchens/{kitchenId}/dishes/{dishId}`. An unrelated
-  App member received `403` on update. The [Item model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/menus/items/item.ts)
+  App member received `403` on update. The [Item model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/item.model.ts)
   and stored paths remain unchanged.
 - The [Items-only registration](../../packages/extensions/fireux-kitchens/src/module.ts)
   now includes the existing [Delete handler](../../packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/dishes/index.delete.ts)

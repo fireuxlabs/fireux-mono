@@ -243,7 +243,7 @@ and `menu/models/menu-storage.model.ts` in `fireux-kitchens`.
 ### Parent-owned records
 
 Kitchen Item is an owned Record, not a standalone Entity. Its canonical record definition and
-storage metadata are in `kitchen/records/menus/items/item.ts`; readers, context and mutation
+storage metadata are in `kitchen/models/item.model.ts`; readers, context and mutation
 adapters use `kitchen/composables/items`, and normalization uses Kitchen utils.
 Its persisted `dishes` path is unchanged. Removing a Menu placement must not
 delete or replace the canonical Kitchen Item. Preparation is also a Kitchen-owned

@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import WorkspaceItemEdit from './WorkspaceItemEdit.vue'
 import ItemPhoto from '../Photo.vue'
-import type { Item } from '../../../../../records/menus/items/item'
+import type { Item } from '../../../../../models/item.model'
 
 defineProps<{ item: Pick<Item, 'name' | 'description' | 'image'> | null }>()
 </script>

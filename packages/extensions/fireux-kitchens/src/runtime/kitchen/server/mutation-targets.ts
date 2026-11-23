@@ -1,4 +1,4 @@
-import { ItemStorage } from '../records/menus/items/item'
+import { ItemStorage } from '../models/item.model'
 import {
   ALL_FIRESTORE_MUTATION_VERBS,
   assertFirestoreMutationDocumentId,

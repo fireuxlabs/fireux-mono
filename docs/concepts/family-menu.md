@@ -42,7 +42,7 @@ Ingredient taxonomy, discovery categories and external menu-category imports
 retain their separate owners. Paid Menu distinctions concern additional/custom
 and Daily Menus, not Item category counts.
 
-The Item identity foundation is `kitchen/records/menus/items/item.ts`. Its reader and
+The Item identity foundation is `kitchen/models/item.model.ts`. Its reader and
 context live under `kitchen/composables/items` in the Kitchen spine and retain
 the existing `dishes` collection path. The canonical model exposes only identity. The same document listener exposes
 selling defaults separately through `records/menus/items/item-offer.ts`; `utils/item-identity.ts` selects
@@ -497,8 +497,9 @@ Start with:
 
 - Menu declaration and storage: `runtime/menu/models/menu.model.ts` and
   `runtime/menu/models/menu-storage.model.ts`.
-- Normal commercial terms: `runtime/kitchen/records/menus/items/item.ts` and
-  `runtime/kitchen/utils/item-pricing.ts`.
+- Item identity: `runtime/kitchen/models/item.model.ts`.
+- Normal commercial terms: `runtime/kitchen/records/menus/items/item-offer.ts`
+  and `runtime/kitchen/utils/item-pricing.ts`.
 - Direct discovery: `runtime/menu/server/index/read.ts` and
   `src/test/menu-canonical-discovery.test.mjs`.
 - Route grammar: `runtime/menu/utils/navigation/route.ts`.

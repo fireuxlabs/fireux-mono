@@ -45,13 +45,26 @@ The broad Kitchens typecheck returned the same 46 diagnostics before and after
 the move. This verifies the naming cutover and generated registration.
 Signed-in runtime evidence remains in the earlier lifecycle handoffs.
 
-1. Move the Kitchen-owned Item model and its consumed storage metadata to
-   `kitchen/models/item.model.ts` as a separate checkpoint. Verify the direct
-   Items route and full Misebox consumers. Keep the `dishes` storage path.
-2. Align the remaining models one owner at a time. Handle Supplier's case-only
+**Item model checkpoint.** Moved the byte-identical [Item model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/item.model.ts)
+and `ItemStorage` together. Reader, command, Menu presentation, test and doc
+references now resolve there. `ItemOffer` remains separate. Neither Kitchen
+nor Item imports the other, and the `kitchens/{kitchenId}/dishes/{dishId}`
+path is unchanged.
+
+Kitchen Core created, read and renamed a Kitchen with Item routes absent.
+Items-only create, list, update, fresh read and delete passed in the named
+emulator. A foreign App member received `403`. An existing Menu placement
+blocked deletion with `409` while Menu routes were unregistered. The owner
+could delete after the test placement was removed. Full Misebox prepared,
+retained the Item and Menu handlers, and returned `200` on the local home and
+Items routes. This was an HTTP smoke check, with no signed-in browser replay.
+204 focused tests and both focused typechecks passed. The broad Kitchens
+typecheck reproduced the same 46 diagnostics byte-for-byte.
+
+1. Align the remaining models one owner at a time. Handle Supplier's case-only
    filename separately. Treat public Menu work and field changes as separate
    checkpoints.
-3. Align the shared surfaces one Entity at a time using existing features.
+2. Align the shared surfaces one Entity at a time using existing features.
    Resolve whether Business needs a separate Overview and what should supply
    Calendar events before exposing new destinations. Check Calendar data in
    actual opt-in Apps before describing it as functional.

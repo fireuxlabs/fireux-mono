@@ -693,10 +693,10 @@ the Item name and return/actions aligned to the Workspace frame. It adds no
 centred domain width cap or repeated thumbnail heading. Details and Price & choices
 use the shared responsive two-column grid, stacking on smaller screens. Appears on retains its focused relationship view.
 The minimal Kitchen Item identity belongs to
-`fireux-kitchens/src/runtime/kitchen/records/menus/items/item.ts`. It owns its stable
+`fireux-kitchens/src/runtime/kitchen/models/item.model.ts`. It owns its stable
 path-derived identity, name, optional description, one photo URL and shared
 creation/update stamp values. It has no Kitchen selector, category vocabulary,
-pricing, flagship flag or preparation fields. `records/menus/items/item.ts` preserves the
+pricing, flagship flag or preparation fields. `models/item.model.ts` preserves the
 existing `kitchens/{kitchenId}/dishes/{dishId}` contract; filesystem ownership does
 not rename persisted collections or authorize migration.
 `composables/items/useKitchenItemRead.ts` owns the single live read, Kitchen
@@ -2241,7 +2241,7 @@ consumers against Nuxt registration, Vue compilation and App typechecking.
 
 ## Item identity and selling defaults
 
-`kitchen/records/menus/items/item.ts` owns only reusable Item identity and provenance.
+`kitchen/models/item.model.ts` owns only reusable Item identity and provenance.
 `utils/item-identity.ts` selects those fields for the document and collection readers;
 no invented timestamps or copied Kitchen ownership are needed to read identity.
 `records/menus/items/item-offer.ts` owns the Item's separate selling-default value contract: optional
