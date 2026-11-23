@@ -48,7 +48,7 @@ test('the public section reader never acquires items from another calendar date'
         const rows =
           name === path
             ? sections
-            : name === `${base}/dishes`
+            : name === `${base}/items`
               ? [
                   {
                     id: 'dish',
@@ -58,7 +58,7 @@ test('the public section reader never acquires items from another calendar date'
                     add_ons: [],
                   },
                 ]
-              : [{ id: 'item', dish_id: 'dish', price: 12 }]
+              : [{ id: 'item', item_id: 'dish', price: 12 }]
         return {
           docs: rows.map(({ id, ...data }) => ({ id, data: () => data })),
         }
@@ -93,7 +93,7 @@ test('the public section reader never acquires items from another calendar date'
     result.map((section) => section.label),
     ['Lunch', 'Dinner']
   )
-  assert.deepEqual(reads.filter((name) => name.endsWith('/items')).sort(), [
+  assert.deepEqual(reads.filter((name) => name.startsWith(path + '/') && name.endsWith('/items')).sort(), [
     `${path}/dinner/items`,
     `${path}/lunch/items`,
   ])

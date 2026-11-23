@@ -40,7 +40,7 @@ export async function buildMenuManifestPayload(
     : await readMenuPromotions(
         source.kitchen_id || '',
         sections
-          .flatMap((section) => section.items.map((item) => item.dishId))
+          .flatMap((section) => section.items.map((item) => item.itemId))
           .filter(Boolean),
         scope.kitchenTimezone || '',
         currencyCode,

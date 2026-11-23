@@ -8,7 +8,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { ref, computed, watch, watchEffect } from 'vue'
 function evaluate(relative, deps, result, vue = false) {
   deps = commandScopeDeps({
-    useRoute: () => ({ fullPath: '/dishes/dish' }),
+    useRoute: () => ({ fullPath: '/items/dish' }),
     ...deps,
   })
   if (vue) deps = { ...specification, ...deps }
@@ -33,7 +33,7 @@ function evaluate(relative, deps, result, vue = false) {
 function setup() {
   const currentUser = ref({ uid: 'u' }),
     kitchenId = ref('k'),
-    dishId = ref('dish'),
+    itemId = ref('dish'),
     notices = [],
     unmount = []
   const useItemEditorScope = evaluate(
@@ -58,15 +58,15 @@ function setup() {
       outcome: ref('ready'),
       data: ref({ id: 'k' }),
     }),
-    useRouteParam: () => dishId,
+    useRouteParam: () => itemId,
     useItemCatalogueContext: () => ({
-      catalogue: { singular: 'dish', path: '/dishes' },
+      catalogue: { singular: 'dish', path: '/items' },
     }),
     onBeforeUnmount: (fn) => unmount.push(fn),
     useToastify: () => ({ add: (value) => notices.push(value) }),
     URL: { revokeObjectURL() {}, createObjectURL: () => 'blob' },
   }
-  return { currentUser, kitchenId, dishId, notices, deps, unmount }
+  return { currentUser, kitchenId, itemId, notices, deps, unmount }
 }
 function deferred() {
   let resolve, reject
@@ -228,7 +228,7 @@ for (const changed of [false, true]) {
         itemCatalogueReturn: () => destination,
         useKitchenItemContext: () => ({
           kitchenId: h.kitchenId,
-          itemId: h.dishId,
+          itemId: h.itemId,
           item,
           canWrite,
         }),
@@ -249,8 +249,8 @@ for (const changed of [false, true]) {
     canWrite.value = false
     assert.equal(action.value, null)
     if (changed) {
-      h.dishId.value = 'other'
-      h.dishId.value = 'dish'
+      h.itemId.value = 'other'
+      h.itemId.value = 'dish'
     }
     pending.resolve({ id: 'dish' })
     await result
@@ -266,7 +266,7 @@ test('record edit ignores old failures and spec saves a detached payload', async
     rootCollection: ref('kitchens'),
     databaseId: ref('db'),
     kitchenId: h.kitchenId,
-    itemId: h.dishId,
+    itemId: h.itemId,
     item: ref({ name: 'Pizza' }),
     canWrite: ref(true),
     catalogue: { singular: 'dish' },
@@ -284,8 +284,8 @@ test('record edit ignores old failures and spec saves a detached payload', async
     true
   )
   const result = edit.updateItemField({ name: 'New' }, 'Saved', 'Failed')
-  h.dishId.value = 'other'
-  h.dishId.value = 'dish'
+  h.itemId.value = 'other'
+  h.itemId.value = 'dish'
   pending.reject(Error('Stale'))
   await result
   assert.deepEqual(h.notices, [])
@@ -314,7 +314,7 @@ for (const state of ['loading', 'error', 'referenced']) {
         }),
         useKitchenItemContext: () => ({
           kitchenId: h.kitchenId,
-          itemId: h.dishId,
+          itemId: h.itemId,
           item: ref({ name: 'Pizza' }),
           canWrite: ref(true),
           catalogue: { singular: 'dish' },

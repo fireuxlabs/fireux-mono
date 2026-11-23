@@ -22,7 +22,7 @@ export async function readMatchingMenuItems(
   menu: MenuDirectoryEntry,
   query: string,
   sources?: LiveProjectionSources,
-  dishId?: string
+  itemId?: string
 ): Promise<Array<{ id: string; name: string }>> {
   const kitchenId = menu.source?.kitchen_id
   const menuId = menu.source?.menu_id
@@ -38,8 +38,8 @@ export async function readMatchingMenuItems(
         const collection = db.collection(
           `${base}/menus/${menuId}/sections/${doc.id}/items`
         )
-        const placementsQuery = dishId
-          ? collection.where('dish_id', '==', dishId)
+        const placementsQuery = itemId
+          ? collection.where('item_id', '==', itemId)
           : collection
         sources?.watch(placementsQuery)
         return placementsQuery.get()
@@ -51,10 +51,10 @@ export async function readMatchingMenuItems(
         page.docs.flatMap((doc) => {
           const item = doc.data()
           return item.status !== 'archived' &&
-            typeof item.dish_id === 'string' &&
-            item.dish_id &&
-            !item.dish_id.includes('/')
-            ? [item.dish_id]
+            typeof item.item_id === 'string' &&
+            item.item_id &&
+            !item.item_id.includes('/')
+            ? [item.item_id]
             : []
         })
       )
@@ -64,7 +64,7 @@ export async function readMatchingMenuItems(
   for (let offset = 0; offset < ids.length; offset += 100) {
     const dishes = await db.getAll(
       ...ids.slice(offset, offset + 100).map((id) => {
-        const reference = db.doc(`${base}/dishes/${id}`)
+        const reference = db.doc(`${base}/items/${id}`)
         sources?.watch(reference)
         return reference
       })

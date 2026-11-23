@@ -25,11 +25,11 @@ function database() {
       { id: 'hidden', status: 'archived' },
     ],
     'kitchens/venue/menus/food/sections/pizza/items': [
-      { id: 'one', dish_id: 'margherita' },
-      { id: 'duplicate', dish_id: 'margherita' },
-      { id: 'removed', dish_id: 'removed', status: 'archived' },
-      { id: 'unavailable', dish_id: 'unavailable' },
-      { id: 'missing', dish_id: 'missing' },
+      { id: 'one', item_id: 'margherita' },
+      { id: 'duplicate', item_id: 'margherita' },
+      { id: 'removed', item_id: 'removed', status: 'archived' },
+      { id: 'unavailable', item_id: 'unavailable' },
+      { id: 'missing', item_id: 'missing' },
     ],
   }
   return {
@@ -74,12 +74,12 @@ test('search matches dish names case/accent independently and ignores archived s
     { id: 'margherita', name: 'Pizza Margherita' },
   ])
   assert.equal(
-    db.reads.filter((path) => path.endsWith('/dishes/margherita')).length,
+    db.reads.filter((path) => path.endsWith('/items/margherita')).length,
     1
   )
   assert.ok(
     !db.reads.some(
-      (path) => path.includes('/hidden/') || path.endsWith('/dishes/removed')
+      (path) => path.includes('/hidden/') || path.endsWith('/items/removed')
     )
   )
   assert.ok(matchesFoodSearch('Pizza Margherita', 'margherita pizza'))
@@ -104,8 +104,8 @@ test('Item lookup matches the exact active dish ID and reads no other dishes', a
     [{ id: 'margherita', name: 'Pizza Margherita' }]
   )
   assert.deepEqual(
-    db.reads.filter((path) => path.includes('/dishes/')),
-    ['kitchens/venue/dishes/margherita']
+    db.reads.filter((path) => path.includes('/items/')),
+    ['kitchens/venue/items/margherita']
   )
   assert.deepEqual(
     await readMatchingMenuItems(db, entry, '', undefined, 'removed'),

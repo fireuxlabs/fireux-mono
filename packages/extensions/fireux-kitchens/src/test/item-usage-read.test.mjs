@@ -42,7 +42,7 @@ function fixture(allowed, inspectUsage) {
         },
         async get() {
           reads.push(['get', path])
-          return { docs: [{ id: 'next', data: () => ({ dish_id: ' d ' }) }] }
+          return { docs: [{ id: 'next', data: () => ({ item_id: ' d ' }) }] }
         },
       }),
     }),
@@ -52,10 +52,10 @@ function fixture(allowed, inspectUsage) {
       await reader.read({ collectionPath: 'kitchen_access' }, 'u')
       if (!allowed) throw Error('Denied')
     },
-    readItemUsage: async (reader, kitchenId, dishId) => {
+    readItemUsage: async (reader, kitchenId, itemId) => {
       reads.push('usage')
       assert.equal(kitchenId, 'k')
-      assert.equal(dishId, 'd')
+      assert.equal(itemId, 'd')
       assert.equal(typeof reader.readAll, 'function')
       assert.equal(typeof reader.query, 'function')
       if (inspectUsage) await inspectUsage(reader)
@@ -66,7 +66,7 @@ function fixture(allowed, inspectUsage) {
     stripTypeScriptTypes(source) + '; return readKitchenItemUsage',
     Object.keys(dependencies)
   )(...Object.values(dependencies))
-  return { reads, read: () => read({}, { kitchenId: 'k', dishId: 'd' }) }
+  return { reads, read: () => read({}, { kitchenId: 'k', itemId: 'd' }) }
 }
 
 test('usage read checks current Kitchen authority before exposing catalogue references', async () => {
@@ -79,7 +79,7 @@ test('usage response carries exact scope and uses observable reads without a tra
   const f = fixture(true)
   const result = await f.read()
   assert.equal(result.kitchenId, 'k')
-  assert.equal(result.dishId, 'd')
+  assert.equal(result.itemId, 'd')
   assert.equal(result.usages[0].name, 'Food')
   assert.deepEqual(f.reads, ['kitchen_access/u', 'usage'])
 })
@@ -88,7 +88,7 @@ test('usage preview pages by document id with the same cursor contract as its tr
   const path = 'kitchens/k/menus/m/sections/s/items'
   const f = fixture(true, async (reader) => {
     const rows = await reader.readAll({ collectionPath: path }, 100, 'previous')
-    assert.deepEqual(rows, [{ id: 'next', data: { dish_id: ' d ' } }])
+    assert.deepEqual(rows, [{ id: 'next', data: { item_id: ' d ' } }])
   })
   await f.read()
   assert.deepEqual(f.reads, [

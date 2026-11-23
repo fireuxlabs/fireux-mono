@@ -3,7 +3,7 @@
     <MenuItemDisplay
       as="div"
       :name="row.label"
-      :name-to="row.dishId ? itemDestination : undefined"
+      :name-to="row.itemId ? itemDestination : undefined"
       :description="row.dish?.description"
       :image-url="showItemImages ? row.dish?.image : undefined"
       :price="itemPrice"
@@ -41,7 +41,7 @@ const props = defineProps<{
   editor: UnwrapNestedRefs<ReturnType<typeof useMenuSectionItemsEditor>>
 }>()
 const itemDestination = computed(() => ({
-  path: `/workspace/kitchen/menu/items/${encodeURIComponent(props.row.dishId)}`,
+  path: `/workspace/kitchen/menu/items/${encodeURIComponent(props.row.itemId)}`,
   query: {
     menu: props.editor.menuSlug,
     section: props.editor.sectionId,
@@ -51,7 +51,7 @@ const itemDestination = computed(() => ({
 const { choiceGroups, selections, itemPrice } = useMenuItemChoicePreview(
   () => ({
     id: props.row.id,
-    dishId: props.row.dishId,
+    itemId: props.row.itemId,
     price: props.row.price,
     choice_groups: props.row.dish?.choice_groups,
     priceOptions: props.row.priceOptions,

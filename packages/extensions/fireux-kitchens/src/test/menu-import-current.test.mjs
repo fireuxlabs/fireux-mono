@@ -9,7 +9,7 @@ function fixture() {
   const records = new Map([
     ['kitchens/k/menus/m', { name: 'Food', status: 'draft' }],
     [
-      'kitchens/k/dishes/d',
+      'kitchens/k/items/d',
       {
         name: 'Margherita',
         description: 'Tomato and mozzarella',
@@ -26,7 +26,7 @@ function fixture() {
     ],
     [
       'kitchens/k/menus/m/sections/s/items/i',
-      { dish_id: 'd', status: 'active', sort_order: 1 },
+      { item_id: 'd', status: 'active', sort_order: 1 },
     ],
   ])
   const reads = []
@@ -98,7 +98,7 @@ test('import comparison resolves all normal terms from Item and ignores stale pl
 
 test('canonical placements need no copied prices, and an explicit zero remains zero', async () => {
   const f = fixture()
-  const dish = f.records.get('kitchens/k/dishes/d')
+  const dish = f.records.get('kitchens/k/items/d')
   dish.price = 0
   dish.price_options = []
   dish.add_ons = []
@@ -112,14 +112,14 @@ test('archived sections and entries are excluded before Item pricing validation'
     status: 'archived',
   })
   f.records.set('kitchens/k/menus/m/sections/old/items/old', {
-    dish_id: 'empty',
+    item_id: 'empty',
     status: 'active',
   })
   f.records.set('kitchens/k/menus/m/sections/s/items/old', {
-    dish_id: 'unpriced',
+    item_id: 'unpriced',
     status: 'archived',
   })
-  f.records.set('kitchens/k/dishes/unpriced', { name: 'Old dish' })
+  f.records.set('kitchens/k/items/unpriced', { name: 'Old dish' })
   const result = await f.read()
   assert.equal(result.sections.length, 1)
   assert.equal(result.sections[0].items.length, 1)
@@ -129,11 +129,11 @@ test('archived sections and entries are excluded before Item pricing validation'
 for (const problem of ['missing Item', 'missing price', 'invalid terms']) {
   test(`import comparison rejects ${problem} instead of inventing a zero price`, async () => {
     const f = fixture()
-    if (problem === 'missing Item') f.records.delete('kitchens/k/dishes/d')
+    if (problem === 'missing Item') f.records.delete('kitchens/k/items/d')
     if (problem === 'missing price')
-      delete f.records.get('kitchens/k/dishes/d').price
+      delete f.records.get('kitchens/k/items/d').price
     if (problem === 'invalid terms')
-      f.records.get('kitchens/k/dishes/d').price = -1
+      f.records.get('kitchens/k/items/d').price = -1
     await assert.rejects(f.read())
   })
 }

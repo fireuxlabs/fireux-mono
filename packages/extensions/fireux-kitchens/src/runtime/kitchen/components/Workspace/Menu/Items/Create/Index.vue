@@ -142,7 +142,7 @@ const addItem = async () => {
     if (requestedImage) {
       try {
         await uploadItemImage({
-          dishId: result.id,
+          itemId: result.id,
           kitchenId: resolvedKitchenId,
           file: requestedImage,
         })

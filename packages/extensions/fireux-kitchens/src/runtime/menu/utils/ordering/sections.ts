@@ -108,7 +108,7 @@ export function serviceSections(
     for (const section of manifest.content.sections) {
       const key = section.label.trim().toLocaleLowerCase()
       for (const item of section.items) {
-        const identity = `${manifest.source.kitchenId}:${item.mealDeal ? `deal:${item.mealDeal.promotionId}` : item.dishId || `${manifest.source.menuId}:${section.id}:${item.id}`}`
+        const identity = `${manifest.source.kitchenId}:${item.mealDeal ? `deal:${item.mealDeal.promotionId}` : item.itemId || `${manifest.source.menuId}:${section.id}:${item.id}`}`
         if (!candidates.has(identity)) {
           candidates.set(identity, [])
           if (!sections.has(key))

@@ -31,7 +31,7 @@ const targets = {
   PLACE_MUTATION_TARGETS: { places: target('places') },
   serverAppUsersTarget: (app) => target(`apps/${app}/users`),
   serverKitchenAccessTarget: () => target('kitchen_access'),
-  serverKitchenItemsTarget: (k) => target(`kitchens/${k}/dishes`),
+  serverKitchenItemsTarget: (k) => target(`kitchens/${k}/items`),
   serverKitchenMenusTarget: (k) => target(`kitchens/${k}/menus`),
   serverKitchenMenuSectionsTarget: (k, m) =>
     target(`kitchens/${k}/menus/${m}/sections`),
@@ -156,7 +156,7 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
   // Keep the existing command harness's real membership/access records, but build new content.
   for (const path of [...records.keys()])
     if (
-      path.startsWith('kitchens/k/dishes/') ||
+      path.startsWith('kitchens/k/items/') ||
       path.startsWith('kitchens/k/menus/m/sections/')
     )
       records.delete(path)
@@ -432,13 +432,17 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
       kitchenId: 'k',
       draft: {
         name: 'Fixture pizza',
-        price: 13,
+        currency_code: 'CHF',
         item_kind: 'food',
-        price_options: [
-          { label: 'Regular', quantity: 1, unit: 'portion', price: 13 },
-          { label: 'Large', quantity: 2, unit: 'portion', price: 17 },
+        choice_groups: [
+          { id: 'size', name: 'Size', pricing: 'full', min: 1, max: 1, options: [
+            { id: 'regular', label: 'Regular', price: 13 },
+            { id: 'large', label: 'Large', price: 17 },
+          ] },
+          { id: 'extras', name: 'Extras', pricing: 'additional', min: 0, max: null,
+            options: [{ id: 'cheese', label: 'Cheese', price: 2 }],
+          },
         ],
-        add_ons: [{ id: 'cheese', label: 'Cheese', price: 2 }],
       },
     }
   )
@@ -449,6 +453,7 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
       draft: {
         name: 'Fixture drink',
         price: 4,
+        currency_code: 'CHF',
         item_kind: 'drink',
       },
     }
@@ -456,7 +461,7 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
   const originals = new Map(
     [dish.id, drink.id].map((id) => [
       id,
-      structuredClone(records.get(`kitchens/k/dishes/${id}`)),
+      structuredClone(records.get(`kitchens/k/items/${id}`)),
     ])
   )
   const section = await createKitchenMenuSection(
@@ -466,7 +471,7 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
   for (const id of [dish.id, drink.id])
     await createKitchenMenuItem(
       {},
-      { kitchenId: 'k', menuId: 'm', sectionId: section.id, dishId: id }
+      { kitchenId: 'k', menuId: 'm', sectionId: section.id, itemId: id }
     )
   await updateKitchenMenu(
     {},
@@ -492,7 +497,7 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
         status: 'active',
         currency: 'CHF',
         days: ['sunday'],
-        dishes: [{ dishId: dish.id, price: 11 }],
+        dishes: [{ itemId: dish.id, price: 11 }],
       },
     }
   )
@@ -511,13 +516,13 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
             id: 'pizza',
             name: 'Pizza',
             choose: 1,
-            dishes: [{ dishId: dish.id, supplement: 0 }],
+            dishes: [{ itemId: dish.id, supplement: 0 }],
           },
           {
             id: 'drink',
             name: 'Drink',
             choose: 1,
-            dishes: [{ dishId: drink.id, supplement: 1 }],
+            dishes: [{ itemId: drink.id, supplement: 1 }],
           },
         ],
       },
@@ -588,7 +593,7 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
     const discounts = await readMenuPromotions(
       'k',
       sections
-        .flatMap((row) => row.items.map((item) => item.dishId))
+        .flatMap((row) => row.items.map((item) => item.itemId))
         .filter(Boolean),
       'Europe/Zurich',
       'CHF'
@@ -630,15 +635,15 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
     const items = view.sections.flatMap((row) =>
       row.items.map((row) => row.item)
     )
-    const pizza = items.find((row) => row.dishId === dish.id)
+    const pizza = items.find((row) => row.itemId === dish.id)
     assert.equal(pizza.price, 11)
     assert.deepEqual(
-      pizza.priceOptions.map((option) => option.price),
+      pizza.choiceGroups[0].options.map((option) => option.price),
       [11, 11]
     )
-    assert.equal(pizza.addOns[0].price, 2)
+    assert.equal(pizza.choiceGroups[1].options[0].price, 2)
     assert.equal(
-      items.find((row) => row.dishId === drink.id).bottleDeposit,
+      items.find((row) => row.itemId === drink.id).bottleDeposit,
       undefined
     )
     const deal = items.find((row) => row.mealDeal)
@@ -661,14 +666,14 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
         status: 'paused',
         currency: persistedOffer.currency,
         days: persistedOffer.days,
-        dishes: persistedOffer.dishes,
+        dishes: persistedOffer.dishes.map(({ item_id, price }) => ({ itemId: item_id, price })),
       },
     }
   )
   assert.equal(
     (await publicView('collection')).sections
       .flatMap((row) => row.items)
-      .find((row) => row.item.dishId === dish.id).item.price,
+      .find((row) => row.item.itemId === dish.id).item.price,
     13
   )
 
@@ -729,10 +734,10 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
   assert.equal((await publicView('delivery')).entry, null)
 
   for (const [id, original] of originals)
-    assert.deepEqual(records.get(`kitchens/k/dishes/${id}`), original)
+    assert.deepEqual(records.get(`kitchens/k/items/${id}`), original)
   for (const row of rows(`kitchens/k/menus/m/sections/${section.id}/items`)) {
     assert.equal(
-      Boolean(row.data.dish_id) !== Boolean(row.data.promotion_id),
+      Boolean(row.data.item_id) !== Boolean(row.data.promotion_id),
       true
     )
     for (const field of ['price', 'price_options', 'add_ons', 'image'])

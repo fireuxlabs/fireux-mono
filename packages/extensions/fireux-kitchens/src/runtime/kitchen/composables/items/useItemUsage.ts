@@ -4,11 +4,11 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 
 import type { ItemUsageResponse } from './item-usage'
 
-export function useItemUsage(kitchenId: Ref<string>, dishId: Ref<string>) {
+export function useItemUsage(kitchenId: Ref<string>, itemId: Ref<string>) {
   const { currentUser } = useAuth()
   const key = computed(
     () =>
-      `dish-usage:${currentUser.value?.uid || ''}:${kitchenId.value}:${dishId.value}`
+      `dish-usage:${currentUser.value?.uid || ''}:${kitchenId.value}:${itemId.value}`
   )
   const { data, error, pending } = useAsyncData<ItemUsageResponse | null>(
     key,
@@ -17,24 +17,24 @@ export function useItemUsage(kitchenId: Ref<string>, dishId: Ref<string>) {
 
       const user = currentUser.value
       const kitchen = kitchenId.value
-      const dish = dishId.value
+      const dish = itemId.value
       if (!user || !kitchen || !dish) return null
       return fetchRead<ItemUsageResponse>(
-        '/api/workspace/kitchen/dishes/usage',
+        '/api/workspace/kitchen/items/usage',
         {
-          query: { kitchenId: kitchen, dishId: dish },
+          query: { kitchenId: kitchen, itemId: dish },
           headers: { authorization: `Bearer ${await user.getIdToken()}` },
         }
       )
     },
-    { server: false, watch: [currentUser, kitchenId, dishId] }
+    { server: false, watch: [currentUser, kitchenId, itemId] }
   )
   const ready = computed(
     () =>
       !pending.value &&
       !error.value &&
       data.value?.kitchenId === kitchenId.value &&
-      data.value?.dishId === dishId.value
+      data.value?.itemId === itemId.value
   )
   const usages = computed(() => (ready.value ? data.value!.usages : []))
   return { usages, ready, error }

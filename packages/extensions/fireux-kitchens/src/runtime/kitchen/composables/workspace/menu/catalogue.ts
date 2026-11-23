@@ -15,7 +15,7 @@ export function useFoodCatalogueSummary(
   menusOutcome: Ref<string>
 ) {
   const dishes = useKitchenChildCollection<ItemCollectionRow>(
-    'dishes',
+    'items',
     kitchenId,
     {
       kitchenCollectionPath: 'kitchens',

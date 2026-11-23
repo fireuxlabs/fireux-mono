@@ -1,12 +1,12 @@
 <template>
-  <WorkspacePageHeader :title="dishId ? item?.name || 'Item' : 'Items'">
+  <WorkspacePageHeader :title="itemId ? item?.name || 'Item' : 'Items'">
     <template #actions>
-      <UButton variant="ghost" :to="dishId ? itemsPath : '/workspace/kitchen'">
-        {{ dishId ? 'Back to Items' : 'Back to Kitchen' }}
+      <UButton variant="ghost" :to="itemId ? itemsPath : '/workspace/kitchen'">
+        {{ itemId ? 'Back to Items' : 'Back to Kitchen' }}
       </UButton>
     </template>
   </WorkspacePageHeader>
-  <p v-if="dishId && !item">
+  <p v-if="itemId && !item">
     This Item is unavailable in the selected Kitchen.
   </p>
   <template v-else>
@@ -15,7 +15,7 @@
         <UInput v-model="name" required :disabled="busy" />
       </UFormField>
       <UButton type="submit" :loading="busy" :disabled="!canSave">
-        {{ dishId ? 'Save item' : 'Add item' }}
+        {{ itemId ? 'Save item' : 'Add item' }}
       </UButton>
       <UButton
         v-if="item && !confirmDelete"
@@ -42,14 +42,14 @@
       </template>
       <UAlert v-if="failure" color="error" :title="failure" />
     </form>
-    <ul v-if="!dishId && items.length">
+    <ul v-if="!itemId && items.length">
       <li v-for="entry in items" :key="entry.id">
         <ULink :to="`${itemsPath}/${encodeURIComponent(entry.id)}`">
           {{ entry.name }}
         </ULink>
       </li>
     </ul>
-    <p v-else-if="!dishId">No items yet.</p>
+    <p v-else-if="!itemId">No items yet.</p>
   </template>
 </template>
 
@@ -63,12 +63,12 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 
 const props = defineProps<{
   kitchenId: string
-  dishId: string
+  itemId: string
   items: Item[]
   itemsPath: string
 }>()
-const { kitchenId, dishId } = props
-const item = computed(() => props.items.find((entry) => entry.id === dishId))
+const { kitchenId, itemId } = props
+const item = computed(() => props.items.find((entry) => entry.id === itemId))
 const items = computed(() =>
   [...props.items].sort((a, b) => a.name.localeCompare(b.name))
 )
@@ -90,7 +90,7 @@ watch(
 const canSave = computed(() =>
   Boolean(
     name.value.trim() &&
-      (!dishId || (item.value && name.value.trim() !== item.value.name))
+      (!itemId || (item.value && name.value.trim() !== item.value.name))
   )
 )
 
@@ -102,7 +102,7 @@ async function save() {
   busy.value = true
   failure.value = ''
   try {
-    if (dishId) await updateItem(dishId, { name: value }, target)
+    if (itemId) await updateItem(itemId, { name: value }, target)
     else {
       await createItem({ name: value }, target)
       if (isCurrent() && name.value.trim() === value) name.value = ''
@@ -122,7 +122,7 @@ async function remove() {
   busy.value = true
   failure.value = ''
   try {
-    await deleteItem(dishId, { kitchenId })
+    await deleteItem(itemId, { kitchenId })
     if (isCurrent()) await navigateTo(props.itemsPath)
   } catch (error) {
     if (isCurrent())

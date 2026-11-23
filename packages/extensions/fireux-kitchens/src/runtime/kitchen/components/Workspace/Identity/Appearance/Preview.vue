@@ -95,12 +95,12 @@ const items = useMenuEntryCollection(
   sectionId,
   options
 )
-const dishId = computed(() =>
+const itemId = computed(() =>
   items.outcome.value === 'ready'
-    ? items.items.value.find((item) => item.dish_id)?.dish_id || ''
+    ? items.items.value.find((item) => item.item_id)?.item_id || ''
     : ''
 )
-const { item } = useKitchenItemRead(kitchenId, dishId)
+const { item } = useKitchenItemRead(kitchenId, itemId)
 </script>
 <style scoped>
 .appearance-preview {

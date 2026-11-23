@@ -30,14 +30,14 @@ const rule = () => ({
   status: 'active',
   currency: 'CHF',
   days: ['sunday'],
-  dishes: [{ dishId: 'margherita', price: 11 }],
+  dishes: [{ itemId: 'margherita', price: 11 }],
 })
 const publicRule = () => [
   { ...rule(), id: 'sunday-pizzas', timezone: 'Europe/Zurich' },
 ]
 const item = () => ({
   id: 'placement',
-  dishId: 'margherita',
+  itemId: 'margherita',
   name: 'Margherita',
   description: '',
   imageUrl: '',
@@ -81,7 +81,8 @@ function source(
   }
 }
 test('promotion normalizes detached dish prices and rejects malformed entries', () => {
-  const input = rule(),
+  const storedRule = () => ({ ...rule(), dishes: [{ item_id: 'margherita', price: 11 }] })
+  const input = storedRule(),
     normalized = pricing.normalizeKitchenPromotion(input)
   input.dishes[0].price = 99
   input.days.push('monday')
@@ -89,14 +90,14 @@ test('promotion normalizes detached dish prices and rejects malformed entries', 
   assert.deepEqual(normalized.days, ['sunday'])
   for (const patch of [
     { dishes: [] },
-    { dishes: [{ dishId: 'x', price: 11.111 }] },
-    { dishes: [{ dishId: 'x', price: -1 }] },
-    { dishes: [{ dishId: 'x', price: Infinity }] },
-    { dishes: [{ dishId: 'x', price: '11' }] },
+    { dishes: [{ item_id: 'x', price: 11.111 }] },
+    { dishes: [{ item_id: 'x', price: -1 }] },
+    { dishes: [{ item_id: 'x', price: Infinity }] },
+    { dishes: [{ item_id: 'x', price: '11' }] },
     {
       dishes: [
-        { dishId: 'x', price: 1 },
-        { dishId: 'x', price: 2 },
+        { item_id: 'x', price: 1 },
+        { item_id: 'x', price: 2 },
       ],
     },
     { currency: 'chf' },
@@ -105,19 +106,19 @@ test('promotion normalizes detached dish prices and rejects malformed entries', 
     { menu_id: 'food' },
   ])
     assert.throws(() =>
-      pricing.normalizeKitchenPromotion({ ...rule(), ...patch })
+      pricing.normalizeKitchenPromotion({ ...storedRule(), ...patch })
     )
   assert.equal(
     pricing.normalizeKitchenPromotion({
       ...rule(),
-      dishes: [{ dishId: 'x', price: 11.5 }],
+      dishes: [{ item_id: 'x', price: 11.5 }],
     }).dishes[0].price,
     11.5
   )
   assert.equal(
     pricing.normalizeKitchenPromotion({
       ...rule(),
-      dishes: [{ dishId: 'x', price: 0 }],
+      dishes: [{ item_id: 'x', price: 0 }],
     }).dishes[0].price,
     0
   )
@@ -158,7 +159,7 @@ test('dish promotion applies across placements, keeps extras and unselected dish
   assert.equal(original.price, 13)
   assert.equal(
     pricing.promotionPricedItem(
-      { ...original, dishId: 'salad' },
+      { ...original, itemId: 'salad' },
       publicRule(),
       'sunday'
     ).item.price,
@@ -238,15 +239,15 @@ test('conflicting normal offers survive deduplication and are stable under sourc
 
 test('each promotional dish keeps its own decimal price without changing catalogue terms', () => {
   const dishes = [
-    { ...item(), dishId: 'margherita' },
-    { ...item(), dishId: 'salad' },
+    { ...item(), itemId: 'margherita' },
+    { ...item(), itemId: 'salad' },
   ]
   const promotion = [
     {
       ...publicRule()[0],
       dishes: [
-        { dishId: 'margherita', price: 11 },
-        { dishId: 'salad', price: 4.5 },
+        { itemId: 'margherita', price: 11 },
+        { itemId: 'salad', price: 4.5 },
       ],
     },
   ]
@@ -269,7 +270,7 @@ test('each promotional dish keeps its own decimal price without changing catalog
 const bundleItem = () => ({
   ...item(),
   id: 'meal-placement',
-  dishId: '',
+  itemId: '',
   name: 'Pizza meal',
   price: 15,
   priceOptions: [],
@@ -284,8 +285,8 @@ const bundleItem = () => ({
         name: 'Pizza',
         choose: 1,
         dishes: [
-          { dishId: 'margherita', name: 'Margherita', supplement: 0 },
-          { dishId: 'swiss', name: 'Swiss', supplement: 3 },
+          { itemId: 'margherita', name: 'Margherita', supplement: 0 },
+          { itemId: 'swiss', name: 'Swiss', supplement: 3 },
         ],
       },
     ],

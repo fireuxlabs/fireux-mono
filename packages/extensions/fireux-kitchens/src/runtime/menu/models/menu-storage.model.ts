@@ -15,7 +15,7 @@ export const MenuStorage = {
   children: {
     sections: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
     items:
-      'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
+      'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{entryId}',
   },
 } as const
 

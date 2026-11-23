@@ -129,7 +129,7 @@ test('copy uses new identities and reuses dish references; refuses occupied date
     status: 'active',
   })
   h.records.set(menuPath + '/sections/s/items/i', {
-    dish_id: 'bratwurst',
+    item_id: 'bratwurst',
     section_id: 's',
     status: 'active',
     price: 0,
@@ -141,7 +141,7 @@ test('copy uses new identities and reuses dish references; refuses occupied date
   const item = [...h.records].find(([path]) =>
     path.startsWith(copied[0] + '/items/')
   )[1]
-  assert.equal(item.dish_id, 'bratwurst')
+  assert.equal(item.item_id, 'bratwurst')
   assert.notEqual(item.section_id, 's')
   await assert.rejects(
     h.run({ date: '2026-09-22', copyFrom: '2026-09-21' }),

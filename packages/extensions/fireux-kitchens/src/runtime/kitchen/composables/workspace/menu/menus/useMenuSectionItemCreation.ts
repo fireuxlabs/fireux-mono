@@ -114,7 +114,7 @@ export function useMenuSectionItemCreation(
     const requested = lines.value
     const requestedPrices = { ...prices.value }
     const knownAtSubmit = knownItems.value
-    const placed = new Set(activeItemRows.value.map((row) => row.dishId))
+    const placed = new Set(activeItemRows.value.map((row) => row.itemId))
     busy.value = true
     error.value = ''
     try {
@@ -147,7 +147,7 @@ export function useMenuSectionItemCreation(
         }
         if (placed.has(id)) continue
         try {
-          await createItem({ ...target, dishId: id }, isCurrent)
+          await createItem({ ...target, itemId: id }, isCurrent)
         } catch (cause) {
           if (!isCurrent()) return
           throw new Error(

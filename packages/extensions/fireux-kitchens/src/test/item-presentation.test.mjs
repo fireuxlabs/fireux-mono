@@ -73,7 +73,7 @@ const Surface = {
 }
 const item = (changes = {}) => ({
   id: 'free',
-  dishId: 'dish',
+  itemId: 'dish',
   itemKind: 'food',
   name: 'Free item',
   description: 'Available without a photograph',

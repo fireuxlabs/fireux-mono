@@ -137,7 +137,7 @@ export async function configureDailyMenu(
                 kitchen_id: kitchenId,
                 menu_id: menuId,
                 section_id: id,
-                dish_id: item.data.dish_id,
+                item_id: item.data.item_id,
                 status: 'active',
                 sort_order: item.data.sort_order || 0,
                 created: stamp,

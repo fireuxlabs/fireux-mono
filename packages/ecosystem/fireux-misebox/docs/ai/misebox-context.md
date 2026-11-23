@@ -671,7 +671,7 @@ Verify these distinctions with `workspace-navigation.test.mjs`.
 Overview is a direct sidebar entrance for the selected Kitchen;
 the Menu setup tool directory remains a contextual route hidden from the sidebar.
 The combined catalogue reads the existing live `dishes` collection once, filters
-All/Food/Drinks locally, and opens the unified `/menu/items/[dishId]`
+All/Food/Drinks locally, and opens the unified `/menu/items/[itemId]`
 editor. `Workspace/Menu/Items/Index.vue` composes Controls, Results and
 Dialogs. The controller under `composables/workspace/menu/items/` owns shared
 filters, pagination and return-query state;
@@ -697,7 +697,7 @@ The minimal Kitchen Item identity belongs to
 path-derived identity, name, optional description, one photo URL and shared
 creation/update stamp values. It has no Kitchen selector, category vocabulary,
 pricing, flagship flag or preparation fields. `models/item.model.ts` preserves the
-existing `kitchens/{kitchenId}/dishes/{dishId}` contract; filesystem ownership does
+existing `kitchens/{kitchenId}/items/{itemId}` contract; filesystem ownership does
 not rename persisted collections or authorize migration.
 `composables/items/useKitchenItemRead.ts` owns the single live read, Kitchen
 access gating and private Item field/stamp normalization. It reuses Core's
@@ -2229,7 +2229,7 @@ rejects category changes while preserving stored values during unrelated updates
 The [Menu Item picker](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Menus/Items/Add/Repertoire.vue)
 searches reusable Items and excludes Items already placed in that Section; it
 does not offer category filtering. Menu-owned Sections and placements reference
-Items through `dish_id`, with the persisted child collection still named `items`.
+Items through `item_id`, with the persisted child collection still named `items`.
 Creation visibility uses selected-Kitchen membership; command authorization
 remains authoritative. Ingredient taxonomy, discovery categories and external
 FoodBooking category-to-Section mapping retain their separate contracts.
@@ -2784,8 +2784,8 @@ links to this capability rather than owning another price editor.
 Both forms share name, active/paused status, venue currency and venue-local
 weekdays. The content fields distinguish them without a compatibility type:
 
-- Dish offer: `dishes: [{ dishId, price }]`, unchanged from the existing contract.
-- Meal deal: `price` and `groups: [{ id, name, choose, dishes: [{ dishId, supplement }] }]`.
+- Dish offer: `dishes: [{ item_id, price }]`.
+- Meal deal: `price` and `groups: [{ id, name, choose, dishes: [{ item_id, supplement }] }]`.
 
 Prices and supplements are non-negative ordinary currency amounts with at most
 two decimal places. A zero supplement means included; Dish normal prices are
@@ -2812,7 +2812,7 @@ readiness or authority changes. `promotions-workspace.test.mjs` exercises the
 mounted parent lifecycle; `promotion-editor.test.mjs` covers detached drafts,
 validation and unchanged command payloads. These checks do not write live data.
 
-Regular interactive Menu entries reference exactly one `dish_id` or
+Regular interactive Menu entries reference exactly one `item_id` or
 `promotion_id` (a meal deal); placements own availability and order, never copied
 commercial terms. Section editing shares one provided section state across its
 controls and offers Add meal deal alongside Dish controls. The trusted placement
@@ -2835,7 +2835,7 @@ are written.
 `kitchen/server/promotions/read.ts` loads active Kitchen promotions, excludes meal deals from standalone item
 repricing and projects only Dish offers matching IDs present in the resolved Menu. Audit metadata and
 unrelated promotional dishes do not enter the public manifest. Daily specials
-remains separate. The pure `kitchen/utils/promotions/pricing.ts` matches `dishId`
+remains separate. The pure `kitchen/utils/promotions/pricing.ts` matches `itemId`
 across Menu placements, applies base/required-variant prices, and retains extras.
 Browse resolves today's local price; service surfaces resolve now when open or
 the day of their next serving window. Existing Menu publication and service

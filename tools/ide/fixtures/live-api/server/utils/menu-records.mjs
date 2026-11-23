@@ -1,7 +1,7 @@
 // Canonical seed recipe supplied by the Kitchen owner for this isolated fixture.
 export const fixtureMenuDate = '2099-11-23'
 export const fixtureMenuPath = 'kitchens/place-000/menus/special-menu'
-export const fixtureItemPath = 'kitchens/place-000/dishes/roll'
+export const fixtureItemPath = 'kitchens/place-000/items/roll'
 
 export function fixtureItemChoices(price = 2) {
   return [
@@ -48,7 +48,7 @@ export function fixtureMenuRecords(stamp) {
     [
       `${fixtureMenuPath}/sections/selection/items/roll-placement`,
       {
-        dish_id: 'roll',
+        item_id: 'roll',
         status: 'active',
         sort_order: 0,
         ...stamps,

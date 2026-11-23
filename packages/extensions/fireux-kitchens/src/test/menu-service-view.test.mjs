@@ -290,10 +290,10 @@ const sourceMenu = (id, label, itemIds, offering = 'evening') => ({
         {
           id: 'section',
           label,
-          items: itemIds.map((dishId) => ({
-            id: `${id}-${dishId}`,
-            dishId,
-            name: dishId,
+          items: itemIds.map((itemId) => ({
+            id: `${id}-${itemId}`,
+            itemId,
+            name: itemId,
           })),
         },
       ],
@@ -315,7 +315,7 @@ test('collection combines named sections and deduplicates catalogue items across
     ['Pizza', 'Drinks']
   )
   assert.deepEqual(
-    result[0].items.map((row) => row.item.dishId),
+    result[0].items.map((row) => row.item.itemId),
     ['margherita', 'salami', 'funghi']
   )
   assert.deepEqual(
@@ -692,8 +692,8 @@ test('large overlapping catalogues remain unique, ordered and retain every servi
   const items = result.flatMap((section) => section.items)
   assert.equal(items.length, 100)
   assert.equal(new Set(items.map((row) => row.key)).size, 100)
-  assert.equal(items[0].item.dishId, 'dish-0')
-  assert.equal(items[99].item.dishId, 'dish-99')
+  assert.equal(items[0].item.itemId, 'dish-0')
+  assert.equal(items[99].item.itemId, 'dish-99')
   assert.ok(items.every((row) => row.offerings.length === 120))
   assert.equal(
     result.length,

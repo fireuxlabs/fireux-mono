@@ -30,8 +30,8 @@ export function replaceKitchenMenuDraftContent(
       input.menuId,
       oldSectionId
     )
-    for (const itemId of oldItems.get(oldSectionId) || []) {
-      mutations.delete(items, itemId)
+    for (const entryId of oldItems.get(oldSectionId) || []) {
+      mutations.delete(items, entryId)
     }
     mutations.delete(
       serverKitchenMenuSectionsTarget(input.kitchenId, input.menuId),
@@ -55,25 +55,25 @@ export function replaceKitchenMenuDraftContent(
     } else {
       mutations.create(sections, section.sectionId, section.sectionData)
     }
-    const plannedItemIds = new Set(section.items.map((item) => item.itemId))
+    const plannedItemIds = new Set(section.items.map((item) => item.entryId))
     for (const oldItemId of oldItems.get(section.sectionId) || []) {
       if (!plannedItemIds.has(oldItemId)) mutations.delete(items, oldItemId)
     }
     section.items.forEach((item) => {
-      if (oldItems.get(section.sectionId)?.has(item.itemId)) {
-        mutations.update<DocumentData>(items, item.itemId, item.itemData)
+      if (oldItems.get(section.sectionId)?.has(item.entryId)) {
+        mutations.update<DocumentData>(items, item.entryId, item.itemData)
       } else {
-        mutations.create(items, item.itemId, item.itemData)
+        mutations.create(items, item.entryId, item.itemData)
       }
     })
   })
   plannedSections
     .flatMap((section) => section.items)
     .forEach((item) => {
-      if (existingItemIds.has(item.dishId)) {
-        mutations.update(dishes, item.dishId, item.catalogueItemData)
+      if (existingItemIds.has(item.itemId)) {
+        mutations.update(dishes, item.itemId, item.catalogueItemData)
       } else {
-        mutations.create(dishes, item.dishId, item.catalogueItemData)
+        mutations.create(dishes, item.itemId, item.catalogueItemData)
       }
     })
 }

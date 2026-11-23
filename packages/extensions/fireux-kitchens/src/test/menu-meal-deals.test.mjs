@@ -32,8 +32,8 @@ const meal = () => ({
       name: 'Pizza',
       choose: 1,
       dishes: [
-        { dishId: 'd', supplement: 0 },
-        { dishId: 'swiss', supplement: 3 },
+        { item_id: 'd', supplement: 0 },
+        { item_id: 'swiss', supplement: 3 },
       ],
     },
   ],
@@ -41,18 +41,18 @@ const meal = () => ({
 function fixture() {
   const records = new Map([
     [
-      'kitchens/k/dishes/d',
+      'kitchens/k/items/d',
       { name: 'Margherita', price: 13, price_options: [], add_ons: [] },
     ],
     [
-      'kitchens/k/dishes/swiss',
+      'kitchens/k/items/swiss',
       { name: 'Swiss', price: 20, price_options: [], add_ons: [] },
     ],
     ['kitchens/k/promotions/meal', meal()],
     ['kitchens/k/menus/m/sections/s', { label: 'Food' }],
     [
       'kitchens/k/menus/m/sections/s/items/dish',
-      { dish_id: 'd', sort_order: 0 },
+      { item_id: 'd', sort_order: 0 },
     ],
     [
       'kitchens/k/menus/m/sections/s/items/deal',
@@ -121,8 +121,8 @@ test('public Menu joins meal-deal choices from Kitchen Items and preserves norma
   const deal = sections[0].items[1]
   assert.equal(deal.price, 15)
   assert.deepEqual(deal.mealDeal.groups[0].dishes, [
-    { dishId: 'd', name: 'Margherita', supplement: 0 },
-    { dishId: 'swiss', name: 'Swiss', supplement: 3 },
+    { itemId: 'd', name: 'Margherita', supplement: 0 },
+    { itemId: 'swiss', name: 'Swiss', supplement: 3 },
   ])
   assert.deepEqual(f.records, before)
   assert.ok(f.reads.every((path) => !path.includes('order')))
@@ -149,7 +149,7 @@ test('paused or removed deals disappear; malformed placements and currency fail 
     if (cause === 'currency')
       f.records.get('kitchens/k/promotions/meal').currency = 'EUR'
     if (cause === 'mixed')
-      f.records.get('kitchens/k/menus/m/sections/s/items/deal').dish_id = 'd'
+      f.records.get('kitchens/k/menus/m/sections/s/items/deal').item_id = 'd'
     await assert.rejects(f.read())
   }
 })
@@ -358,7 +358,7 @@ test('section Add meal deal dispatches only a scoped reference and ignores obsol
 
 test('public Menu omits an unpriced item, keeps other entries and displays explicit zero', async () => {
   const f = fixture()
-  delete f.records.get('kitchens/k/dishes/d').price
+  delete f.records.get('kitchens/k/items/d').price
   const before = structuredClone(f.records)
   const sections = await f.read()
   assert.equal(
@@ -367,7 +367,7 @@ test('public Menu omits an unpriced item, keeps other entries and displays expli
   )
   assert.ok(sections[0].items.some((item) => item.id === 'deal'))
   assert.deepEqual(f.records, before)
-  f.records.get('kitchens/k/dishes/d').price = 0
+  f.records.get('kitchens/k/items/d').price = 0
   const priced = await f.read()
   assert.equal(priced[0].items.find((item) => item.id === 'dish').price, 0)
 })

@@ -48,7 +48,7 @@ export async function moveKitchenMenuEntry(event: H3Event, input: unknown) {
   if (
     Object.keys(value).some(
       (key) =>
-        !['kitchenId', 'menuId', 'sectionId', 'itemId', 'direction'].includes(
+        !['kitchenId', 'menuId', 'sectionId', 'entryId', 'direction'].includes(
           key
         )
     ) ||
@@ -61,10 +61,10 @@ export async function moveKitchenMenuEntry(event: H3Event, input: unknown) {
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
   const menuId = requireFirestoreDocumentId(value.menuId, 'Menu id')
   const sectionId = requireFirestoreDocumentId(value.sectionId, 'Section id')
-  const itemId =
-    value.itemId === undefined
+  const entryId =
+    value.entryId === undefined
       ? ''
-      : requireFirestoreDocumentId(value.itemId, 'Item id')
+      : requireFirestoreDocumentId(value.entryId, 'Item id')
   const actor = await readKitchenMutationActor(event)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     const access = await requireKitchenMutationAuthority(tx, actor, kitchenId)
@@ -87,13 +87,13 @@ export async function moveKitchenMenuEntry(event: H3Event, input: unknown) {
         statusCode: 403,
         statusMessage: 'Daily specials require Pro.',
       })
-    const target = itemId
+    const target = entryId
       ? serverKitchenMenuItemsTarget(kitchenId, menuId, sectionId)
       : sectionTarget
     const entries = (await rows(tx, target))
       .filter(
         (row) =>
-          itemId ||
+          entryId ||
           (row.data.status !== 'archived' &&
             (menu.data?.schedule !== 'daily' ||
               row.data.date === section.data?.date))
@@ -101,12 +101,12 @@ export async function moveKitchenMenuEntry(event: H3Event, input: unknown) {
       .sort(
         (a, b) =>
           position(a.data.sort_order) - position(b.data.sort_order) ||
-          String(itemId ? a.data.dish_id : a.data.label).localeCompare(
-            String(itemId ? b.data.dish_id : b.data.label)
+          String(entryId ? a.data.item_id : a.data.label).localeCompare(
+            String(entryId ? b.data.item_id : b.data.label)
           ) ||
           a.id.localeCompare(b.id)
       )
-    const index = entries.findIndex((row) => row.id === (itemId || sectionId))
+    const index = entries.findIndex((row) => row.id === (entryId || sectionId))
     if (index < 0)
       throw createError({
         statusCode: 404,
@@ -120,8 +120,8 @@ export async function moveKitchenMenuEntry(event: H3Event, input: unknown) {
       if (row.data.sort_order !== rank)
         tx.update(target, row.id, { sort_order: rank, updated: stamp })
     tx.update(
-      itemId ? sectionTarget : menuTarget,
-      itemId ? sectionId : menuId,
+      entryId ? sectionTarget : menuTarget,
+      entryId ? sectionId : menuId,
       { updated: stamp }
     )
   })

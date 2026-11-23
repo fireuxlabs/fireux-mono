@@ -11,7 +11,7 @@ export default defineLiveProjection({
       kitchenSlug: query.kitchenSlug,
       service: query.service,
       search: query.search,
-      dishId: query.dishId,
+      itemId: query.itemId,
       offering: query.offering,
       cursor: query.cursor,
       limit: query.limit,

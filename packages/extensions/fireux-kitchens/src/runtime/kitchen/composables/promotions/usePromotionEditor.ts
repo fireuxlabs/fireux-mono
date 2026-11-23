@@ -71,14 +71,14 @@ export function usePromotionEditor() {
                   ? Number(group.choose)
                   : NaN,
                 dishes: group.dishes.map((dish) => ({
-                  dishId: dish.dishId,
+                  item_id: dish.item_id,
                   supplement: amount(dish.supplement),
                 })),
               })),
             }
           : {
               dishes: rows.value.map((row) => ({
-                dishId: row.dishId,
+                item_id: row.item_id,
                 price: amount(row.price),
               })),
             }

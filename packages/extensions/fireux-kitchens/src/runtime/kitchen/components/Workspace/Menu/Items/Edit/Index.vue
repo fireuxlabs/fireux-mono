@@ -175,7 +175,7 @@ const handleImageUpload = async (file: File) => {
   imageUploading.value = true
   try {
     await uploadItemImage({
-      dishId: requestedItemId,
+      itemId: requestedItemId,
       kitchenId: requestedKitchenId,
       file,
     })

@@ -30,14 +30,14 @@
         @click="rows.forEach((row) => (row.price = allPrice))"
       />
     </div>
-    <div v-for="row in rows" :key="row.dishId" class="promotion-dish-price">
-      <label :for="`promotion-price-${row.dishId}`">{{
-        itemOptions.find((dish) => dish.value === row.dishId)?.label ||
+    <div v-for="row in rows" :key="row.item_id" class="promotion-dish-price">
+      <label :for="`promotion-price-${row.item_id}`">{{
+        itemOptions.find((dish) => dish.value === row.item_id)?.label ||
         'Unavailable dish'
       }}</label>
       <!-- @vue-generic {string | number, {}} -->
       <UInput
-        :id="`promotion-price-${row.dishId}`"
+        :id="`promotion-price-${row.item_id}`"
         v-model="row.price"
         type="number"
         min="0"
@@ -61,11 +61,11 @@ defineProps<{
 const rows = defineModel<PromotionItemDraft[]>({ required: true })
 const allPrice = ref<string | number>('')
 const selected = computed({
-  get: () => rows.value.map((row) => row.dishId),
+  get: () => rows.value.map((row) => row.item_id),
   set: (ids: string[]) => {
     rows.value = ids.map(
-      (dishId) =>
-        rows.value.find((row) => row.dishId === dishId) || { dishId, price: '' }
+      (item_id) =>
+        rows.value.find((row) => row.item_id === item_id) || { item_id, price: '' }
     )
   },
 })

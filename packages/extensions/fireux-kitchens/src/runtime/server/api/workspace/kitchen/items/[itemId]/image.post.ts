@@ -52,10 +52,10 @@ export default defineEventHandler(async (event: H3Event) => {
   const query = getQuery(event)
   const appId = requirePathSegment(runtime.public?.fireux?.id, 'Runtime App id')
   const kitchenId = requirePathSegment(query.kitchenId, 'Kitchen id')
-  const dishId = requirePathSegment(getRouterParam(event, 'dishId'), 'Item id')
+  const itemId = requirePathSegment(getRouterParam(event, 'itemId'), 'Item id')
   const { db, uid } = await requireKitchenWriter(event, { appId, kitchenId })
   const itemRef = db.doc(
-    `kitchens/${kitchenId}/${ItemStorage.collection}/${dishId}`
+    `kitchens/${kitchenId}/${ItemStorage.collection}/${itemId}`
   )
   const itemSnapshot = await itemRef.get()
   const itemData = itemSnapshot.data() ?? {}
@@ -74,7 +74,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const saved = await normalizeAndSaveItemImage({
     appId,
     kitchenId,
-    dishId,
+    itemId,
     data: file.data,
   })
 
@@ -89,7 +89,7 @@ export default defineEventHandler(async (event: H3Event) => {
           transaction
         )
         const target = serverKitchenItemsTarget(kitchenId)
-        const current = await transaction.read(target, dishId)
+        const current = await transaction.read(target, itemId)
         assertItemIdentity(current.exists, current.data ?? {}, kitchenId)
         if (readString(current.data?.image) !== previousImage) {
           throw createError({
@@ -98,7 +98,7 @@ export default defineEventHandler(async (event: H3Event) => {
               'The Item image changed during upload. Please try again.',
           })
         }
-        transaction.update(target, dishId, {
+        transaction.update(target, itemId, {
           image: saved.imageUrl,
           updated: serverAuditStamp({ by: uid }),
         })
@@ -144,7 +144,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
   return {
     ok: true as const,
-    dish_id: dishId,
+    itemId,
     image: saved.imageUrl,
     object_path: saved.objectPath,
   }

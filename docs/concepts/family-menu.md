@@ -32,7 +32,7 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 
 Kitchen Items are reusable across Menus. Each Menu owns its Sections and
 [MenuEntry placements](../../packages/extensions/fireux-kitchens/src/runtime/menu/records/sections/entry.ts),
-which reference Items through `dish_id` (or a meal deal through `promotion_id`).
+which reference Items through `item_id` (or a meal deal through `promotion_id`).
 The persisted Section child remains `items`; calling these entries or placements
 does not rename storage. Food/Drink is the Item type, not a Menu Section or an
 Item category tier. Legacy stored category values remain untouched by unrelated
@@ -602,7 +602,7 @@ live operator publication or provider/deployment acceptance.
 
 ## Meal-deal entries
 
-Regular interactive Menu placements reference one Kitchen Item (`dish_id`) or
+Regular interactive Menu placements reference one Kitchen Item (`item_id`) or
 Kitchen meal-deal Promotion (`promotion_id`). The Menu owns organisation and
 availability; Item owns normal terms, Promotion owns its set price and choices.
 Daily specials do not accept meal-deal placements. Section editing exposes both

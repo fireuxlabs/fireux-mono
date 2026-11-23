@@ -36,7 +36,7 @@ export function useMenuSectionItemSelection(
   watch(
     activeItemRows,
     (rows) => {
-      const acknowledged = new Set(rows.map((row) => row.dishId))
+      const acknowledged = new Set(rows.map((row) => row.itemId))
       added.value = added.value.filter((id) => !acknowledged.has(id))
     },
     { flush: 'sync' }
@@ -47,7 +47,7 @@ export function useMenuSectionItemSelection(
   const placed = computed(
     () =>
       new Set([
-        ...activeItemRows.value.map((row) => row.dishId),
+        ...activeItemRows.value.map((row) => row.itemId),
         ...added.value,
       ])
   )
@@ -104,14 +104,14 @@ export function useMenuSectionItemSelection(
     error.value = ''
     let count = 0
     try {
-      for (const dishId of ids) {
+      for (const itemId of ids) {
         if (!isCurrent()) return
-        if (placed.value.has(dishId)) continue
-        await createItem({ ...target, dishId }, isCurrent)
+        if (placed.value.has(itemId)) continue
+        await createItem({ ...target, itemId }, isCurrent)
         if (!isCurrent()) return
-        if (!activeItemRows.value.some((row) => row.dishId === dishId))
-          added.value.push(dishId)
-        selected.value = selected.value.filter((id) => id !== dishId)
+        if (!activeItemRows.value.some((row) => row.itemId === itemId))
+          added.value.push(itemId)
+        selected.value = selected.value.filter((id) => id !== itemId)
         count++
       }
       return count

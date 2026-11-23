@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
   const runtime = useRuntimeConfig()
   const appId = requirePathSegment(runtime.public?.fireux?.id, 'Runtime App id')
   const kitchenId = requirePathSegment(getQuery(event).kitchenId, 'Kitchen id')
-  const dishId = requirePathSegment(getRouterParam(event, 'dishId'), 'Item id')
+  const itemId = requirePathSegment(getRouterParam(event, 'itemId'), 'Item id')
   const body = await readBody<{ is_flagship?: unknown }>(event)
   if (
     !body ||
@@ -41,7 +41,7 @@ export default defineEventHandler(async (event) => {
     { kind: 'runtime' },
     async (transaction) => {
       await requireKitchenWriterAccount({ appId, kitchenId }, uid, transaction)
-      const current = await transaction.read(target, dishId)
+      const current = await transaction.read(target, itemId)
       if (!current.exists)
         throw createError({ statusCode: 404, statusMessage: 'Item not found.' })
       if (
@@ -71,18 +71,18 @@ export default defineEventHandler(async (event) => {
       }
 
       for (const id of previousIds) {
-        if (id !== dishId)
+        if (id !== itemId)
           transaction.update(target, id, {
             is_flagship: false,
             updated: serverAuditStamp({ by: uid }),
           })
       }
-      transaction.update(target, dishId, {
+      transaction.update(target, itemId, {
         is_flagship: isFlagship,
         updated: serverAuditStamp({ by: uid }),
       })
     }
   )
 
-  return { ok: true as const, dish_id: dishId, is_flagship: isFlagship }
+  return { ok: true as const, itemId, is_flagship: isFlagship }
 })

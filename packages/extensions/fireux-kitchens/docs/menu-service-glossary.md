@@ -25,9 +25,9 @@ for available customer and staff surfaces.
 
 Use **dish** or **drink** in customer copy when it describes the food. In source
 and architecture docs, use **Item** for the Kitchen-owned record. The collection
-is `dishes` and the route parameter is `dishId`. A **Menu placement**
-references an Item in a Menu section. **Item selling terms** describe price and
-choice groups. The source calls that shape `ItemOffer`.
+is `items` and the route parameter is `itemId`. A **Menu placement** has its
+own ID and stores `item_id` to reference an Item in its Kitchen. **Item selling
+terms** describe the Item's price, currency and choice groups.
 
 ## Kitchen Services
 

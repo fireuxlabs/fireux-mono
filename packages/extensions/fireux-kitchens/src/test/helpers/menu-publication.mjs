@@ -48,7 +48,7 @@ const targets = {
   serverAppUsersTarget: (app) => target(`apps/${app}/users`),
   serverKitchenAccessTarget: (app) => target('kitchen_access'),
   serverKitchenMenusTarget: (kitchen) => target(`kitchens/${kitchen}/menus`),
-  serverKitchenItemsTarget: (kitchen) => target(`kitchens/${kitchen}/dishes`),
+  serverKitchenItemsTarget: (kitchen) => target(`kitchens/${kitchen}/items`),
   serverKitchenMenuSectionsTarget: (kitchen, menu) =>
     target(`kitchens/${kitchen}/menus/${menu}/sections`),
   serverKitchenMenuItemsTarget: (kitchen, menu, section) =>
@@ -85,9 +85,9 @@ export function harness({ document = false, status = 'draft' } = {}) {
       },
     ],
     [`${menuPath}/sections/s`, { status: 'active' }],
-    [`${menuPath}/sections/s/items/i`, { status: 'active', dish_id: 'dish' }],
+    [`${menuPath}/sections/s/items/i`, { status: 'active', item_id: 'dish' }],
     [
-      'kitchens/k/dishes/dish',
+      'kitchens/k/items/dish',
       { name: 'Tapas', price: 12, price_options: [], add_ons: [] },
     ],
   ])

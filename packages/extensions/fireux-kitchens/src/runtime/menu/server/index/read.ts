@@ -25,7 +25,7 @@ import { projectMenuDirectoryEntry } from './projection'
 export type ReadMenuDirectoryPageInput = {
   offering?: unknown
   search?: unknown
-  dishId?: unknown
+  itemId?: unknown
   service?: unknown
   kitchenSlug?: unknown
   cursor?: unknown
@@ -215,10 +215,10 @@ export async function readMenuDirectoryPage(
       statusMessage: 'Unknown Menu service.',
     })
   const search = text(input.search).slice(0, 120)
-  const dishId = text(input.dishId)
+  const itemId = text(input.itemId)
   if (
-    input.dishId !== undefined &&
-    (!isDocumentId(dishId) || !text(input.kitchenSlug))
+    input.itemId !== undefined &&
+    (!isDocumentId(itemId) || !text(input.kitchenSlug))
   )
     throw createError({
       statusCode: 400,
@@ -256,7 +256,7 @@ export async function readMenuDirectoryPage(
         )
       )
         continue
-      if (!search && !dishId) {
+      if (!search && !itemId) {
         items.push(menu)
         continue
       }
@@ -265,7 +265,7 @@ export async function readMenuDirectoryPage(
         menu,
         search,
         input.sources,
-        dishId
+        itemId
       )
       const metadata = [
         menu.name,
@@ -275,7 +275,7 @@ export async function readMenuDirectoryPage(
       ]
         .filter(Boolean)
         .join(' ')
-      if (dishes.length || (!dishId && matchesFoodSearch(metadata, search)))
+      if (dishes.length || (!itemId && matchesFoodSearch(metadata, search)))
         items.push({ ...menu, matching_dishes: dishes })
     }
     cursor = page.nextCursor

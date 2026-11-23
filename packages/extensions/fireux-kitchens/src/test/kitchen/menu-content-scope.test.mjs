@@ -90,7 +90,7 @@ test('Menu section/item adapters capture exact bodies and invalidate credential/
               kitchenId: 'k',
               menuId: 'm',
               sectionId: 's',
-              dishId: 'd',
+              itemId: 'd',
               price: 13,
             }
         const patch = isSection
@@ -109,7 +109,7 @@ test('Menu section/item adapters capture exact bodies and invalidate credential/
                 kitchenId: 'k',
                 menuId: 'm',
                 sectionId: 's',
-                itemId: 'i',
+                entryId: 'i',
                 changes: structuredClone(patch),
               }
         const pending = isCreate
@@ -283,7 +283,7 @@ test('Item selection snapshots targets and drops stale account or section comple
         kitchenId: 'k',
         menuId: 'm',
         sectionId: 's',
-        dishId: 'd',
+        itemId: 'd',
       })
       assert.equal(count, change === 'stable' && !failed ? 1 : undefined)
       assert.equal(Boolean(api.error.value), change === 'stable' && failed)
@@ -488,8 +488,8 @@ test('new Item placement reuses catalogue owners and never attaches an obsolete 
       { kitchenId: 'kitchen' },
     ])
     assert.equal(placements.length, changed ? 1 : 2)
-    assert.equal(placements[0].dishId, 'known')
-    if (!changed) assert.equal(placements[1].dishId, 'new-dish')
+    assert.equal(placements[0].itemId, 'known')
+    if (!changed) assert.equal(placements[1].itemId, 'new-dish')
   }
 })
 
@@ -504,9 +504,9 @@ test('all Add workflows can restore retained placements and exclude already acti
     { id: 'dinner', name: 'Dinner deal', groups: [] },
   ])
   const placements = ref([
-    { id: 'p1', dish_id: 'soup', status: 'archived' },
-    { id: 'p2', dish_id: 'salad' },
-    { id: 'p3', dish_id: 'salad', status: 'archived' },
+    { id: 'p1', item_id: 'soup', status: 'archived' },
+    { id: 'p2', item_id: 'salad' },
+    { id: 'p3', item_id: 'salad', status: 'archived' },
     { id: 'p4', promotion_id: 'lunch', status: 'archived' },
     { id: 'p5', promotion_id: 'dinner', status: 'active' },
   ])
@@ -592,9 +592,9 @@ test('all Add workflows can restore retained placements and exclude already acti
   await names.addNames()
   assert.equal(names.error.value, '')
   assert.deepEqual(commands, [
-    { kitchenId: 'k', menuId: 'm', sectionId: 's', dishId: 'soup' },
+    { kitchenId: 'k', menuId: 'm', sectionId: 's', itemId: 'soup' },
     { kitchenId: 'k', menuId: 'm', sectionId: 's', promotionId: 'lunch' },
-    { kitchenId: 'k', menuId: 'm', sectionId: 's', dishId: 'soup' },
+    { kitchenId: 'k', menuId: 'm', sectionId: 's', itemId: 'soup' },
   ])
 })
 
@@ -630,7 +630,7 @@ test('a Menu placement retry reuses its saved Item before the catalogue listener
       activeItemRows: ref([]),
       itemSource: { dishes, outcome: catalogueOutcome, error: ref(null) },
       createItem: async (input) => {
-        placed.push(input.dishId)
+        placed.push(input.itemId)
         if (failPlacement) throw new Error('Placement failed')
       },
     },

@@ -41,7 +41,7 @@ const actions = computed(() => [
           },
         ]
       : []),
-    props.row.dishId
+    props.row.itemId
       ? {
           label: 'Edit item',
           to: props.itemDestination,

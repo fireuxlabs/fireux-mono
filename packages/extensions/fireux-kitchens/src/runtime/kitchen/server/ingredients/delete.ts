@@ -29,7 +29,7 @@ export async function deleteKitchenIngredient(event: H3Event, input: unknown) {
     // Read every page before deleting. References retain the canonical ingredient id.
     for (const collection of [
       'recipes',
-      'dishes',
+      'items',
       'prep-items',
       'supplier-ingredients',
     ]) {
@@ -48,7 +48,7 @@ export async function deleteKitchenIngredient(event: H3Event, input: unknown) {
                     .filter((row) => row?.kind === 'ingredient')
                     .map((row) => ({ ingredient_id: row.reference_id }))
                 : data.preparation?.ingredients
-              : collection === 'dishes'
+              : collection === 'items'
                 ? data.spec?.ingredients
                 : collection === 'prep-items'
                   ? data.inputs

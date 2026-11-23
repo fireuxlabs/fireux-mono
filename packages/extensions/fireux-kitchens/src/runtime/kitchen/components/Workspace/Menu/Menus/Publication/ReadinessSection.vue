@@ -9,7 +9,7 @@
       >{{ section.label || 'Section' }}</NuxtLink
     >
     <ul class="fx-type-caption">
-      <li v-for="issue in report.result.issues" :key="issue.itemId">
+      <li v-for="issue in report.result.issues" :key="issue.entryId">
         <span class="fx-type-caption">{{ issue.name }}</span> —
         {{ issue.reason }}
       </li>

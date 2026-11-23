@@ -22,7 +22,7 @@ const emit = defineEmits<{
   result: [value: 'pending' | 'error' | 'empty' | 'match']
 }>()
 const {
-  itemId: dishId,
+  itemId,
   storageKitchenId,
   databaseId,
   rootCollection,
@@ -34,7 +34,7 @@ const { items, pending, error } = useMenuEntryCollection(
   { databaseId, kitchenCollectionPath: rootCollection }
 )
 const matches = computed(() =>
-  items.value.filter((item) => item.dish_id === dishId.value)
+  items.value.filter((item) => item.item_id === itemId.value)
 )
 const destination = computed(() =>
   props.menu.schedule === 'daily'
@@ -42,7 +42,7 @@ const destination = computed(() =>
     : `/workspace/kitchen/menu/${encodeURIComponent(props.menu.slug)}?section=${encodeURIComponent(props.section.id)}`
 )
 watch(
-  [pending, error, matches, dishId],
+  [pending, error, matches, itemId],
   () =>
     emit(
       'result',

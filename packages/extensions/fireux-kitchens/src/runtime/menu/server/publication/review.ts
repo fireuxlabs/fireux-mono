@@ -137,7 +137,7 @@ export async function readKitchenMenuReview(
           Number(a.data.sort_order || 0) - Number(b.data.sort_order || 0) ||
           a.id.localeCompare(b.id)
       )) {
-      if (!row.data.dish_id || row.data.promotion_id)
+      if (!row.data.item_id || row.data.promotion_id)
         throw createError({
           statusCode: 409,
           statusMessage:
@@ -145,7 +145,7 @@ export async function readKitchenMenuReview(
         })
       const dish = await tx.read(
         serverKitchenItemsTarget(kitchenId),
-        String(row.data.dish_id)
+        String(row.data.item_id)
       )
       if (!dish.exists || dish.data?.status === 'archived')
         throw createError({

@@ -2,7 +2,7 @@
   <ItemPlacement
     v-if="menuSlug && kitchenSlug"
     :key="`${kitchenSlug}/${menuSlug}/${item.id}`"
-    :dish-id="item.id"
+    :item-id="item.id"
     :menu-slug="menuSlug"
     :kitchen-slug="kitchenSlug"
   />
@@ -33,7 +33,7 @@ const lookup = computed(() => {
   if (props.menu || !props.kitchenSlug || !props.item.id) return ''
   const query = new URLSearchParams({
     kitchenSlug: props.kitchenSlug,
-    dishId: props.item.id,
+    itemId: props.item.id,
     limit: '1',
   })
   return `/api/menus?${query}`

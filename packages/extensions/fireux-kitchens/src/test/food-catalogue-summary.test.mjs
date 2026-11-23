@@ -20,10 +20,10 @@ test('Menu summary separates drafts and excludes daily and archived menus', () =
 })
 test('Promotions flag incomplete choices and missing dishes without treating no promotions as a problem', () => {
   assert.deepEqual(foodPromotionSummary([],[]), {status:'No promotions',flags:[]})
-  const offer={name:'Sunday',status:'active',days:['sunday'],dishes:[{dishId:'pizza',price:11}]}
+  const offer={name:'Sunday',status:'active',days:['sunday'],dishes:[{item_id:'pizza',price:11}]}
   assert.deepEqual(foodPromotionSummary([offer],[{id:'pizza'}]).flags,[])
   assert.equal(foodPromotionSummary([offer],[]).flags.length,1)
-  const deal={name:'Lunch',status:'paused',days:['monday'],price:15,groups:[{name:'Main',choose:1,dishes:[{dishId:'pizza',supplement:0}]}]}
+  const deal={name:'Lunch',status:'paused',days:['monday'],price:15,groups:[{name:'Main',choose:1,dishes:[{item_id:'pizza',supplement:0}]}]}
   assert.deepEqual(foodPromotionSummary([deal],[{id:'pizza'}]),{status:'0 active · 1 paused',flags:[]})
   deal.groups[0].choose=2
   assert.equal(foodPromotionSummary([deal],[{id:'pizza'}]).flags.length,1)

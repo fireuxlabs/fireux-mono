@@ -69,7 +69,7 @@ const dishes = props.sectionContext
       error: props.sectionContext.itemSource.error,
     }
   : useKitchenChildCollection<Record<string, unknown>>(
-      'dishes',
+      'items',
       storageKitchenId,
       options
     )

@@ -49,7 +49,7 @@ test('placements retain only references while date withdrawal and disabled trans
   const placement = records.get(
     `${fixtureMenuPath}/sections/selection/items/roll-placement`
   )
-  assert.equal(placement.dish_id, 'roll')
+  assert.equal(placement.item_id, 'roll')
   for (const field of [
     'name',
     'price',

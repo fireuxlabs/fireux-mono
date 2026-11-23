@@ -31,14 +31,14 @@ export async function readMenuPromotions(
       })
       if (!('dishes' in promotion)) return []
       const visibleItems = promotion.dishes.filter((dish) =>
-        itemIds.includes(dish.dishId)
+        itemIds.includes(dish.item_id)
       )
       if (!visibleItems.length) return []
       if (promotion.currency !== currency || !timezone)
         throw new Error(
           'Promotion currency and venue timezone must be configured.'
         )
-      return [{ ...promotion, dishes: visibleItems, id: doc.id, timezone }]
+      return [{ ...promotion, dishes: visibleItems.map(({ item_id, price }) => ({ itemId: item_id, price })), id: doc.id, timezone }]
     })
     .sort((a, b) => a.id.localeCompare(b.id))
 }

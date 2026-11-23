@@ -37,8 +37,8 @@ export type Item = {
 
 export const ItemStorage = {
   shape: 'scoped',
-  path: 'kitchens/{kitchenId}/items/{dishId}',
+  path: 'kitchens/{kitchenId}/items/{itemId}',
   collection: 'items',
   parent: 'kitchen',
-  idParam: 'dishId',
+  idParam: 'itemId',
 } as const

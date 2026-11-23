@@ -62,12 +62,12 @@ export function planKitchenMenuDraft(
         item.name
       )
       // A source creates its own Items; a matching catalogue name is not identity.
-      const dishId = createHash('sha256')
+      const itemId = createHash('sha256')
         .update(JSON.stringify([input.menuId, sourceItemKey]))
         .digest('hex')
         .slice(0, 32)
-      const itemId = `${dishId}-${itemIndex + 1}`
-      const itemKey = `dish:${fieldSegment(sectionId)}__${fieldSegment(itemId)}`
+      const entryId = `${itemId}-${itemIndex + 1}`
+      const itemKey = `dish:${fieldSegment(sectionId)}__${fieldSegment(entryId)}`
       const addOns = normalizeItemAddOns(item.add_ons)
       const priceOptions = normalizeItemPriceOptions(item.price_options)
       appendKitchenMenuCacheUnits(sproochliCacheUnits, {
@@ -116,15 +116,15 @@ export function planKitchenMenuDraft(
       )
 
       return {
+        entryId,
         itemId,
-        dishId,
         catalogueItemData: {
-          id: dishId,
+          id: itemId,
           price,
           price_options: priceOptions,
           add_ons: addOns,
           name: text(item.name),
-          slug: dishId,
+          slug: itemId,
           item_kind: item.item_kind,
           kitchen_id: input.kitchenId,
           created: stamp,
@@ -134,11 +134,11 @@ export function planKitchenMenuDraft(
             : {}),
         },
         itemData: {
-          id: itemId,
+          id: entryId,
           kitchen_id: input.kitchenId,
           menu_id: input.menuId,
           section_id: sectionId,
-          dish_id: dishId,
+          item_id: itemId,
           status: 'active',
           sort_order: itemIndex,
           created: stamp,

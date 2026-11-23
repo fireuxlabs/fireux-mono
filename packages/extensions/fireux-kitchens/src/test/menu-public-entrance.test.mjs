@@ -126,7 +126,7 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
               items: [
                 {
                   id: 'entry',
-                  dishId: 'octopus-roll',
+                  itemId: 'octopus-roll',
                   imageUrl: '',
                   priceLabel: '',
                   priceOptions: [],

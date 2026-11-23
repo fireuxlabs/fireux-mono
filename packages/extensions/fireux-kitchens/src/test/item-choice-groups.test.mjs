@@ -99,7 +99,7 @@ test('promotions replace full choice prices and retain additional charges', () =
   const values = groups()
   const item = {
     id: 'i',
-    dishId: 'dish',
+    itemId: 'dish',
     name: 'Item',
     price: 1,
     priceOptions: [],
@@ -115,7 +115,7 @@ test('promotions replace full choice prices and retain additional charges', () =
         status: 'active',
         currency: 'CHF',
         days: ['monday'],
-        dishes: [{ dishId: 'dish', price: 10 }],
+        dishes: [{ itemId: 'dish', price: 10 }],
       },
     ],
     'monday'

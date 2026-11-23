@@ -302,14 +302,14 @@ test('update validates nested specification; deletion remains document-only', as
     {},
     {
       kitchenId: 'k',
-      dishId: 'existing',
+      itemId: 'existing',
       changes: { name: ' New ', spec },
     }
   )
   assert.equal(h.writes[0][3].name, 'New')
   assert.deepEqual(h.writes[0][3].spec, spec)
   assert.equal('image' in h.writes[0][3], false)
-  await h.deleteItem({}, { kitchenId: 'k', dishId: 'existing' })
+  await h.deleteItem({}, { kitchenId: 'k', itemId: 'existing' })
   assert.deepEqual(h.writes[1], ['delete', 'dishes/k', 'existing'])
 })
 test('all commands enforce transaction-time current membership and bound Kitchen grant', async () => {
@@ -333,8 +333,8 @@ test('all commands enforce transaction-time current membership and bound Kitchen
         action === 'createItem'
           ? { kitchenId: 'k', draft: { name: 'New' } }
           : action === 'updateItem'
-            ? { kitchenId: 'k', dishId: 'existing', changes: { name: 'New' } }
-            : { kitchenId: 'k', dishId: 'existing' }
+            ? { kitchenId: 'k', itemId: 'existing', changes: { name: 'New' } }
+            : { kitchenId: 'k', itemId: 'existing' }
       await assert.rejects(h[action]({}, input))
       assert.equal(h.writes.length, 0)
     }
@@ -345,7 +345,7 @@ test('retired Item category writes are rejected without changing records', async
     await assert.rejects(
       h.updateItem(
         {},
-        { kitchenId: 'k', dishId: 'existing', changes: { category } }
+        { kitchenId: 'k', itemId: 'existing', changes: { category } }
       ),
       /Unsupported/
     )
@@ -357,7 +357,7 @@ test('ordinary Item updates preserve stored legacy category values without proje
   h.records.get('dishes/k/existing').category = 'main'
   await h.updateItem(
     {},
-    { kitchenId: 'k', dishId: 'existing', changes: { name: 'Renamed' } }
+    { kitchenId: 'k', itemId: 'existing', changes: { name: 'Renamed' } }
   )
   assert.equal(h.records.get('dishes/k/existing').category, 'main')
   assert.deepEqual(h.writes[0].slice(0, 3), ['update', 'dishes/k', 'existing'])
@@ -386,7 +386,7 @@ test('update rejects protected/unknown fields, malformed spec and missing record
   ]) {
     const h = harness()
     await assert.rejects(
-      h.updateItem({}, { kitchenId: 'k', dishId: 'existing', changes })
+      h.updateItem({}, { kitchenId: 'k', itemId: 'existing', changes })
     )
     assert.equal(h.writes.length, 0)
   }
@@ -394,7 +394,7 @@ test('update rejects protected/unknown fields, malformed spec and missing record
   await assert.rejects(
     h.updateItem(
       {},
-      { kitchenId: 'k', dishId: 'missing', changes: { name: 'New' } }
+      { kitchenId: 'k', itemId: 'missing', changes: { name: 'New' } }
     ),
     { statusCode: 404 }
   )
@@ -422,7 +422,7 @@ test('Item transport snapshots nested input and invalidates account/Kitchen roun
       const user = { uid: 'u', getIdToken: () => token },
         currentUser = ref(user),
         selectedId = ref('k'),
-        routePath = ref('/dishes/cola'),
+        routePath = ref('/items/cola'),
         calls = [],
         disposed = []
       const useItemActions = load(
@@ -458,8 +458,8 @@ test('Item transport snapshots nested input and invalidates account/Kitchen roun
       }
       if (scope === 'dispose') disposed.forEach((fn) => fn())
       if (scope === 'route') {
-        routePath.value = '/dishes/other'
-        routePath.value = '/dishes/cola'
+        routePath.value = '/items/other'
+        routePath.value = '/items/cola'
       }
       if (scope === 'kitchen') {
         selectedId.value = 'other'
@@ -505,9 +505,9 @@ test('Item actions send the exact command envelopes from one editor scope', asyn
     ['POST', { draft: { name: 'Item' }, kitchenId: 'k' }],
     [
       'PATCH',
-      { dishId: 'dish', changes: { description: 'Copy' }, kitchenId: 'k' },
+      { itemId: 'dish', changes: { description: 'Copy' }, kitchenId: 'k' },
     ],
-    ['DELETE', { dishId: 'dish', kitchenId: 'k' }],
+    ['DELETE', { itemId: 'dish', kitchenId: 'k' }],
   ])
 })
 
@@ -579,7 +579,7 @@ test('Item specifications reject explicit null/coercion and detach every nested 
     await assert.rejects(
       h.updateItem(
         {},
-        { kitchenId: 'k', dishId: 'existing', changes: { spec } }
+        { kitchenId: 'k', itemId: 'existing', changes: { spec } }
       ),
       { statusCode: 400 }
     )
@@ -590,7 +590,7 @@ test('Item specifications reject explicit null/coercion and detach every nested 
     spec = linkedSpec()
   const pending = h.updateItem(
     {},
-    { kitchenId: 'k', dishId: 'existing', changes: { spec } }
+    { kitchenId: 'k', itemId: 'existing', changes: { spec } }
   )
   spec.ingredients[0].quantity = 999
   spec.prep_items[0].prep_item_id = 'other'
@@ -627,7 +627,7 @@ test('Item specification commit reads exact Kitchen associations and rejects mis
           {},
           {
             kitchenId: 'k',
-            dishId: 'existing',
+            itemId: 'existing',
             changes: { spec: linkedSpec() },
           }
         ),
@@ -645,11 +645,11 @@ test('Item identity-only updates leave untouched links alone and document-only d
     {},
     {
       kitchenId: 'k',
-      dishId: 'existing',
+      itemId: 'existing',
       changes: { description: 'Fresh copy' },
     }
   )
-  await h.deleteItem({}, { kitchenId: 'k', dishId: 'missing' })
+  await h.deleteItem({}, { kitchenId: 'k', itemId: 'missing' })
   assert.equal(
     h.reads.some(
       (path) =>
@@ -668,7 +668,7 @@ test('Item update rejects a foreign stored Kitchen without changing identity or 
   await assert.rejects(
     h.updateItem(
       {},
-      { kitchenId: 'k', dishId: 'existing', changes: { name: 'Changed' } }
+      { kitchenId: 'k', itemId: 'existing', changes: { name: 'Changed' } }
     ),
     { statusCode: 409 }
   )
@@ -706,7 +706,7 @@ for (const reference of [
         status: 'archived',
       })
       h.records.set('kitchens/k/menus/m/sections/s/items/i', {
-        dish_id: 'existing',
+        item_id: 'existing',
         status: 'archived',
       })
     } else
@@ -715,17 +715,17 @@ for (const reference of [
         reference === 'meal deal'
           ? {
               name: 'Meal',
-              groups: [{ dishes: [{ dishId: 'existing', supplement: 0 }] }],
+              groups: [{ dishes: [{ item_id: 'existing', supplement: 0 }] }],
             }
           : {
               name: 'Sunday',
               status: 'paused',
-              dishes: [{ dishId: 'existing', price: 11 }],
+              dishes: [{ item_id: 'existing', price: 11 }],
             }
       )
     const before = structuredClone(h.records)
     await assert.rejects(
-      h.deleteItem({}, { kitchenId: 'k', dishId: 'existing' }),
+      h.deleteItem({}, { kitchenId: 'k', itemId: 'existing' }),
       (error) => error.statusCode === 409 && error.data.usages.length === 1
     )
     assert.deepEqual(h.records, before)
@@ -739,12 +739,12 @@ test('Item deletion rechecks references on transaction retry', async () => {
     retry: (records) => {
       records.set('kitchens/k/promotions/p', {
         name: 'New deal',
-        groups: [{ dishes: [{ dishId: 'existing' }] }],
+        groups: [{ dishes: [{ item_id: 'existing' }] }],
       })
     },
   })
   await assert.rejects(
-    h.deleteItem({}, { kitchenId: 'k', dishId: 'existing' }),
+    h.deleteItem({}, { kitchenId: 'k', itemId: 'existing' }),
     { statusCode: 409 }
   )
   assert.deepEqual(h.writes, [])
@@ -754,9 +754,9 @@ test('Item deletion never scans another Kitchen', async () => {
   const h = harness()
   h.records.set('kitchens/other/promotions/p', {
     name: 'Other',
-    dishes: [{ dishId: 'existing', price: 11 }],
+    dishes: [{ item_id: 'existing', price: 11 }],
   })
-  await h.deleteItem({}, { kitchenId: 'k', dishId: 'existing' })
+  await h.deleteItem({}, { kitchenId: 'k', itemId: 'existing' })
   assert.equal(h.writes[0][0], 'delete')
   assert.ok(h.reads.every((path) => !path.includes('kitchens/other')))
 })
@@ -766,7 +766,7 @@ test('Item deletion refuses an incomplete usage scan', async () => {
   for (let index = 0; index < 1000; index++)
     h.records.set(`kitchens/k/promotions/${index}`, { dishes: [] })
   await assert.rejects(
-    h.deleteItem({}, { kitchenId: 'k', dishId: 'existing' }),
+    h.deleteItem({}, { kitchenId: 'k', itemId: 'existing' }),
     /Too many records/
   )
   assert.deepEqual(h.writes, [])
@@ -792,12 +792,12 @@ test('Item deletion protects every reference that Menu rendering resolves, inclu
     const items = 'kitchens/k/menus/m/sections/s/items'
     for (let index = 0; index < offset; index++)
       h.records.set(items + '/' + String(index).padStart(4, '0'), {
-        dish_id: 'unrelated',
+        item_id: 'unrelated',
       })
-    h.records.set(items + '/target', { dish_id: reference })
+    h.records.set(items + '/target', { item_id: reference })
     const db = {
       collection(path) {
-        const target = path === 'kitchens/k/dishes' ? 'dishes/k' : path
+        const target = path === 'kitchens/k/items' ? 'dishes/k' : path
         return {
           get: async () => ({
             docs: [...h.records]
@@ -824,7 +824,7 @@ test('Item deletion protects every reference that Menu rendering resolves, inclu
       ['Existing']
     )
     await assert.rejects(
-      h.deleteItem({}, { kitchenId: 'k', dishId: 'existing' }),
+      h.deleteItem({}, { kitchenId: 'k', itemId: 'existing' }),
       {
         statusCode: 409,
       }
@@ -845,9 +845,9 @@ test('Item deletion completes all item pages before deciding a Menu has no refer
   const items = 'kitchens/k/menus/m/sections/s/items'
   for (let index = 0; index < 1001; index++)
     h.records.set(items + '/' + String(index).padStart(4, '0'), {
-      dish_id: 'unrelated',
+      item_id: 'unrelated',
     })
-  await h.deleteItem({}, { kitchenId: 'k', dishId: 'existing' })
+  await h.deleteItem({}, { kitchenId: 'k', itemId: 'existing' })
   assert.deepEqual(h.writes, [['delete', 'dishes/k', 'existing']])
   assert.equal(h.reads.filter((target) => target === items).length, 12)
 })
@@ -946,7 +946,7 @@ test('new Items need no Food/Drink type; group and Station references are checke
     {},
     {
       kitchenId: 'k',
-      dishId: 'existing',
+      itemId: 'existing',
       changes: { preparation_station_ids: ['bar'] },
     }
   )
@@ -955,7 +955,7 @@ test('new Items need no Food/Drink type; group and Station references are checke
     {},
     {
       kitchenId: 'k',
-      dishId: 'existing',
+      itemId: 'existing',
       changes: { preparation_station_ids: null },
     }
   )
@@ -966,7 +966,7 @@ test('new Items need no Food/Drink type; group and Station references are checke
       {},
       {
         kitchenId: 'k',
-        dishId: 'existing',
+        itemId: 'existing',
         changes: { preparation_station_ids: ['foreign'] },
       }
     ),
@@ -995,7 +995,7 @@ test('authorized Item update stores choice prices and removes a prior base price
     {},
     {
       kitchenId: 'k',
-      dishId: 'existing',
+      itemId: 'existing',
       changes: {
         currency_code: 'CHF',
         choice_groups: groups,
@@ -1010,7 +1010,7 @@ test('authorized Item update stores choice prices and removes a prior base price
   await assert.rejects(
     denied.updateItem(
       {},
-      { kitchenId: 'k', dishId: 'existing', changes: { choice_groups: groups } }
+      { kitchenId: 'k', itemId: 'existing', changes: { choice_groups: groups } }
     )
   )
   assert.equal(denied.writes.length, 0)
@@ -1031,7 +1031,7 @@ test('minimal Item creation composes selling defaults without redundant identity
     {},
     {
       kitchenId: 'k',
-      dishId: 'minimal',
+      itemId: 'minimal',
       changes: { description: 'Updated identity' },
     }
   )

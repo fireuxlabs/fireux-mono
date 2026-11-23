@@ -21,7 +21,7 @@ function fixture(createItem = async () => {}) {
     menuId: ref('m'),
     sectionId: ref('s'),
     canWrite: ref(true),
-    activeItemRows: ref([{ dishId: 'placed' }]),
+    activeItemRows: ref([{ itemId: 'placed' }]),
     itemsOutcome: ref('ready'),
     itemSource: {
       outcome: ref('ready'),
@@ -69,7 +69,7 @@ test('search finds descriptions, keeps selection across filters, and skips exist
   f.state.query.value = 'burger'
   assert.equal(await f.state.add(), 2)
   assert.deepEqual(
-    calls.map((x) => x.dishId),
+    calls.map((x) => x.itemId),
     ['a', 'b']
   )
   assert.ok(
@@ -84,8 +84,8 @@ test('partial failure keeps remaining choices and retry does not duplicate succe
   const calls = []
   let fail = true
   const f = fixture(async (input) => {
-    calls.push(input.dishId)
-    if (input.dishId === 'b' && fail) throw Error('Offline')
+    calls.push(input.itemId)
+    if (input.itemId === 'b' && fail) throw Error('Offline')
   })
   f.state.selected.value = ['a', 'b']
   await f.state.add()
@@ -100,7 +100,7 @@ test('scope disposal stops a batch before its next command or completion feedbac
   let resolve
   const calls = []
   const f = fixture((input) => {
-    calls.push(input.dishId)
+    calls.push(input.itemId)
     return new Promise((done) => (resolve = done))
   })
   f.state.selected.value = ['a', 'b']

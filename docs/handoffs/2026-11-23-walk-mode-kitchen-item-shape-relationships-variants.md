@@ -86,8 +86,8 @@ remain open. Stage 1 made no live writes or storage-path changes.
 ## Stage 2 checkpoint and migration plan
 
 Stage 1 is published as [`426219c59`](https://github.com/fireuxlabs/fireux-mono/commit/426219c594d7ca14034b13b0362e3d5a12585cac).
-Stage 2 is blocked on a coordinated data and runtime cutover. This checkpoint
-contains the inventory and proposed release plan.
+Stage 2 requires a coordinated data and runtime release. The inventory below
+records why, and the offline rehearsal records what is now verified.
 
 ### Live inventory
 
@@ -129,9 +129,12 @@ placements. Neither change can ship independently.
 - Align the [Promotion reference contract](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/menus/promotions/promotion.ts)
   and [Item usage guard](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/items/usage.ts)
   with the new field. The guard must continue counting paused Promotions and
-  archived placements. Review persisted Order, Submitted Order and Sale
-  identifiers with their owners before converting history or changing report
-  readers. Preserve ordering idempotency and recorded amounts.
+  archived placements. Leave legacy Orders, Submitted Orders and Sales unchanged. Preserve the
+  version 1 Sale parser and reporting aggregation, order idempotency and
+  recorded prices. The historical checkout command resolved
+  `menu.selections[].itemId` under the selected Menu Section's placement
+  collection. These values identify placements in that snapshot contract.
+  [Historical checkout command](https://github.com/fireuxlabs/fireux-mono/blob/330c4384fa/packages/extensions/fireux-kitchens/src/runtime/menu/server/ordering.ts#L117-L139)
 - Update the [Rules source](../../packages/ecosystem/fireux-misebox/src/config/firebase/rules/kitchen-operations.rules),
   preserving the same-Kitchen check, immutable placement reference and existing
   authorization. Rehearse the generated policy and verify query/index coverage.
@@ -140,9 +143,10 @@ placements. Neither change can ship independently.
 
 ### Proposed migration and release sequence for approval
 
-1. Resolve ownership of the historical Order and Sale fields, including the 66
-   unmatched Order values, and verify what Submitted Order selections identify.
-   Inventory all deploying Apps and background writers that share this named
+1. Exclude historical Orders, Sales and Submitted Orders from the write set.
+   The 66 unmatched Order values remain historical facts with unresolved
+   catalogue provenance. Do not infer matches. Inventory all deploying Apps
+   and background writers that share this named
    database, including importers. Repeat the inventory immediately before
    release and identify any destination conflicts. Stop on an unresolved
    catalogue or placement conflict instead of overwriting a record.
@@ -158,15 +162,17 @@ placements. Neither change can ship independently.
 4. In the same coordinated release window, replace reference fields in place,
    preserving each MenuEntry ID, order, status and timestamps. Verify every
    placement and Promotion resolves within its Kitchen. Release the complete
-   reader/writer and Rules cutover as a unit before reopening writes. Rehearse
-   no permanent dual-field support, owner and cross-user access, signed-out
-   Menu and food search, signed-in edit, ordering price resolution and the
-   two-Menu deletion guard.
+   reader/writer and Rules cutover as a unit before reopening writes. Confirm that all 991 placements in the audited
+   snapshot, plus any changes in the refreshed inventory, resolve without
+   legacy placement fields. Verify Promotions, authorization, public Menu and
+   food search, signed-in edit, ordering prices and the two-Menu deletion
+   guard. Compare historical Finance output against the baseline.
 5. If verification fails, keep writes paused and restore the exact reference
    preimages, prior runtime and prior Rules together. Roll back only verified
    migration-created destinations and only when their versions still match
-   the journal. Resume writes after baseline read and authorization checks
-   pass. Retire legacy catalogue documents only with separate approval after a
+   the journal. Make the rollback decision while writers are paused.
+   Once writes resume, any recovery requires a separate reconciliation plan.
+   Resume writes after baseline read and authorization checks pass. Retire legacy catalogue documents only with separate approval after a
    verified release and rollback window.
 
 ### Verification at this checkpoint
@@ -182,3 +188,35 @@ typecheck and lint passed. The wider Kitchen contracts check reproduced the
 same 23 diagnostics. The signed-in browser check of the cutover remains open.
 This checkpoint contains no runtime or Rules changes. No live Firestore writes
 or deployment were performed.
+
+### Offline implementation and rehearsal
+
+- The Workspace and public readers, Item APIs and route parameters, Menu
+  placement commands, Promotion commands, import references and deletion guard
+  use the new contract. Firestore stores `item_id` in MenuEntries and in
+  Promotion choices. API inputs use `itemId` for the catalogue Item and
+  `entryId` for placement edits, moves and removals.
+- Menu publication accepts valid full-price groups without a stored base price.
+  The Stage 1 Item write rules still require explicit currency for priced Items.
+  Existing bare prices were carried forward as-is in the migration rehearsal.
+  The reviewed Menu import keeps its existing pricing representation during
+  this reference cutover, and no historical currency backfill is part of it.
+- The loopback-only [rehearsal](../../tools/misebox-migrations/rehearse-item-reference-cutover.mjs)
+  copied a missing Item, skipped an identical destination, rejected a conflicting
+  destination, rewrote two placements and both Promotion forms, and restored
+  the exact fixtures. It refused rollback after a subsequent write. Legacy
+  Order, Submitted Order and version 1 Sale fixture snapshots were unchanged.
+- The separate restricted production-candidate Rules suite passed on the named
+  `misebox` emulator. The live policy and live records remain untouched.
+  Production still needs reviewed migration tooling and a frozen release
+  inventory. Keep the local candidate out of the release pipeline until those
+  gates and production authorization are satisfied.
+
+The current candidate passed 169 focused tests, 29 named-database Rules tests,
+Item and commerce typechecks, lint and full Misebox preparation. The wider
+400-test selection passed 397 and reproduced the three baseline presentation
+failures. The wider Kitchen contracts typecheck retained 23 diagnostics.
+Authenticated HTTP tests passed standalone Item CRUD and the two-Menu placement
+and deletion guard. Signed-out HTTP verified public Menu and food search
+against an `items`-only catalogue. The Firefox check did not reach signed-in
+verification.

@@ -546,7 +546,7 @@ test('Menu owner fingerprints customer-facing content, not internal context, and
       },
     ],
     [
-      'kitchens/kitchen/dishes/dish',
+      'kitchens/kitchen/items/dish',
       {
         name: 'TEST soup',
         description: 'Tomato',
@@ -564,7 +564,7 @@ test('Menu owner fingerprints customer-facing content, not internal context, and
     readAll: async (t) =>
       t.collectionPath.endsWith('/sections')
         ? [{ id: 'section', data: { label: 'TEST snacks', sort_order: 0 } }]
-        : [{ id: 'item', data: { dish_id: 'dish', sort_order: 0 } }],
+        : [{ id: 'item', data: { item_id: 'dish', sort_order: 0 } }],
   }
   const { readKitchenMenuReview } = load(
     '../../../../packages/extensions/fireux-kitchens/src/runtime/menu/server/publication/review.ts',
@@ -578,7 +578,7 @@ test('Menu owner fingerprints customer-facing content, not internal context, and
         target(`kitchens/${k}/menus/${m}/sections`),
       serverKitchenMenuItemsTarget: (k, m, s) =>
         target(`kitchens/${k}/menus/${m}/sections/${s}/items`),
-      serverKitchenItemsTarget: (k) => target(`kitchens/${k}/dishes`),
+      serverKitchenItemsTarget: (k) => target(`kitchens/${k}/items`),
       readItemPricing: (data) => ({
         price: data.price,
         price_options: [],
@@ -594,12 +594,12 @@ test('Menu owner fingerprints customer-facing content, not internal context, and
   )
   const initial = await readKitchenMenuReview(tx, 'kitchen', 'menu')
   assert.equal(JSON.stringify(initial).includes('PRIVATE'), false)
-  rows.get('kitchens/kitchen/dishes/dish').context = 'Changed internal context'
+  rows.get('kitchens/kitchen/items/dish').context = 'Changed internal context'
   assert.equal(
     (await readKitchenMenuReview(tx, 'kitchen', 'menu')).revision,
     initial.revision
   )
-  rows.get('kitchens/kitchen/dishes/dish').price = 9
+  rows.get('kitchens/kitchen/items/dish').price = 9
   assert.notEqual(
     (await readKitchenMenuReview(tx, 'kitchen', 'menu')).revision,
     initial.revision

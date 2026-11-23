@@ -20,9 +20,9 @@ import { validateItemSpecification } from '../../utils/item-specification'
 import { itemFields, itemText, validateItemInput } from './record-input'
 
 export async function updateItem(event: H3Event, input: unknown) {
-  const value = itemFields(input, ['kitchenId', 'dishId', 'changes'])
+  const value = itemFields(input, ['kitchenId', 'itemId', 'changes'])
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
-  const itemId = requireFirestoreDocumentId(value.dishId, 'Item id')
+  const itemId = requireFirestoreDocumentId(value.itemId, 'Item id')
   const changes = itemFields(value.changes, [
     'name',
     'slug',

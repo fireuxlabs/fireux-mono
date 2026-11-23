@@ -16,7 +16,7 @@ const writeMarker = 'fireuxItemImageWriteId'
 type ItemImageTarget = {
   appId: string
   kitchenId: string
-  dishId: string
+  itemId: string
 }
 
 type StorageBucket = ReturnType<ReturnType<typeof getStorage>['bucket']>
@@ -86,7 +86,7 @@ export async function normalizeAndSaveItemImage(
   const downloadToken = randomUUID()
   const objectPath = itemImageStoragePath(
     input.kitchenId,
-    input.dishId,
+    input.itemId,
     uploadId
   )
   const bucketName = runtimeStorageBucketName()

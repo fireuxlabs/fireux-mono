@@ -77,7 +77,7 @@ function harness() {
       ],
       ['kitchens/k/menus/m', {}],
       ['kitchens/k/menus/m/sections/s', {}],
-      ['kitchens/k/dishes/d', {}],
+      ['kitchens/k/items/d', {}],
       ['kitchens/k/menus/m/sections/s/items/i', {}],
     ])
   let before = () => {}
@@ -101,7 +101,7 @@ function harness() {
     serverKitchenMenusTarget: (k) => target(k),
     serverKitchenMenuSectionsTarget: (k, m) => target(k, m),
     serverKitchenMenuItemsTarget: target,
-    serverKitchenItemsTarget: (k) => `kitchens/${k}/dishes`,
+    serverKitchenItemsTarget: (k) => `kitchens/${k}/items`,
     readKitchenMutationActor: async () => ({ uid: 'u', runtimeAppId: 'app' }),
     serverAuditStamp: (x) => ({ ...x, at: 'server-time' }),
     runGuardedServerTransaction: async (_, run) => {
@@ -171,7 +171,7 @@ const item = {
   kitchenId: 'k',
   menuId: 'm',
   sectionId: 's',
-  dishId: 'd',
+  itemId: 'd',
 }
 test('Menu content commands persist scoped sections/items without changing publication', async () => {
   const h = harness()
@@ -188,7 +188,7 @@ test('Menu content commands persist scoped sections/items without changing publi
   )
   assert.equal(itemWrite[1], 'kitchens/k/menus/m/sections/s/items')
   assert.equal(itemWrite[3].price, undefined)
-  assert.equal(itemWrite[3].dish_id, 'd')
+  assert.equal(itemWrite[3].item_id, 'd')
   assert.equal(itemWrite[3].sellable_id, undefined)
   await h.updateKitchenMenuSection(
     {},
@@ -241,7 +241,7 @@ test('Every content command rechecks membership and binding inside transaction',
           kitchenId: 'k',
           menuId: 'm',
           sectionId: 's',
-          itemId: 'i',
+          entryId: 'i',
           changes: { price: 2 },
         }
       ),
@@ -265,7 +265,7 @@ test('Content commands reject missing parent/foreign Item and caller-owned field
   for (const missing of [
     'kitchens/k/menus/m',
     'kitchens/k/menus/m/sections/s',
-    'kitchens/k/dishes/d',
+    'kitchens/k/items/d',
   ]) {
     const h = harness()
     h.records.delete(missing)
@@ -323,7 +323,7 @@ test('Placements reject all pricing fields but retain organisation edits', async
     await assert.rejects(
       h.updateKitchenMenuItem(
         {},
-        { kitchenId: 'k', menuId: 'm', sectionId: 's', itemId: 'i', changes }
+        { kitchenId: 'k', menuId: 'm', sectionId: 's', entryId: 'i', changes }
       ),
       { statusCode: 400 }
     )
@@ -336,7 +336,7 @@ test('Placements reject all pricing fields but retain organisation edits', async
       kitchenId: 'k',
       menuId: 'm',
       sectionId: 's',
-      itemId: 'i',
+      entryId: 'i',
       changes: { status: 'archived', sort_order: 2 },
     }
   )
@@ -354,7 +354,7 @@ const deal = () => ({
       id: 'pizza',
       name: 'Pizza',
       choose: 1,
-      dishes: [{ dishId: 'd', supplement: 0 }],
+      dishes: [{ item_id: 'd', supplement: 0 }],
     },
   ],
 })
@@ -369,14 +369,14 @@ test('Menu entries reference one meal deal without copying or changing its comme
   const [, path, , data] = h.writes[0]
   assert.equal(path, 'kitchens/k/menus/m/sections/s/items')
   assert.equal(data.promotion_id, 'deal')
-  assert.equal(Object.hasOwn(data, 'dish_id'), false)
+  assert.equal(Object.hasOwn(data, 'item_id'), false)
   assert.equal(Object.hasOwn(data, 'price'), false)
   assert.deepEqual(h.records, before)
 })
 test('Menu entry creation rejects mixed, missing, non-meal and Daily specials references', async () => {
   for (const input of [
     {},
-    { dishId: 'd', promotionId: 'deal' },
+    { itemId: 'd', promotionId: 'deal' },
     { promotionId: 'missing' },
   ]) {
     const h = harness()
@@ -399,7 +399,7 @@ test('Menu entry creation rejects mixed, missing, non-meal and Daily specials re
             status: 'active',
             currency: 'CHF',
             days: ['friday'],
-            dishes: [{ dishId: 'd', price: 11 }],
+            dishes: [{ item_id: 'd', price: 11 }],
           }
     )
     if (daily) h.records.set('kitchens/k/menus/m', { schedule: 'daily' })
@@ -418,7 +418,7 @@ test('removing a Menu entry deletes only that placement and preserves catalogue 
   const before = structuredClone(h.records)
   await h.removeKitchenMenuItem(
     {},
-    { kitchenId: 'k', menuId: 'm', sectionId: 's', itemId: 'i' }
+    { kitchenId: 'k', menuId: 'm', sectionId: 's', entryId: 'i' }
   )
   assert.deepEqual(h.writes, [
     ['delete', 'kitchens/k/menus/m/sections/s/items', 'i'],
@@ -441,7 +441,7 @@ test('Menu entry removal enforces current authority, parent scope and Daily enti
     await assert.rejects(
       h.removeKitchenMenuItem(
         {},
-        { kitchenId: 'k', menuId: 'm', sectionId: 's', itemId: 'i' }
+        { kitchenId: 'k', menuId: 'm', sectionId: 's', entryId: 'i' }
       )
     )
     assert.deepEqual(h.writes, [])
@@ -451,7 +451,7 @@ test('Menu entry removal enforces current authority, parent scope and Daily enti
 test('manual creation appends after stored gaps and serializes through the parent without price writes', async () => {
   const h = harness()
   h.records.set('kitchens/k/menus/m/sections/s/items/old', {
-    dish_id: 'another-dish',
+    item_id: 'another-dish',
     sort_order: 20,
     status: 'archived',
   })
@@ -478,9 +478,9 @@ test('manual creation appends after stored gaps and serializes through the paren
 
 test('Section archive and restore write only status/audit and retain Item and placement terms', async () => {
   const h = harness()
-  h.records.set('kitchens/k/dishes/d', { name: 'Pizza', price: 13 })
+  h.records.set('kitchens/k/items/d', { name: 'Pizza', price: 13 })
   h.records.set('kitchens/k/menus/m/sections/s/items/i', {
-    dish_id: 'd',
+    item_id: 'd',
     sort_order: 4,
   })
   const before = structuredClone([...h.records])

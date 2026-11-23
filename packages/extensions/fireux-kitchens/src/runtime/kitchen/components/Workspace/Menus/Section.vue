@@ -9,7 +9,7 @@
     />
     <ul v-else-if="read.items.value.length">
       <li v-for="entry in read.items.value" :key="entry.id">
-        {{ names.get(entry.dish_id || '') || 'Item unavailable' }}
+        {{ names.get(entry.item_id || '') || 'Item unavailable' }}
       </li>
     </ul>
     <p v-else>No Items in this section yet.</p>
@@ -31,13 +31,13 @@
     >
       <UFormField label="Existing Item" :name="`item-${section.id}`">
         <USelect
-          v-model="dishId"
+          v-model="itemId"
           :items="availableItems"
           placeholder="Choose an Item"
           :disabled="busy"
         />
       </UFormField>
-      <UButton type="submit" :loading="busy" :disabled="!dishId"
+      <UButton type="submit" :loading="busy" :disabled="!itemId"
         >Add to section</UButton
       >
       <UAlert v-if="failure" color="error" :title="failure" />
@@ -76,20 +76,20 @@ const names = computed(
   () => new Map(props.catalogue.map((item) => [item.id, item.name]))
 )
 const availableItems = computed(() => {
-  const placed = new Set(read.items.value.map((entry) => entry.dish_id))
+  const placed = new Set(read.items.value.map((entry) => entry.item_id))
   return props.catalogue
     .filter((item) => !placed.has(item.id))
     .map((item) => ({ label: item.name, value: item.id }))
     .sort((a, b) => a.label.localeCompare(b.label))
 })
-const dishId = ref<string>()
+const itemId = ref<string>()
 const busy = ref(false)
 const failure = ref('')
 const captureIntent = useMenuEditorScope([])
 const { createItem } = useMenuItemMutations()
 
 async function add() {
-  const selected = dishId.value
+  const selected = itemId.value
   if (
     props.readOnly ||
     busy.value ||
@@ -105,11 +105,11 @@ async function add() {
         kitchenId: props.kitchenId,
         menuId: props.menuId,
         sectionId: props.section.id,
-        dishId: selected,
+        itemId: selected,
       },
       isCurrent
     )
-    if (isCurrent()) dishId.value = undefined
+    if (isCurrent()) itemId.value = undefined
   } catch (error) {
     if (isCurrent())
       failure.value =

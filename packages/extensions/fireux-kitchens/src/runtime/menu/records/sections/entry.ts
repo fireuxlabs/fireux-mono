@@ -3,8 +3,8 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type MenuEntryStatus = 'active' | 'archived'
 export type MenuEntryReference =
-  | { dish_id: string; promotion_id?: never }
-  | { promotion_id: string; dish_id?: never }
+  | { item_id: string; promotion_id?: never }
+  | { promotion_id: string; item_id?: never }
 
 export type MenuEntry = FireuxStamped &
   MenuEntryReference & {
@@ -18,17 +18,17 @@ export type MenuEntry = FireuxStamped &
 
 export const MenuEntryStorage = {
   shape: 'scoped',
-  path: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
+  path: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{entryId}',
   collection: 'items',
   parent: 'menu-section',
-  idParam: 'itemId',
+  idParam: 'entryId',
 } as const
-export const MenuEntryDefaults: Extract<MenuEntry, { dish_id: string }> = {
+export const MenuEntryDefaults: Extract<MenuEntry, { item_id: string }> = {
   id: '',
   kitchen_id: '',
   menu_id: '',
   section_id: '',
-  dish_id: '',
+  item_id: '',
   status: 'active',
   sort_order: 0,
   created: {
@@ -51,7 +51,7 @@ export type MenuEntryUpdateInput = Partial<
     | 'kitchen_id'
     | 'menu_id'
     | 'section_id'
-    | 'dish_id'
+    | 'item_id'
     | 'promotion_id'
   >
 >

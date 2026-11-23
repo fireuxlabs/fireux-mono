@@ -93,7 +93,7 @@ export async function assertKitchenMenuCanPublish(
         items: items.map((item) => ({ ...item.data, id: item.id })),
       })
       for (const item of items) {
-        await readItem(text(item.data.dish_id))
+        await readItem(text(item.data.item_id))
         const id = text(item.data.promotion_id)
         if (!id || promotions.has(id)) continue
         const stored = await tx.read(
@@ -106,7 +106,7 @@ export async function assertKitchenMenuCanPublish(
           ? stored.data!.groups
           : [])
           for (const choice of Array.isArray(group?.dishes) ? group.dishes : [])
-            await readItem(text(choice?.dishId))
+            await readItem(text(choice?.item_id))
       }
     }
     const readiness = menuPublicationReadiness(
@@ -154,15 +154,15 @@ export async function assertKitchenMenuCanPublish(
           statusCode: 400,
           statusMessage: 'Choose one Item or meal deal in a regular Menu.',
         })
-      const dishId = text(item.data.dish_id)
-      if (!dishId)
+      const itemId = text(item.data.item_id)
+      if (!itemId)
         throw createError({
           statusCode: 400,
           statusMessage: 'Every menu item needs a dish',
         })
       const dish = await tx.read(
         serverKitchenItemsTarget(input.kitchenId),
-        dishId
+        itemId
       )
       if (
         !dish.exists ||
@@ -171,7 +171,7 @@ export async function assertKitchenMenuCanPublish(
       )
         throw createError({
           statusCode: 400,
-          statusMessage: `Menu item references missing dish: ${dishId}`,
+          statusMessage: `Menu item references missing dish: ${itemId}`,
         })
       try {
         readItemPricing(dish.data || {})

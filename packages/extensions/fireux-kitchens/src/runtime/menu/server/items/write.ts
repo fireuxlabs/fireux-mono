@@ -33,7 +33,7 @@ export async function createKitchenMenuItem(
   if (
     Object.keys(value).some(
       (key) =>
-        !['kitchenId', 'menuId', 'sectionId', 'dishId', 'promotionId'].includes(
+        !['kitchenId', 'menuId', 'sectionId', 'itemId', 'promotionId'].includes(
           key
         )
     )
@@ -45,13 +45,13 @@ export async function createKitchenMenuItem(
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
   const menuId = requireFirestoreDocumentId(value.menuId, 'Menu id')
   const sectionId = requireFirestoreDocumentId(value.sectionId, 'Section id')
-  if (Boolean(value.dishId) === Boolean(value.promotionId))
+  if (Boolean(value.itemId) === Boolean(value.promotionId))
     throw createError({
       statusCode: 400,
       statusMessage: 'Choose one Item or meal deal.',
     })
-  const dishId = value.dishId
-    ? requireFirestoreDocumentId(value.dishId, 'Item id')
+  const itemId = value.itemId
+    ? requireFirestoreDocumentId(value.itemId, 'Item id')
     : ''
   const promotionId = value.promotionId
     ? requireFirestoreDocumentId(value.promotionId, 'Promotion id')
@@ -65,8 +65,8 @@ export async function createKitchenMenuItem(
       const [menu, section, dish] = await Promise.all([
         tx.read(serverKitchenMenusTarget(kitchenId), menuId),
         tx.read(serverKitchenMenuSectionsTarget(kitchenId, menuId), sectionId),
-        dishId
-          ? tx.read(serverKitchenItemsTarget(kitchenId), dishId)
+        itemId
+          ? tx.read(serverKitchenItemsTarget(kitchenId), itemId)
           : tx.read(kitchenPromotionsTarget(kitchenId), promotionId),
       ])
       if (!menu.exists || !section.exists || !dish.exists)
@@ -117,9 +117,9 @@ export async function createKitchenMenuItem(
       while (matches.length <= 400) {
         const limit = Math.min(100, 401 - matches.length)
         const page = await tx.query(target, {
-          field: dishId ? 'dish_id' : 'promotion_id',
+          field: itemId ? 'item_id' : 'promotion_id',
           op: '==',
-          value: dishId || promotionId,
+          value: itemId || promotionId,
           limit,
           ...(afterId ? { afterId } : {}),
         })
@@ -162,7 +162,7 @@ export async function createKitchenMenuItem(
         kitchen_id: kitchenId,
         menu_id: menuId,
         section_id: sectionId,
-        ...(dishId ? { dish_id: dishId } : { promotion_id: promotionId }),
+        ...(itemId ? { item_id: itemId } : { promotion_id: promotionId }),
         sort_order,
         status: 'active',
         created: stamp,
@@ -183,7 +183,7 @@ export async function updateKitchenMenuItem(
     kitchenId?: unknown
     menuId?: unknown
     sectionId?: unknown
-    itemId?: unknown
+    entryId?: unknown
     changes?: unknown
   }
 ) {
@@ -193,7 +193,7 @@ export async function updateKitchenMenuItem(
     Array.isArray(input) ||
     Object.keys(input).some(
       (key) =>
-        !['kitchenId', 'menuId', 'sectionId', 'itemId', 'changes'].includes(key)
+        !['kitchenId', 'menuId', 'sectionId', 'entryId', 'changes'].includes(key)
     )
   )
     throw createError({
@@ -203,7 +203,7 @@ export async function updateKitchenMenuItem(
   const kitchenId = requireFirestoreDocumentId(input?.kitchenId, 'Kitchen id')
   const menuId = requireFirestoreDocumentId(input?.menuId, 'Menu id')
   const sectionId = requireFirestoreDocumentId(input?.sectionId, 'Section id')
-  const itemId = requireFirestoreDocumentId(input?.itemId, 'Item id')
+  const entryId = requireFirestoreDocumentId(input?.entryId, 'Menu entry id')
   let changes: Partial<MenuEntry>
   try {
     changes = normalizeMenuItemPatch(input?.changes as Partial<MenuEntry>)
@@ -228,7 +228,7 @@ export async function updateKitchenMenuItem(
         serverKitchenMenuSectionsTarget(kitchenId, menuId),
         sectionId
       ),
-      mutations.read(target, itemId),
+      mutations.read(target, entryId),
     ])
     if (!menu.exists || !section.exists || !item.exists)
       throw createError({
@@ -243,7 +243,7 @@ export async function updateKitchenMenuItem(
         statusCode: 403,
         statusMessage: 'Daily specials require Pro.',
       })
-    mutations.update(target, itemId, {
+    mutations.update(target, entryId, {
       ...changes,
       updated: serverAuditStamp({ by: actor.uid }),
     })

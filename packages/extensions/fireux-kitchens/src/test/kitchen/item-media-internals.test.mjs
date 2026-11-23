@@ -19,7 +19,7 @@ const createError = (input) =>
 const readString = (value) => (typeof value === 'string' ? value.trim() : '')
 const target = (path) => ({ collectionPath: path })
 const pathOf = (value, id) => value.collectionPath + '/' + id
-const serverKitchenItemsTarget = (id) => target('kitchens/' + id + '/dishes')
+const serverKitchenItemsTarget = (id) => target('kitchens/' + id + '/items')
 const serverAppUsersTarget = (id) => target('apps/' + id + '/users')
 const serverKitchenAccessTarget = () => target('kitchen_access')
 const KITCHEN_MUTATION_TARGETS = { kitchens: target('kitchens') }
@@ -36,7 +36,7 @@ const readKitchenAccessIds = load(
 
 function harness(options = {}) {
   const at = { seconds: 1, nanoseconds: 0 }
-  const itemPath = 'kitchens/k/dishes/d'
+  const itemPath = 'kitchens/k/items/d'
   const records = new Map([
     ['apps/app/users/u', { role: 'user', created: { at } }],
     ['kitchens/k', {}],
@@ -170,7 +170,7 @@ function harness(options = {}) {
     readString,
     serverKitchenItemsTarget,
     runGuardedServerTransaction: async (_, run) => transaction(run),
-    ItemStorage: { collection: 'dishes' },
+    ItemStorage: { collection: 'items' },
     serverAuditStamp: (value) => value,
     defineEventHandler: (handler) => handler,
     useRuntimeConfig: () => ({ public: { fireux: { id: 'app' } } }),
@@ -200,11 +200,11 @@ function harness(options = {}) {
   }
   return {
     image: load(
-      '../../runtime/server/api/workspace/kitchen/dishes/[dishId]/image.post.ts',
+      '../../runtime/server/api/workspace/kitchen/items/[itemId]/image.post.ts',
       deps
     ),
     flagship: load(
-      '../../runtime/server/api/workspace/kitchen/dishes/[dishId]/flagship.patch.ts',
+      '../../runtime/server/api/workspace/kitchen/items/[itemId]/flagship.patch.ts',
       deps
     ),
     records,
@@ -226,7 +226,7 @@ test('image attachment accepts canonical path identity without a duplicated stor
   assert.equal('id' in h.records.get(h.itemPath), false)
   assert.deepEqual(await h.image({}), {
     ok: true,
-    dish_id: 'd',
+    itemId: 'd',
     image: 'saved',
     object_path: 'immutable-object',
   })
@@ -276,7 +276,7 @@ test('image conflict or rejected pointer commit cleans only its unreferenced upl
   for (const options of [
     {
       duringUpload: (records) => {
-        records.get('kitchens/k/dishes/d').image = 'newer'
+        records.get('kitchens/k/items/d').image = 'newer'
       },
     },
     { outcome: 'reject' },
@@ -357,7 +357,7 @@ test('flagship rechecks current writer authority before promotion or removal', a
 test('flagship promotion reads every existing page before clearing other flags atomically', async () => {
   const h = harness()
   for (let i = 0; i < 103; i++)
-    h.records.set('kitchens/k/dishes/old-' + String(i).padStart(3, '0'), {
+    h.records.set('kitchens/k/items/old-' + String(i).padStart(3, '0'), {
       kitchen_id: 'k',
       is_flagship: true,
     })

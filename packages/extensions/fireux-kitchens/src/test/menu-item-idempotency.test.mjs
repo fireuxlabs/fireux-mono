@@ -17,7 +17,7 @@ function harness() {
     ['k/menus/m', { status: 'published' }],
     ['k/menus/m/sections/s', {}],
     ['k/menus/m/sections/other', {}],
-    ['k/dishes/d', { name: 'Pizza', price: 13 }],
+    ['k/items/d', { name: 'Pizza', price: 13 }],
     [
       'k/promotions/p',
       {
@@ -31,7 +31,7 @@ function harness() {
             id: 'main',
             name: 'Main',
             choose: 1,
-            dishes: [{ dishId: 'd', supplement: 0 }],
+            dishes: [{ item_id: 'd', supplement: 0 }],
           },
         ],
       },
@@ -57,7 +57,7 @@ function harness() {
     serverKitchenMenuSectionsTarget: (k, m) => `${k}/menus/${m}/sections`,
     serverKitchenMenuItemsTarget: (k, m, s) =>
       `${k}/menus/${m}/sections/${s}/items`,
-    serverKitchenItemsTarget: (k) => `${k}/dishes`,
+    serverKitchenItemsTarget: (k) => `${k}/items`,
     kitchenPromotionsTarget: (k) => `${k}/promotions`,
     normalizeMenuItemPatch: (x) => x,
     // Optimistic transaction simulation: overlapping commits retry against fresh data.
@@ -144,19 +144,19 @@ function harness() {
     },
   }
 }
-for (const reference of [{ dishId: 'd' }, { promotionId: 'p' }]) {
-  const kind = reference.dishId ? 'Item' : 'meal deal'
+for (const reference of [{ itemId: 'd' }, { promotionId: 'p' }]) {
+  const kind = reference.itemId ? 'Item' : 'meal deal'
   const body = { kitchenId: 'k', menuId: 'm', sectionId: 's', ...reference }
   test(`${kind}: repeat Add returns the saved placement with no further writes`, async () => {
     const h = harness(),
-      beforeItem = structuredClone(h.records.get('k/dishes/d'))
+      beforeItem = structuredClone(h.records.get('k/items/d'))
     const first = await h.create({}, body),
       count = h.writes.length
     const saved = structuredClone(h.records)
     assert.deepEqual(await h.create({}, body), first)
     assert.equal(h.writes.length, count)
     assert.deepEqual(h.records, saved)
-    assert.deepEqual(h.records.get('k/dishes/d'), beforeItem)
+    assert.deepEqual(h.records.get('k/items/d'), beforeItem)
     h.deny()
     await assert.rejects(h.create({}, body), /Denied/)
   })
@@ -166,7 +166,7 @@ for (const reference of [{ dishId: 'd' }, { promotionId: 'p' }]) {
     assert.equal(result[0].id, result[1].id)
     assert.ok(h.retries() > 0, 'must exercise a conflicting commit and retry')
     assert.equal(h.writes.filter((row) => row[0] === 'create').length, 1)
-    assert.equal(h.records.get('k/dishes/d').price, 13)
+    assert.equal(h.records.get('k/items/d').price, 13)
     assert.equal(h.records.get('k/promotions/p').price, 15)
     const other = await h.create({}, { ...body, sectionId: 'other' })
     assert.notEqual(
@@ -177,9 +177,9 @@ for (const reference of [{ dishId: 'd' }, { promotionId: 'p' }]) {
   })
   test(`${kind}: Add restores an archived match and preserves its position`, async () => {
     const h = harness(),
-      field = reference.dishId ? 'dish_id' : 'promotion_id'
+      field = reference.itemId ? 'item_id' : 'promotion_id'
     h.records.set('k/menus/m/sections/s/items/saved', {
-      [field]: reference.dishId || reference.promotionId,
+      [field]: reference.itemId || reference.promotionId,
       status: 'archived',
       sort_order: 7,
       created: { by: 'original' },
@@ -207,11 +207,11 @@ test('duplicate detection pages within the native query bound and still refuses 
   for (let index = 0; index < 401; index++) {
     h.records.set(
       `k/menus/m/sections/s/items/old-${String(index).padStart(3, '0')}`,
-      { dish_id: 'd', status: 'archived' }
+      { item_id: 'd', status: 'archived' }
     )
   }
   await assert.rejects(
-    h.create({}, { kitchenId: 'k', menuId: 'm', sectionId: 's', dishId: 'd' }),
+    h.create({}, { kitchenId: 'k', menuId: 'm', sectionId: 's', itemId: 'd' }),
     /duplicate cleanup/
   )
   assert.equal(h.writes.length, 0)

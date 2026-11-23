@@ -99,9 +99,9 @@ export function createKitchenItemsWorkspace(
     }
   })
 
-  function select(dishId: string) {
-    selectedItemId.value = dishes.value.some((dish) => dish.id === dishId)
-      ? dishId
+  function select(itemId: string) {
+    selectedItemId.value = dishes.value.some((dish) => dish.id === itemId)
+      ? itemId
       : ''
   }
 

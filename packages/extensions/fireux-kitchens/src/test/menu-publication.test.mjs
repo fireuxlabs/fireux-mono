@@ -62,7 +62,7 @@ for (const [name, change, message] of [
   ],
   [
     'dish',
-    (h) => h.records.delete('kitchens/k/dishes/dish'),
+    (h) => h.records.delete('kitchens/k/items/dish'),
     's: dish — Item is missing.',
   ],
 ])
@@ -138,7 +138,7 @@ for (const operation of ['publish', 'unpublish', 'archive']) {
 
 test('transaction retry validates changed content before committing publication', async () => {
   const h = harness()
-  h.state.retry = (records) => records.delete('kitchens/k/dishes/dish')
+  h.state.retry = (records) => records.delete('kitchens/k/items/dish')
   await assert.rejects(h.publish(), /Item is missing/)
   assert.equal(h.records.get(menuPath).status, 'draft')
   assert.equal(h.records.has(rootPath), false)
@@ -227,7 +227,7 @@ const meal = () => ({
       id: 'pizza',
       name: 'Pizza',
       choose: 1,
-      dishes: [{ dishId: 'dish', supplement: 0 }],
+      dishes: [{ item_id: 'dish', supplement: 0 }],
     },
   ],
 })
@@ -238,9 +238,9 @@ test('publication validates meal-deal placements and every choice without changi
     promotion_id: 'meal',
   })
   h.records.set('kitchens/k/promotions/meal', meal())
-  const dish = structuredClone(h.records.get('kitchens/k/dishes/dish'))
+  const dish = structuredClone(h.records.get('kitchens/k/items/dish'))
   await h.publish()
-  assert.deepEqual(h.records.get('kitchens/k/dishes/dish'), dish)
+  assert.deepEqual(h.records.get('kitchens/k/items/dish'), dish)
   assert.equal(h.records.get('kitchens/k/promotions/meal').price, 15)
 })
 test('publication refuses dangling meal deals and unavailable choices', async () => {
@@ -254,13 +254,13 @@ test('publication refuses dangling meal deals and unavailable choices', async ()
     h.records.set(`${menuPath}/sections/s/items/i`, {
       status: 'active',
       promotion_id: 'meal',
-      ...(cause === 'mixed' ? { dish_id: 'dish' } : {}),
+      ...(cause === 'mixed' ? { item_id: 'dish' } : {}),
     })
     if (cause !== 'missing-deal')
       h.records.set('kitchens/k/promotions/meal', meal())
-    if (cause === 'missing-dish') h.records.delete('kitchens/k/dishes/dish')
+    if (cause === 'missing-dish') h.records.delete('kitchens/k/items/dish')
     if (cause === 'archived-dish')
-      h.records.get('kitchens/k/dishes/dish').status = 'archived'
+      h.records.get('kitchens/k/items/dish').status = 'archived'
     await assert.rejects(h.publish())
     assert.equal(h.records.get(menuPath).status, 'draft')
   }
@@ -275,7 +275,7 @@ test('archived Menu cannot be republished before explicit restoration', async ()
 test('ordinary Menu with only archived Items cannot publish or change prices', async () => {
   const h = harness()
   h.records.get(`${menuPath}/sections/s`).label = 'Pizzas'
-  Object.assign(h.records.get('kitchens/k/dishes/dish'), {
+  Object.assign(h.records.get('kitchens/k/items/dish'), {
     name: 'Margherita',
     status: 'archived',
   })
@@ -309,13 +309,13 @@ test('paused meal deal does not make an otherwise empty Menu publishable', async
 
 test('publication reports unavailable entries in every section', async () => {
   const h = harness()
-  h.records.get('kitchens/k/dishes/dish').status = 'archived'
+  h.records.get('kitchens/k/items/dish').status = 'archived'
   h.records.set(`${menuPath}/sections/second`, {
     status: 'active',
     label: 'Drinks',
   })
   h.records.set(`${menuPath}/sections/second/items/missing`, {
-    dish_id: 'missing',
+    item_id: 'missing',
   })
   await assert.rejects(h.publish(), (error) => {
     assert.equal(error.data.readiness.issues.length, 2)
@@ -327,7 +327,7 @@ test('publication reports unavailable entries in every section', async () => {
 
 test('publication rejects an unset normal price but preserves explicit zero and existing prices', async () => {
   const unpriced = harness()
-  delete unpriced.records.get('kitchens/k/dishes/dish').price
+  delete unpriced.records.get('kitchens/k/items/dish').price
   const before = structuredClone(unpriced.records)
   await assert.rejects(unpriced.publish(), (error) => {
     assert.match(JSON.stringify(error.data), /Item price is not set/)
@@ -336,10 +336,10 @@ test('publication rejects an unset normal price but preserves explicit zero and 
   assert.deepEqual(unpriced.records, before)
   for (const price of [0, 12]) {
     const h = harness()
-    h.records.get('kitchens/k/dishes/dish').price = price
-    const dish = structuredClone(h.records.get('kitchens/k/dishes/dish'))
+    h.records.get('kitchens/k/items/dish').price = price
+    const dish = structuredClone(h.records.get('kitchens/k/items/dish'))
     await h.publish()
     assert.equal(h.records.get(menuPath).status, 'published')
-    assert.deepEqual(h.records.get('kitchens/k/dishes/dish'), dish)
+    assert.deepEqual(h.records.get('kitchens/k/items/dish'), dish)
   }
 })

@@ -9,7 +9,7 @@ export function useMenuItemMutations() {
       kitchenId: string
       menuId: string
       sectionId: string
-      dishId?: string
+      itemId?: string
       promotionId?: string
     },
     isCurrent?: () => boolean
@@ -18,41 +18,41 @@ export function useMenuItemMutations() {
     kitchenId: string,
     menuId: string,
     sectionId: string,
-    itemId: string,
+    entryId: string,
     patch: Partial<MenuEntry>
   ) =>
     mutate('item', 'PATCH', {
       kitchenId,
       menuId,
       sectionId,
-      itemId,
+      entryId,
       changes: normalizeMenuItemPatch(patch),
     })
   const moveItem = (
     kitchenId: string,
     menuId: string,
     sectionId: string,
-    itemId: string,
+    entryId: string,
     direction: 'up' | 'down',
     isCurrent: () => boolean
   ) =>
     mutate(
       'display-order',
       'PATCH',
-      { kitchenId, menuId, sectionId, itemId, direction },
+      { kitchenId, menuId, sectionId, entryId, direction },
       isCurrent
     )
   const removeItem = (
     kitchenId: string,
     menuId: string,
     sectionId: string,
-    itemId: string,
+    entryId: string,
     isCurrent: () => boolean
   ) =>
     mutate(
       'item',
       'DELETE',
-      { kitchenId, menuId, sectionId, itemId },
+      { kitchenId, menuId, sectionId, entryId },
       isCurrent
     )
   return {
@@ -64,8 +64,8 @@ export function useMenuItemMutations() {
       kitchenId: string,
       menuId: string,
       sectionId: string,
-      itemId: string
+      entryId: string
     ) =>
-      updateItem(kitchenId, menuId, sectionId, itemId, { status: 'archived' }),
+      updateItem(kitchenId, menuId, sectionId, entryId, { status: 'archived' }),
   }
 }

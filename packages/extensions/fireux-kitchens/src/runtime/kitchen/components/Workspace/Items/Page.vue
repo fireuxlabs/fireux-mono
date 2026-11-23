@@ -1,11 +1,11 @@
 <template>
   <KitchenItems
     v-if="kitchen"
-    :key="JSON.stringify([kitchen.id, dishId])"
+    :key="JSON.stringify([kitchen.id, itemId])"
     :kitchen-id="kitchen.id"
     :items="kitchen.items"
     :items-path="itemsPath"
-    :dish-id="dishId"
+    :item-id="itemId"
   />
   <template v-else>
     <WorkspacePageHeader title="Items">
@@ -41,7 +41,7 @@ const { workspace } = defineProps<{
   }
   itemsPath: string
 }>()
-const dishId = useRouteParam('dishId')
+const itemId = useRouteParam('itemId')
 const collection = useKitchenItemCollection(
   computed(() =>
     workspace.outcome.value === 'ready' ? (workspace.data.value?.id ?? '') : ''

@@ -54,11 +54,11 @@ test('draft planner preserves distinct identities, prices, stamps and Item owner
     ['lunch', 'lunch-2']
   )
   const items = plannedSections.flatMap((row) => row.items)
-  assert.equal(new Set(items.map((row) => row.dishId)).size, 4)
+  assert.equal(new Set(items.map((row) => row.entryId)).size, 4)
   for (const row of items) {
     assert.equal(row.catalogueItemData.price, 5)
     assert.equal(Object.hasOwn(row.itemData, 'price'), false)
-    assert.equal(row.itemData.dish_id, row.dishId)
+    assert.equal(row.itemData.item_id, row.itemId)
     assert.equal(row.catalogueItemData.item_kind, 'food')
     assert.equal(row.catalogueItemData.created, stamp)
     assert.equal(row.catalogueItemData.updated, stamp)
@@ -76,7 +76,7 @@ test('translation planning uses the same section and item identities as the writ
   const row = plannedSections[0]
   const unit = sproochliCacheUnits.find(
     (unit) =>
-      unit.fieldId === `dish:${row.sectionId}__${row.items[0].itemId}:name`
+      unit.fieldId === `dish:${row.sectionId}__${row.items[0].entryId}:name`
   )
   assert.deepEqual(unit.translations, item.name_translations)
   assert.equal(unit.sourceText, 'Soup')
@@ -97,7 +97,7 @@ test('content replacement removes stale children and preserves create/update dec
       'serverKitchenMenuSectionsTarget',
     ]
   )(
-    (k) => `kitchens/${k}/dishes`,
+    (k) => `kitchens/${k}/items`,
     (k, m, s) => `kitchens/${k}/menus/${m}/sections/${s}/items`,
     (k, m) => `kitchens/${k}/menus/${m}/sections`
   )
@@ -119,9 +119,9 @@ test('content replacement removes stale children and preserves create/update dec
     plannedSections,
     oldItems: new Map([
       ['removed-section', new Set(['removed-item'])],
-      ['lunch', new Set([first.itemId, 'stale-item'])],
+      ['lunch', new Set([first.entryId, 'stale-item'])],
     ]),
-    existingItemIds: new Set([first.dishId]),
+    existingItemIds: new Set([first.itemId]),
   })
   for (const expected of [
     [
@@ -133,9 +133,9 @@ test('content replacement removes stale children and preserves create/update dec
     ['delete', 'kitchens/k/menus/m/sections/lunch/items', 'stale-item'],
     ['update', 'kitchens/k/menus/m/sections', 'lunch'],
     ['create', 'kitchens/k/menus/m/sections', 'lunch-2'],
-    ['update', 'kitchens/k/menus/m/sections/lunch/items', first.itemId],
-    ['update', 'kitchens/k/dishes', first.dishId],
-    ['create', 'kitchens/k/dishes', plannedSections[1].items[0].dishId],
+    ['update', 'kitchens/k/menus/m/sections/lunch/items', first.entryId],
+    ['update', 'kitchens/k/items', first.itemId],
+    ['create', 'kitchens/k/items', plannedSections[1].items[0].itemId],
   ])
     assert.ok(
       calls.some((call) => JSON.stringify(call) === JSON.stringify(expected)),
@@ -150,11 +150,11 @@ test('separate imports never infer Item identity from a shared name, while retri
       .plannedSections[0].items
   const first = plan('first-upload')
   const second = plan('second-upload')
-  assert.notEqual(first[0].dishId, 'soup')
-  assert.notEqual(first[0].dishId, second[0].dishId)
+  assert.notEqual(first[0].itemId, 'soup')
+  assert.notEqual(first[0].itemId, second[0].itemId)
   assert.deepEqual(
-    first.map((row) => row.dishId),
-    plan('first-upload').map((row) => row.dishId)
+    first.map((row) => row.itemId),
+    plan('first-upload').map((row) => row.itemId)
   )
-  assert.notEqual(first[0].dishId, first[1].dishId)
+  assert.notEqual(first[0].itemId, first[1].itemId)
 })

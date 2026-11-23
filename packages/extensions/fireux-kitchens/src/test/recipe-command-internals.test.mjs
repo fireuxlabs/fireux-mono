@@ -81,7 +81,7 @@ const references = load(
     createError,
     defineFirestoreMutationTarget: (x) => x.collectionPath,
     INGREDIENT_MUTATION_TARGETS: { ingredients: 'ingredients' },
-    serverKitchenItemsTarget: (kitchen) => `kitchens/${kitchen}/dishes`,
+    serverKitchenItemsTarget: (kitchen) => `kitchens/${kitchen}/items`,
   }
 )
 function deferred() {
@@ -352,7 +352,7 @@ test('Recipe deletion reports exact-Kitchen Item and Prep Item references withou
   const prep = { name: 'Sauce fraîche', recipe_id: 'existing' }
   const command = { kitchenId: 'k', recipeId: 'existing' }
   for (const [path, record, label] of [
-    ['dishes/roast', dish, 'Poulet rôti'],
+    ['items/roast', dish, 'Poulet rôti'],
     ['prep-items/sauce', prep, 'Sauce fraîche'],
   ]) {
     const h = fixture()
@@ -367,9 +367,9 @@ test('Recipe deletion reports exact-Kitchen Item and Prep Item references withou
     assert.ok(h.pages.every((page) => page.limit === 100))
   }
   const h = fixture()
-  h.records.set('kitchens/other/dishes/roast', dish)
+  h.records.set('kitchens/other/items/roast', dish)
   h.records.set('kitchens/other/prep-items/sauce', prep)
-  h.records.set('kitchens/k/dishes/elsewhere', {
+  h.records.set('kitchens/k/items/elsewhere', {
     spec: { recipe_ids: ['other'] },
   })
   await h.deleteRecipe({}, command)
@@ -383,7 +383,7 @@ test('Recipe deletion reports exact-Kitchen Item and Prep Item references withou
 test('Recipe usage reads later pages and the reference identities displayed by existing records', async () => {
   for (const [collection, recipeId, record] of [
     [
-      'dishes',
+      'items',
       'existing',
       { name: 'Later Item', spec: { recipe_ids: [' existing '] } },
     ],

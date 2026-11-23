@@ -117,7 +117,7 @@ export async function writeKitchenMenuDraft(input: {
       const plannedItems = plannedSections.flatMap((section) => section.items)
       const itemSnapshots = await mutations.readMany(
         dishes,
-        plannedItems.map((item) => item.dishId)
+        plannedItems.map((item) => item.itemId)
       )
 
       for (const [index, planned] of plannedItems.entries()) {
@@ -159,7 +159,7 @@ export async function writeKitchenMenuDraft(input: {
         existingItemIds: new Set(
           plannedItems
             .filter((_, index) => itemSnapshots[index]?.exists)
-            .map((item) => item.dishId)
+            .map((item) => item.itemId)
         ),
       })
       return { menuData, status, existed: menu.exists }
@@ -175,10 +175,10 @@ export async function writeKitchenMenuDraft(input: {
       (count, section) => count + section.items.length,
       0
     ),
-    dish_targets: plannedSections.flatMap((section, sectionIndex) =>
+    itemTargets: plannedSections.flatMap((section, sectionIndex) =>
       section.items.map((item, itemIndex) => ({
         review_key: `${sectionIndex}:${itemIndex}`,
-        dish_id: item.dishId,
+        itemId: item.itemId,
       }))
     ),
     sproochliCacheUnits,

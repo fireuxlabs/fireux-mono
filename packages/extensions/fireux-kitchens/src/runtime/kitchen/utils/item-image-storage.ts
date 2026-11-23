@@ -2,8 +2,8 @@
 // Concurrent edit — 2026-07-22 01:58 CEST — Item media ownership: keep storage under Item image without current/version product vocabulary.
 export function itemImageStoragePath(
   kitchenId: string,
-  dishId: string,
+  itemId: string,
   writeId: string
 ) {
-  return `kitchens/${kitchenId}/dishes/${dishId}/image/${writeId}.webp`
+  return `kitchens/${kitchenId}/dishes/${itemId}/image/${writeId}.webp`
 }

@@ -93,7 +93,7 @@ export default defineNuxtModule<ModuleOptions>({
         if (options.workspaceItems) {
           pages.push({
             name: 'workspace-kitchen-items',
-            path: '/workspace/kitchen/items/:dishId?',
+            path: '/workspace/kitchen/items/:itemId?',
             file: resolver.resolve('./runtime/kitchen/pages/items.vue'),
           })
         }
@@ -122,10 +122,10 @@ export default defineNuxtModule<ModuleOptions>({
       if (options.workspaceItems) {
         for (const method of ['post', 'patch', 'delete'] as const) {
           addServerHandler({
-            route: '/api/workspace/kitchen/dishes',
+            route: '/api/workspace/kitchen/items',
             method,
             handler: resolver.resolve(
-              `./runtime/server/api/workspace/kitchen/dishes/index.${method}.ts`
+              `./runtime/server/api/workspace/kitchen/items/index.${method}.ts`
             ),
           })
         }

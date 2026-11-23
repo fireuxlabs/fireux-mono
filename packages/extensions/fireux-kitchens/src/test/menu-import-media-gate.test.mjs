@@ -78,7 +78,7 @@ test('import confirmation needs a media decision only for a detected image', asy
     compareKitchenMenuDraftToCurrent: () => ({ flags: [] }),
     writeKitchenMenuDraft: async () => {
       writes++
-      return { sproochliCacheUnits: [], dish_targets: [], status: 'draft' }
+      return { sproochliCacheUnits: [], itemTargets: [], status: 'draft' }
     },
     importKitchenMenuCacheUnits: async () => ({ status: 'complete' }),
     serverAuditStamp: () => ({ at: 'now' }),

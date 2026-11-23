@@ -5,7 +5,7 @@
       <ul>
         <li
           v-for="dish in group.dishes"
-          :key="dish.dishId"
+          :key="dish.itemId"
           class="meal-deal-choice"
         >
           <span>{{ dish.name }}</span>

@@ -36,12 +36,12 @@ export type PublicMenuItem = {
       id: string
       name: string
       choose: number
-      dishes: { dishId: string; name: string; supplement: number }[]
+      dishes: { itemId: string; name: string; supplement: number }[]
     }[]
   }
   promotionLabel?: string
   id: string
-  dishId: string
+  itemId: string
   itemKind?: string | null
   name: string
   description: string

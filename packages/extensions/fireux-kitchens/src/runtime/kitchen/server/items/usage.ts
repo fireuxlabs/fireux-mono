@@ -16,7 +16,7 @@ const text = (value: unknown) => (typeof value === 'string' ? value : '')
 export async function readItemUsage(
   reader: UsageReader,
   kitchenId: string,
-  dishId: string
+  itemId: string
 ): Promise<ItemUsage[]> {
   async function all(target: Parameters<UsageReader['readAll']>[0]) {
     const rows = await reader.readAll(target, 1000)
@@ -29,9 +29,9 @@ export async function readItemUsage(
   }
   async function usesItem(target: Parameters<UsageReader['readAll']>[0]) {
     const matches = await reader.query(target, {
-      field: 'dish_id',
+      field: 'item_id',
       op: '==',
-      value: dishId,
+      value: itemId,
       limit: 1,
     })
     if (matches.length) return true
@@ -40,7 +40,7 @@ export async function readItemUsage(
     for (;;) {
       const items = await reader.readAll(target, 100, afterId)
       if (
-        items.some(({ data }) => readRecordString(data, 'dish_id') === dishId)
+        items.some(({ data }) => readRecordString(data, 'item_id') === itemId)
       )
         return true
       if (items.length < 100) return false
@@ -78,7 +78,7 @@ export async function readItemUsage(
       : Array.isArray(data.dishes)
         ? data.dishes
         : []
-    if (choices.some((choice: any) => choice?.dishId === dishId))
+    if (choices.some((choice: any) => choice?.item_id === itemId))
       usages.push({
         kind: 'promotion',
         id: promotion.id,

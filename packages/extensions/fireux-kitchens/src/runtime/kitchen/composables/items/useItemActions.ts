@@ -52,7 +52,7 @@ export function useItemActions(ownerSources: WatchSource[] = []) {
     const token = await user.getIdToken()
     assertScope()
     const result = await $fetch<{ id: string }>(
-      '/api/workspace/kitchen/dishes',
+      '/api/workspace/kitchen/items',
       {
         onResponse: async ({ options, response }) => {
           if (
@@ -77,7 +77,7 @@ export function useItemActions(ownerSources: WatchSource[] = []) {
       typeof result?.id !== 'string' ||
       result.id !== result.id.trim() ||
       !isFirestoreDocumentId(result.id) ||
-      (method !== 'POST' && result.id !== body.dishId)
+      (method !== 'POST' && result.id !== body.itemId)
     )
       throw new Error('Command response did not identify the requested record.')
     return result
@@ -87,12 +87,12 @@ export function useItemActions(ownerSources: WatchSource[] = []) {
     createItem: (draft: ItemCreateDraft, target: { kitchenId: string }) =>
       mutate('POST', { draft }, target.kitchenId),
     updateItem: (
-      dishId: string,
+      itemId: string,
       changes: ItemIdentityChanges & Record<string, unknown>,
       target: { kitchenId: string; isCurrent?: () => boolean }
     ) =>
-      mutate('PATCH', { dishId, changes }, target.kitchenId, target.isCurrent),
-    deleteItem: (dishId: string, target: { kitchenId: string }) =>
-      mutate('DELETE', { dishId }, target.kitchenId),
+      mutate('PATCH', { itemId, changes }, target.kitchenId, target.isCurrent),
+    deleteItem: (itemId: string, target: { kitchenId: string }) =>
+      mutate('DELETE', { itemId }, target.kitchenId),
   }
 }

@@ -8,6 +8,6 @@ export default defineEventHandler((event) => {
   const query = getQuery(event)
   return readKitchenItemUsage(event, {
     kitchenId: query.kitchenId,
-    dishId: query.dishId,
+    itemId: query.itemId,
   })
 })

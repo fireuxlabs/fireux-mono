@@ -727,7 +727,7 @@ test('Item usage ignores retained placements when the Kitchen or Item changes', 
   const placement = { kind: 'menu', id: 'food', name: 'Comida Casera' }
   const data = ref({
     kitchenId: 'kitchen-a',
-    dishId: 'picanha',
+    itemId: 'picanha',
     usages: [placement],
   })
   const pending = ref(false)
@@ -755,7 +755,7 @@ test('Item usage ignores retained placements when the Kitchen or Item changes', 
   itemId.value = 'picanha'
   kitchenId.value = 'kitchen-b'
   assert.equal(usage.ready.value, false)
-  data.value = { kitchenId: 'kitchen-b', dishId: 'picanha', usages: [] }
+  data.value = { kitchenId: 'kitchen-b', itemId: 'picanha', usages: [] }
   assert.equal(usage.ready.value, true)
   pending.value = true
   assert.equal(usage.ready.value, false)
@@ -872,7 +872,7 @@ test('the legacy Item preview renders its supplied read surfaces', async () => {
               key(),
               menu
                 ? 'item-menu-preview|'
-                : `item-menu-preview|/api/menus?kitchenSlug=la-tapberne&dishId=${item.id}&limit=1`
+                : `item-menu-preview|/api/menus?kitchenSlug=la-tapberne&itemId=${item.id}&limit=1`
             )
             return { data: ref(directory), pending: ref(false) }
           },
@@ -880,7 +880,7 @@ test('the legacy Item preview renders its supplied read surfaces', async () => {
       render: template(publicItem),
     })
     app.component('ItemPlacement', {
-      props: ['dishId', 'menuSlug', 'kitchenSlug'],
+      props: ['itemId', 'menuSlug', 'kitchenSlug'],
       setup: (props) =>
         load(
           'menu/components/ItemPlacement.vue',
@@ -1028,8 +1028,8 @@ test('the legacy Item preview renders its supplied read surfaces', async () => {
         {
           id: 'onlyhands',
           items: [
-            { dishId: placed.id, name: 'Picanha Smashburger' },
-            { dishId: 'other', name: 'Different Item' },
+            { itemId: placed.id, name: 'Picanha Smashburger' },
+            { itemId: 'other', name: 'Different Item' },
           ],
         },
       ],
@@ -1056,7 +1056,7 @@ test('Item linked read perspectives bind exact ready storage owner instead of re
   const owner = {
     kitchenId: ref('remembered'),
     storageKitchenId: ref('ready'),
-    dishId: ref('soup'),
+    itemId: ref('soup'),
     dish: ref(null),
     databaseId: ref('misebox'),
     rootCollection: ref('kitchens'),
@@ -1096,7 +1096,7 @@ test('Item linked read perspectives bind exact ready storage owner instead of re
             id: owner.kitchenId,
             outcome: ref('ready'),
           }),
-          useRouteParam: () => owner.dishId,
+          useRouteParam: () => owner.itemId,
           useKitchenItemRead: () => owner,
           useKitchenItemContext: () => owner,
           useKitchenPrepItems: reader,
@@ -1674,7 +1674,7 @@ test('Item placements return to the inline Menu builder or exact daily section',
       section: { id: 'main course', label: 'Main course' },
     })
     const owner = { itemId: ref('soup'), storageKitchenId: ref('kitchen') }
-    const rows = ref([{ id: 'placement', dish_id: 'soup' }])
+    const rows = ref([{ id: 'placement', item_id: 'soup' }])
     const pending = ref(false),
       error = ref(null),
       emitted = []

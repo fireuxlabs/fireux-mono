@@ -1,7 +1,7 @@
 import type { WeekdayTimeDay } from '../../../../models/shared/weekday-time.model'
 
-export type PromotionalDish = { dishId: string; price: number }
-export type MealDealChoice = { dishId: string; supplement: number }
+export type PromotionalDish = { item_id: string; price: number }
+export type MealDealChoice = { item_id: string; supplement: number }
 export type MealDealGroup = {
   id: string
   name: string
@@ -23,7 +23,8 @@ export type KitchenMealDeal = PromotionSchedule & {
 export type KitchenPromotionInput = KitchenDishOffer | KitchenMealDeal
 export type KitchenPromotion = KitchenPromotionInput & { id: string }
 /** Only standalone Dish offers participate in existing public item repricing. */
-export type PublicKitchenPromotion = KitchenDishOffer & {
+export type PublicKitchenPromotion = PromotionSchedule & {
+  dishes: Array<{ itemId: string; price: number }>
   id: string
   timezone: string
 }

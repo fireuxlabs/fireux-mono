@@ -160,7 +160,7 @@ function server() {
       plannedSections: [],
       sproochliCacheUnits: [],
     }),
-    serverKitchenItemsTarget: (kitchen) => `kitchens/${kitchen}/dishes`,
+    serverKitchenItemsTarget: (kitchen) => `kitchens/${kitchen}/items`,
   }).writeKitchenMenuDraft
   return {
     rows,
@@ -215,7 +215,7 @@ test('one saved source creates a draft document through the shared Menu creation
   assert.equal((await h.prepare()).created, false)
   assert.equal(h.saved.length, 1)
   assert.equal(
-    [...h.rows].some(([path]) => path.includes('/dishes/')),
+    [...h.rows].some(([path]) => path.includes('/items/')),
     false
   )
 })

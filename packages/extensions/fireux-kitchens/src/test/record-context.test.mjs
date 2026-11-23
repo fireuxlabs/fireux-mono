@@ -34,7 +34,7 @@ const note =
 function fixture() {
   const roots = new Map([
     ['kitchens/baren/recipes/soup', { context: '', name: 'Soup' }],
-    ['kitchens/baren/dishes/plate', { context: '', price: 15 }],
+    ['kitchens/baren/items/plate', { context: '', price: 15 }],
     ['kitchens/baren', { context: '', prices: [13, 15] }],
     [
       'places/baren',
@@ -73,7 +73,7 @@ function fixture() {
       KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
       PLACE_MUTATION_TARGETS: { places: target('places') },
       recipeTarget: (k) => target(`kitchens/${k}/recipes`),
-      serverKitchenItemsTarget: (k) => target(`kitchens/${k}/dishes`),
+      serverKitchenItemsTarget: (k) => target(`kitchens/${k}/items`),
       serverKitchenMenusTarget: (k) => target(`kitchens/${k}/menus`),
       readKitchenMutationActor: async () => ({
         uid: 'actor',
@@ -232,7 +232,7 @@ for (const subject of ['kitchen', 'venue', 'menu', 'recipe', 'dish']) {
           : subject === 'recipe'
             ? 'kitchens/baren/recipes/soup'
             : subject === 'dish'
-              ? 'kitchens/baren/dishes/plate'
+              ? 'kitchens/baren/items/plate'
               : 'kitchens/baren'
     assert.deepEqual(f.writes[0], {
       path,

@@ -38,7 +38,8 @@ function promotionAmount(value: unknown): number {
 }
 
 export function normalizeKitchenPromotion(
-  value: unknown
+  value: unknown,
+  referenceField: 'item_id' | 'itemId' = 'item_id'
 ): KitchenPromotionInput {
   if (!value || typeof value !== 'object' || Array.isArray(value))
     throw new Error('Invalid promotion.')
@@ -107,17 +108,17 @@ export function normalizeKitchenPromotion(
         const dish = value as Record<string, unknown>
         if (
           Object.keys(dish).some(
-            (key) => !['dishId', 'supplement'].includes(key)
+            (key) => ![referenceField, 'supplement'].includes(key)
           ) ||
-          !promotionId(dish.dishId)
+          !promotionId(dish[referenceField])
         )
           throw new Error('Each choice needs a Item and a supplement.')
         return {
-          dishId: dish.dishId,
+          item_id: dish[referenceField],
           supplement: promotionAmount(dish.supplement),
         }
       })
-      if (new Set(dishes.map((dish) => dish.dishId)).size !== dishes.length)
+      if (new Set(dishes.map((dish) => dish.item_id)).size !== dishes.length)
         throw new Error('Choose each Item once within a group.')
       return {
         id: group.id,
@@ -148,15 +149,37 @@ export function normalizeKitchenPromotion(
       throw new Error('Invalid promotional dish.')
     const dish = value as Record<string, unknown>
     if (
-      Object.keys(dish).some((key) => !['dishId', 'price'].includes(key)) ||
-      !promotionId(dish.dishId)
+      Object.keys(dish).some((key) => ![referenceField, 'price'].includes(key)) ||
+      !promotionId(dish[referenceField])
     )
       throw new Error('Each promotional dish needs an id and a price.')
-    return { dishId: dish.dishId, price: promotionAmount(dish.price) }
+    return { item_id: dish[referenceField], price: promotionAmount(dish.price) }
   })
-  if (new Set(dishes.map((dish) => dish.dishId)).size !== dishes.length)
+  if (new Set(dishes.map((dish) => dish.item_id)).size !== dishes.length)
     throw new Error('Choose each dish once.')
   return { ...common, dishes } as KitchenPromotionInput
+}
+
+/** API inputs use itemId. The stored record uses item_id. */
+export function promotionCommandInput(promotion: KitchenPromotionInput) {
+  return 'groups' in promotion
+    ? {
+        ...promotion,
+        groups: promotion.groups.map((group) => ({
+          ...group,
+          dishes: group.dishes.map(({ item_id, supplement }) => ({
+            itemId: item_id,
+            supplement,
+          })),
+        })),
+      }
+    : {
+        ...promotion,
+        dishes: promotion.dishes.map(({ item_id, price }) => ({
+          itemId: item_id,
+          price,
+        })),
+      }
 }
 
 export function promotionItemIds(promotion: KitchenPromotionInput): string[] {
@@ -164,7 +187,7 @@ export function promotionItemIds(promotion: KitchenPromotionInput): string[] {
     'groups' in promotion
       ? promotion.groups.flatMap((group) => group.dishes)
       : promotion.dishes
-  return [...new Set(dishes.map((dish) => dish.dishId))]
+  return [...new Set(dishes.map((dish) => dish.item_id))]
 }
 
 export function promotionDay(timezone: string, now = new Date()): string {
@@ -191,9 +214,9 @@ export function promotionPricedItem(
     (offer) =>
       offer.status === 'active' &&
       offer.days.some((value) => value === day) &&
-      offer.dishes.some((dish) => dish.dishId === item.dishId)
+      offer.dishes.some((dish) => dish.itemId === item.itemId)
   )
-  const dish = offer?.dishes.find((dish) => dish.dishId === item.dishId)
+  const dish = offer?.dishes.find((dish) => dish.itemId === item.itemId)
   if (!offer || !dish) return { item }
   const price = dish.price
   return {
@@ -260,7 +283,7 @@ export function promotionsOverlap(
     b.status === 'active' &&
     a.days.some((day) => b.days.includes(day)) &&
     a.dishes.some((dish) =>
-      b.dishes.some((other) => other.dishId === dish.dishId)
+      b.dishes.some((other) => other.item_id === dish.item_id)
     )
   )
 }

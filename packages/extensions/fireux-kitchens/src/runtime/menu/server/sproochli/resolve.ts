@@ -71,7 +71,7 @@ function menuFields(menu: MenuManifest): SproochliMenuTranslationField[] {
         })
         group.dishes.forEach((choice) =>
           fields.push({
-            id: `${itemKey}:group:${group.id}:dish:${choice.dishId}:name`,
+            id: `${itemKey}:group:${group.id}:dish:${choice.itemId}:name`,
             sourceText: text(choice.name),
           })
         )
@@ -133,7 +133,7 @@ function translatedMenu(
                       dishes: group.dishes.map((choice) => ({
                         ...choice,
                         name: translated(
-                          `${itemKey}:group:${group.id}:dish:${choice.dishId}:name`,
+                          `${itemKey}:group:${group.id}:dish:${choice.itemId}:name`,
                           choice.name
                         ),
                       })),

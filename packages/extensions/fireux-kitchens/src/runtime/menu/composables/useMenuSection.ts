@@ -37,7 +37,7 @@ export type MenuEntryRow = {
   entry: MenuEntry
   dish: ItemCollectionRow | null
   promotionId: string
-  dishId: string
+  itemId: string
   label: string
   price: number | undefined
   addOns: ItemAddOnOption[]
@@ -135,7 +135,7 @@ function createMenuSectionState(
   })
   const itemRows = computed<MenuEntryRow[]>(() =>
     items.value.map((item) => {
-      const dish = dishesById.value.get(clean(item.dish_id)) ?? null
+      const dish = dishesById.value.get(clean(item.item_id)) ?? null
       const deal = promotions.items.value.find(
         (promotion) =>
           promotion.id === item.promotion_id && 'groups' in promotion
@@ -144,13 +144,13 @@ function createMenuSectionState(
         id: clean(item.id),
         entry: item,
         dish,
-        dishId: clean(item.dish_id),
+        itemId: clean(item.item_id),
         promotionId: clean(item.promotion_id),
         label:
           clean(deal?.name) ||
           clean(dish?.name) ||
           clean(item.promotion_id) ||
-          clean(item.dish_id),
+          clean(item.item_id),
         price: deal && 'price' in deal ? deal.price : dish?.price,
         addOns: normalizeItemAddOns(record(dish).add_ons),
         priceOptions:

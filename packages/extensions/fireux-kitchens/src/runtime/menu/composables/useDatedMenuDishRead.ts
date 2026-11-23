@@ -35,12 +35,12 @@ export function useDatedMenuDishRead(
     sectionId,
     options
   )
-  const dishId = computed(() =>
+  const itemId = computed(() =>
     sectionId.value && links.outcome.value === 'ready'
-      ? links.items.value.find((link) => link.dish_id)?.dish_id || ''
+      ? links.items.value.find((link) => link.item_id)?.item_id || ''
       : ''
   )
-  const dish = useKitchenItemRead(kitchenId, dishId)
+  const dish = useKitchenItemRead(kitchenId, itemId)
   const pending = (outcome: string) =>
     outcome === 'idle' || outcome === 'pending'
   const status = computed(() => {
@@ -49,7 +49,7 @@ export function useDatedMenuDishRead(
     if (pending(sections.outcome.value)) return 'loading'
     if (!sectionId.value) return 'unavailable'
     if (pending(links.outcome.value)) return 'loading'
-    if (!dishId.value) return 'unavailable'
+    if (!itemId.value) return 'unavailable'
     if (pending(dish.outcome.value)) return 'loading'
     return dish.outcome.value === 'ready' && dish.item.value?.name
       ? 'ready'

@@ -17,7 +17,7 @@ const at = { seconds: 100, nanoseconds: 20 }
 
 test('Item storage and trusted target use the same Item collection', () => {
   const target = serverKitchenItemsTarget('k')
-  assert.equal(ItemStorage.path, 'kitchens/{kitchenId}/items/{dishId}')
+  assert.equal(ItemStorage.path, 'kitchens/{kitchenId}/items/{itemId}')
   assert.equal(target.collectionPath, 'kitchens/k/items')
   assert.equal(target.key, 'kitchens.items')
 })

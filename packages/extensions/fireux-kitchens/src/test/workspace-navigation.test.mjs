@@ -559,7 +559,7 @@ test('Menus creation and service configuration have no redundant child pages', (
     'services/[offering].vue',
   ])
     assert.equal(existsSync(join(root, 'menu', file)), false, file)
-  assert.ok(existsSync(join(root, 'menu/items/[dishId].vue')))
+  assert.ok(existsSync(join(root, 'menu/items/[itemId].vue')))
   assert.ok(existsSync(join(root, 'menu/[menuSlug]/index.vue')))
   assert.equal(existsSync(join(root, 'food/drinks')), false)
 })

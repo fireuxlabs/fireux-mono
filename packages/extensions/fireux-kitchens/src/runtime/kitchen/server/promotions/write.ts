@@ -36,7 +36,7 @@ export async function saveKitchenPromotion(event: H3Event, input: unknown) {
       : requireFirestoreDocumentId(data.promotionId, 'Promotion id')
   let promotion: ReturnType<typeof normalizeKitchenPromotion>
   try {
-    promotion = normalizeKitchenPromotion(data.promotion)
+    promotion = normalizeKitchenPromotion(data.promotion, 'itemId')
   } catch (cause) {
     throw bad(cause instanceof Error ? cause.message : 'Invalid promotion.')
   }

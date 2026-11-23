@@ -29,7 +29,7 @@ import { resolveMenuBrowseSurfaceCopy } from '../utils/catalogue/surface-copy'
 import { directoryMenuRouteScope } from '../utils/navigation/route'
 
 const props = defineProps<{
-  dishId: string
+  itemId: string
   menuSlug: string
   kitchenSlug: string
 }>()
@@ -60,7 +60,7 @@ const sections = computed(() => {
     content.sections
       .map((section) => ({
         ...section,
-        items: section.items.filter((item) => item.dishId === props.dishId),
+        items: section.items.filter((item) => item.itemId === props.itemId),
       }))
       .filter((section) => section.items.length),
     content.promotions,

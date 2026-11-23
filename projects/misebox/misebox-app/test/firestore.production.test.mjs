@@ -206,7 +206,7 @@ before(async () => {
       ...stamp(uid, app),
     })
     await seed(
-      `kitchens/kitchen-${index}/dishes/soup`,
+      `kitchens/kitchen-${index}/items/soup`,
       dish(uid, `kitchen-${index}`, app)
     )
     await seed(`kitchens/kitchen-${index}/orders/order`, {
@@ -257,7 +257,7 @@ test('each Kitchen-enabled App grant reads its own Kitchen, Place, collection an
       `kitchens/kitchen-${index}/orders/order`,
     ])
       allowed(await get(path, uid))
-    allowed(await query('dishes', uid, `kitchens/kitchen-${index}`))
+    allowed(await query('items', uid, `kitchens/kitchen-${index}`))
     allowed(await get(`kitchen_access/${uid}`, uid))
   }
 })
@@ -305,7 +305,7 @@ test('unauthenticated, unrelated, admin-only and obsolete Team/AppUser arrays gr
   for (const uid of [undefined, 'stranger', 'outsider', 'operator-1']) {
     denied(await get('kitchens/kitchen-0', uid))
     denied(await get('kitchens/kitchen-0/orders/order', uid))
-    denied(await query('dishes', uid, 'kitchens/kitchen-0'))
+    denied(await query('items', uid, 'kitchens/kitchen-0'))
   }
 })
 test('guest can read only its exact root and Place, including missing pre-creation roots', async () => {
@@ -393,10 +393,10 @@ test('each Kitchen App reads its Item but cannot bypass trusted create, update o
   for (const [index, app] of apps.entries()) {
     const uid = `operator-${index}`,
       kitchen = `kitchen-${index}`
-    allowed(await get(`kitchens/${kitchen}/dishes/soup`, uid))
+    allowed(await get(`kitchens/${kitchen}/items/soup`, uid))
     denied(
       await write(
-        `kitchens/${kitchen}/dishes/new`,
+        `kitchens/${kitchen}/items/new`,
         dish(uid, kitchen, app),
         uid,
         { create: true }
@@ -404,19 +404,19 @@ test('each Kitchen App reads its Item but cannot bypass trusted create, update o
     )
     denied(
       await write(
-        `kitchens/${kitchen}/dishes/soup`,
+        `kitchens/${kitchen}/items/soup`,
         { name: 'New soup', updated: { by: uid } },
         uid,
         { mask: ['name', 'updated'] }
       )
     )
     denied(
-      await write(`kitchens/${kitchen}/dishes/soup`, {}, uid, { remove: true })
+      await write(`kitchens/${kitchen}/items/soup`, {}, uid, { remove: true })
     )
   }
   denied(
     await write(
-      'kitchens/kitchen-0/dishes/intruder',
+      'kitchens/kitchen-0/items/intruder',
       dish('operator-1', 'kitchen-0', apps[1]),
       'operator-1',
       { create: true }
@@ -437,9 +437,13 @@ test('ID-only Kitchen Items require a current grant and trusted writes', async (
   await seed(kitchen, { id: 'minimal-items-kitchen' })
   const item = `${kitchen}/items/soup`
   await seed(item, { name: 'Soup' })
+  const legacyItem = `${kitchen}/dishes/soup`
+  await seed(legacyItem, { name: 'Soup' })
+  denied(await get(legacyItem, uid))
   allowed(await get(item, uid))
   allowed(await query('items', uid, kitchen))
   denied(await get(item, 'operator-0'))
+  denied(await query('items', 'operator-0', kitchen))
   denied(await get(item))
   denied(
     await write(`${kitchen}/items/second`, { name: 'Salad' }, uid, {
@@ -463,7 +467,7 @@ test('Menu metadata and nested content stay readable but require commands for al
     kitchen_id: 'kitchen-0',
     menu_id: 'food',
     section_id: 'lunch',
-    dish_id: 'soup',
+    item_id: 'soup',
     status: 'active',
   })
   for (const path of [
@@ -548,15 +552,15 @@ test('malformed grants and deleted Kitchen parents cannot expose children', asyn
       ids,
       membership_created_at: time,
     })
-    denied(await get('kitchens/kitchen-0/dishes/soup', 'malformed'))
+    denied(await get('kitchens/kitchen-0/items/soup', 'malformed'))
     denied(await query('offerings', 'malformed', 'kitchens/kitchen-0'))
   }
   await seedAccess('misebox-app', 'malformed', {
     ids: ['deleted'],
     membership_created_at: time,
   })
-  await seed('kitchens/deleted/dishes/soup', dish('malformed', 'deleted'))
-  denied(await get('kitchens/deleted/dishes/soup', 'malformed'))
+  await seed('kitchens/deleted/items/soup', dish('malformed', 'deleted'))
+  denied(await get('kitchens/deleted/items/soup', 'malformed'))
   await seed('kitchens/deleted/offerings/lunch', {
     name: 'Lunch',
     enabled: true,
@@ -566,7 +570,7 @@ test('malformed grants and deleted Kitchen parents cannot expose children', asyn
   denied(await get('kitchens/deleted/offerings/lunch', 'malformed'))
   denied(
     await write(
-      'kitchens/deleted/dishes/new',
+      'kitchens/deleted/items/new',
       dish('malformed', 'deleted'),
       'malformed',
       { create: true }

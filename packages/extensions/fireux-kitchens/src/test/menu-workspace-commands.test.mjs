@@ -126,7 +126,7 @@ function harness({
       return {
         exists: !missingItem,
         data: {
-          dish_id: 'margherita',
+          item_id: 'margherita',
           ...(sellableId ? { sellable_id: sellableId } : {}),
         },
       }
@@ -232,7 +232,7 @@ const item = {
   kitchenId: 'pizza',
   menuId: 'food',
   sectionId: 'pizza',
-  itemId: 'margherita',
+  entryId: 'margherita',
 }
 
 test('Free creation allows one combined Menu and blocks further creation without deleting retained menus', async () => {
@@ -335,7 +335,7 @@ test('Invalid prices, unknown fields, identity changes and invalid options are r
     { price: -1 },
     { price: NaN },
     { price: '12' },
-    { dish_id: 'other' },
+    { item_id: 'other' },
     { image: 'url' },
     { status: 'sold-out' },
     { user_id: 'other' },

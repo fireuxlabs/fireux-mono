@@ -29,7 +29,7 @@ const sectionRow = (section: Record<string, unknown>, sectionId: string) => ({
 
 const itemRow = (
   item: Record<string, unknown>,
-  itemId: string,
+  entryId: string,
   dish: Record<string, unknown> | null
 ) => {
   if (item.promotion_id)
@@ -43,8 +43,8 @@ const itemRow = (
       'Import comparison cannot represent Item choice groups. Review choices in the Item editor.'
     )
   return {
-    id: readString(item.id) || itemId,
-    dish_id: readString(item.dish_id),
+    id: readString(item.id) || entryId,
+    item_id: readString(item.item_id),
     name: readString(dish.name),
     description: readString(dish.description),
     price: pricing.price,
@@ -73,7 +73,7 @@ export async function readKitchenMenuCurrentShape(
     }
   }
 
-  const dishesSnap = await db.collection(`${basePath}/dishes`).get()
+  const dishesSnap = await db.collection(`${basePath}/items`).get()
   const dishesById = new Map(
     dishesSnap.docs.map((doc) => [
       doc.id,
@@ -96,7 +96,7 @@ export async function readKitchenMenuCurrentShape(
             return itemRow(
               item,
               itemDoc.id,
-              dishesById.get(readString(item.dish_id)) ?? null
+              dishesById.get(readString(item.item_id)) ?? null
             )
           })
           .sort(sortByOrder)

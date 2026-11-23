@@ -48,7 +48,7 @@ import { useKitchenItemContext } from '../../../../composables/items/useKitchenI
 const props = defineProps<{ remove: () => Promise<void> }>()
 const {
   item: dish,
-  itemId: dishId,
+  itemId,
   kitchenId,
   canWrite,
 } = useKitchenItemContext()
@@ -57,11 +57,11 @@ const {
   usages,
   ready: usageReady,
   error: usageError,
-} = useItemUsage(kitchenId, dishId)
+} = useItemUsage(kitchenId, itemId)
 const toast = useToastify()
 const route = useRoute()
 const deleting = ref(false)
-const scopeSources = [kitchenId, dishId, () => route.fullPath]
+const scopeSources = [kitchenId, itemId, () => route.fullPath]
 const captureScope = useItemEditorScope(scopeSources, () => {
   deleting.value = false
 })

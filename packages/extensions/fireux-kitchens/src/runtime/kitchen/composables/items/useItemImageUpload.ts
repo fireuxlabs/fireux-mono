@@ -6,7 +6,7 @@ import { useItemEditorScope } from './useItemEditorScope'
 
 type ItemImageUploadResponse = {
   ok: true
-  dish_id: string
+  item_id: string
   image: string
   object_path: string
 }
@@ -21,18 +21,18 @@ export function useItemImageUpload(ownerSources: WatchSource[] = []) {
   })
 
   async function uploadItemImage(input: {
-    dishId: string
+    itemId: string
     kitchenId: string
     file: File
   }) {
-    const dishId = text(input.dishId)
+    const itemId = text(input.itemId)
     const kitchenId = text(input.kitchenId)
     const file = input.file
     const user = currentUser.value
     const isCurrent = captureScope()
 
     if (!kitchenId) throw new Error('Kitchen id is required.')
-    if (!isFirestoreDocumentId(dishId)) throw new Error('Item id is required.')
+    if (!isFirestoreDocumentId(itemId)) throw new Error('Item id is required.')
     if (!(file instanceof File)) throw new Error('Item image is required.')
     if (pending.value) throw new Error('A Item image is already uploading.')
 
@@ -52,7 +52,7 @@ export function useItemImageUpload(ownerSources: WatchSource[] = []) {
       const form = new FormData()
       form.set('file', file, file.name || 'dish-image')
       const result = await $fetch<ItemImageUploadResponse>(
-        `/api/workspace/kitchen/dishes/${encodeURIComponent(dishId)}/image`,
+        `/api/workspace/kitchen/items/${encodeURIComponent(itemId)}/image`,
         {
           onResponse: async ({ options, response }) => {
             if (
@@ -71,7 +71,7 @@ export function useItemImageUpload(ownerSources: WatchSource[] = []) {
       )
       if (
         result?.ok !== true ||
-        result.dish_id !== dishId ||
+        result.item_id !== itemId ||
         typeof result.image !== 'string' ||
         !result.image.trim() ||
         typeof result.object_path !== 'string' ||

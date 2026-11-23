@@ -176,10 +176,10 @@ export default defineEventHandler(async (event: H3Event) => {
   })
   const {
     sproochliCacheUnits,
-    dish_targets: itemTargets,
+    itemTargets,
     ...write
   } = writeResult
-  const mediaApplied: Array<{ dish_id: string; image: string }> = []
+  const mediaApplied: Array<{ itemId: string; image: string }> = []
   for (const target of itemTargets) {
     const decision = mediaReview[target.review_key]
     if (decision?.action !== 'keep' || !decision.candidate_url) continue
@@ -187,15 +187,15 @@ export default defineEventHandler(async (event: H3Event) => {
     const saved = await normalizeAndSaveItemImage({
       appId,
       kitchenId,
-      dishId: target.dish_id,
+      itemId: target.itemId,
       data: fetched.buffer,
     })
     try {
-      await serverUpdate(serverKitchenItemsTarget(kitchenId), target.dish_id, {
+      await serverUpdate(serverKitchenItemsTarget(kitchenId), target.itemId, {
         image: saved.imageUrl,
         updated: serverAuditStamp({ by: uid, appId }),
       })
-      mediaApplied.push({ dish_id: target.dish_id, image: saved.imageUrl })
+      mediaApplied.push({ itemId: target.itemId, image: saved.imageUrl })
     } catch (cause) {
       await saved.deleteUploaded().catch(() => undefined)
       throw cause

@@ -52,7 +52,7 @@ export async function readKitchenMenuSections(
   }
 ) {
   const basePath = `kitchens/${input.kitchenId}`
-  const dishesQuery = db.collection(`${basePath}/dishes`)
+  const dishesQuery = db.collection(`${basePath}/items`)
   input.sources?.watch(dishesQuery)
   const dishesSnap = await dishesQuery.get()
   input.observe?.collection(
@@ -103,7 +103,7 @@ export async function readKitchenMenuSections(
             .map(async (item) => {
               const promotionId = readRecordString(item, 'promotion_id')
               if (promotionId) {
-                if (item.dish_id || input.date)
+                if (item.item_id || input.date)
                   throw new Error('Invalid meal-deal placement.')
                 const promotionRef = db
                   .collection(`${basePath}/promotions`)
@@ -140,7 +140,7 @@ export async function readKitchenMenuSections(
                 if (
                   promotion.groups.some((group) =>
                     group.dishes.some((choice) => {
-                      const dish = dishesById.get(choice.dishId)
+                      const dish = dishesById.get(choice.item_id)
                       return !dish || dish.status === 'archived'
                     })
                   )
@@ -149,11 +149,12 @@ export async function readKitchenMenuSections(
                 const publicGroups = promotion.groups.map((group) => ({
                   ...group,
                   dishes: group.dishes.map((choice) => {
-                    const dish = dishesById.get(choice.dishId)
+                    const dish = dishesById.get(choice.item_id)
                     return {
-                      ...choice,
+                      itemId: choice.item_id,
+                      supplement: choice.supplement,
                       name:
-                        readRecordString(dish || {}, 'name') || choice.dishId,
+                        readRecordString(dish || {}, 'name') || choice.item_id,
                     }
                   }),
                 }))
@@ -174,8 +175,8 @@ export async function readKitchenMenuSections(
                   addOns: [],
                 }
               }
-              const dishId = readRecordString(item, 'dish_id')
-              const dish = dishesById.get(dishId) ?? null
+              const itemId = readRecordString(item, 'item_id')
+              const dish = dishesById.get(itemId) ?? null
               if (!dish || dish.status === 'archived') return null
               // An incomplete catalogue item must not break an already published Menu.
               let pricing
@@ -187,11 +188,11 @@ export async function readKitchenMenuSections(
 
               return {
                 id: text(item.id),
-                dish_id: dishId,
+                item_id: itemId,
                 item_kind:
                   readLegacyItemKind(dish?.item_kind) ||
                   (dish.item_kind === null ? null : 'food'),
-                name: readRecordString(dish || {}, 'name') || dishId,
+                name: readRecordString(dish || {}, 'name') || itemId,
                 description: readRecordString(dish || {}, 'description'),
                 image_url: readRecordString(dish || {}, 'image'),
                 price: pricing.price,

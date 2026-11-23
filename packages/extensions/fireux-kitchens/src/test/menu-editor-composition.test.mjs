@@ -157,7 +157,7 @@ test('Menu item row shows prices and confirmed removal inside its vertical actio
   const calls = []
   const row = {
     id: 'item',
-    dishId: 'dish',
+    itemId: 'dish',
     label: 'Soup',
     item: { status: 'active' },
     dish: { description: 'Daily soup' },

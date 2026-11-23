@@ -43,7 +43,7 @@ be derived, and a slot does not define a Firestore field or collection.
   requires `id`, `name` and `items`. The [root reader](src/runtime/kitchen/utils/read-kitchen-document.ts)
   gets the ID from the document path. A name-only Kitchen stores `name`.
 - [Item model](src/runtime/kitchen/models/item.model.ts) retains its own
-  identity and is loaded from `kitchens/{kitchenId}/items/{dishId}`.
+  identity and is loaded from `kitchens/{kitchenId}/items/{itemId}`.
   The Kitchen never stores its Item array in the document.
 
 ## Identity & brand
@@ -143,7 +143,7 @@ lists only granted Kitchen roots. Older documents can use their stored
 failed Place read leaves the Kitchen accessible under its document ID.
 
 The [Items list](src/runtime/pages/workspace/kitchen/menu/items/index.vue) and
-[Item detail](src/runtime/pages/workspace/kitchen/menu/items/%5BdishId%5D.vue)
+[Item detail](src/runtime/pages/workspace/kitchen/menu/items/%5BitemId%5D.vue)
 share the [Items page](src/runtime/kitchen/components/Workspace/Items/Page.vue).
 It reads the granted Kitchen's `items` collection, handles loading, empty and
 error states, and passes the loaded `kitchen.items` to the list and editor.

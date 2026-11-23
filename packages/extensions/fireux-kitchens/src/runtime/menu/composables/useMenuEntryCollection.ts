@@ -13,7 +13,7 @@ const sortItems = (items: MenuEntry[]) =>
   [...items].sort(
     (a, b) =>
       Number(a.sort_order || 0) - Number(b.sort_order || 0) ||
-      String(a.dish_id).localeCompare(String(b.dish_id))
+      String(a.item_id).localeCompare(String(b.item_id))
   )
 
 export function useMenuEntryCollection(

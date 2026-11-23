@@ -18,7 +18,7 @@ export async function removeKitchenMenuItem(event: H3Event, input: unknown) {
     typeof input !== 'object' ||
     Array.isArray(input) ||
     Object.keys(input).some(
-      (key) => !['kitchenId', 'menuId', 'sectionId', 'itemId'].includes(key)
+      (key) => !['kitchenId', 'menuId', 'sectionId', 'entryId'].includes(key)
     )
   )
     throw createError({
@@ -29,7 +29,7 @@ export async function removeKitchenMenuItem(event: H3Event, input: unknown) {
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
   const menuId = requireFirestoreDocumentId(value.menuId, 'Menu id')
   const sectionId = requireFirestoreDocumentId(value.sectionId, 'Section id')
-  const itemId = requireFirestoreDocumentId(value.itemId, 'Item id')
+  const entryId = requireFirestoreDocumentId(value.entryId, 'Menu entry id')
   const actor = await readKitchenMutationActor(event)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     const access = await requireKitchenMutationAuthority(tx, actor, kitchenId)
@@ -52,7 +52,7 @@ export async function removeKitchenMenuItem(event: H3Event, input: unknown) {
       })
     tx.delete(
       serverKitchenMenuItemsTarget(kitchenId, menuId, sectionId),
-      itemId
+      entryId
     )
   })
   return { ok: true as const, kitchenId, menuId }

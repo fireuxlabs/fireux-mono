@@ -39,8 +39,8 @@ const bundle = () => ({
       name: 'Pizza',
       choose: 1,
       dishes: [
-        { dishId: 'margherita', supplement: 0 },
-        { dishId: 'swiss', supplement: 3 },
+        { item_id: 'margherita', supplement: 0 },
+        { item_id: 'swiss', supplement: 3 },
       ],
     },
   ],
@@ -125,7 +125,7 @@ test('existing Item offers retain their original command shape', async () => {
     status: 'active',
     currency: 'CHF',
     days: ['sunday'],
-    dishes: [{ dishId: 'margherita', price: 11 }],
+    dishes: [{ item_id: 'margherita', price: 11 }],
   })
   await e.save()
   assert.deepEqual(e.writes[0], [
@@ -134,7 +134,7 @@ test('existing Item offers retain their original command shape', async () => {
       status: 'active',
       currency: 'CHF',
       days: ['sunday'],
-      dishes: [{ dishId: 'margherita', price: 11 }],
+      dishes: [{ item_id: 'margherita', price: 11 }],
     },
     'sunday',
   ])
@@ -163,7 +163,7 @@ test('new meal deals and form conversion do not submit hidden Item-offer rows', 
     status: 'paused',
     currency: 'CHF',
     days: ['monday'],
-    dishes: [{ dishId: 'margherita', price: 11 }],
+    dishes: [{ item_id: 'margherita', price: 11 }],
   })
   e.form.value = 'meal_deal'
   e.setPrice.value = 15

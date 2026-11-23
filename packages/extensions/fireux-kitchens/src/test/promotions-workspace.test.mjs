@@ -30,7 +30,7 @@ function fixture() {
     status: 'active',
     currency: 'CHF',
     days: ['sunday'],
-    dishes: [{ dishId: 'pizza', price: 11 }],
+    dishes: [{ item_id: 'pizza', price: 11 }],
   }
   const state = {
     identity: { outcome: Vue.ref('ready') },
@@ -231,7 +231,7 @@ test('readiness changes do not change the promotion editor owner or acquire extr
   assert.equal(state.editorOwnerKey.value, owner)
   assert.deepEqual(
     reads.map((read) => read.name),
-    ['promotions', 'dishes']
+    ['promotions', 'items']
   )
   assert.ok(reads.every((read) => read.kitchenId.value === ''))
   identity.kitchenId.value = 'kitchen-b'
@@ -299,7 +299,7 @@ test('Promotion save uses the linked Place currency supplied by Kitchen Identity
             status: 'active',
             currency: 'CHF',
             days: ['sunday'],
-            dishes: [{ dishId: 'pizza', price: 11 }],
+            dishes: [{ item_id: 'pizza', price: 11 }],
           },
         }),
         canSave: Vue.ref(true),

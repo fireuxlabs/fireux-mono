@@ -26,7 +26,7 @@
     <template v-else>
       <ItemMenu
         v-for="menu in activeMenus"
-        :key="`${kitchenId}:${dishId}:${menu.id}`"
+        :key="`${kitchenId}:${itemId}:${menu.id}`"
         :menu="menu"
         @result="results[menu.id] = $event"
       />
@@ -50,7 +50,7 @@ import { useKitchenItemContext } from '../../../../../../composables/items/useKi
 import { useKitchenMenuCollection } from '../../../../../../../menu/composables/useKitchenMenuCollection'
 const {
   kitchenId,
-  itemId: dishId,
+  itemId,
   storageKitchenId,
   rootCollection,
   databaseId,
@@ -64,7 +64,7 @@ const { activeMenus, pending, error } = useKitchenMenuCollection(
 )
 const results = ref<Record<string, 'pending' | 'error' | 'empty' | 'match'>>({})
 watch(
-  [kitchenId, dishId],
+  [kitchenId, itemId],
   () => {
     results.value = {}
   },

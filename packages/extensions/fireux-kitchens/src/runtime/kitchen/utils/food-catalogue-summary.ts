@@ -67,14 +67,14 @@ export function foodPromotionSummary(
             group.dishes.length < group.choose ||
             group.dishes.some(
               (choice) =>
-                !itemIds.has(choice.dishId) || !validPrice(choice.supplement)
+                !itemIds.has(choice.item_id) || !validPrice(choice.supplement)
             )
         )
       )
     return (
       !promotion.dishes?.length ||
       promotion.dishes.some(
-        (dish) => !itemIds.has(dish.dishId) || !validPrice(dish.price)
+        (dish) => !itemIds.has(dish.item_id) || !validPrice(dish.price)
       )
     )
   }).length

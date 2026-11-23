@@ -7,6 +7,6 @@ export type ItemUsage = {
 }
 export type ItemUsageResponse = {
   kitchenId: string
-  dishId: string
+  itemId: string
   usages: ItemUsage[]
 }

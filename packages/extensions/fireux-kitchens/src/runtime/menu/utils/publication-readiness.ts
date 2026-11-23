@@ -15,7 +15,7 @@ export type MenuReadiness = {
   issues: Array<{
     sectionId: string
     section: string
-    itemId: string
+    entryId: string
     name: string
     reason: string
   }>
@@ -32,17 +32,17 @@ export function menuPublicationReadiness(
   for (const section of sections)
     for (const item of section.items) {
       if (item.status === 'archived') continue
-      const dish = dishes.get(String(item.dish_id || ''))
+      const dish = dishes.get(String(item.item_id || ''))
       const stored = promotions.get(String(item.promotion_id || ''))
       let reason = ''
       const name = String(
         (item.promotion_id ? stored?.name : dish?.name) ||
           item.promotion_id ||
-          item.dish_id ||
+          item.item_id ||
           'Unavailable entry'
       )
       if (item.promotion_id) {
-        if (item.dish_id)
+        if (item.item_id)
           reason = 'Entry references both a Item and a meal deal.'
         else if (!stored || !Array.isArray(stored.groups))
           reason = 'Meal deal is missing.'
@@ -72,19 +72,23 @@ export function menuPublicationReadiness(
         }
       } else if (!dish) reason = 'Item is missing.'
       else if (dish.status === 'archived') reason = 'Item is archived.'
-      else if (!Object.hasOwn(dish, 'price')) reason = 'Item price is not set.'
       else {
         try {
           readItemPricing(dish)
         } catch {
-          reason = 'Item pricing is incomplete.'
+          reason =
+            !Object.hasOwn(dish, 'price') &&
+            Array.isArray(dish.choice_groups ?? []) &&
+            !(dish.choice_groups as unknown[] | undefined)?.length
+              ? 'Item price is not set.'
+              : 'Item pricing is incomplete.'
         }
       }
       if (reason)
         result.issues.push({
           sectionId: section.id,
           section: section.label || section.id,
-          itemId: String(item.id || ''),
+          entryId: String(item.id || ''),
           name,
           reason,
         })

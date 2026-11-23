@@ -46,7 +46,7 @@ test('publishes one date atomically and preserves the stable doorway when withdr
     status: 'active',
   })
   h.records.set(`${menuPath}/sections/future/items/i`, {
-    dish_id: 'dish',
+    item_id: 'dish',
     price: 15,
   })
   await h.daily('2026-10-16')
@@ -70,12 +70,12 @@ for (const [label, change] of [
   ],
   [
     'invalid price',
-    (h) => (h.records.get('kitchens/k/dishes/dish').price = '12'),
+    (h) => (h.records.get('kitchens/k/items/dish').price = '12'),
   ],
-  ['missing Item', (h) => h.records.delete('kitchens/k/dishes/dish')],
+  ['missing Item', (h) => h.records.delete('kitchens/k/items/dish')],
   [
     'archived Item',
-    (h) => (h.records.get('kitchens/k/dishes/dish').status = 'archived'),
+    (h) => (h.records.get('kitchens/k/items/dish').status = 'archived'),
   ],
   [
     'missing currency',

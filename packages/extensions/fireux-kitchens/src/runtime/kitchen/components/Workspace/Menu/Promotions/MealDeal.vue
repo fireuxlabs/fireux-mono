@@ -44,7 +44,7 @@
       </div>
       <UFormField label="Food and drinks">
         <USelectMenu
-          :model-value="group.dishes.map((dish) => dish.dishId)"
+          :model-value="group.dishes.map((dish) => dish.item_id)"
           @update:model-value="(ids) => selectItems(group, ids)"
           :aria-label="`Choose dishes for group ${index + 1}`"
           multiple
@@ -56,17 +56,17 @@
       </UFormField>
       <div
         v-for="dish in group.dishes"
-        :key="dish.dishId"
+        :key="dish.item_id"
         class="promotion-choice"
       >
-        <label :for="`supplement-${group.id}-${dish.dishId}`">{{
-          itemOptions.find((option) => option.value === dish.dishId)?.label ||
+        <label :for="`supplement-${group.id}-${dish.item_id}`">{{
+          itemOptions.find((option) => option.value === dish.item_id)?.label ||
           'Unavailable dish'
         }}</label>
         <UFormField :label="`Supplement (${currency})`">
           <!-- @vue-generic {string | number, {}} -->
           <UInput
-            :id="`supplement-${group.id}-${dish.dishId}`"
+            :id="`supplement-${group.id}-${dish.item_id}`"
             v-model="dish.supplement"
             type="number"
             min="0"
@@ -110,9 +110,9 @@ function addGroup() {
 }
 function selectItems(group: MealDealGroupDraft, ids: string[]) {
   group.dishes = ids.map(
-    (dishId) =>
-      group.dishes.find((dish) => dish.dishId === dishId) || {
-        dishId,
+    (item_id) =>
+      group.dishes.find((dish) => dish.item_id === item_id) || {
+        item_id,
         supplement: 0,
       }
   )

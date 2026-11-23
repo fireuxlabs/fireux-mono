@@ -103,7 +103,7 @@ export const readMenuManifestSections = (
 
         return {
           id: text(itemRecord.id) || name,
-          dishId: text(itemRecord.dish_id),
+          itemId: text(itemRecord.item_id),
           ...(itemRecord.mealDeal
             ? {
                 mealDeal: itemRecord.mealDeal as NonNullable<

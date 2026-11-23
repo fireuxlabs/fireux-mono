@@ -381,9 +381,9 @@ const existing = () => ({
 })
 const imageResponse = () => ({
   ok: true,
-  dish_id: 'dish',
+  item_id: 'dish',
   image: 'https://example.com/dish.webp',
-  object_path: 'kitchens/kitchen/dishes/dish/image/revision',
+  object_path: 'kitchens/kitchen/items/dish/image/revision',
 })
 const finish = async (h) => {
   h.auth.resolve(h.user)
@@ -492,13 +492,13 @@ test('Image transport snapshots its file, rejects obsolete credentials, and reta
           ])
         ),
         input = {
-          dishId: 'dish',
+          itemId: 'dish',
           kitchenId: 'kitchen',
           file: new File(['original'], 'original.png'),
         },
         flight = api.uploadItemImage(input)
       input.file = new File(['replacement'], 'replacement.png')
-      input.dishId = 'other'
+      input.itemId = 'other'
       if (stage === 'response') {
         h.token.resolve('token')
         await drain()
@@ -514,7 +514,7 @@ test('Image transport snapshots its file, rejects obsolete credentials, and reta
       if (stage === 'token' && changed !== 'stable') {
         await assert.rejects(flight, /changed/)
         assert.equal(h.calls.length, 0)
-      } else assert.equal((await flight).dish_id, 'dish')
+      } else assert.equal((await flight).item_id, 'dish')
       h.scope.stop()
     }
 })

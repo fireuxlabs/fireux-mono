@@ -7,7 +7,7 @@ import type { ItemChoiceSelection } from '../../kitchen/models/item.model'
 
 type ChoicePreviewItem = Parameters<typeof readItemChoiceGroups>[0] & {
   id: string
-  dishId?: string
+  itemId?: string
   price?: number
 }
 
@@ -20,7 +20,7 @@ export function useMenuItemChoicePreview(
   const choiceGroups = computed(() => readItemChoiceGroups(readItem()))
   const selections = ref<ItemChoiceSelection>({})
   watch(
-    [() => readItem().id, () => readItem().dishId, choiceGroups],
+    [() => readItem().id, () => readItem().itemId, choiceGroups],
     (currentOwner, previousOwner) => {
       const sameItem =
         previousOwner &&

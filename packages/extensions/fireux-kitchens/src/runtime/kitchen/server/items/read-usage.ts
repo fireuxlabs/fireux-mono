@@ -11,10 +11,10 @@ import type { ItemUsageResponse } from '../../composables/items/item-usage'
 
 export async function readKitchenItemUsage(
   event: H3Event,
-  input: { kitchenId: unknown; dishId: unknown }
+  input: { kitchenId: unknown; itemId: unknown }
 ): Promise<ItemUsageResponse> {
   const kitchenId = requireFirestoreDocumentId(input.kitchenId, 'Kitchen id')
-  const dishId = requireFirestoreDocumentId(input.dishId, 'Item id')
+  const itemId = requireFirestoreDocumentId(input.itemId, 'Item id')
   const actor = await readKitchenMutationActor(event)
   const db = getRuntimeFirestore()
   await requireKitchenRecordMutationAuthority(
@@ -57,7 +57,7 @@ export async function readKitchenItemUsage(
       },
     },
     kitchenId,
-    dishId
+    itemId
   )
-  return { kitchenId, dishId, usages }
+  return { kitchenId, itemId, usages }
 }

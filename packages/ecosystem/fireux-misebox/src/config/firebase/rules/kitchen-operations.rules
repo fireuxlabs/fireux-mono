@@ -88,41 +88,6 @@
           allow create, update, delete: if false;
         }
 
-        match /dishes/{dishId} {
-          function isValidDish(data) {
-            return data is map &&
-              data.keys().size() <= 20 &&
-              data.kitchen_id == kitchenId &&
-              data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
-              data.slug is string && data.slug.size() <= 200 &&
-              data.description is string && data.description.size() <= 5000 &&
-              data.item_kind in ['food', 'drink'] &&
-              data.is_deal is bool &&
-              data.is_flagship is bool &&
-              data.image is string && data.image.size() <= 2000 &&
-              validCreatedStamp(data.created) &&
-              validUpdatedStamp(data.updated);
-          }
-
-          allow get, list: if canReadKitchenWorkspace(kitchenId);
-          allow create: if (canOperateKitchenWorkspace(kitchenId)) &&
-            isValidDish(request.resource.data) &&
-            request.resource.data.created.at == request.time &&
-            request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == 'misebox-app' &&
-            request.resource.data.updated.at == request.time &&
-            request.resource.data.updated.by == request.auth.uid;
-          allow update: if (canOperateKitchenWorkspace(kitchenId)) &&
-            isValidDish(request.resource.data) &&
-            request.resource.data.kitchen_id == resource.data.kitchen_id &&
-            request.resource.data.created == resource.data.created &&
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-              'name', 'slug', 'description', 'updated'
-            ]) &&
-            request.resource.data.updated.at == request.time &&
-            request.resource.data.updated.by == request.auth.uid;
-          allow delete: if canOperateKitchenWorkspace(kitchenId);
-        }
 
         match /recipes/{recipeId} {
           function isValidRecipe(data) {
@@ -184,16 +149,17 @@
               request.resource.data.menu_id == resource.data.menu_id;
             allow delete: if canOperateKitchenWorkspace(kitchenId);
 
-            match /items/{itemId} {
+            match /items/{entryId} {
               function hasValidMenuItemScope(data) {
                 return data is map &&
                   data.keys().size() <= 20 &&
                   data.kitchen_id == kitchenId &&
                   data.menu_id == menuId &&
                   data.section_id == sectionId &&
-                  isValidFirestoreDocumentId(data.dish_id) &&
+                  !data.keys().hasAny(['dish_id', 'promotion_id']) &&
+                  isValidFirestoreDocumentId(data.item_id) &&
                   exists(
-                    /databases/$(database)/documents/kitchens/$(kitchenId)/dishes/$(data.dish_id)
+                    /databases/$(database)/documents/kitchens/$(kitchenId)/items/$(data.item_id)
                   );
               }
 
@@ -205,7 +171,7 @@
                 request.resource.data.kitchen_id == resource.data.kitchen_id &&
                 request.resource.data.menu_id == resource.data.menu_id &&
                 request.resource.data.section_id == resource.data.section_id &&
-                request.resource.data.dish_id == resource.data.dish_id;
+                request.resource.data.item_id == resource.data.item_id;
               allow delete: if canOperateKitchenWorkspace(kitchenId);
             }
 

@@ -21,9 +21,11 @@ const offer = () => ({
   status: 'active',
   currency: 'CHF',
   days: ['sunday'],
-  dishes: [{ dishId: 'margherita', price: 11 }],
+  dishes: [{ itemId: 'margherita', price: 11 }],
 })
 const deletedField = Symbol('delete')
+const storedOffer = (...args) => helpers.normalizeKitchenPromotion(offer(...args), 'itemId')
+
 function harness(options = {}) {
   const writes = [],
     promotions = new Map(options.promotions || [])
@@ -109,14 +111,14 @@ function harness(options = {}) {
   }
 }
 test('active overlap follows dish identity and weekday, independently of Menu', () => {
-  assert(helpers.promotionsOverlap(offer(), offer()))
+  assert(helpers.promotionsOverlap(storedOffer(), storedOffer()))
   for (const patch of [
-    { dishes: [{ dishId: 'salad', price: 5 }] },
+    { dishes: [{ item_id: 'salad', price: 5 }] },
     { days: ['monday'] },
     { status: 'paused' },
   ])
     assert.equal(
-      helpers.promotionsOverlap(offer(), { ...offer(), ...patch }),
+      helpers.promotionsOverlap(storedOffer(), { ...storedOffer(), ...patch }),
       false
     )
 })
@@ -125,7 +127,7 @@ test('saving writes only the promotion', async () => {
   await h.save()
   assert.equal(h.writes.length, 1)
   assert.equal(h.writes[0][1], 'promotions')
-  assert.deepEqual(h.writes[0][3].dishes, [{ dishId: 'margherita', price: 11 }])
+  assert.deepEqual(h.writes[0][3].dishes, [{ item_id: 'margherita', price: 11 }])
 })
 test('authority, currency, catalogue ownership and overlapping offers reject before writes', async () => {
   for (const [options, patch] of [
@@ -133,7 +135,7 @@ test('authority, currency, catalogue ownership and overlapping offers reject bef
     [{ missingItem: true }, {}],
     [{ foreignItem: true }, {}],
     [{}, { currency: 'EUR' }],
-    [{ promotions: [['other', offer()]] }, {}],
+    [{ promotions: [['other', storedOffer()]] }, {}],
   ]) {
     const h = harness(options)
     await assert.rejects(h.save({ ...offer(), ...patch }))
@@ -168,8 +170,8 @@ test('public projection includes only dishes present in this Menu and no audit m
                     data: () => ({
                       ...offer(),
                       dishes: [
-                        ...offer().dishes,
-                        { dishId: 'private-dish', price: 99 },
+                        ...storedOffer().dishes,
+                        { item_id: 'private-dish', price: 99 },
                       ],
                       previous_menu_promotion: { private: 'audit' },
                     }),
@@ -194,7 +196,7 @@ test('public projection includes only dishes present in this Menu and no audit m
     'CHF'
   )
   assert.equal(result.length, 1)
-  assert.deepEqual(result[0].dishes, [{ dishId: 'margherita', price: 11 }])
+  assert.deepEqual(result[0].dishes, [{ itemId: 'margherita', price: 11 }])
   assert.equal(result[0].previous_menu_promotion, undefined)
   assert.deepEqual(
     await readMenuPromotions('kitchen', ['salad'], 'Europe/Zurich', 'CHF'),
@@ -217,15 +219,15 @@ const mealDeal = () => ({
       name: 'Pizza',
       choose: 1,
       dishes: [
-        { dishId: 'margherita', supplement: 0 },
-        { dishId: 'swiss', supplement: 3 },
+        { itemId: 'margherita', supplement: 0 },
+        { itemId: 'swiss', supplement: 3 },
       ],
     },
     {
       id: 'drink',
       name: 'Drink',
       choose: 1,
-      dishes: [{ dishId: 'water', supplement: 0 }],
+      dishes: [{ itemId: 'water', supplement: 0 }],
     },
   ],
 })
@@ -271,7 +273,7 @@ test('malformed meal deals and mixed promotion forms reject before writes', asyn
       groups: [
         {
           ...mealDeal().groups[0],
-          dishes: [{ dishId: 'margherita', supplement: -1 }],
+          dishes: [{ itemId: 'margherita', supplement: -1 }],
         },
       ],
     },
@@ -279,7 +281,7 @@ test('malformed meal deals and mixed promotion forms reject before writes', asyn
       groups: [
         {
           ...mealDeal().groups[0],
-          dishes: [{ dishId: 'margherita', supplement: '0' }],
+          dishes: [{ itemId: 'margherita', supplement: '0' }],
         },
       ],
     },
@@ -288,8 +290,8 @@ test('malformed meal deals and mixed promotion forms reject before writes', asyn
         {
           ...mealDeal().groups[0],
           dishes: [
-            { dishId: 'margherita', supplement: 0 },
-            { dishId: 'margherita', supplement: 1 },
+            { itemId: 'margherita', supplement: 0 },
+            { itemId: 'margherita', supplement: 1 },
           ],
         },
       ],
@@ -314,7 +316,7 @@ test('meal deals check every Item owner and status without touching normal Item 
     await assert.rejects(h.save(mealDeal()))
     assert.equal(h.writes.length, 0)
   }
-  assert.deepEqual(helpers.promotionItemIds(mealDeal()), [
+  assert.deepEqual(helpers.promotionItemIds(helpers.normalizeKitchenPromotion(mealDeal(), 'itemId')), [
     'margherita',
     'swiss',
     'water',
@@ -323,7 +325,7 @@ test('meal deals check every Item owner and status without touching normal Item 
 
 test('meal deals can share Items with other promotions without repricing standalone items', async () => {
   assert.equal(helpers.promotionsOverlap(mealDeal(), offer()), false)
-  assert.equal(helpers.promotionsOverlap(offer(), mealDeal()), false)
+  assert.equal(helpers.promotionsOverlap(storedOffer(), mealDeal()), false)
   assert.equal(helpers.promotionsOverlap(mealDeal(), mealDeal()), false)
   const h = harness({ promotions: [['sunday', offer()]] })
   await h.save(mealDeal())
@@ -340,7 +342,7 @@ test('changing a promotion form removes the previous form fields and retains its
   await h.save(offer(), 'existing')
   assert.equal(h.promotions.get('existing').groups, undefined)
   assert.equal(h.promotions.get('existing').price, undefined)
-  assert.deepEqual(h.promotions.get('existing').dishes, offer().dishes)
+  assert.deepEqual(h.promotions.get('existing').dishes, storedOffer().dishes)
   assert.ok(
     h.writes.every(
       (write) => write[1] === 'promotions' && write[2] === 'existing'

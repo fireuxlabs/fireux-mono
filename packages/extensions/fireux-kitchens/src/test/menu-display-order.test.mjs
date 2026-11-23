@@ -11,11 +11,11 @@ function fixture() {
     ['kitchens/k/menus/m/sections/t', { label: 'Drinks', sort_order: 8 }],
     [
       'kitchens/k/menus/m/sections/s/items/a',
-      { dish_id: 'a', sort_order: 2, price: 13 },
+      { item_id: 'a', sort_order: 2, price: 13 },
     ],
     [
       'kitchens/k/menus/m/sections/s/items/b',
-      { dish_id: 'b', sort_order: 3, price: 19 },
+      { item_id: 'b', sort_order: 3, price: 19 },
     ],
     [
       'kitchens/k/menus/m/sections/s/items/c',
@@ -121,7 +121,7 @@ test('append follows the maximum saved position, including gaps and archived ent
 test('item move normalizes ties atomically and never changes prices or publication', async () => {
   const f = fixture(),
     before = structuredClone(f.records)
-  await f.move({ itemId: 'b', direction: 'up' })
+  await f.move({ entryId: 'b', direction: 'up' })
   assert.equal(f.records.get(items + '/b').sort_order, 0)
   assert.equal(f.records.get(items + '/a').sort_order, 1)
   assert.equal(f.records.get(items + '/c').sort_order, 2)
@@ -147,13 +147,13 @@ test('section move stays within the Menu and supports both directions', async ()
 })
 test('boundary moves are harmless; missing entries and revoked authority do not write', async () => {
   const f = fixture()
-  await f.move({ itemId: 'a', direction: 'up' })
+  await f.move({ entryId: 'a', direction: 'up' })
   assert.deepEqual(f.writes, [])
-  await assert.rejects(f.move({ itemId: 'foreign', direction: 'down' }), {
+  await assert.rejects(f.move({ entryId: 'foreign', direction: 'down' }), {
     statusCode: 404,
   })
   f.deny()
-  await assert.rejects(f.move({ itemId: 'b', direction: 'up' }), /Denied/)
+  await assert.rejects(f.move({ entryId: 'b', direction: 'up' }), /Denied/)
   assert.deepEqual(f.writes, [])
 })
 test('a failed commit preserves the complete prior order', async () => {
@@ -161,7 +161,7 @@ test('a failed commit preserves the complete prior order', async () => {
     before = structuredClone(f.records)
   f.fail()
   await assert.rejects(
-    f.move({ itemId: 'b', direction: 'up' }),
+    f.move({ entryId: 'b', direction: 'up' }),
     /Commit failed/
   )
   assert.deepEqual(f.records, before)

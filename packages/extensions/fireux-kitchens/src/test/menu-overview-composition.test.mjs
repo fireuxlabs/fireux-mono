@@ -56,7 +56,7 @@ const specialsBindings = {
   './useMenuEntryCollection': {
     useMenuEntryCollection: () => ({
       outcome: Vue.ref('ready'),
-      items: Vue.ref([{ dish_id: 'octopus' }]),
+      items: Vue.ref([{ item_id: 'octopus' }]),
     }),
   },
   '../../kitchen/composables/items/useKitchenItemRead': {

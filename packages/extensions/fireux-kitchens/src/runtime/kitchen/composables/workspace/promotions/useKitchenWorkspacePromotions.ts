@@ -6,6 +6,7 @@ import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { promotionCommandInput } from '../../../utils/promotions/pricing'
 import type {
   KitchenPromotion,
   KitchenPromotionInput,
@@ -29,7 +30,7 @@ export function useKitchenWorkspacePromotions() {
     { kitchenCollectionPath: 'kitchens' }
   )
   const dishes = useKitchenChildCollection<{ id: string; name: string }>(
-    'dishes',
+    'items',
     kitchenId,
     { kitchenCollectionPath: 'kitchens' }
   )
@@ -96,7 +97,7 @@ export function useKitchenWorkspacePromotions() {
     dishes,
     identity,
     save: (promotion: KitchenPromotionInput, promotionId?: string) =>
-      command({ promotion, ...(promotionId ? { promotionId } : {}) }),
+      command({ promotion: promotionCommandInput(promotion), ...(promotionId ? { promotionId } : {}) }),
   }
 }
 export type KitchenPromotionsState = ReturnType<

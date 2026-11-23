@@ -9,7 +9,7 @@ import { ref, watch, effectScope, onScopeDispose } from 'vue'
 function load(path, deps, result) {
   deps = commandScopeDeps({
     isFirestoreDocumentId,
-    useRoute: () => ({ fullPath: '/dishes/dish' }),
+    useRoute: () => ({ fullPath: '/items/dish' }),
     ...deps,
   })
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -72,7 +72,7 @@ function harness(t) {
 }
 const input = () => ({
   kitchenId: 'k',
-  dishId: 'dish',
+  itemId: 'dish',
   file: new File(['image'], 'original.png'),
 })
 test('image blocks Kitchen/account round trips, logout/login and disposal during credentials', async (t) => {
@@ -101,18 +101,18 @@ test('image captures file/target and prevents a second upload during token wait'
     pending = h.uploadItemImage(draft)
   await assert.rejects(h.uploadItemImage(input()), /already uploading/)
   draft.file = new File(['changed'], 'changed.png')
-  draft.dishId = 'other'
+  draft.itemId = 'other'
   draft.kitchenId = 'other'
   h.token.resolve('token')
   await Promise.resolve()
-  assert.equal(h.calls[0][0], '/api/workspace/kitchen/dishes/dish/image')
+  assert.equal(h.calls[0][0], '/api/workspace/kitchen/items/dish/image')
   assert.equal(h.calls[0][1].body.get('file').name, 'original.png')
   assert.equal(h.calls[0][1].query.kitchenId, 'k')
   h.response.resolve({
     ok: true,
-    dish_id: 'dish',
+    item_id: 'dish',
     image: 'https://example.com/dish.webp',
-    object_path: 'kitchens/k/dishes/dish/image',
+    object_path: 'kitchens/k/items/dish/image',
   })
   await pending
   assert.equal(h.pending.value, false)
@@ -133,9 +133,9 @@ test('obsolete credentials cannot dispatch; committed upload stays truthful with
     h.token.resolve('old')
     h.response.resolve({
       ok: true,
-      dish_id: 'dish',
+      item_id: 'dish',
       image: 'https://example.com/dish.webp',
-      object_path: 'kitchens/k/dishes/dish/image',
+      object_path: 'kitchens/k/items/dish/image',
     })
     await settled
     assert.equal(h.pending.value, true)
