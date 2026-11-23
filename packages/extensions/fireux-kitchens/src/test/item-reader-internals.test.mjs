@@ -763,7 +763,7 @@ test('Item usage ignores retained placements when the Kitchen or Item changes', 
 
 test('the Workspace Items page loads one granted Kitchen collection and drops it when access changes', () => {
   const workspace = {
-    data: ref({ id: 'a', name: 'Kitchen A', items: [] }),
+    data: ref({ id: 'a', name: 'Kitchen A' }),
     outcome: ref('ready'),
     error: ref(),
   }
@@ -773,7 +773,7 @@ test('the Workspace Items page loads one granted Kitchen collection and drops it
   let scope
   const page = load(
     'kitchen/components/Workspace/Items/Page.vue',
-    '({ kitchen, outcome, error })',
+    '({ readyKitchenId, items, outcome, error })',
     {
       computed,
       defineProps: () => ({ workspace }),
@@ -786,22 +786,21 @@ test('the Workspace Items page loads one granted Kitchen collection and drops it
     }
   )
   assert.equal(scope.value, 'a')
-  assert.deepEqual(page.kitchen.value, {
-    ...workspace.data.value,
-    items: items.value,
-  })
+  assert.equal(page.readyKitchenId.value, 'a')
+  assert.deepEqual(page.items.value, items.value)
+  assert.equal(Object.hasOwn(workspace.data.value, 'items'), false)
   outcome.value = 'empty'
   items.value = []
   assert.equal(page.outcome.value, 'ready')
-  assert.deepEqual(page.kitchen.value.items, [])
+  assert.deepEqual(page.items.value, [])
   outcome.value = 'error'
   error.value = new Error('Read denied')
   assert.equal(page.outcome.value, 'error')
   assert.equal(page.error.value, error.value)
-  assert.equal(page.kitchen.value, null)
+  assert.equal(page.readyKitchenId.value, '')
   workspace.outcome.value = 'empty'
   assert.equal(scope.value, '')
-  assert.equal(page.kitchen.value, null)
+  assert.equal(page.readyKitchenId.value, '')
 })
 
 test('the legacy Item preview renders its supplied read surfaces', async () => {

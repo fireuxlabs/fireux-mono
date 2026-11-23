@@ -13,7 +13,7 @@ import {
   resolveKitchenPlaceId,
 } from '../runtime/kitchen/utils/read-kitchen-document.ts'
 
-const canonical = (id) => ({ id, name: id, items: [] })
+const canonical = (id) => ({ id, name: id })
 
 function loadComposable(path, name, bindings) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')

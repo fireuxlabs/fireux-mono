@@ -70,7 +70,6 @@ export function readKitchenDocument(
   return {
     id,
     name: name || id,
-    items: [],
     ...(slug ? { slug } : {}),
     ...(status ? { status } : {}),
     ...(visibility ? { visibility } : {}),

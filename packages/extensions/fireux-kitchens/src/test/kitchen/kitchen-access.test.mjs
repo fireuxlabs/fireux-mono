@@ -465,7 +465,6 @@ test('Kitchen-only shell persists only its name and retries without reading or w
   assert.deepEqual(readKitchenDocument(root, 'user'), {
     id: 'user',
     name: 'My Kitchen',
-    items: [],
   })
   assert.equal((await h.create(false, 'Another name')).action, 'open')
   assert.equal(h.records.get('kitchens/user'), root)
@@ -494,7 +493,6 @@ test('reopening a historical shell does not backfill or replace its root stamps'
   assert.deepEqual(readKitchenDocument(historical, 'user'), {
     id: 'user',
     name: 'user',
-    items: [],
   })
 })
 

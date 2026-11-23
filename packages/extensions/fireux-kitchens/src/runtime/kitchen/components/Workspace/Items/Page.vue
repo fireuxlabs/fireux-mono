@@ -1,9 +1,9 @@
 <template>
   <KitchenItems
-    v-if="kitchen"
-    :key="JSON.stringify([kitchen.id, itemId])"
-    :kitchen-id="kitchen.id"
-    :items="kitchen.items"
+    v-if="readyKitchenId"
+    :key="JSON.stringify([readyKitchenId, itemId])"
+    :kitchen-id="readyKitchenId"
+    :items="items"
     :items-path="itemsPath"
     :item-id="itemId"
   />
@@ -55,9 +55,8 @@ const outcome = computed(() => {
     : 'pending'
 })
 const error = computed(() => workspace.error.value ?? collection.error.value)
-const kitchen = computed(() =>
-  workspace.data.value && outcome.value === 'ready'
-    ? { ...workspace.data.value, items: collection.items.value }
-    : null
+const { items } = collection
+const readyKitchenId = computed(() =>
+  outcome.value === 'ready' ? (workspace.data.value?.id ?? '') : ''
 )
 </script>

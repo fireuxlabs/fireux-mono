@@ -13,7 +13,6 @@ import type { KitchenSale } from '../records/sale'
 import type { KitchenWasteEvent } from '../records/waste-event'
 import type { KitchenFulfilment } from '../utils/kitchen-fulfilment-reader'
 import type { KitchenOffering } from '../utils/offering-policy'
-import type { Item } from './item.model'
 
 export const KitchenStatuses = ['draft', 'active', 'archived'] as const
 export type KitchenStatus = (typeof KitchenStatuses)[number]
@@ -50,8 +49,6 @@ export type Kitchen = {
 
   // Menus
   menus?: Menu[]
-  /** Loaded from the Kitchen's items subcollection. */
-  items: Item[]
   promotions?: KitchenPromotion[]
   services?: KitchenOffering[]
 

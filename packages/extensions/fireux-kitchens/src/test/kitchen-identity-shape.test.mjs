@@ -284,7 +284,6 @@ test('flat Kitchen Identity is readable without Place or implicit publication', 
   assert.deepEqual(readKitchenDocument({ name: 'Name only' }, 'a'), {
     id: 'a',
     name: 'Name only',
-    items: [],
   })
   const input = {
     name: 'Flat Kitchen',
@@ -309,7 +308,6 @@ test('flat Kitchen Identity is readable without Place or implicit publication', 
     imageUrl: input.imageUrl,
     context: input.context,
     placeId: 'venue',
-    items: [],
   })
   assert.deepEqual(projectPublicKitchenSummary(kitchen), {
     id: 'a',

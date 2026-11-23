@@ -22,7 +22,6 @@ test('Kitchen projects path identity and loads no embedded or optional data', ()
   assert.deepEqual(readKitchenDocument(stored, 'kitchen'), {
     id: 'kitchen',
     name: 'Previous name',
-    items: [],
   })
   assert.deepEqual(stored, original)
   assert.equal(
@@ -33,7 +32,6 @@ test('Kitchen projects path identity and loads no embedded or optional data', ()
   assert.deepEqual(readKitchenDocument({}, 'kitchen'), {
     id: 'kitchen',
     name: 'kitchen',
-    items: [],
   })
 })
 
