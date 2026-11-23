@@ -3,15 +3,11 @@ import { computed, ref } from 'vue'
 import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import { useState } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenItemCollection } from '../../../useKitchenItemCollection'
 import { useKitchenMenuRecordContext } from './useKitchenMenuRecordContext'
 
 export function useMenuSectionsEditor() {
   const {
     menu,
-    storageKitchenId,
-    rootCollection,
-    databaseId,
     timezone,
     source,
     menuId,
@@ -31,14 +27,6 @@ export function useMenuSectionsEditor() {
     timezone.value ? menuLocalDate(timezone.value) : ''
   )
   const daily = computed(() => menu.value?.schedule === 'daily')
-  const previewKitchenId = computed(() =>
-    daily.value ? storageKitchenId.value : ''
-  )
-  const previewItems = useKitchenItemCollection(previewKitchenId, {
-    kitchenCollectionPath: rootCollection,
-    databaseId,
-  })
-
   const formattedDate = computed(() =>
     /^\d{4}-\d{2}-\d{2}$/.test(selectedDate.value)
       ? new Date(`${selectedDate.value}T12:00:00Z`).toLocaleDateString(
@@ -273,7 +261,6 @@ export function useMenuSectionsEditor() {
   }
   return {
     menu,
-    previewItems,
     menuSlug,
     sectionsPending,
     sectionsError,

@@ -59,9 +59,9 @@ const { normalizeItem, normalizeLegacyItemKind } = load(
   '({ normalizeItem, normalizeLegacyItemKind })',
   { readItemReferenceIds, readItemIdentity, ...itemPricingHelpers }
 )
-const { resolveKitchenChildCollectionBasePath } = load(
+const { normalizeString, resolveKitchenCollectionBasePath, resolveKitchenChildCollectionPath } = load(
   'kitchen/utils/kitchen-collection-path.ts',
-  '({ resolveKitchenChildCollectionBasePath })',
+  '({ normalizeString, resolveKitchenCollectionBasePath, resolveKitchenChildCollectionPath })',
   {}
 )
 const { useFirestoreCollectionState } = load(
@@ -146,21 +146,31 @@ function bindingFixture() {
   }
 }
 function lowerReader(f) {
+  const useKitchenChildCollection = load(
+    'kitchen/composables/useKitchenChildCollection.ts',
+    'useKitchenChildCollection',
+    {
+      computed,
+      unref,
+      useFireUXConfig: () => ({ appId: 'app' }),
+      useFirestoreRead: () => f.read,
+      normalizeString,
+      resolveKitchenCollectionBasePath,
+      resolveKitchenChildCollectionPath,
+      useFirestoreCollectionState,
+    }
+  )
   return load(
     'kitchen/composables/useKitchenItemCollection.ts',
     'useKitchenItemCollection',
     {
       computed,
       unref,
-      toValue,
-      useFireUXConfig: () => ({ appId: 'app' }),
-      useFirestoreRead: () => f.read,
+      useKitchenChildCollection,
       ItemStorage,
       normalizeItem,
       readItemIdentity,
       readItemSellingTerms: itemPricingHelpers.readItemSellingTerms,
-      resolveKitchenChildCollectionBasePath,
-      useFirestoreCollectionState,
     }
   )
 }
@@ -317,6 +327,48 @@ test('Item lower reader honours deliberately inactive parent path', () => {
   assert.equal(state.outcome.value, 'idle')
   assert.deepEqual(state.dishes.value, [])
   f.scope.stop()
+})
+test('canonical collection distinguishes unpriced, fixed, variant and invalid Items', () => {
+  const f = bindingFixture()
+  const state = f.scope.run(() => lowerReader(f)(ref('mine')))
+  const sizes = {
+    id: 'size', name: 'Size', min: 1, max: 1, pricing: 'full',
+    options: [
+      { id: 'small', label: 'Small', price: 18 },
+      { id: 'large', label: 'Large', price: 22 },
+    ],
+  }
+  const extras = {
+    id: 'extras', name: 'Extras', min: 0, max: 1, pricing: 'additional',
+    options: [{ id: 'cheese', label: 'Cheese', price: 2 }],
+  }
+  try {
+    f.raw.value = [
+      { id: 'draft', name: 'Draft' },
+      { id: 'fixed', name: 'Fixed', price: 12, currency_code: 'CHF' },
+      { id: 'pizza', name: 'Pizza', currency_code: 'CHF', choice_groups: [sizes, extras] },
+      { id: 'old', name: 'Old', price: 8 },
+    ]
+    assert.equal(state.outcome.value, 'ready')
+    assert.equal(Object.hasOwn(state.items.value[0], 'price'), false)
+    assert.equal(state.items.value[1].price, 12)
+    assert.equal(state.items.value[1].currency_code, 'CHF')
+    assert.deepEqual(state.items.value[2].choice_groups, [sizes, extras])
+    assert.equal(Object.hasOwn(state.items.value[2], 'price'), false)
+    assert.equal(state.items.value[3].price, 8)
+    assert.equal(Object.hasOwn(state.items.value[3], 'currency_code'), false)
+
+    f.raw.value = [{ id: 'broken', name: 'Broken', price: '12' }]
+    assert.equal(state.outcome.value, 'error')
+    assert.match(state.error.value.message, /Could not read Item "broken".*Price/)
+    assert.deepEqual(state.items.value, [])
+
+    f.raw.value = []
+    assert.equal(state.outcome.value, 'empty')
+    assert.equal(state.error.value, undefined)
+  } finally {
+    f.scope.stop()
+  }
 })
 test('Food and Drinks partition one live Item collection; failures disable Create instead of publishing an empty ready capability', async () => {
   const f = workspaceFixture(),

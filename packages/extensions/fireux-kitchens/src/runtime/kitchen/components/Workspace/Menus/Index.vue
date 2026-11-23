@@ -143,7 +143,7 @@ const {
   error: sectionError,
 } = useMenuSectionCollection(kitchenId, menuId, storage)
 const {
-  dishes: catalogue,
+  items: catalogue,
   outcome: catalogueOutcome,
   error: catalogueError,
 } = useKitchenItemCollection(

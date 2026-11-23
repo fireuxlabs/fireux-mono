@@ -360,3 +360,13 @@ and 29 restricted Rules tests. Lint, Python compilation, Item and commerce
 typechecks, and Misebox Nuxt preparation passed. The wider 400-test run
 reproduced the same three presentation failures. The wider Kitchen contracts
 check reproduced the same 23 diagnostics.
+
+### Item collection read contract
+
+The shared Kitchen child collection reader supplies the scoped Item records.
+The canonical Item projection reports malformed selling terms as a collection
+error with the offending Item ID. Unpriced Items and supported historical
+pricing shapes remain readable. The existing catalogue and Menu section
+editors still use a lazy historical row projection for their presentation
+fields. The name-only Menu picker uses canonical Items. The unused daily Menu
+preview subscription was removed.

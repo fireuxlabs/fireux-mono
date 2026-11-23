@@ -1,16 +1,11 @@
 import { ItemStorage } from '../models/item.model'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
 import { normalizeItem, type ItemCollectionRow } from '../utils/item.ts'
 import { readItemSellingTerms } from '../utils/item-pricing'
 import { readItemIdentity } from '../utils/item-identity'
-import { resolveKitchenChildCollectionBasePath } from '../utils/kitchen-collection-path'
 
-const resolveItemsPath = (kitchenCollectionPath: string, kitchenId: string) =>
-  `${kitchenCollectionPath}/${kitchenId}/${ItemStorage.collection}`
+import { useKitchenChildCollection } from './useKitchenChildCollection'
 
 type UseKitchenItemCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -21,61 +16,40 @@ export function useKitchenItemCollection(
   kitchenId?: string | Ref<string | null | undefined>,
   options: UseKitchenItemCollectionOptions = {}
 ) {
-  const { firestoreFetchCollection } = useFirestoreRead({
-    databaseId: options.databaseId,
-  })
-  const { appId } = useFireUXConfig()
-
-  const resolvedKitchenId = computed(() =>
-    String(unref(kitchenId) || '').trim()
-  )
-  const kitchenCollectionPath = computed(() =>
-    resolveKitchenChildCollectionBasePath({
-      kitchenCollectionPath: unref(options.kitchenCollectionPath),
-      collectionName: ItemStorage.collection,
-      appId,
-    })
-  )
-  const collectionPath = computed(() =>
-    kitchenCollectionPath.value && resolvedKitchenId.value
-      ? resolveItemsPath(kitchenCollectionPath.value, resolvedKitchenId.value)
-      : ''
-  )
-  const collectionRef = firestoreFetchCollection<
+  const collection = useKitchenChildCollection<
     Record<string, unknown> & { id: string }
-  >(collectionPath)
-  const items = computed(() =>
-    (collectionRef.value ?? []).map((entry) => {
-      const identity = readItemIdentity(entry.id, entry)
-      try {
-        return { ...identity, ...readItemSellingTerms(entry) }
-      } catch {
-        return identity
-      }
-    })
+  >(
+    ItemStorage.collection,
+    computed(() => unref(kitchenId) ?? ''),
+    options
   )
-  const dishes = computed<ItemCollectionRow[]>(() =>
-    (collectionRef.value ?? []).map((entry) => normalizeItem(entry))
-  )
-  const count = computed(() => collectionRef.value?.length ?? 0)
-  const pending = computed(() => collectionRef.pending.value)
-  const error = computed(() => collectionRef.error.value)
-  const { outcome } = useFirestoreCollectionState({
-    active: computed(() => Boolean(collectionPath.value)),
-    count,
-    pending,
-    error,
+  const decoded = computed(() => {
+    if (collection.outcome.value !== 'ready') return { items: [] }
+    try {
+      const items = collection.items.value.map((entry) => {
+        try {
+          return {
+            ...readItemIdentity(entry.id, entry),
+            ...readItemSellingTerms(entry),
+          }
+        } catch (cause) {
+          const reason = cause instanceof Error ? cause.message : String(cause)
+          throw new Error(`Could not read Item "${entry.id}". ${reason}`, { cause })
+        }
+      })
+      return { items }
+    } catch (error) {
+      return { items: [], error }
+    }
   })
-
-  return {
-    kitchenId: resolvedKitchenId,
-    kitchenCollectionPath,
-    collectionPath,
-    items,
-    dishes,
-    count,
-    pending,
-    error,
-    outcome,
-  }
+  const items = computed(() => decoded.value.items)
+  const error = computed(() => collection.error.value ?? decoded.value.error)
+  const outcome = computed(() =>
+    decoded.value.error ? 'error' : collection.outcome.value
+  )
+  // Historical catalogue and Menu editors still need the legacy row fields.
+  const dishes = computed<ItemCollectionRow[]>(() =>
+    collection.items.value.map((entry) => normalizeItem(entry))
+  )
+  return { ...collection, items, error, outcome, dishes }
 }
