@@ -9,14 +9,14 @@ Order: shared Identity design and Kitchen cleanup → Items → Menus → Servic
 
 We want a simple reusable *standard* for Identity & Brand across Workspace Entities, with a **domain delta** for fields that are special to Kitchen, Supplier, Business, Project, Portfolio, or Property. We are designing the desired target, not providing permanent backward compatibility for old Firestore document shapes. Do not create two competing authorities or a second Workspace Entity document.
 
-**Important correction:** `context` belongs in the common review. It is an internal-facing Entity/Workspace field, not a public biography. Do not omit it simply because a public directory does not expose it. The owner is the domain Entity; public projections must exclude it. Consider authoring it from Identity & Brand's Context view, but not treating it as a public branding field.
+**Open design question (raised during walking mode):** `context` belongs in the common review, but it should **not be categorically classified as internal**. Rich, verified, publishable Entity context may help people, search engines and agents understand an Entity. Distinguish public contextual content from private operational notes and confidential AI instructions. Decide ownership, authoring, publication, and safe public projections explicitly before implementation; never expose all context indiscriminately.
 
 ## Confirmed repository inventory
 
 | Workspace Entity | Identity as currently modeled | Candidate domain delta / nuance |
 |---|---|---|
 | Kitchen | Flat root `id`, `name`, optional `slug`, `status`, `visibility`, `description`, `imageUrl`, `placeId`, `context` | May exist with no Place. `cuisines` is a proposed Kitchen-specific discoverability field, **not yet confirmed in the new model**. Operating hours and service availability belong to their actual capabilities, not general Identity. |
-| Business | Flat `id`, `name`, `description`, `email`, `phone`, `website`, `place_ids[]`; no `context` field in the inspected canonical Business model | Zero/one/many linked Places; contact fields and Place relationships must retain real ownership. Consider adding internal context to desired target after consumer review, not by inventing current support. |
+| Business | Flat `id`, `name`, `description`, `email`, `phone`, `website`, `place_ids[]`; no `context` field in the inspected canonical Business model | Zero/one/many linked Places; contact fields and Place relationships must retain real ownership. Consider adding context with explicit private/public treatment to desired target after consumer review, not by inventing current support. |
 | Supplier | Root `business_id`, nested `identity` containing `slug`, `status`, `visibility`, optional root `context`. Workspace name, description and image currently derive from linked Business/Place | Supplier identity presentation is not independently authoritative for Business or Place's public name/media. Supplier-specific catalogue mode/delivery area are separate domain capabilities, not generic Identity. |
 | Project | Nested `identity` with `name`, `description`, `image_url`, `status`; optional root `context` | Current status has 'active' and 'inactive'; guest ownership authority is not public Identity. No canonical slug or Place in inspected model. |
 | Portfolio | Nested `identity` with `name`, `tagline`, `image_url`, `slug`, `owner_label`, `status`, `strategy_label`, `region_label`, `notes`; optional root `context` | Owner/strategy/region labels and private notes are Portfolio-specific. |
@@ -34,7 +34,7 @@ export type WorkspaceIdentityCore = {
   name: string
   description?: string
   imageUrl?: string
-  /** Internal operator/AI background; never in public directory projections. */
+  /** Rich Entity background; publication policy to be decided. */
   context?: string
 }
 ```
@@ -47,7 +47,7 @@ Other commonly useful *optional facets*, not baseline requirements:
 - `visibility`: public discovery/access policy; enum and defaults require deliberate decisions.
 - `tagline`, `logoUrl`, `coverUrl`, `wordmarkUrl`, `gallery`, `brandPalette`: richer brand presentation with an explicit owning Entity or Appearance capability; avoid independently editable duplicates.
 
-**Do not treat `context` as `description`.** Description is audience-appropriate, subject to publication rules. Context is operational/internal information used by staff or AI and must not be accidentally included in public responses.
+**Do not treat `context` as `description`.** Description is a short public summary. Context can contain richer, factual background; some of it may merit publication as an About section or other visible page content, while operational secrets and internal instructions remain private. A saved `context` field alone does not boost SEO: only deliberately published, crawlable, helpful content can aid discovery. Public semantic content should be rendered in visible text, with matching structured data where appropriate, never placed solely in machine-only markup. Review whether `context` is itself public and vetted or whether a separate publishable projection is needed; avoid duplicating independently editable sources.
 
 ## Why placeId is not universal
 
@@ -73,7 +73,7 @@ Kitchen may exist without Place to support online-only/test/name-only Kitchens. 
 ## Codex when desktop resumes
 
 1. Compare this inventory to the latest local tree; report drift.
-2. Return a concise **common vs optional vs domain-specific** matrix with authoritative owner and visibility. Include `context` explicitly.
+2. Return a concise **common vs optional vs domain-specific** matrix with authoritative owner and publication rules. Include `context` explicitly and propose how public context differs from private operational notes.
 3. Propose the smallest shared `WorkspaceIdentityCore` shape and whether it is best implemented as a read interface, TypeScript composition, reusable UI contract, or combination. Avoid a universal stored `identity` blob.
 4. Identify conflicts: Kitchen `imageUrl` vs Appearance/Place; nested Identity on Project/Portfolio/Property/Supplier; Supplier linked-source data; source of publication and slug authority.
 5. Do not perform wholesale cross-repo migration or rewrite without a separately reviewed target + migration plan.
