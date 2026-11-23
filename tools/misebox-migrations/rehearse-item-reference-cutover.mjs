@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { randomUUID } from 'node:crypto'
 import { initializeApp } from 'firebase-admin/app'
 import { getFirestore, Timestamp } from 'firebase-admin/firestore'
+import { readKitchenGrossSalesReport } from '../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/finance/gross-sales-report-read.ts'
 
 assert.match(process.env.FIRESTORE_EMULATOR_HOST ?? '', /^127\.0\.0\.1:\d+$/)
 const db = getFirestore(
@@ -87,9 +88,56 @@ const report = new Map([
     ],
   ],
 ])
+const money = (amount_minor) => ({ amount_minor, currency_code: 'CHF' })
+const financeReport = () =>
+  readKitchenGrossSalesReport({
+    db,
+    appId: 'misebox-app',
+    kitchenId: kitchen.id,
+    fromDate: '2027-01-15',
+    toDate: '2027-01-15',
+    timezone: 'Europe/Zurich',
+    now: new Date('2027-01-16T12:00:00Z'),
+  })
+
 const historical = new Map([
   [order, { items: [{ id: 'line', dish_id: 'unknown-item' }] }],
-  [sale, { version: 1, lines: [{ dish_id: 'margherita', unit_price: 18 }] }],
+  [
+    sale,
+    {
+      schema_version: 1,
+      app_id: 'misebox-app',
+      kitchen_id: kitchen.id,
+      menu_id: 'food',
+      order_id: sale.id,
+      order_number: '17',
+      order_type: 'collection',
+      channel: 'menu',
+      occurred_at: at,
+      recorded_at: at,
+      actor: { kind: 'user', id: 'fixture-closer' },
+      lines: [
+        {
+          id: 'historic-line',
+          menu_id: 'food',
+          source_item_id: 'entry-food',
+          dish_id: 'margherita',
+          label: 'Margherita',
+          variant_id: 'large',
+          variant_label: '16 inch',
+          quantity: 2,
+          unit_price: money(1800),
+          line_total: money(3600),
+        },
+      ],
+      pricing: {
+        minor_unit_digits: 2,
+        subtotal: money(3600),
+        delivery_fee: money(0),
+        total: money(3600),
+      },
+    },
+  ],
   [submitted, { menu: { selections: [{ itemId: 'unclassified-id' }] } }],
 ])
 
@@ -149,7 +197,12 @@ try {
   assert.equal((await placement('food').get()).data().dish_id, 'margherita')
   await item('margherita').set(catalogue.margherita)
   const matchingVersion = (await item('margherita').get()).updateTime
+  const financeBefore = await financeReport()
+  assert.equal(financeBefore.sale_count, 1)
+  assert.deepEqual(financeBefore.currencies[0].gross_sales, money(3600))
+  assert.equal(financeBefore.transactions[0].items[0].quantity, 2)
   await apply()
+  assert.deepEqual(await financeReport(), financeBefore)
   const postimages = await db.getAll(item('coffee'), ...report.keys())
   assert.deepEqual(postimages[0].data(), catalogue.coffee)
   for (const [ref, [before, convert]] of report)
@@ -166,6 +219,7 @@ try {
   // Reset the isolated fixture for the paused-writer rollback rehearsal.
   await postimages[1].ref.set(postimages[1].data())
   await rollback(await db.getAll(item('coffee'), ...report.keys()))
+  assert.deepEqual(await financeReport(), financeBefore)
   assert.equal((await item('coffee').get()).exists, false)
   assert.deepEqual(
     (await item('margherita').get()).data(),
@@ -176,7 +230,7 @@ try {
   for (const [ref, fields] of historical)
     assert.deepEqual((await ref.get()).data(), fields)
   console.log(
-    'Named misebox emulator: copy, in-place references, conflicts and rollback verified; historical snapshots and bare prices preserved.'
+    'Named misebox emulator: copy, in-place references, conflicts and rollback verified; historical snapshots, Finance reports and bare prices preserved.'
   )
 } finally {
   await db.recursiveDelete(kitchen)

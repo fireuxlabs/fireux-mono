@@ -220,3 +220,47 @@ Authenticated HTTP tests passed standalone Item CRUD and the two-Menu placement
 and deletion guard. Signed-out HTTP verified public Menu and food search
 against an `items`-only catalogue. The Firefox check did not reach signed-in
 verification.
+
+### Release readiness review
+
+- Published the offline runtime and Rules candidate on
+  [`codex/kitchen-item-reference-cutover`](https://github.com/fireuxlabs/fireux-mono/tree/codex/kitchen-item-reference-cutover).
+  Candidate commit `5937d6aeaad4a423fb1cfec7d549b4727068aaf2`. The branch is
+  separate from the live release.
+- The real FireUX email form completed sign-in in the in-app browser using the
+  named emulator. Workspace listed the new name-only Margherita, opened its
+  exact detail URL, saved a rename and reopened the renamed Item after a
+  hard refresh. The isolated fixture needed the same `FireuxApp` wrapper as
+  Misebox. Firefox verification remains open.
+- The [emulator rehearsal](../../tools/misebox-migrations/rehearse-item-reference-cutover.mjs)
+  now reads an actual version 1 Sale through the existing gross-sales report
+  reader. The complete report matched before migration, after migration and
+  after rollback. The fixture reconciled one Sale, two Margheritas and CHF 36
+  gross. The Finance reader and schema are unchanged. No production report
+  comparison has been run.
+- Refreshed the read-only production inventory at 20:41:59 CET on 23 November 2026. All previously recorded counts matched, including 520 catalogue
+  documents missing from `items`, 991 legacy placements and 19 Promotion
+  references. A fresh inventory taken after writers are paused still gates
+  the release.
+
+**Release decision: hold.** The helper is deliberately restricted to the demo
+emulator and uses one fixture transaction with an in-memory rollback journal.
+It cannot apply or safely resume the production-sized change. Use the
+[existing migration tooling requirements](../../tools/misebox-migrations/README.md)
+as the review baseline. Before approval:
+
+1. Prepare a source-bound production plan and protected typed preimages for
+   `misebox-78f9c/misebox`. Require a verified backup receipt, a reviewed plan
+   hash and a rehearsal of bounded commits, interrupted-run recovery and
+   rollback across the full inventory size. Journal the exact postimage
+   version for each successful batch. Keep Orders, Sales and Submitted
+   Orders out of the write set.
+2. Identify all App versions and manual or automated writers sharing the
+   database. Demonstrate how the maintenance window blocks both legacy
+   browser writes and trusted server writers, and rehearse the runtime and
+   restricted policy sequence. The Main App release workflow alone does not
+   deploy the policy or release the tenant Apps.
+3. Capture the production Finance baseline and check report parity,
+   reference resolution and restricted access before reopening writes.
+   Resolve any rollback decision within that window. A separate
+   authorization is required for production execution.
