@@ -11,12 +11,13 @@ project. The pending public Menu edits were outside this check.
   App member received `403` on update. The [Item model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/records/menus/items/item.ts)
   and stored paths remain unchanged.
 - The [Items-only registration](../../packages/extensions/fireux-kitchens/src/module.ts)
-  supplies POST and PATCH. DELETE returned `404` for both users. In a separate
-  temporary fixture that enabled only the existing
-  [Delete handler](../../packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/dishes/index.delete.ts),
-  the unrelated member received `403` and the owner's delete persisted. The
-  guard still checks Menu and Promotion references, with neither collection
-  needed for a successful delete.
+  now includes the existing [Delete handler](../../packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/dishes/index.delete.ts)
+  alongside POST and PATCH. In the standard Items-only fixture, an unrelated
+  App member received `403`, the owner deleted the Item, and a fresh
+  authenticated detail read returned `404`. The Kitchen remained intact.
+  Generated routes contained none of the Menu, Order, Service or Table
+  endpoints. The existing Delete guard still checks Menu and Promotion
+  references. Empty collections allow deletion.
 - The [direct editor](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Items/Index.vue)
   exposes name editing. Description was exercised through HTTP and reopen
   through a fresh Firestore read. A browser replay was outside this check.
@@ -27,10 +28,14 @@ project. The pending public Menu edits were outside this check.
   keys, so an Items-only page has no Menu reader to refresh. This does not
   block the lifecycle.
 
-**Checks.** 105 focused tests passed. Package `tsc --noEmit` reported 45
-Vue import resolution errors and one Kitchen reader `context` type error.
+**Checks.** The Delete checkpoint passed 153 focused tests, including reference
+protection and Menu publication. Full Misebox Nuxt prepare passed and generated
+its existing Item and Menu publication handlers. The lifecycle ran through
+HTTP commands and authorized Firestore reads. Browser and Storage checks were
+outside this checkpoint. The earlier package typecheck reported 45 Vue import
+resolution errors and one Kitchen reader `context` type error and was not rerun.
 
-**Next.** Register the existing guarded DELETE handler in Items-only mode.
-Keep the usage guard. Decide separately whether the direct editor needs
-description, image and Delete controls before calling its full lifecycle
-complete. [Earlier Items checkpoint](../reviews/2026-11-22-kitchen-items-architecture.md#independent-items-local-checkpoint)
+**Next.** Continue the [Workspace Entity alignment](2026-11-23-workspace-entity-alignment.md)
+with one shared surface at a time. Description, image and Delete controls in
+the direct editor remain a separate product decision.
+[Earlier Items checkpoint](../reviews/2026-11-22-kitchen-items-architecture.md#independent-items-local-checkpoint)

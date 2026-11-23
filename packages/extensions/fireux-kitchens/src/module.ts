@@ -127,7 +127,7 @@ export default defineNuxtModule<ModuleOptions>({
         ),
       })
       if (options.workspaceItems) {
-        for (const method of ['post', 'patch'] as const) {
+        for (const method of ['post', 'patch', 'delete'] as const) {
           addServerHandler({
             route: '/api/workspace/kitchen/dishes',
             method,
