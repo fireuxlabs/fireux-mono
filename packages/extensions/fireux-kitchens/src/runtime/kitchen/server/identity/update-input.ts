@@ -1,6 +1,6 @@
 import { createError } from 'h3'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
-import type { Kitchen } from '../../models/model'
+import type { Kitchen } from '../../models/kitchen.model'
 
 export type KitchenUpdateInput = {
   'identity.name'?: string

@@ -42,7 +42,7 @@ import { useIdentityEditor } from 'fireux-core/runtime/composables/fireux/useIde
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import type { KitchenWorkspaceIdentityState } from '../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
-import type { KitchenStatus } from '../../../models/model'
+import type { KitchenStatus } from '../../../models/kitchen.model'
 
 const props = defineProps<{
   open: boolean

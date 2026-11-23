@@ -3033,7 +3033,7 @@ The Menu QR route mounts `Workspace/Menu/QR/Index.vue`. Its panel and
 target components use the QR coordinator in `composables/workspace/menu/menus/qr.ts`.
 The Menu Entity still owns the shared QR renderer.
 
-Kitchen's own model remains in `kitchen/models/model.ts`. Stored Kitchen
+Kitchen's own model remains in `kitchen/models/kitchen.model.ts`. Stored Kitchen
 support definitions (including Station, Promotion, Order and its submission,
 and table tabs and rounds) live in `kitchen/records/`. Runtime reader responses,
 form inputs and presentation contracts belong with their capabilities.

@@ -375,7 +375,7 @@ These Product and Supplier relationships describe source contracts, not a live
 integrity audit of the Misebox database.
 
 Kitchen's stored root, identity and admitted configuration contract is declared
-in [models/model.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/model.ts).
+in [models/kitchen.model.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts).
 [readKitchenDocument](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/read-kitchen-document.ts)
 validates stored values; trusted domain commands retain target, permission and
 write authority. Public projections and UI shapes do not replace that contract.

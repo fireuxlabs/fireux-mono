@@ -4,7 +4,7 @@ import {
 } from 'fireux-places/runtime/place/utils/place-spine'
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { toShortAddress } from 'fireux-places/runtime/place/utils/format-place-address'
-import type { Kitchen } from '../models/model'
+import type { Kitchen } from '../models/kitchen.model'
 import { readKitchenVisibility } from '../utils/kitchen-readers'
 import { resolveKitchenPath } from '../utils/kitchen-interface-projection'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'

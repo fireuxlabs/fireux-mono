@@ -51,7 +51,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['venue'],
       uses: [],
-      sourcePaths: [source + 'kitchen/models/model.ts'],
+      sourcePaths: [source + 'kitchen/models/kitchen.model.ts'],
     },
     {
       id: 'workspace',

@@ -33,20 +33,28 @@ needed for this documentation checkpoint.
 
 ## Remaining sequence
 
-1. Prove capability exposure with the existing Kitchen-only and Items-only
-   registrations. Start with the [guarded Items Delete gap](2026-11-23-kitchen-items-lifecycle.md)
-   in a separate checkpoint. Keep the usage guard and verify allowed and denied
-   mutations without the Menu routes. Preserve the full Misebox composition.
-2. Align the shared surfaces one Entity at a time using existing features.
+The [Items-only lifecycle](2026-11-23-kitchen-items-lifecycle.md) closed the
+guarded Delete gap in `d8f77753c`. The [six-Entity model audit](../audits/2026-11-23-workspace-entity-models.md)
+maps ownership, source references and storage. The first model checkpoint
+renames the Kitchen root file to `kitchen.model.ts` and updates its consumers.
+
+**Model checkpoint verification.** The model contents are byte-identical.
+154 focused Kitchen, Items, Menu and Ignition tests passed. The focused
+Kitchen contracts and commerce typechecks passed, and full Misebox prepared.
+The broad Kitchens typecheck returned the same 46 diagnostics before and after
+the move. This verifies the naming cutover and generated registration.
+Signed-in runtime evidence remains in the earlier lifecycle handoffs.
+
+1. Move the Kitchen-owned Item model and its consumed storage metadata to
+   `kitchen/models/item.model.ts` as a separate checkpoint. Verify the direct
+   Items route and full Misebox consumers. Keep the `dishes` storage path.
+2. Align the remaining models one owner at a time. Handle Supplier's case-only
+   filename separately. Treat public Menu work and field changes as separate
+   checkpoints.
+3. Align the shared surfaces one Entity at a time using existing features.
    Resolve whether Business needs a separate Overview and what should supply
    Calendar events before exposing new destinations. Check Calendar data in
    actual opt-in Apps before describing it as functional.
-3. Follow the data and command dependencies of each Domain capability. Correct
-   concrete dependencies at their owners, keeping navigation and storage paths
-   stable. Treat the public Menu checkpoint as separate work.
-4. Align root model filenames with the lowercase Entity naming pattern in small
-   source-only slices. Start with Kitchen and handle Supplier's case-only move
-   separately. Leave field and authority changes to their own review.
 
 Verify each runtime slice against an actual consuming App, including selection,
 navigation, capability availability and authorization. Keep the independent

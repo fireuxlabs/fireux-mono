@@ -68,7 +68,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRequestURL } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import type { Kitchen } from '../../../../models/model'
+import type { Kitchen } from '../../../../models/kitchen.model'
 import {
   directoryMenuRouteScope,
   tenantMenuRouteScope,

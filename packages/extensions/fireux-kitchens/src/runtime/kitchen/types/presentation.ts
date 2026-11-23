@@ -3,7 +3,7 @@ import type {
   MediaBackdropColor,
   PlaceImageShade,
 } from 'fireux-places/runtime/place/utils/place-spine'
-import type { Kitchen } from '../models/model'
+import type { Kitchen } from '../models/kitchen.model'
 import type { KitchenCollectionCard } from '../utils/kitchen-interface-projection'
 import type { KitchenDirectoryEntry } from './public'
 

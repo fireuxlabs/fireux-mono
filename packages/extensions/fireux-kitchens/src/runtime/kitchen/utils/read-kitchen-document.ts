@@ -1,6 +1,6 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { readWorkspacePalette } from 'fireux-core/runtime/utils/theme-palette'
-import type { Kitchen, KitchenIdentity } from '../models/model'
+import type { Kitchen, KitchenIdentity } from '../models/kitchen.model'
 import { weekdayTimeCore } from '../../utils/weekday-time-core.ts'
 const KITCHEN_IDENTITY_SOURCES = ['user', 'place'] as const
 const KITCHEN_STATUSES = ['active', 'inactive', 'archived'] as const

@@ -2,7 +2,7 @@ import type { PublicMenuItem } from '../../menu/models/menu-detail.model'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { MediaBackdropColor } from 'fireux-places/runtime/place/utils/place-spine'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
-import type { Kitchen } from '../models/model'
+import type { Kitchen } from '../models/kitchen.model'
 import type { KitchenPublicOffering } from '../utils/public-offerings'
 
 /** Normalized public Kitchen and its required same-ID Place; no root metadata. */

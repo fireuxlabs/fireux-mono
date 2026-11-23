@@ -32,7 +32,7 @@ export const miseboxIndustry: IgnitionIndustryCase = {
       [
         'projects/misebox/misebox-app/nuxt.config.ts',
         workspace + 'layouts/workspace.vue',
-        kitchens + 'kitchen/models/model.ts',
+        kitchens + 'kitchen/models/kitchen.model.ts',
       ],
       'Architecture mapped from the current App and domain source; this is not complete journey acceptance.'
     ),

@@ -107,7 +107,7 @@ import type {
   Place,
   PlaceBusinessHours,
 } from 'fireux-places/runtime/place/models/place.model'
-import type { Kitchen } from '../../../../models/model'
+import type { Kitchen } from '../../../../models/kitchen.model'
 import { useKitchenOperationHours } from '../../../../composables/workspace/ordering/useKitchenOperationHours'
 import { hoursWithinParent } from '../../../../utils/service-hours'
 import {

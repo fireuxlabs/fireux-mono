@@ -30,7 +30,7 @@ Kitchen implementation lives in `src/runtime/kitchen/` beneath technical roles:
 and `tools` roles. Conventional Nuxt entrypoints remain at the runtime root.
 There is no aggregate `useKitchen` CRUD facade or supported root Delete action.
 
-- `models/model.ts`: the stored Kitchen root, composing capability
+- `models/kitchen.model.ts`: the stored Kitchen root, composing capability
   configuration once, with creation and optional update stamps.
 - `utils/read-kitchen-document.ts`: strict validation of Kitchen identity and
   root fields. Malformed Orders, Services or Tables maps are omitted from the

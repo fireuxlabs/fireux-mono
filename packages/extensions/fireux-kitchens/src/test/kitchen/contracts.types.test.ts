@@ -1,4 +1,4 @@
-import type { Kitchen } from '../../runtime/kitchen/models/model'
+import type { Kitchen } from '../../runtime/kitchen/models/kitchen.model'
 import type {
   KitchenPublicSummary,
   KitchenDirectoryEntry,

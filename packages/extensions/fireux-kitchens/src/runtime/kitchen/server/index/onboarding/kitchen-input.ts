@@ -1,4 +1,4 @@
-import type { KitchenIdentity } from '../../../models/model.ts'
+import type { KitchenIdentity } from '../../../models/kitchen.model.ts'
 
 export type KitchenCreateInput = { place_id: string }
 export type KitchenShellCreateInput = {
