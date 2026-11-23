@@ -364,9 +364,21 @@ check reproduced the same 23 diagnostics.
 ### Item collection read contract
 
 The shared Kitchen child collection reader supplies the scoped Item records.
-The canonical Item projection reports malformed selling terms as a collection
-error with the offending Item ID. Unpriced Items and supported historical
-pricing shapes remain readable. The existing catalogue and Menu section
+The collection reports Firestore read failures separately from malformed Item
+pricing. The Workspace keeps valid Items visible and links each malformed Item
+to the pricing editor. Publication rejects malformed referenced Items and public
+Menu reads omit invalid offers. Unpriced Items and supported historical pricing
+shapes remain readable. Signed-in switching, access denial and listener disposal
+remain unverified in the browser. The existing catalogue and Menu section
 editors still use a lazy historical row projection for their presentation
 fields. The name-only Menu picker uses canonical Items. The unused daily Menu
 preview subscription was removed.
+
+The readiness test failure reproduced with the committed fixture. The fixture
+now mocks `items`, matching the existing reader. New staff submissions
+validate each explicit Item reference in the authorized Kitchen before assigning
+an order number. Free-text lines and retries of saved submissions retain their
+existing behavior. The staff submission schema rejects variant, extra and
+meal-deal selection fields. Public Menu reads omit malformed commercial offers,
+including meal deals with a malformed choice. Focused verification passed
+133 tests. No live order was submitted.

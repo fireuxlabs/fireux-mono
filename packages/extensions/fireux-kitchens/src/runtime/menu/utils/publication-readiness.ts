@@ -1,4 +1,4 @@
-import { readItemPricing } from '../../kitchen/utils/item-pricing'
+import { readItemPricing, readItemSellingTerms } from '../../kitchen/utils/item-pricing'
 import {
   normalizeKitchenPromotion,
   promotionItemIds,
@@ -66,12 +66,20 @@ export function menuPublicationReadiness(
               )
             )
               reason = 'Meal deal includes an unavailable Item.'
+            else {
+              for (const id of promotionItemIds(deal)) {
+                const row = dishes.get(id)!
+                if (row.pricing_error) throw new Error('Invalid Item pricing.')
+                readItemSellingTerms(row)
+              }
+            }
           } catch {
             reason = 'Meal deal is incomplete.'
           }
         }
       } else if (!dish) reason = 'Item is missing.'
       else if (dish.status === 'archived') reason = 'Item is archived.'
+      else if (dish.pricing_error) reason = 'Item pricing is incomplete.'
       else {
         try {
           readItemPricing(dish)

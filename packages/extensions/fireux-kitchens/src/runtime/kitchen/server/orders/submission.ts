@@ -10,6 +10,8 @@ import {
   requireKitchenRecordMutationAuthority,
 } from '../core/mutation-authority'
 import { readOrder, requireOrderChannel } from '../../utils/ordering'
+import { readItemSellingTerms } from '../../utils/item-pricing'
+import { serverKitchenItemsTarget } from '../mutation-targets'
 import {
   canTransitionOrder,
   initialOrderSubmissionState,
@@ -95,6 +97,26 @@ export async function submitKitchenOrder(
         ok: true,
         kitchen_id: kitchenId,
         submission: readOrderSubmission(current.data),
+      }
+    }
+    const itemIds = new Set(
+      order.lines.flatMap(({ item }) => (item.id ? [item.id] : []))
+    )
+    if (itemIds.size) {
+      const items = serverKitchenItemsTarget(kitchenId)
+      for (const itemId of itemIds) {
+        const id = requireFirestoreDocumentId(itemId, 'Item id')
+        const item = await tx.read(items, id)
+        if (!item.exists || item.data?.status === 'archived')
+          fail(400, `Order references an unavailable Item: ${id}.`)
+        try {
+          readItemSellingTerms(item.data ?? {})
+        } catch {
+          fail(
+            400,
+            `Repair selling terms for Item ${id} before submitting the order.`
+          )
+        }
       }
     }
     if (order.channel === 'pos') {

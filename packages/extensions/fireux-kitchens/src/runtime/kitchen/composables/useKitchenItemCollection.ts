@@ -1,4 +1,4 @@
-import { ItemStorage } from '../models/item.model'
+import { ItemStorage, type Item } from '../models/item.model'
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
 import { normalizeItem, type ItemCollectionRow } from '../utils/item.ts'
@@ -24,32 +24,26 @@ export function useKitchenItemCollection(
     options
   )
   const decoded = computed(() => {
-    if (collection.outcome.value !== 'ready') return { items: [] }
-    try {
-      const items = collection.items.value.map((entry) => {
+    const items: Item[] = []
+    const invalidItems: { id: string; name: string; error: string }[] = []
+    if (collection.outcome.value === 'ready') {
+      for (const entry of collection.items.value) {
+        const identity = readItemIdentity(entry.id, entry)
         try {
-          return {
-            ...readItemIdentity(entry.id, entry),
-            ...readItemSellingTerms(entry),
-          }
+          items.push({ ...identity, ...readItemSellingTerms(entry) })
         } catch (cause) {
-          const reason = cause instanceof Error ? cause.message : String(cause)
-          throw new Error(`Could not read Item "${entry.id}". ${reason}`, { cause })
+          const error = cause instanceof Error ? cause.message : String(cause)
+          invalidItems.push({ id: identity.id, name: identity.name, error })
         }
-      })
-      return { items }
-    } catch (error) {
-      return { items: [], error }
+      }
     }
+    return { items, invalidItems }
   })
   const items = computed(() => decoded.value.items)
-  const error = computed(() => collection.error.value ?? decoded.value.error)
-  const outcome = computed(() =>
-    decoded.value.error ? 'error' : collection.outcome.value
-  )
+  const invalidItems = computed(() => decoded.value.invalidItems)
   // Historical catalogue and Menu editors still need the legacy row fields.
   const dishes = computed<ItemCollectionRow[]>(() =>
     collection.items.value.map((entry) => normalizeItem(entry))
   )
-  return { ...collection, items, error, outcome, dishes }
+  return { ...collection, items, invalidItems, dishes }
 }

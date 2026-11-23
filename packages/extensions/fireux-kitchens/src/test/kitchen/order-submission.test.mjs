@@ -1,3 +1,4 @@
+import { itemPricingHelpers } from '../helpers/item-pricing.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
@@ -91,6 +92,10 @@ function harness() {
   const deps = {
     ...ordering,
     ...utils,
+    readItemSellingTerms: itemPricingHelpers.readItemSellingTerms,
+    serverKitchenItemsTarget: (id) => ({
+      collectionPath: `kitchens/${id}/items`,
+    }),
     createHash,
     createError: (v) => Object.assign(new Error(v.statusMessage), v),
     useRuntimeConfig: () => ({
@@ -196,6 +201,46 @@ test('submission completeness and auto acceptance vary by origin', () => {
   )
   assert.ok(utils.orderSubmissionIssues({ ...draft(), lines: [] }).length)
 })
+test('new orders reject malformed Item references and unsupported commercial selections before writing', async () => {
+  const h = harness()
+  const path = 'kitchens/k/items/pizza'
+  const order = draft()
+  order.lines[0].item.id = 'pizza'
+  for (const badTerms of [
+    { price: '18' },
+    { choice_groups: [{ pricing: 'full', options: [{ price: '18' }] }] },
+    { price: 18, add_ons: [{ label: 'Cheese', price: '2' }] },
+  ]) {
+    h.records.set(path, { name: 'Pizza', ...badTerms })
+    await assert.rejects(
+      h.submitKitchenOrder({}, { kitchenId: 'k', order }),
+      /Repair selling terms/
+    )
+    assert.equal(h.records.size, 1)
+  }
+  h.records.delete(path)
+  await assert.rejects(
+    h.submitKitchenOrder({}, { kitchenId: 'k', order }),
+    /unavailable Item/
+  )
+  assert.equal(h.records.size, 0)
+
+  h.records.set(path, { name: 'Pizza', price: 18, currency_code: 'CHF' })
+  for (const field of ['variant_id', 'add_ons', 'promotion_id']) {
+    const malformed = structuredClone(order)
+    malformed.lines[0][field] = 'choice'
+    await assert.rejects(
+      h.submitKitchenOrder({}, { kitchenId: 'k', order: malformed }),
+      /Order line is invalid/
+    )
+    assert.equal(h.records.size, 1)
+  }
+  await h.submitKitchenOrder({}, { kitchenId: 'k', order })
+  h.records.set(path, { name: 'Pizza', price: '18' })
+  const retry = await h.submitKitchenOrder({}, { kitchenId: 'k', order })
+  assert.equal(retry.submission.order.number, '1')
+})
+
 test('numbering and retry preserve exactly one submitted order', async () => {
   const s = harness(),
     input = { kitchenId: 'kitchen', order: draft() }

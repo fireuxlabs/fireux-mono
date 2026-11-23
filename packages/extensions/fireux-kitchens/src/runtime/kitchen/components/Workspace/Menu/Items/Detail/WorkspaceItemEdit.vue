@@ -35,7 +35,13 @@
         :ui="{ content: 'item-edit-panel' }"
       >
         <template #details><ItemEdit /></template>
-        <template #pricing><ItemPricing /></template>
+        <template #pricing><ItemPricing
+            :item="item"
+            :pricing-error="pricingError"
+            :kitchen-id="kitchenId"
+            :item-id="itemId"
+            :can-write="canWrite"
+          /></template>
       </UTabs>
       <ItemDelete v-else-if="action === 'remove'" :remove="removeItem" />
     </template>
@@ -53,7 +59,7 @@ import ItemPricing from '../Pricing.vue'
 import { useItemEditorScope } from '../../../../../composables/items/useItemEditorScope'
 import { useKitchenItemContext } from '../../../../../composables/items/useKitchenItemContext'
 
-const { item, kitchenId, itemId, canWrite } = useKitchenItemContext()
+const { item, pricingError, kitchenId, itemId, canWrite } = useKitchenItemContext()
 const route = useRoute()
 const action = ref<'edit' | 'remove' | null>(null)
 const editTabs = [

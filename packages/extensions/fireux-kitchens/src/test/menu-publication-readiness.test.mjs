@@ -35,7 +35,7 @@ function readiness(props = {}) {
     defineProps: () => props,
     useKitchenMenuRecordContext: () => context,
     useKitchenChildCollection: (name) =>
-      name === 'dishes' ? dishes : promotions,
+      name === 'items' ? dishes : promotions,
   }
   const api = compileFunction(
     `${stripTypeScriptTypes(source)};return {props,menu,sections,dishes,promotions,currencyCode,pending,error,empty,reports}`,

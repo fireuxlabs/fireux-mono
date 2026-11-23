@@ -248,6 +248,7 @@ test('publication refuses dangling meal deals and unavailable choices', async ()
     'missing-deal',
     'missing-dish',
     'archived-dish',
+    'malformed-price',
     'mixed',
   ]) {
     const h = harness()
@@ -261,6 +262,8 @@ test('publication refuses dangling meal deals and unavailable choices', async ()
     if (cause === 'missing-dish') h.records.delete('kitchens/k/items/dish')
     if (cause === 'archived-dish')
       h.records.get('kitchens/k/items/dish').status = 'archived'
+    if (cause === 'malformed-price')
+      h.records.get('kitchens/k/items/dish').price = '12'
     await assert.rejects(h.publish())
     assert.equal(h.records.get(menuPath).status, 'draft')
   }

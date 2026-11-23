@@ -188,14 +188,15 @@ export function normalizeItemPricingPatch(
   return normalized
 }
 
-function readStoredPricing(data: Record<string, unknown>) {
+export function readStoredItemPricing(data: Record<string, unknown>) {
   return normalizeItemPricingPatch({
     ...(Object.hasOwn(data, 'price') ? { price: data.price } : {}),
     ...(Object.hasOwn(data, 'choice_groups')
       ? { choice_groups: data.choice_groups }
-      : {}),
-    price_options: data.price_options ?? [],
-    add_ons: data.add_ons ?? [],
+      : {
+          price_options: data.price_options ?? [],
+          add_ons: data.add_ons ?? [],
+        }),
   })
 }
 
@@ -203,7 +204,8 @@ function readStoredPricing(data: Record<string, unknown>) {
 export function readItemPricing(
   data: Record<string, unknown>
 ): ItemPricing & { price: number } {
-  const pricing = readStoredPricing(data)
+  const pricing = readStoredItemPricing(data)
+  if (data.currency_code !== undefined) currencyCode(data.currency_code)
   // Keep the existing publication prerequisite for historical flat variants.
   const price = pricing.price
   if (price === undefined)
@@ -228,9 +230,11 @@ function currencyCode(value: unknown): string {
 export function readItemSellingTerms(
   data: Record<string, unknown>
 ): ItemSellingTerms {
-  const pricing = readStoredPricing(data)
+  const pricing = readStoredItemPricing(data)
   const choice_groups = normalizeItemChoiceGroups(readItemChoiceGroups(pricing))
   const hasFullPrice = choice_groups.some((group) => group.pricing === 'full')
+  if (choice_groups.length && !hasFullPrice && pricing.price === undefined)
+    throw new Error('Set a base price before adding extras.')
   return {
     ...(!hasFullPrice && pricing.price !== undefined
       ? { price: pricing.price }

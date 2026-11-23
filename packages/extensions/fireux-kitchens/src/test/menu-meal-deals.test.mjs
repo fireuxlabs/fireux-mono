@@ -153,6 +153,12 @@ test('paused or removed deals disappear; malformed placements and currency fail 
     await assert.rejects(f.read())
   }
 })
+test('public Menu omits a meal deal with a malformed Item and keeps valid offers', async () => {
+  const f = fixture()
+  f.records.get('kitchens/k/items/swiss').price = '12'
+  const sections = await f.read()
+  assert.deepEqual(sections[0].items.map((item) => item.price), [13])
+})
 test('public meal-deal presentation shows choose counts, included choices and supplements without ordering controls', async () => {
   const f = fixture(),
     deal = (await f.read())[0].items[1].mealDeal

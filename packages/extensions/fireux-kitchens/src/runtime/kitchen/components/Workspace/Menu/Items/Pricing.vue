@@ -3,11 +3,11 @@
     <UAlert
       v-if="pricingError"
       title="Price & choices unavailable"
-      description="The saved selling configuration could not be read. Item details remain available."
+      :description="typeof pricingError === 'string' ? pricingError : 'The saved selling configuration could not be read. Replace it with valid pricing.'"
       color="error"
       variant="soft"
     />
-    <form v-else-if="item" class="fx-card-body-stack" @submit.prevent="save">
+    <form v-if="item" class="fx-card-body-stack" @submit.prevent="save">
       <p class="fx-type-caption">
         Menus use these defaults unless the item’s placement sets its own price
         or choices.
@@ -72,11 +72,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useKitchenItemContext } from '../../../../composables/items/useKitchenItemContext'
+import { computed, ref, toRefs, watch } from 'vue'
 import { useItemActions } from '../../../../composables/items/useItemActions'
 import { useItemEditorScope } from '../../../../composables/items/useItemEditorScope'
 import type {
+  Item,
   ItemChoiceGroup,
   ItemChoiceSelection,
 } from '../../../../models/item.model'
@@ -85,7 +85,13 @@ import {
   priceItemChoices,
 } from '../../../../utils/item-choices'
 const { item, pricingError, itemId, kitchenId, canWrite } =
-  useKitchenItemContext()
+  toRefs(defineProps<{
+    item: Item | null
+    pricingError: unknown
+    itemId: string
+    kitchenId: string
+    canWrite: boolean
+  }>())
 const currency = ref('')
 const price = ref<string | number>('')
 const groups = ref<ItemChoiceGroup[]>([])
@@ -162,7 +168,7 @@ const amount = (value: string | number) => {
   return Number(value)
 }
 async function save() {
-  if (!canWrite.value || !item.value || pricingError.value || busy.value) return
+  if (!canWrite.value || !item.value || busy.value) return
   const current = captureIntent()
   busy.value = true
   error.value = ''
@@ -177,6 +183,8 @@ async function save() {
       currency_code: currencyCode.value,
       choice_groups: normalizeItemChoiceGroups(groups.value),
     }
+    if (pricingError.value && changes.price === null && !fullPrices)
+      throw new Error('Enter a valid price or full-price choices to repair this Item.')
     await updateItem(itemId.value, changes, {
       kitchenId: kitchenId.value,
       isCurrent: current,

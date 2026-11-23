@@ -4,6 +4,7 @@
     :key="JSON.stringify([readyKitchenId, itemId])"
     :kitchen-id="readyKitchenId"
     :items="items"
+    :invalid-items="invalidItems"
     :items-path="itemsPath"
     :item-id="itemId"
   />
@@ -55,7 +56,7 @@ const outcome = computed(() => {
     : 'pending'
 })
 const error = computed(() => workspace.error.value ?? collection.error.value)
-const { items } = collection
+const { items, invalidItems } = collection
 const readyKitchenId = computed(() =>
   outcome.value === 'ready' ? (workspace.data.value?.id ?? '') : ''
 )

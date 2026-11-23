@@ -1,5 +1,5 @@
 import { readItemReferenceIds } from './item-preparation'
-import { normalizeItemPricingPatch } from './item-pricing'
+import { readItemSellingTerms, readStoredItemPricing } from './item-pricing'
 // Concurrent edit — 2026-07-22 02:08 CEST — Item media ownership: name the food-owned field image, independent of its Storage transport.
 import type { Item, ItemKind } from '../models/item.model'
 import type {
@@ -48,17 +48,11 @@ export function normalizeItem(value: unknown): ItemCollectionRow {
   let pricing: ItemPricing = { price_options: [], add_ons: [] }
   let pricingError = ''
   try {
+    readItemSellingTerms(source)
     pricing = {
       price_options: [],
       add_ons: [],
-      ...normalizeItemPricingPatch({
-        ...(Object.hasOwn(source, 'price') ? { price: source.price } : {}),
-        ...(Object.hasOwn(source, 'choice_groups')
-          ? { choice_groups: source.choice_groups }
-          : {}),
-        price_options: source.price_options ?? [],
-        add_ons: source.add_ons ?? [],
-      }),
+      ...readStoredItemPricing(source),
     }
   } catch (error) {
     pricingError =

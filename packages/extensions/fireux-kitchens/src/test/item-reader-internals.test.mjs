@@ -358,13 +358,17 @@ test('canonical collection distinguishes unpriced, fixed, variant and invalid It
     assert.equal(state.items.value[3].price, 8)
     assert.equal(Object.hasOwn(state.items.value[3], 'currency_code'), false)
 
-    f.raw.value = [{ id: 'broken', name: 'Broken', price: '12' }]
-    assert.equal(state.outcome.value, 'error')
-    assert.match(state.error.value.message, /Could not read Item "broken".*Price/)
-    assert.deepEqual(state.items.value, [])
+    f.raw.value = [f.raw.value[1], { id: 'broken', name: 'Broken', price: '12' }]
+    assert.equal(state.outcome.value, 'ready')
+    assert.equal(state.error.value, undefined)
+    assert.deepEqual(state.items.value.map(({ id }) => id), ['fixed'])
+    assert.deepEqual(state.invalidItems.value, [
+      { id: 'broken', name: 'Broken', error: 'Price must be a non-negative number.' },
+    ])
 
     f.raw.value = []
     assert.equal(state.outcome.value, 'empty')
+    assert.deepEqual(state.invalidItems.value, [])
     assert.equal(state.error.value, undefined)
   } finally {
     f.scope.stop()

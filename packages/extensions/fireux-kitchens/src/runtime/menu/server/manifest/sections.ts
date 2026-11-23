@@ -1,7 +1,7 @@
 import type { LiveProjectionSources } from 'fireux-core/runtime/server/utils/live-projection-sources'
 import { normalizeKitchenPromotion } from '../../../kitchen/utils/promotions/pricing'
 import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
-import { readItemPricing } from '../../../kitchen/utils/item-pricing'
+import { readItemPricing, readItemSellingTerms } from '../../../kitchen/utils/item-pricing'
 import {
   normalizeItemPriceOptions,
   normalizeItemAddOns,
@@ -141,7 +141,13 @@ export async function readKitchenMenuSections(
                   promotion.groups.some((group) =>
                     group.dishes.some((choice) => {
                       const dish = dishesById.get(choice.item_id)
-                      return !dish || dish.status === 'archived'
+                      if (!dish || dish.status === 'archived') return true
+                      try {
+                        readItemSellingTerms(dish)
+                        return false
+                      } catch {
+                        return true
+                      }
                     })
                   )
                 )

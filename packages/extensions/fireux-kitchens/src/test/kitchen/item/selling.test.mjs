@@ -74,14 +74,15 @@ test('pricing draft survives same-record refresh, resets on navigation, and igno
   const api = scope.run(() =>
     load(
       'components/Workspace/Menu/Items/Pricing.vue',
-      '({price,groups,dirty,save,resetDraft,message,error,busy,previewPrice})',
+      '({price,currency,groups,dirty,save,resetDraft,message,error,busy,previewPrice})',
       {
         computed,
         ref,
         watch,
+        toRefs: (props) => props,
         normalizeItemChoiceGroups,
         priceItemChoices,
-        useKitchenItemContext: () => ({
+        defineProps: () => ({
           item,
           pricingError,
           kitchenId,
@@ -138,6 +139,17 @@ test('pricing draft survives same-record refresh, resets on navigation, and igno
   item.value = { choice_groups: [] }
   await nextTick()
   assert.equal(api.previewPrice.value, 'Set a normal price to preview.')
+  pricingError.value = new Error('Malformed saved price')
+  await nextTick()
+  await api.save()
+  assert.equal(calls.length, 1)
+  assert.match(api.error.value, /Enter a valid price/)
+  api.price.value = 12
+  api.currency.value = 'CHF'
+  const repair = api.save()
+  assert.equal(calls[1].changes.price, 12)
+  resolveSave({ id: 'soup' })
+  await repair
   scope.stop()
 })
 

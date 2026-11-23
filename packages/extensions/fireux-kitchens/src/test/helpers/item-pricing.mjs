@@ -14,7 +14,7 @@ const source = readFileSync(
   .replace(/^export /gm, '')
 export const itemPricingHelpers = compileFunction(
   stripTypeScriptTypes(source) +
-    ';return {normalizeItemChoiceGroups,normalizeItemPriceOptions,normalizeItemAddOns,normalizeItemPricingPatch,readItemPricing,readItemSellingTerms,normalizeItemSellingTerms}',
+    ';return {normalizeItemChoiceGroups,normalizeItemPriceOptions,normalizeItemAddOns,normalizeItemPricingPatch,readItemPricing,readStoredItemPricing,readItemSellingTerms,normalizeItemSellingTerms}',
   [
     'normalizeSlug',
     'normalizeItemChoiceGroups',

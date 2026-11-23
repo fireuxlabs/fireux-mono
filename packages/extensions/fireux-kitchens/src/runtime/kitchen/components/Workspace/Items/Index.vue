@@ -1,12 +1,20 @@
 <template>
-  <WorkspacePageHeader :title="itemId ? item?.name || 'Item' : 'Items'">
+  <WorkspacePageHeader :title="itemId ? invalidItem?.name || item?.name || 'Item' : 'Items'">
     <template #actions>
       <UButton variant="ghost" :to="itemId ? itemsPath : '/workspace/kitchen'">
         {{ itemId ? 'Back to Items' : 'Back to Kitchen' }}
       </UButton>
     </template>
   </WorkspacePageHeader>
-  <p v-if="itemId && !item">
+  <ItemPricing
+    v-if="invalidItem"
+    :item="invalidItem"
+    :pricing-error="invalidItem.error"
+    :kitchen-id="kitchenId"
+    :item-id="itemId"
+    :can-write="true"
+  />
+  <p v-else-if="itemId && !item">
     This Item is unavailable in the selected Kitchen.
   </p>
   <template v-else>
@@ -49,13 +57,23 @@
         </ULink>
       </li>
     </ul>
-    <p v-else-if="!itemId">No items yet.</p>
+    <ul v-if="!itemId && invalidItems.length">
+      <li v-for="entry in invalidItems" :key="entry.id">
+        <strong>{{ entry.name }}</strong>
+        <p>{{ entry.error }}</p>
+        <ULink :to="`${itemsPath}/${encodeURIComponent(entry.id)}`">
+          Repair pricing
+        </ULink>
+      </li>
+    </ul>
+    <p v-if="!itemId && !items.length && !invalidItems.length">No items yet.</p>
   </template>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { navigateTo } from '#imports'
+import ItemPricing from '../Menu/Items/Pricing.vue'
 import type { Item } from '../../../models/item.model'
 import { useItemActions } from '../../../composables/items/useItemActions'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
@@ -65,10 +83,14 @@ const props = defineProps<{
   kitchenId: string
   itemId: string
   items: Item[]
+  invalidItems: { id: string; name: string; error: string }[]
   itemsPath: string
 }>()
 const { kitchenId, itemId } = props
 const item = computed(() => props.items.find((entry) => entry.id === itemId))
+const invalidItem = computed(() =>
+  props.invalidItems.find((entry) => entry.id === itemId)
+)
 const items = computed(() =>
   [...props.items].sort((a, b) => a.name.localeCompare(b.name))
 )
