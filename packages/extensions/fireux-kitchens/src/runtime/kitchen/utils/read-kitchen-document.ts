@@ -1,9 +1,9 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { readWorkspacePalette } from 'fireux-core/runtime/utils/theme-palette'
 import type { Kitchen, KitchenIdentity } from '../models/model'
+import { weekdayTimeCore } from '../../utils/weekday-time-core.ts'
 const KITCHEN_IDENTITY_SOURCES = ['user', 'place'] as const
 const KITCHEN_STATUSES = ['active', 'inactive', 'archived'] as const
-import { weekdayTimeCore } from '../../utils/weekday-time-core.ts'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
@@ -56,62 +56,45 @@ function isHours(value: unknown): boolean {
   )
 }
 
-function isConfiguration(
-  value: Record<string, unknown>
-): value is Record<string, unknown> &
-  Pick<Kitchen, 'theme' | 'orders' | 'services' | 'tables'> {
-  if (value.theme !== undefined) {
-    if (
-      !isRecord(value.theme) ||
-      !hasFields(value.theme, ['palette']) ||
-      !readWorkspacePalette(value.theme.palette)
-    )
-      return false
-  }
-  if (value.orders !== undefined) {
-    const orders = value.orders
-    if (
-      !isRecord(orders) ||
-      !hasFields(orders, ['operation_hours', 'printing'])
-    )
-      return false
-    if (
-      orders.operation_hours !== undefined &&
-      !isHours(orders.operation_hours)
-    )
-      return false
-    if (
-      orders.printing !== undefined &&
-      (!isRecord(orders.printing) ||
-        !hasFields(orders.printing, ['ticket_device_id']) ||
-        typeof orders.printing.ticket_device_id !== 'string')
-    )
-      return false
-  }
-  if (value.services !== undefined) {
-    const services = value.services
-    if (
-      !isRecord(services) ||
-      !hasFields(services, ['title', 'item_images']) ||
-      (services.title !== undefined &&
-        (typeof services.title !== 'string' || services.title.length > 120)) ||
-      (services.item_images !== undefined &&
-        typeof services.item_images !== 'boolean')
-    )
-      return false
-  }
-  if (value.tables !== undefined) {
-    const tables = value.tables
-    if (
-      !isRecord(tables) ||
-      !hasFields(tables, ['count']) ||
-      !Number.isSafeInteger(tables.count) ||
-      Number(tables.count) < 0 ||
-      Number(tables.count) > 500
-    )
-      return false
-  }
-  return true
+function isTheme(value: unknown): value is NonNullable<Kitchen['theme']> {
+  return (
+    isRecord(value) &&
+    hasFields(value, ['palette']) &&
+    Boolean(readWorkspacePalette(value.palette))
+  )
+}
+
+function isOrders(value: unknown): value is NonNullable<Kitchen['orders']> {
+  return (
+    isRecord(value) &&
+    hasFields(value, ['operation_hours', 'printing']) &&
+    (value.operation_hours === undefined || isHours(value.operation_hours)) &&
+    (value.printing === undefined ||
+      (isRecord(value.printing) &&
+        hasFields(value.printing, ['ticket_device_id']) &&
+        typeof value.printing.ticket_device_id === 'string'))
+  )
+}
+
+function isServices(value: unknown): value is NonNullable<Kitchen['services']> {
+  return (
+    isRecord(value) &&
+    hasFields(value, ['title', 'item_images']) &&
+    (value.title === undefined ||
+      (typeof value.title === 'string' && value.title.length <= 120)) &&
+    (value.item_images === undefined || typeof value.item_images === 'boolean')
+  )
+}
+
+function isTables(value: unknown): value is NonNullable<Kitchen['tables']> {
+  return (
+    isRecord(value) &&
+    hasFields(value, ['count']) &&
+    typeof value.count === 'number' &&
+    Number.isSafeInteger(value.count) &&
+    value.count >= 0 &&
+    value.count <= 500
+  )
 }
 
 // These stored fields are outside the Workspace Kitchen model. Server owners
@@ -178,7 +161,9 @@ export function readKitchenDocument(raw: unknown, id: string): Kitchen | null {
   )
     return null
 
-  if (!isIdentity(kitchen.identity) || !isConfiguration(kitchen)) return null
+  const theme = kitchen.theme
+  if (!isIdentity(kitchen.identity) || (theme !== undefined && !isTheme(theme)))
+    return null
 
   return {
     id,
@@ -189,9 +174,10 @@ export function readKitchenDocument(raw: unknown, id: string): Kitchen | null {
     ...(kitchen.guidance_ids !== undefined
       ? { guidance_ids: kitchen.guidance_ids }
       : {}),
-    ...(kitchen.theme !== undefined ? { theme: kitchen.theme } : {}),
-    ...(kitchen.orders !== undefined ? { orders: kitchen.orders } : {}),
-    ...(kitchen.services !== undefined ? { services: kitchen.services } : {}),
-    ...(kitchen.tables !== undefined ? { tables: kitchen.tables } : {}),
+    ...(theme !== undefined ? { theme } : {}),
+    // Optional capability settings are projected only when usable.
+    ...(isOrders(kitchen.orders) ? { orders: kitchen.orders } : {}),
+    ...(isServices(kitchen.services) ? { services: kitchen.services } : {}),
+    ...(isTables(kitchen.tables) ? { tables: kitchen.tables } : {}),
   }
 }

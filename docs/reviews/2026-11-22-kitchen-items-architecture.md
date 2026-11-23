@@ -313,3 +313,21 @@ updates or clearing an already-open Menu after unpublication remain outside
 the recorded proof. Review that acquisition before accepting it as a
 maintained public surface. The Items checkpoint likewise leaves live
 revocation in the open Item editor unverified.
+
+### Independence proof closeout
+
+The Kitchen-only emulator run used normal Core sign-in. It created and selected
+a name-only Kitchen without a Place or capability records. After the test
+document received malformed Orders, Services and Tables maps, the operator
+reopened and renamed the Kitchen, then refreshed it. Readback preserved the
+stored maps. The identity endpoint refused capability patches and denied a
+rename by an unrelated App member. The 147 focused tests covered the reader,
+selection, creation and trusted update behavior.
+
+The temporary sign-in page, selection debug plugin and retired probe script
+were disposable local helpers. The narrow module options and routes remain
+available as opt-in composition. No checked-in App selects them, and Misebox
+uses its full Kitchens installation. A product decision is still needed on
+whether to maintain the narrow composition for Apps. The evidence covers
+local registration and behavior. Package-level isolation and production
+adoption have separate acceptance criteria.

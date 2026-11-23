@@ -32,8 +32,9 @@ There is no aggregate `useKitchen` CRUD facade or supported root Delete action.
 
 - `models/model.ts`: the stored Kitchen root, composing capability
   configuration once, with creation and optional update stamps.
-- `utils/read-kitchen-document.ts`: strict stored-root validation, independently
-  of stamp-free public summaries and Place-derived presentation.
+- `utils/read-kitchen-document.ts`: strict validation of Kitchen identity and
+  root fields. Malformed Orders, Services or Tables maps are omitted from the
+  read result. Valid maps remain available to their consumers.
 - `composables/useKitchens.ts`: public HTTP directory.
 - `composables/useKitchenCollection.ts`: live membership-bound roots and Place
   presentation; invalid roots fail the collection without a partial list.
@@ -54,6 +55,11 @@ There is no aggregate `useKitchen` CRUD facade or supported root Delete action.
 
 ## Kitchen-only Workspace
 
+The [local independence checkpoint](../../../docs/reviews/2026-11-22-kitchen-items-architecture.md#independence-proof-closeout)
+verifies this opt-in composition. Checked-in Apps use their existing Kitchen
+composition. Adoption of the narrow mode as a supported App configuration
+still needs a product decision.
+
 Install `['fireux-kitchens', { workspaceOnly: true }]` with the
 [Workspace module and layer](../fireux-workspace/README.md#registration), and
 declare `kitchen` in the App's `workspaces`. This mode adds the Kitchen
@@ -64,6 +70,8 @@ The [Kitchen page](src/runtime/kitchen/pages/workspace.vue) reads the selected
 Kitchen without Place hydration and reconciles the saved selection against
 settled grants. The name lives on `Kitchen.identity.name`. The standard
 Misebox installation retains its Place-backed onboarding path.
+The base update endpoint accepts identity fields in Kitchen-only mode. The
+full installation retains its validated Services and Tables settings writes.
 
 Add `workspaceItems: true` alongside `workspaceOnly: true` to opt into
 the [Items route](src/runtime/kitchen/pages/items.vue). It lists Items from the

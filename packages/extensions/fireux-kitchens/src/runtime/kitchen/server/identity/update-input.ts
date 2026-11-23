@@ -21,26 +21,18 @@ function fail(message: string): never {
   throw createError({ statusCode: 400, statusMessage: message })
 }
 
-const allowed = new Set([
+const identityFields = new Set([
   'identity.name',
   'identity.slug',
   'identity.status',
   'identity.visibility',
+])
+
+const capabilityFields = new Set([
   'tables.count',
   'services.title',
   'services.item_images',
 ])
-
-function flatten(source: Record<string, unknown>) {
-  const out: Record<string, unknown> = {}
-  for (const [key, value] of Object.entries(source)) {
-    out[key] = value
-  }
-  const unsupported = Object.keys(out).find((key) => !allowed.has(key))
-  if (unsupported)
-    fail(`Kitchen update contains unsupported field: ${unsupported}.`)
-  return out
-}
 
 function boundedString(value: unknown, label: string, max: number) {
   const result = text(value)
@@ -50,15 +42,21 @@ function boundedString(value: unknown, label: string, max: number) {
 
 export function parseKitchenUpdate(
   value: unknown,
-  runtimeReservedRouteKeys: readonly unknown[] = []
+  runtimeReservedRouteKeys: readonly unknown[] = [],
+  identityOnly = false
 ) {
   const source = record(value)
   if (!source) fail('Kitchen update must be an object.')
-  const patch = flatten(source)
-  if (!Object.keys(patch).length) fail('Kitchen update has no fields.')
+  const entries = Object.entries(source)
+  if (!entries.length) fail('Kitchen update has no fields.')
   const out: Record<string, unknown> = {}
 
-  for (const [key, raw] of Object.entries(patch)) {
+  for (const [key, raw] of entries) {
+    if (
+      !identityFields.has(key) &&
+      (identityOnly || !capabilityFields.has(key))
+    )
+      fail(`Kitchen update contains unsupported field: ${key}.`)
     if (key === 'identity.name') {
       if (typeof raw !== 'string' || !raw.trim() || raw.trim().length > 120)
         fail('Kitchen name is required and must be 120 characters or fewer.')

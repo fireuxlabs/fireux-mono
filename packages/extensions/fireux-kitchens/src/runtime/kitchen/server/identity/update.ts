@@ -16,7 +16,11 @@ const record = (value: unknown): Record<string, unknown> | null =>
     ? (value as Record<string, unknown>)
     : null
 
-function request(value: unknown, runtimeReservedRouteKeys: readonly unknown[]) {
+function request(
+  value: unknown,
+  runtimeReservedRouteKeys: readonly unknown[],
+  identityOnly: boolean
+) {
   const source = record(value)
   if (!source)
     throw createError({
@@ -33,13 +37,22 @@ function request(value: unknown, runtimeReservedRouteKeys: readonly unknown[]) {
     })
   return {
     kitchenId: requireFirestoreDocumentId(source.kitchen_id, 'Kitchen id'),
-    patch: parseKitchenUpdate(source.patch, runtimeReservedRouteKeys),
+    patch: parseKitchenUpdate(
+      source.patch,
+      runtimeReservedRouteKeys,
+      identityOnly
+    ),
   }
 }
 
 export async function updateKitchen(event: H3Event, input: unknown) {
-  const keys = useRuntimeConfig(event).public?.fireux?.reservedRouteKeys
-  const requested = request(input, Array.isArray(keys) ? keys : [])
+  const runtime = useRuntimeConfig(event)
+  const keys = runtime.public?.fireux?.reservedRouteKeys
+  const requested = request(
+    input,
+    Array.isArray(keys) ? keys : [],
+    runtime.kitchensWorkspaceOnly === true
+  )
   const actor = await readKitchenMutationActor(event)
   const slug =
     typeof requested.patch['identity.slug'] === 'string'
@@ -51,17 +64,14 @@ export async function updateKitchen(event: H3Event, input: unknown) {
       actor,
       requested.kitchenId
     )
-    const identity = current.rootData.identity as
-      | Record<string, unknown>
-      | undefined
-    if (
-      'identity.name' in requested.patch &&
-      (identity?.source !== 'user' || typeof identity.name !== 'string')
-    ) {
-      throw createError({
-        statusCode: 409,
-        statusMessage: 'This Kitchen’s name is managed by its Place.',
-      })
+    if ('identity.name' in requested.patch) {
+      const identity = record(current.rootData.identity)
+      if (identity?.source !== 'user' || typeof identity.name !== 'string') {
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'This Kitchen’s name is managed by its Place.',
+        })
+      }
     }
     if (slug) {
       const matches = await mutations.query(KITCHEN_MUTATION_TARGETS.kitchens, {

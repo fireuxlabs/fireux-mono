@@ -67,7 +67,7 @@ const readKitchenByRouteSlug = load(
   { createError }
 )
 
-function harness() {
+function harness(kitchensWorkspaceOnly = false) {
   const at = { seconds: 1, nanoseconds: 0 }
   const records = new Map([
     ...['first', 'second', 'foreign'].map((id) => [
@@ -122,7 +122,7 @@ function harness() {
     }),
   }
   const update = load('kitchen/server/identity/update.ts', 'updateKitchen', {
-    useRuntimeConfig: () => ({ public: {} }),
+    useRuntimeConfig: () => ({ public: {}, kitchensWorkspaceOnly }),
     createError,
     parseKitchenUpdate,
     serverAuditStamp,
@@ -252,6 +252,42 @@ test('Kitchen-owned names can be renamed without changing the slug or Place-owne
   await assert.rejects(rename('first', ' '), { statusCode: 400 })
   await assert.rejects(rename('second', 'Place rename'), { statusCode: 409 })
   assert.equal(h.writes.length, 1)
+})
+
+test('Kitchen-only updates preserve stored capability settings and reject capability patches', async () => {
+  const h = harness(true)
+  const kitchen = h.records.get('kitchens/first')
+  kitchen.identity.source = 'user'
+  kitchen.identity.name = 'First Kitchen'
+  kitchen.orders = { printing: { ticket_device_id: 1 } }
+  kitchen.services = { item_images: 'old value' }
+  kitchen.tables = { count: 501 }
+  const before = structuredClone(kitchen)
+  const rename = { 'identity.name': 'New Kitchen name' }
+  const capability = {
+    'services.title': 'Lunch',
+    'services.item_images': true,
+    'tables.count': 6,
+  }
+  for (const [field, value] of Object.entries(capability)) {
+    await assert.rejects(
+      h.update(
+        {},
+        { kitchen_id: 'first', patch: { ...rename, [field]: value } }
+      ),
+      { statusCode: 400 }
+    )
+  }
+  assert.deepEqual(kitchen, before)
+  assert.deepEqual(h.writes, [])
+  await h.update({}, { kitchen_id: 'first', patch: rename })
+  assert.equal(kitchen.identity.name, rename['identity.name'])
+  for (const field of ['orders', 'services', 'tables'])
+    assert.deepEqual(kitchen[field], before[field])
+  const full = harness()
+  await full.update({}, { kitchen_id: 'first', patch: capability })
+  for (const [field, value] of Object.entries(capability))
+    assert.equal(full.writes[0].patch[field], value)
 })
 
 test('Kitchen rechecks revoked membership and lifetime-bound access before slug query or write', async () => {

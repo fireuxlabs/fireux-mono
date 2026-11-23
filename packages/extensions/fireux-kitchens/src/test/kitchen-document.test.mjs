@@ -80,15 +80,52 @@ test('Workspace reads exclude server-owned fields and reject retired storage fie
   for (const invalid of [
     { ...raw, identity: undefined },
     { ...raw, identity: { ...raw.identity, visibility: null } },
-    { ...raw, services: { item_images: 'no' } },
     { ...raw, unknown: true },
     { ...raw, slug: raw.identity.slug },
     { ...raw, status: raw.identity.status },
     { ...raw, visibility: raw.identity.visibility },
     { ...raw, identity_source: 'place' },
-    { ...raw, services: [{ name: 'Old service' }] },
   ])
     assert.equal(readKitchenDocument(invalid, raw.id), null)
+})
+
+test('Missing or malformed capability maps leave the canonical Kitchen readable', () => {
+  const kitchen = canonical()
+  for (const configuration of [
+    {},
+    {
+      orders: null,
+      services: [{ name: 'Old service' }],
+      tables: { count: 501 },
+    },
+    {
+      orders: { printing: { ticket_device_id: 1 } },
+      services: { item_images: 'no' },
+    },
+    {
+      orders: {
+        operation_hours: {
+          source: 'custom',
+          timezone: '',
+          windows: [{ days: ['funday'], open: '12:00', close: '13:00' }],
+        },
+      },
+    },
+  ]) {
+    const stored = { ...kitchen, ...configuration }
+    const before = structuredClone(stored)
+    assert.deepEqual(readKitchenDocument(stored, kitchen.id), kitchen)
+    assert.deepEqual(stored, before)
+  }
+  const services = { title: 'Dining', item_images: false }
+  const tables = { count: 7 }
+  assert.deepEqual(
+    readKitchenDocument(
+      { ...kitchen, orders: false, services, tables },
+      kitchen.id
+    ),
+    { ...kitchen, services, tables }
+  )
 })
 
 test('Stored Kitchen rejects invalid identity, stamps, borrowed Place facts and unknown fields', () => {
@@ -128,19 +165,7 @@ test('Stored Kitchen rejects invalid identity, stamps, borrowed Place facts and 
     { ...canonical(), context: {} },
     { ...canonical(), name: 'Borrowed Place' },
     { ...canonical(), fulfilment: { modes: ['collection'] } },
-    { ...canonical(), tables: { count: 501 } },
     { ...canonical(), theme: { palette: {} } },
-    { ...canonical(), orders: { printing: { ticket_device_id: 1 } } },
-    {
-      ...canonical(),
-      orders: {
-        operation_hours: {
-          source: 'custom',
-          timezone: '',
-          windows: [{ days: ['funday'], open: '12:00', close: '13:00' }],
-        },
-      },
-    },
   ]
   for (const value of cases)
     assert.equal(readKitchenDocument(value, 'kitchen'), null)
