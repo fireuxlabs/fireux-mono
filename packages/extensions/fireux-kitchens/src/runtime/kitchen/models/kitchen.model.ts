@@ -4,9 +4,11 @@ import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.
 import type { Recipe } from '../../recipe/models/model'
 import type { KitchenPromotion } from '../records/menus/promotions/promotion'
 import type { Order } from '../records/order'
-import type { KitchenIngredient } from '../records/prep/ingredients/ingredient'
-import type { Preparation } from '../records/prep/preparations/preparation'
-import type { KitchenStation } from '../records/prep/stations/station'
+import type {
+  KitchenIngredient,
+  Preparation,
+  KitchenStation,
+} from '../records/prep'
 import type { KitchenSale } from '../records/sale'
 import type { KitchenWasteEvent } from '../records/waste-event'
 import type { KitchenFulfilment } from '../utils/kitchen-fulfilment-reader'
