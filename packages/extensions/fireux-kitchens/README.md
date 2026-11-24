@@ -133,3 +133,11 @@ A full-price group stores prices on its options, and the starting price is
 derived from them. Extras add to the base or selected price. The Item reader
 keeps identity usable if older selling data cannot be parsed. Menu placements
 continue to reference the Item through the existing contract.
+
+## Authorized Kitchen detail
+
+An App passes the requested Kitchen ID to
+[`useAuthorizedKitchenRead`](src/runtime/kitchen/composables/useAuthorizedKitchenRead.ts).
+Kitchens resolves the current membership grant before opening the exact document.
+The reader distinguishes pending, denied, missing, failed and ready results.
+The route supplies identity and Workspace presents the result.

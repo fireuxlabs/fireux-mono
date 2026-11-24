@@ -1,4 +1,4 @@
-import { computed, toValue, type MaybeRefOrGetter } from 'vue'
+import { computed, toValue, type MaybeRefOrGetter, type Ref } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
@@ -10,6 +10,7 @@ import {
 type UseKitchenReadOptions = {
   collectionPath?: MaybeRefOrGetter<string>
   hydrate?: boolean
+  bindingKey?: Ref<number>
 }
 
 /** Canonical Kitchen with an optional Place lookup. */
@@ -25,7 +26,9 @@ export function useKitchenRead(
   )
   const { firestoreFetchDoc } = useFirestoreRead()
   const enabled = computed(() => Boolean(path.value && kitchenId.value))
-  const source = firestoreFetchDoc<Record<string, unknown>>(path, kitchenId)
+  const source = firestoreFetchDoc<Record<string, unknown>>(path, kitchenId, {
+    bindingKey: options.bindingKey,
+  })
   const stale = computed(
     () =>
       enabled.value &&

@@ -16,7 +16,12 @@
         <p v-else-if="outcome === 'empty'">You have no available Kitchens.</p>
         <ul v-else-if="outcome === 'ready'" class="list-disc ps-5">
           <li v-for="kitchen in kitchens" :key="kitchen.id">
-            {{ kitchen.name }}
+            <NuxtLink
+              :to="`/workspace/kitchens/${encodeURIComponent(kitchen.id)}`"
+              class="underline"
+            >
+              {{ kitchen.name }}
+            </NuxtLink>
           </li>
         </ul>
       </section>

@@ -131,3 +131,83 @@ test('Exact Kitchen reads mask old identities and release errors when their scop
   assert.equal(s.read.error.value, undefined)
   assert.equal(s.read.kitchen.value, null)
 })
+
+test('authorized Kitchen acquisition gates the document and masks scope transitions', () => {
+  const uid = ref('alice')
+  const hasAuthState = ref(false)
+  const isAuthenticated = ref(true)
+  const access = { outcome: ref('pending'), ids: ref([]) }
+  const id = ref('a')
+  const source = { outcome: ref('idle'), kitchen: ref(null), error: ref(null) }
+  let readId
+  let readOptions
+  const factory = loadComposable(
+    '../runtime/kitchen/composables/useAuthorizedKitchenRead.ts',
+    'useAuthorizedKitchenRead',
+    {
+      computed,
+      ref,
+      toValue,
+      watch,
+      useAuth: () => ({
+        uid,
+        hasAuthState,
+        isAuthenticated,
+        lastBindError: ref(null),
+      }),
+      useKitchenAccess: () => access,
+      useKitchenRead: (target, options) => {
+        readId = target
+        readOptions = options
+        return source
+      },
+    }
+  )
+  const scope = effectScope()
+  const result = scope.run(() => factory(id))
+  try {
+    assert.equal(readId.value, '')
+    assert.equal(result.outcome.value, 'pending')
+    assert.equal(readOptions.hydrate, false)
+    hasAuthState.value = true
+    access.outcome.value = 'empty'
+    assert.equal(result.outcome.value, 'denied')
+    access.outcome.value = 'error'
+    assert.equal(result.outcome.value, 'error')
+    access.ids.value = ['a', 'b']
+    access.outcome.value = 'ready'
+    assert.equal(readId.value, 'a')
+    assert.equal(result.outcome.value, 'pending')
+    source.outcome.value = 'empty'
+    assert.equal(result.outcome.value, 'missing')
+    source.outcome.value = 'error'
+    assert.equal(result.outcome.value, 'error')
+    source.error.value = { code: 'permission-denied' }
+    assert.equal(result.outcome.value, 'denied')
+    source.outcome.value = 'ready'
+    source.kitchen.value = canonical('a')
+    assert.equal(result.kitchen.value.id, 'a')
+    id.value = 'b'
+    assert.equal(readId.value, 'b')
+    assert.equal(result.kitchen.value, null)
+    source.kitchen.value = canonical('b')
+    assert.equal(result.kitchen.value.id, 'b')
+    const firstBinding = readOptions.bindingKey.value
+    uid.value = 'bob'
+    assert.ok(readOptions.bindingKey.value > firstBinding)
+    access.outcome.value = 'pending'
+    assert.equal(result.kitchen.value, null)
+    access.outcome.value = 'ready'
+    access.ids.value = ['a']
+    assert.equal(readId.value, '')
+    assert.equal(result.outcome.value, 'denied')
+    access.ids.value = ['b']
+    assert.equal(result.kitchen.value.id, 'b')
+    isAuthenticated.value = false
+    assert.equal(readId.value, '')
+    assert.equal(result.outcome.value, 'denied')
+    assert.equal(result.kitchen.value, null)
+  } finally {
+    scope.stop()
+  }
+})

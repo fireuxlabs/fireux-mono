@@ -291,3 +291,53 @@ test('live collection pages stay bounded and reconcile changes across the loaded
   assert.equal(queries.at(-1).limit, 26)
   scope.stop()
 })
+
+test('exact document masks a retained value when the binding key changes', () => {
+  const scope = effectScope()
+  const bindingKey = ref(0)
+  const binding = Object.assign(ref({ id: 'same', name: 'Previous' }), {
+    pending: ref(false),
+    error: ref(undefined),
+    promise: shallowRef(Promise.resolve()),
+    stop() {},
+  })
+  let documentRef
+  const factory = load(
+    '../runtime/composables/fireux/firestore/operations/useFirestoreRead.ts',
+    'useFirestoreRead',
+    {
+      computed,
+      shallowRef,
+      unref,
+      watch,
+      resolveReadOutcome,
+      useFirestoreResolver: () => () => 'db',
+      readRuntimeFirestoreDatabaseId: () => 'test',
+      doc: (db, path, id) => ({ db, path, id }),
+      guardFirestorePromise() {},
+      useDocument(source) {
+        documentRef = source
+        return binding
+      },
+    }
+  )
+  try {
+    const read = scope.run(() =>
+      factory().firestoreFetchDoc('kitchens', 'same', { bindingKey })
+    )
+    assert.equal(read.value.name, 'Previous')
+    const before = documentRef.value
+    bindingKey.value++
+    assert.notEqual(documentRef.value, before)
+    assert.equal(read.outcome.value, 'pending')
+    assert.equal(read.value, undefined)
+    binding.pending.value = true
+    binding.promise.value = Promise.resolve()
+    assert.equal(read.value, undefined)
+    binding.value = { id: 'same', name: 'Current' }
+    binding.pending.value = false
+    assert.equal(read.value.name, 'Current')
+  } finally {
+    scope.stop()
+  }
+})

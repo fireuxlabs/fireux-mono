@@ -54,6 +54,7 @@ export type FirestoreDocSource =
 
 export type FirestoreFetchDocOptions = {
   ssrKey?: string
+  bindingKey?: Ref<number>
 }
 
 export type FirestoreReadOutcome = ReadOutcome
@@ -298,6 +299,8 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
       Boolean(resolvedCollectionPath.value && resolvedDocId.value)
     )
     const documentRef = computed<DocumentReference<T> | null>(() => {
+      // Rebind an unchanged document path when its authorized scope changes.
+      void readOptions.bindingKey?.value
       const path = resolvedCollectionPath.value
       const id = resolvedDocId.value
       return path && id
