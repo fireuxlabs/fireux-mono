@@ -5,8 +5,8 @@ one UApp and one native NuxtLayout/NuxtPage pair. The
 [default layout](default.vue) owns public chrome and the main landmark.
 [Dashboard](dashboard.vue) owns account and App chrome. Domain pages supply
 content through the native page slot. Optional
-[Workspace](../../../../../extensions/fireux-workspace/README.md#layout) owns
-its layout, frame, and manifest override.
+[Workspace](../../../../../extensions/fireux-workspace/README.md) supplies a
+shared shell. The App owns the Workspace routes and composes the shell.
 
 ## Layout admission
 

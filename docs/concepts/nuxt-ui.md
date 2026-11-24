@@ -39,30 +39,14 @@ new FireUX shell or layout has the right responsibility. Apply the canonical
 meaning, readers, permissions and commands; Apps retain product framing and
 route policy.
 
-The repository-wide authored-Tailwind rule lives in
-[global context](../ai/gpt-context.md#ui-and-design-system). Nuxt UI may use
-Tailwind internally; that implementation does not grant FireUX source permission
-to add utility strings. The global rule distinguishes exact approved adjustments
-from migration debt.
+See [AGENTS.md](../../AGENTS.md#architecture-and-ui) for repository UI rules.
 See [component ownership and reuse](../../packages/core/fireux-core/src/runtime/components/README.md) for the consumption rule,
 shared component admission and current component evidence.
 
-## Current shared frame
+## Workspace
 
-Workspace's [WorkspacePage.vue](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/Page.vue)
-composes Nuxt UI's dashboard panel around the App-supplied page slot with the shared
-[Navbar.vue](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/Navbar.vue)
-and [Breadcrumbs.vue](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/Breadcrumbs.vue).
-Group links use Nuxt UI page cards through the ordinary
-[PageLinks.vue](../../packages/extensions/fireux-workspace/src/runtime/workspace/components/PageLinks.vue)
-content component. The frame uses semantic styles in
-[workspace-surface.scss](../../packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/workspace-surface.scss).
-WorkspaceNavbar owns selected identity and page actions; Dashboard's separate
-Navbar retains its existing `ui` forwarding, which does not permit authored
-utility overrides. The shared frame does not establish that every
-header, domain component or App has completed styling migration. Route and
-domain ownership remain as described in [Workspace](workspace.md) and
-[Workspace Entity composition](workspace.md).
+The [Workspace package README](../../packages/extensions/fireux-workspace/README.md)
+explains the shared shell and how Misebox composes it through its parent route.
 
 ## Refresh
 

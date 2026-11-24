@@ -26,8 +26,7 @@ command and access checks.
 
 A component group may statically re-export nearby Vue children from its local
 `index.ts`. The parent imports the namespace and visibly names its children.
-See [Kitchen Menu](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menu/Index.vue)
-and [FireUX Framework](../../projects/fireux/fireux-app/app/components/Framework/Home.vue).
+See [FireUX Framework](../../projects/fireux/fireux-app/app/components/Framework/Home.vue).
 
 A useful single-use child or explicitly imported private presentation
 composable can earn its own file. Shared library admission is a separate

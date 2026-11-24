@@ -76,7 +76,7 @@ Concrete Apps, the reusable starter, and local test harnesses.
 | `bringli-app`             | Bringli marketplace for local producers.                           | [Directory](projects/bringli/bringli-app/)              |
 | `buenohost-app`           | Digital guest guides for accommodation hosts.                      | [Directory](projects/buenohost/buenohost-app/)          |
 | `find-my-seo-app`         | Directory of SEO professionals and agencies.                       | [Directory](projects/fireux/find-my-seo-app/)           |
-| `fireux-blank`            | Minimal Workspace development harness.                             | [Directory](projects/fireux/fireux-blank/)              |
+| `fireux-blank`            | Native Nuxt, Nuxt UI and Firebase reference App.                             | [Directory](projects/fireux/fireux-blank/)              |
 | `fireux-platform-app`     | FireUX platform site, developer reference, and Project management. | [Directory](projects/fireux/fireux-app/)                |
 | `fireux-template`         | Reusable Nuxt App starter for FireUX.                              | [Directory](projects/templates/fireux-template/)        |
 | `fireux-tenant`           | Michel AG Metallbau company site.                                  | [Directory](projects/fireux/tenant/)                    |

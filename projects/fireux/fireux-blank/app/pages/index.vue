@@ -1,5 +1,5 @@
 <template>
-  <UContainer class="py-8">
+  <UContainer>
     <UPageHeader title="Hello FireUX World" />
   </UContainer>
 </template>

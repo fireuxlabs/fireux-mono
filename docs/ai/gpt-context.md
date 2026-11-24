@@ -1,4 +1,4 @@
-# Shared FireUX working guidance
+# FireUX task guidance
 
 Updated: 2026-11-22
 Ref: eb57620fa
@@ -9,35 +9,10 @@ Scope: repository-wide
 [README spine](../../README.md) to the owner and consult the sections below
 when their subject applies.
 
-## Ownership and composition
-
-Use the [repository map](../concepts/fireux-mono.md) for dependency direction,
-the [runtime map](../concepts/runtime-filesystem.md) for placement, and
-[Lasagne](../concepts/lasagne.md) for composition. Keep the path from read to
-screen to action direct. Remove unnecessary work before extracting a helper,
-and share a responsibility only when its actual consumers justify the boundary.
-
-### Mandatory composition checks
-
-Apply the start and finish checks in [AGENTS.md](../../AGENTS.md).
-At the start, identify the existing composition, lower owners being reused
-and the specific domain or App difference. At completion, follow the actual
-route, registration or route-to-command path as relevant. Preserve access,
-readiness, cleanup and stale-completion behavior. Report fit against the
-reference as well as functional results. A screenshot or successful build
-covers only the behavior it exercised.
-
-## UI and design system
-
-Use Nuxt UI, shared styles and semantic tokens. Authored Tailwind utilities
-require explicit approval for the exact adjustment, including utilities in
-templates, generated strings, `ui` overrides, styles and `@apply`. Nuxt UI may
-use Tailwind internally. Existing utility use grants no further exception.
+## UI implementation references
 
 Follow the [component convention](../../packages/core/fireux-core/src/runtime/components/README.md#vue-file-convention)
-and [layout admission rules](../../packages/core/fireux-core/src/runtime/layouts/README.md#layout-admission). Review UI
-changes in the actual consumer at the affected viewport sizes and exercise the
-changed interactions.
+and [layout admission rules](../../packages/core/fireux-core/src/runtime/layouts/README.md#layout-admission).
 
 ## Data and mutations
 
@@ -60,8 +35,7 @@ evidence. Check deployed policy through authorized readback.
 
 ## Coordination and handoffs
 
-Before starting, check the [handoffs](../handoffs/) for the task or owner.
-Reconcile relevant decisions and checkpoints with the current checkout and source.
+Reconcile active handoff decisions and checkpoints with current source.
 
 The main Codex chat leads implementation. It tracks decisions with the user,
 delegates bounded work when specialist input helps, and owns integration,

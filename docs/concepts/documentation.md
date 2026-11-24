@@ -11,6 +11,7 @@ to real source, consumers, and checks.
 
 ## Document roles
 
+- **AGENTS.md** owns repository-wide operating rules.
 - **Concept maps** explain shared ownership, architecture, and terminology.
 - **Living context** holds durable scope-specific guidance. Use the closest
   owner, and keep shared guidance central only when it crosses owners.

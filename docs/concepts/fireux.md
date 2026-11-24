@@ -129,7 +129,8 @@ sets up an already configured runtime.
 
 The [Capabilities library](../../projects/fireux/fireux-app/app/pages/capabilities.vue)
 describes shared primitives, presentation, read-only surfaces and
-domain implementations. Blank is the neutral reference for structure.
+domain implementations. [Blank](../../projects/fireux/fireux-blank/) is the architectural proving ground.
+It composes Nuxt UI and the Firebase client SDK directly.
 The [Patterns catalogue](../../projects/fireux/fireux-app/app/pages/patterns/index.vue)
 explains examples and their limits. Credit external patterns to their authors
 and identify FireUX adaptations. Apply repository guidance for implementation
