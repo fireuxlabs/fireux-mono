@@ -1,25 +1,9 @@
 <template>
-  <UMain>
-    <div />
-  </UMain>
+  <WorkspaceGreeting />
 </template>
 
 <script setup lang="ts">
-import { useWorkspaceEntryCta } from '../../workspace/composables/useWorkspaceEntryCta'
+import WorkspaceGreeting from '../../workspace/components/Greeting.vue'
 
-definePageMeta({
-  layout: false,
-  requiresAuth: false,
-  nav: {
-    key: 'workspace-entry',
-    label: 'Workspace',
-    icon: 'i-lucide-panels-top-left',
-    menus: ['default', 'landing'],
-    visibility: { modules: ['fireux-workspace'] },
-  },
-})
-
-const { openWorkspace } = useWorkspaceEntryCta()
-
-await openWorkspace({}, { replace: true })
+definePageMeta({ layout: false, requiresAuth: false })
 </script>
