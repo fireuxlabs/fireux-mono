@@ -18,8 +18,6 @@ import { configurePages } from './config/module/pages-config.ts'
 import { configureAssets } from './config/module/assets-config.ts'
 
 export interface ModuleOptions {
-  prefix?: string
-  defaultKitchenId?: string
   ordering?: OrderingConfiguration
 }
 
@@ -38,10 +36,6 @@ export default defineNuxtModule<ModuleOptions>({
     version: '0.1.0',
     configKey: 'fireuxKitchens',
     compatibility: { nuxt: '^4.1.0' },
-  },
-  defaults: {
-    prefix: 'Fire',
-    defaultKitchenId: '',
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
@@ -76,10 +70,7 @@ export default defineNuxtModule<ModuleOptions>({
       }
     )
 
-    configureRuntime(nuxt, 'kitchens', {
-      enabled: true,
-      defaultKitchenId: String(options.defaultKitchenId || '').trim(),
-    })
+    configureRuntime(nuxt, 'kitchens')
     registerComposablesDirs(resolver, [
       './runtime/ingredient/composables',
       './runtime/kitchen/composables',
