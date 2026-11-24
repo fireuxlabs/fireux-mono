@@ -1,12 +1,14 @@
 <template>
-  <WorkspaceGreeting family="Kitchen" />
-  <p v-if="!hasAuthState">Checking sign-in…</p>
-  <p v-else-if="isAuthenticated">
-    Signed in as
-    {{ currentUser?.displayName || currentUser?.email || currentUser?.uid }}
-  </p>
-  <p v-else-if="lastBindError">Unable to check sign-in.</p>
-  <UButton v-else :to="signInPath">Sign in</UButton>
+  <div>
+    <WorkspaceGreeting family="Kitchen" />
+    <p v-if="!hasAuthState">Checking sign-in…</p>
+    <p v-else-if="isAuthenticated">
+      Signed in as
+      {{ currentUser?.displayName || currentUser?.email || currentUser?.uid }}
+    </p>
+    <p v-else-if="lastBindError">Unable to check sign-in.</p>
+    <UButton v-else :to="signInPath">Sign in</UButton>
+  </div>
 </template>
 
 <script setup lang="ts">
