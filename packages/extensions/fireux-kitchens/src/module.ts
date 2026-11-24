@@ -4,10 +4,7 @@ import {
   configureOrdering,
 } from './config/module/runtime-config.ts'
 import type { OrderingConfiguration } from './types/ordering.ts'
-import {
-  registerComposablesDirs,
-  registerLayoutComponents,
-} from 'fireux-core/config/module/module-helpers'
+import { registerComposablesDirs } from 'fireux-core/config/module/module-helpers'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 import type {
   FireuxSeoExtendContext,
@@ -112,7 +109,6 @@ export default defineNuxtModule<ModuleOptions>({
       })
     }
     configureComponents(resolver)
-    registerLayoutComponents(resolver, nuxt)
     configurePages(resolver, nuxt)
     configureAssets(resolver, nuxt)
   },
