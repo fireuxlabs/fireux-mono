@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} { allow read: if database == "identity" && request.auth.uid == uid; }
+    match /grants/{uid} { allow read: if request.auth.uid == uid; }
+    match /apps/probe/users/{uid} { allow read: if request.auth.uid == uid; }
+    match /kitchens/{id} {
+      allow read: if request.auth != null &&
+        get(/databases/$(database)/documents/grants/$(request.auth.uid)).data.allowed == true &&
+        get(/databases/$(database)/documents/grants/$(request.auth.uid)).data.membership_created_at ==
+          get(/databases/$(database)/documents/apps/probe/users/$(request.auth.uid)).data.created.at;
+    }
+  }
+}
