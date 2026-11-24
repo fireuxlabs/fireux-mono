@@ -1,3 +1,5 @@
 <template>
-  <FireuxApp />
+  <UApp>
+    <NuxtPage />
+  </UApp>
 </template>
