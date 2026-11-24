@@ -16,10 +16,7 @@ export default defineFireuxEcosystem({
     noindexPaths: ['/'],
     siteUrl: 'https://buenohost-app.web.app',
   },
-  workspaces: ['property'],
-  modules: ['fireux-workspace'],
   extends: [
-    'fireux-workspace/layer',
     'fireux-core/layer',
     'fireux-buenohost/property-layer',
   ],

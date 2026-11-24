@@ -36,6 +36,10 @@
   </section>
 </template>
 <script setup lang="ts">
+import KitchenWorkspaceMenuMenusPreparationDocument from './Preparation/Document.vue'
+import KitchenWorkspaceMenuMenusProcess from './Process/Index.vue'
+import KitchenWorkspaceMenuMenusUploadsDetailFile from './Uploads/Detail/File.vue'
+import '../../../../../menu/assets/styles/menu-editor.css'
 import { useKitchenMenuPreparation } from '../../../../composables/menu/useKitchenMenuPreparation'
 const props = defineProps<{ kitchenId: string; sourceId: string }>()
 const { context, outcome, menuOutcome, error } = useKitchenMenuPreparation({
@@ -43,5 +47,3 @@ const { context, outcome, menuOutcome, error } = useKitchenMenuPreparation({
   sourceId: () => props.sourceId,
 })
 </script>
-
-<style src="../../../../../menu/assets/styles/menu-editor.css"></style>

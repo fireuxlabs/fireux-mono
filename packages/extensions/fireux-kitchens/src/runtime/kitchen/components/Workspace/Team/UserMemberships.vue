@@ -13,7 +13,7 @@
           </UBadge>
           <UButton
             v-if="isOwnProfile"
-            :to="workspaceEntryHref"
+            to="/workspace"
             label="Open Kitchen Workspace"
             icon="i-lucide-chef-hat"
             color="neutral"
@@ -52,7 +52,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceEntryCta'
 import FireCollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
 import type { CollectionCellData } from 'fireux-core/runtime/types/collection-cell'
 import type { User } from 'fireux-core/runtime/user/models/user.model'
@@ -63,7 +62,6 @@ const props = defineProps<{
   user: Pick<User, 'id' | 'display_name'>
 }>()
 
-const { workspaceEntryHref } = useWorkspaceEntryCta('kitchen')
 const subjectUserId = computed(() => props.user.id)
 const { response, pending, error, canInspect, isOwnProfile } =
   useKitchenUserMemberships(subjectUserId)

@@ -1,4 +1,3 @@
-import { useWorkspaceRecord } from '../../../../fireux-workspace/src/runtime/workspace/composables/useWorkspaceRecord.ts'
 import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/utils/membership/validation.ts'
 import { resolveAppUserAccess } from '../../../../../core/fireux-core/src/runtime/app/utils/membership/access.ts'
 import {
@@ -1042,79 +1041,6 @@ test('browser recovery survives time and reload, stays App-scoped, and clears on
   assert.deepEqual(later.readGuestKitchenClaim('app'), claim)
   later.clearGuestKitchenClaim('app', claim)
   assert.equal(later.readGuestKitchenClaim('app'), null)
-})
-
-test('adopted Kitchen becomes selected only after the live collection contains it', async () => {
-  const adopted = ref('guest')
-  const selectedId = ref('existing')
-  const kitchens = ref([{ id: 'existing' }])
-  const outcome = ref('ready')
-  const useIndex = compile(
-    new URL('kitchen/composables/workspace/useKitchenWorkspace.ts', runtime),
-    'useKitchenWorkspace',
-    {
-      useCommandScope,
-      watch,
-      computed,
-      useWorkspaceEntryCta: () => ({
-        workspaceEntryPath: ref('/workspace/kitchen'),
-      }),
-      useRouter: () => ({ getRoutes: () => [] }),
-      useAppSession: () => ({
-        uid: ref('actor'),
-        appUser: ref(member()),
-        pending: ref(false),
-        error: ref(null),
-      }),
-      resolveAppUserAccess: () => ({ hasBusinessSubscription: false }),
-      useRoute: () => ({
-        path: '/workspace/kitchen',
-        meta: { workspace: 'kitchen' },
-        query: {},
-        matched: [],
-        hash: '',
-      }),
-      useState: (key, init) =>
-        key.startsWith('kitchen-adopted-selection:') ? adopted : ref(init()),
-      useFireUXConfig: () => ({ appId: 'app' }),
-      defineWorkspace: (factory) => factory,
-      useWorkspaceRecord,
-      useWorkspaceSwitch: () => () => {},
-      useKitchenCollection: () => ({
-        kitchens,
-        outcome,
-        access: {
-          ids: computed(() => kitchens.value.map((row) => row.id)),
-          outcome,
-        },
-      }),
-      useKitchenRead: () => ({
-        kitchen: ref(null),
-        place: ref(null),
-        outcome: ref('empty'),
-        placeOutcome: ref('empty'),
-      }),
-      useKitchenInterface: () => ({ surface: () => null }),
-      useWorkspace: () => ({
-        selectedId,
-        select: (id) => {
-          selectedId.value = id
-        },
-        reconcile: (ids, state) => {
-          if (state === 'ready' && !ids.includes(selectedId.value))
-            selectedId.value = ids[0] || ''
-        },
-      }),
-    }
-  )
-  const scope = effectScope()
-  scope.run(useIndex)
-  assert.equal(selectedId.value, 'existing')
-  kitchens.value = [{ id: 'existing' }, { id: 'guest' }]
-  await nextTick()
-  assert.equal(selectedId.value, 'guest')
-  assert.equal(adopted.value, '')
-  scope.stop()
 })
 
 test('auth waits for the User read and navigates directly to the required destination once', async () => {

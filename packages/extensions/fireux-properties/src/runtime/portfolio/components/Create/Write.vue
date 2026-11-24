@@ -67,7 +67,6 @@ import type {
 } from 'fireux-core/runtime/types/entity-create'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
-import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import { usePortfolioCreate } from '../../composables/firestore/mutations/usePortfolioCreate'
 
 const props = withDefaults(
@@ -89,7 +88,6 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const router = useRouter()
-const { select } = useWorkspace('portfolio')
 const { createPortfolio } = usePortfolioCreate()
 
 const name = ref('')
@@ -158,9 +156,6 @@ const submit = async () => {
     )
 
     if (!isCurrent()) return
-    if (mode === 'workspace') {
-      select(result.id)
-    }
     emit('created', result)
 
     if (route.path !== returnTo) {

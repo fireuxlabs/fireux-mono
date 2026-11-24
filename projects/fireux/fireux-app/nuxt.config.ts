@@ -11,7 +11,6 @@ const appConfig = defineFireuxEcosystem({
   shortName: 'FireUX',
   role: 'global',
   homePath: '/',
-  workspaces: ['project'],
   subscriptionCapacity: {
     project: { free: 1, pro: 1, business: null },
     'project.team': { free: 3, pro: 7, business: null },
@@ -49,7 +48,6 @@ const appConfig = defineFireuxEcosystem({
     noindexPaths: ['/apps/fireux-blank'],
   },
   modules: [
-    'fireux-workspace',
     [
       'fireux-products',
       {
@@ -66,7 +64,6 @@ const appConfig = defineFireuxEcosystem({
     ],
   ],
   extends: [
-    'fireux-workspace/layer',
     'fireux-docs/layer',
     'fireux-fireux/project-layer',
   ],

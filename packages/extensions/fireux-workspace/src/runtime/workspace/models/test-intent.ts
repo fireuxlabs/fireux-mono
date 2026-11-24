@@ -1,6 +1,0 @@
-export type TestIntent = {
-  action: 'create' | 'read' | 'update' | 'delete' | 'none'
-  recordId: string
-  value: string
-  message: string
-}

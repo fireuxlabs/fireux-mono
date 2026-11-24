@@ -49,7 +49,7 @@
           v-if="menu.data?.status === 'published'"
           label="Explore more Kitchen tools"
           variant="ghost"
-          @click="openWorkspace({ kitchenId: menu.data.kitchenId })"
+          to="/workspace"
         />
       </div>
     </UPageBody>
@@ -60,11 +60,9 @@ import { reactive } from 'vue'
 import MenuHostingUpload from '../../../components/MenuHosting/Upload.vue'
 import MenuHostingPublished from '../../../components/MenuHosting/Published.vue'
 import { useMenuDocument } from 'fireux-kitchens/runtime/menu/composables/useMenuDocument'
-import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceEntryCta'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 const menu = reactive(useMenuDocument())
-const { openWorkspace } = useWorkspaceEntryCta('kitchen')
 
 definePageMeta({
   title: 'Menu Hosting',

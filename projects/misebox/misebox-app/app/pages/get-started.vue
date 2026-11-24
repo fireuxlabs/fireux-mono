@@ -14,7 +14,7 @@
             {{ getStartedContent.hero.description }}
           </p>
           <div class="fx-card__actions">
-            <UButton :to="workspaceEntryHref" color="primary" size="lg">
+            <UButton to="/workspace" color="primary" size="lg">
               {{ getStartedContent.hero.primaryAction.label }}
             </UButton>
             <UButton
@@ -130,7 +130,6 @@ import {
   buildPublicPageJsonLd,
   useSeo,
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceEntryCta'
 import { getStartedContent } from '../content/get-started'
 
 definePageMeta({
@@ -161,6 +160,5 @@ useSeo({
     }),
 })
 
-const { workspaceEntryHref } = useWorkspaceEntryCta('kitchen')
 const steps = getStartedContent.steps
 </script>

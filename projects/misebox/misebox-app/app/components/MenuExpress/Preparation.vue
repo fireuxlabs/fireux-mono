@@ -19,7 +19,7 @@
       </UFormField>
       <UButton
         v-if="targets.outcome === 'empty'"
-        to="/workspace/kitchen"
+        to="/workspace"
         variant="outline"
         >Open Kitchen Workspace</UButton
       >
@@ -48,14 +48,13 @@
   </section>
 </template>
 <script setup lang="ts">
+import KitchenWorkspaceMenuMenusPreparation from 'fireux-kitchens/runtime/kitchen/components/Workspace/Menu/Menus/Preparation.vue'
 import { computed, reactive, ref } from 'vue'
 import { useKitchenCollection } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenCollection'
-import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import type { MenuExpressRequestView } from '../../composables/useMenuExpressRequest'
 defineProps<{
   state: Pick<MenuExpressRequestView, 'request' | 'busy' | 'act'>
 }>()
-const { selectedId } = useWorkspace('kitchen')
 const targets = reactive(useKitchenCollection())
 const chosenId = ref('')
 const kitchenOptions = computed(() =>
@@ -69,7 +68,6 @@ const kitchenId = computed({
     if (targets.outcome !== 'ready') return ''
     const ids = targets.kitchens.map((kitchen) => kitchen.id)
     if (ids.includes(chosenId.value)) return chosenId.value
-    if (ids.includes(selectedId.value)) return selectedId.value
     return ids.length === 1 ? ids[0]! : ''
   },
   set: (id: string) => {

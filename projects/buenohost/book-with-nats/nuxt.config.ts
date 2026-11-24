@@ -13,10 +13,7 @@ export default defineFireuxApp({
   seo: {
     siteUrl: 'https://book-with-nats-buenohost.web.app',
   },
-  workspaces: ['property'],
-  modules: ['fireux-workspace'],
   extends: [
-    'fireux-workspace/layer',
     'fireux-core/layer',
     'fireux-buenohost/property-layer',
   ],

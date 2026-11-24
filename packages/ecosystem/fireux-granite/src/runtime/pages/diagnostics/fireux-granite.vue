@@ -21,7 +21,6 @@
 </template>
 
 <script setup lang="ts">
-import { usePortfolioWorkspace } from 'fireux-properties/runtime/portfolio/composables/workspace/usePortfolioWorkspace'
 
 // Concurrent edit — 2026-07-20 22:24 CEST — Repo Efficiency Pass 5 of 6: compose Granite-owned portfolio child diagnostics.
 import { computed } from 'vue'
@@ -39,7 +38,8 @@ definePageMeta({
   },
 })
 
-const runtimePortfolio = usePortfolioScope(usePortfolioWorkspace().id)
+const route = useRoute()
+const runtimePortfolio = usePortfolioScope(computed(() => String(route.query.portfolioId || '')))
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeOutcome = computed(() => runtimePortfolio.targetOutcome.value)
 </script>

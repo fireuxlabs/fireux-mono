@@ -91,23 +91,6 @@ export default defineNuxtModule<ModuleOptions>({
         ),
       })
     }
-    // Public Workspace entrypoints only; internal constructors and keys stay private.
-    for (const [name, path] of [
-      ['useKitchenWorkspaceMenu', 'menu/index'],
-      ['useKitchenWorkspaceMenuOverview', 'menu/overview'],
-      ['useKitchenWorkspaceMenuAi', 'menu/ai'],
-      ['useKitchenWorkspaceMenuServices', 'menu/services'],
-      ['useKitchenWorkspacePrep', 'prep/index'],
-
-      ['useKitchenWorkspacePrepLibrary', 'prep/library'],
-    ] as const) {
-      addImports({
-        name,
-        from: resolver.resolve(
-          `./runtime/kitchen/composables/workspace/${path}`
-        ),
-      })
-    }
     configureComponents(resolver)
     configurePages(resolver, nuxt)
     configureAssets(resolver, nuxt)

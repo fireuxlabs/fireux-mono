@@ -16,13 +16,6 @@
         </p>
         <div class="framework-hero__actions">
           <UButton
-            v-if="hasWorkspaceEntry"
-            :to="workspaceEntryHref"
-            label="Open free Project Workspace"
-            size="xl"
-            trailing-icon="i-lucide-arrow-right"
-          />
-          <UButton
             to="/#offering"
             label="Explore your options"
             color="neutral"
@@ -40,10 +33,7 @@
 
 <script setup lang="ts">
 import { fireuxOffer } from '../../content/meta/source'
-import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceEntryCta'
 
-const { hasWorkspaceEntry, workspaceEntryHref } =
-  useWorkspaceEntryCta('project')
 </script>
 
 <style scoped>

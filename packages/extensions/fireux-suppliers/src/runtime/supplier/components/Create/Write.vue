@@ -89,7 +89,6 @@ import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
 } from 'fireux-core/runtime/types/entity-create'
-import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import { useSupplierCreate } from '../../composables/firestore/mutations/useSupplierCreate'
 
 const props = defineProps<{
@@ -107,7 +106,6 @@ const emit = defineEmits<{
 const router = useRouter()
 const route = useRoute()
 const { createSupplierWorkspace } = useSupplierCreate()
-const { select } = useWorkspace('supplier')
 
 const isCreating = ref(false)
 const errorMessage = ref<string | null>(null)

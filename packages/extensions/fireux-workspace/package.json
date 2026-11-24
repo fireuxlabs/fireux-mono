@@ -5,8 +5,6 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/module.ts",
-    "./layer": "./src/runtime/nuxt.config.ts",
     "./runtime/*.vue": "./src/runtime/*.vue",
     "./runtime/*": "./src/runtime/*.ts",
     "./package.json": "./package.json"

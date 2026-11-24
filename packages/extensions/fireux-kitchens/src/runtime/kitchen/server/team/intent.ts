@@ -3,7 +3,7 @@ import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { TEAM_INTENT_RECORD_LIMIT } from 'fireux-workspace/runtime/workspace/utils/team-intent-records'
-import type { TeamAIIntent } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceTeam'
+import type { TeamAIIntent } from 'fireux-workspace/runtime/workspace/models/team-member.model'
 import { kitchenTeamAgentTools } from '../../tools/team'
 
 export async function interpretKitchenTeam(

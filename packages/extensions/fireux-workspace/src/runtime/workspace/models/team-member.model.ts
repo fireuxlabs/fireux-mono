@@ -7,3 +7,9 @@ export type WorkspaceTeamMemberRecord = {
 
 /** A fetched roster entry includes its document id. */
 export type WorkspaceTeamMemberDocument = WorkspaceTeamMemberRecord & { id: string }
+
+export type TeamAIIntent = {
+  action: 'create' | 'read' | 'update' | 'delete' | 'none'
+  name: string
+  message: string
+}

@@ -38,6 +38,10 @@
   </section>
 </template>
 <script setup lang="ts">
+import KitchenWorkspaceMenuMenusProcessComparison from './Comparison.vue'
+import KitchenWorkspaceMenuMenusProcessReport from './Report.vue'
+import KitchenWorkspaceMenuMenusProcessReview from './Review/Index.vue'
+import KitchenWorkspaceMenuMenusProcessRun from './Run.vue'
 import { reactive } from 'vue'
 import {
   useMenuSourceProcess,

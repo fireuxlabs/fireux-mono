@@ -8,11 +8,7 @@
         :place="place"
       >
         <template #management>
-          <WorkspaceKitchenOperatorPanel
-            v-if="canOperateKitchen"
-            :kitchen="kitchen"
-          />
-          <PlaceDetailAdmin v-else :place="place" />
+          <PlaceDetailAdmin :place="place" />
           <!-- Supplier actions remain disconnected until its Place relationship is ready. -->
         </template>
       </PublicKitchenPlaceDetail>
@@ -47,9 +43,7 @@ import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { usePlaceDetail } from 'fireux-places/runtime/place/composables/usePlaceDetail'
 import PlaceDetailAdmin from 'fireux-places/runtime/place/components/Detail/Admin.vue'
-import WorkspaceKitchenOperatorPanel from 'fireux-kitchens/runtime/kitchen/components/Workspace/OperatorPanel.vue'
 import { useKitchens } from 'fireux-kitchens/runtime/kitchen/composables/useKitchens'
-import { useKitchenAccess } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenAccess'
 
 definePageMeta({
   layout: 'default',
@@ -66,14 +60,6 @@ const kitchen = computed(
   () =>
     kitchens.collection.value.find((item) => item.id === place.value?.id) ||
     null
-)
-const access = useKitchenAccess()
-const canOperateKitchen = computed(() =>
-  Boolean(
-    kitchen.value &&
-      access.outcome.value === 'ready' &&
-      access.ids.value.includes(kitchen.value.id)
-  )
 )
 await kitchens.ready
 </script>

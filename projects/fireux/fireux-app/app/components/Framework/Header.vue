@@ -7,15 +7,7 @@
     <UNavigationMenu :items="desktop" aria-label="Framework" />
     <template #right>
       <UColorModeButton />
-      <UButton
-        v-if="hasWorkspaceEntry"
-        :to="workspaceEntryHref"
-        label="Workspace"
-        color="neutral"
-        variant="outline"
-        icon="i-lucide-panels-top-left"
-      />
-    </template>
+      </template>
     <template #body>
       <UNavigationMenu
         :items="mobile"
@@ -28,8 +20,6 @@
 
 <script setup lang="ts">
 import { useNav } from 'fireux-core/runtime/composables/navigation/useNav'
-import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceEntryCta'
 
 const { desktop, mobile } = useNav('framework')
-const { hasWorkspaceEntry, workspaceEntryHref } = useWorkspaceEntryCta()
 </script>

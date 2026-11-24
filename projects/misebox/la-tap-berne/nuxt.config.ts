@@ -13,15 +13,13 @@ export default defineFireuxApp({
   seo: {
     siteUrl: 'https://tapberne.misebox.app',
   },
-  workspaces: ['kitchen'],
   workspaceConfig: {
     kitchen: {
       canCreate: false,
     },
   },
-  modules: ['fireux-workspace', 'fireux-places', 'fireux-go-qr'],
+  modules: ['fireux-places', 'fireux-go-qr'],
   extends: [
-    'fireux-workspace/layer',
     'fireux-misebox/kitchen-layer',
     'fireux-core/layer',
     'fireux-places/layer',

@@ -32,6 +32,7 @@
   </FireDisclosurePanel>
 </template>
 <script setup lang="ts">
+import KitchenWorkspaceMenuMenusProcessCost from './Cost.vue'
 import type { UnwrapNestedRefs } from 'vue'
 import type { useMenuSourceProcess } from '../../../../../composables/menu/useMenuSourceProcess'
 defineProps<{

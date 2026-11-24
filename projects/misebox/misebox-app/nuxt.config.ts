@@ -12,14 +12,12 @@ export default defineFireuxEcosystem({
   homePath: '/',
   contactEmail: 'misebox@misebox.app',
   role: 'global',
-  workspaces: ['kitchen'],
   domains: ['kitchens', 'jobs', 'chefs', 'ingredients'],
   profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],
   seo: {
     staticPaths: ['/', '/product', '/get-started', '/programme'],
   },
   modules: [
-    'fireux-workspace',
     [
       'fireux-kitchens',
       { ordering: { channels: ['pos', 'kiosk', 'website'] } },
@@ -32,7 +30,6 @@ export default defineFireuxEcosystem({
     ['fireux-jobs', { categories: ['hospitality'] }],
   ],
   extends: [
-    'fireux-workspace/layer',
     'fireux-misebox/kitchen-layer',
     'fireux-core/layer',
     'fireux-places/layer',

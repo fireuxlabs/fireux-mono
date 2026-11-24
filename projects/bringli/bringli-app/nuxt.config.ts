@@ -12,9 +12,7 @@ export default defineFireuxEcosystem({
   role: 'global',
   homePath: '/home',
   seo: { staticPaths: ['/home'], noindexPaths: ['/'] },
-  workspaces: ['supplier'],
   extends: [
-    'fireux-workspace/layer',
     'fireux-core/layer',
     'fireux-bringli/supplier-layer',
     'fireux-places/layer',
@@ -25,5 +23,5 @@ export default defineFireuxEcosystem({
     'supplier.team': { free: 3, pro: 7, business: null },
   },
   domains: ['suppliers'],
-  modules: ['fireux-workspace', 'fireux-places', 'fireux-businesses'],
+  modules: ['fireux-places', 'fireux-businesses'],
 })

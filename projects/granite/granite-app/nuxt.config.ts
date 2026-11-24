@@ -12,10 +12,7 @@ export default defineFireuxEcosystem({
   role: 'global',
   homePath: '/home',
   seo: { staticPaths: ['/home'], noindexPaths: ['/'] },
-  workspaces: ['portfolio'],
-  modules: ['fireux-workspace'],
   extends: [
-    'fireux-workspace/layer',
     'fireux-core/layer',
     'fireux-granite/portfolio-layer',
   ],

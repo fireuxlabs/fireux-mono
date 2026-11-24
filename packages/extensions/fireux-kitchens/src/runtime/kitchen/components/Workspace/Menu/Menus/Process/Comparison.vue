@@ -25,6 +25,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import KitchenWorkspaceMenuMenusProcessSections from './Sections.vue'
 import type { UnwrapNestedRefs } from 'vue'
 import type { useMenuSourceProcess } from '../../../../../composables/menu/useMenuSourceProcess'
 defineProps<{

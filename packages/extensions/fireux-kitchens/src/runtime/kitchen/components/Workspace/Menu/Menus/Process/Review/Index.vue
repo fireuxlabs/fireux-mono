@@ -32,6 +32,8 @@
 </template>
 
 <script setup lang="ts">
+import KitchenWorkspaceMenuMenusProcessMediaReview from '../MediaReview.vue'
+import KitchenWorkspaceMenuMenusProcessReviewApply from './Apply.vue'
 import { computed } from 'vue'
 
 const props = defineProps<{

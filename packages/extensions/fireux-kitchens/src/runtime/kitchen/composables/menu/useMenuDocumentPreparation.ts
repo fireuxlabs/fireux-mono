@@ -2,14 +2,12 @@ import { computed, ref } from 'vue'
 import { useRoute, navigateTo } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useMenuEditorScope } from '../../../menu/composables/useMenuEditorScope'
-import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import type { MenuSourceProcessContext } from './useMenuSourceProcess'
 
 /** Save one existing source as a document Menu; the live readers own the result. */
 export function useMenuDocumentPreparation(context: MenuSourceProcessContext) {
   const { currentUser } = useAuth()
   const route = useRoute()
-  const workspace = useWorkspace('kitchen')
   const name = ref('Main')
   const pending = ref(false)
   const error = ref('')
@@ -19,7 +17,7 @@ export function useMenuDocumentPreparation(context: MenuSourceProcessContext) {
   )
   const menuPath = computed(() =>
     context.menu.value?.format === 'document' && context.menu.value.slug
-      ? `/workspace/kitchen/menu/${encodeURIComponent(context.menu.value.slug)}`
+      ? `/menus/${encodeURIComponent(context.menu.value.slug)}`
       : ''
   )
   const capture = useMenuEditorScope(
@@ -71,7 +69,6 @@ export function useMenuDocumentPreparation(context: MenuSourceProcessContext) {
   }
   function openMenu() {
     if (!context.canWrite.value || !menuPath.value) return
-    workspace.select(context.kitchenId.value)
     return navigateTo(menuPath.value)
   }
   return { name, pending, error, available, menuPath, prepare, openMenu }

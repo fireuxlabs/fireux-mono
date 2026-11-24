@@ -57,13 +57,12 @@
 </template>
 
 <script setup lang="ts">
-import { useFetch, useRequestURL } from 'nuxt/app'
+import { useFetch } from 'nuxt/app'
 import { computed, ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { authRedirectPath } from 'fireux-core/runtime/user/utils/auth-redirect'
-import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceEntryCta'
 
 definePageMeta({ requiresAuth: false })
 
@@ -72,8 +71,6 @@ const endpoint = computed(
   () => `/api/kitchen/member-invitations/${encodeURIComponent(token.value)}`
 )
 const { authState, currentUser } = useAuth()
-const { workspaceEntryHref } = useWorkspaceEntryCta('kitchen')
-const requestUrl = useRequestURL()
 const scope = [token, () => currentUser.value?.uid]
 const capture = useCommandScope(scope)
 const accepting = ref(false)
@@ -110,15 +107,7 @@ const authTo = computed(() =>
     `/kitchen/member-invitation/${encodeURIComponent(token.value)}`
   )
 )
-const continueTo = computed(() => {
-  if (!accepted.value) return undefined
-  const workspace = new URL(workspaceEntryHref.value, requestUrl.origin)
-  const destination = new URL('/workspace/kitchen/create', workspace)
-  destination.searchParams.set('existingRootId', accepted.value.kitchenId)
-  return destination.origin === requestUrl.origin
-    ? destination.pathname + destination.search
-    : destination.href
-})
+const continueTo = computed(() => accepted.value ? '/dashboard' : undefined)
 
 async function acceptInvitation() {
   const user = currentUser.value

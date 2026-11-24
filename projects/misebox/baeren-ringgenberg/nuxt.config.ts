@@ -13,7 +13,6 @@ export default defineFireuxApp({
   seo: {
     siteUrl: 'https://baeren-ringgenberg.web.app',
   },
-  workspaces: ['kitchen'],
   domains: ['jobs'],
   profiles: ['agent', 'professional'],
   workspaceConfig: {
@@ -22,7 +21,6 @@ export default defineFireuxApp({
     },
   },
   modules: [
-    'fireux-workspace',
     [
       'fireux-kitchens',
       { ordering: { channels: ['pos', 'kiosk', 'website'] } },
@@ -39,7 +37,6 @@ export default defineFireuxApp({
     ],
   ],
   extends: [
-    'fireux-workspace/layer',
     'fireux-misebox/kitchen-layer',
     'fireux-core/layer',
     'fireux-places/layer',

@@ -5,7 +5,7 @@
     :links="[
       {
         label: 'Open Workspace',
-        to: workspaceEntryHref,
+        to: '/workspace',
         trailingIcon: 'i-lucide-arrow-up-right',
         color: 'neutral',
         variant: 'soft',
@@ -14,7 +14,5 @@
   />
 </template>
 <script setup lang="ts">
-import { useWorkspaceEntryCta } from 'fireux-workspace/runtime/workspace/composables/useWorkspaceEntryCta'
 
-const { workspaceEntryHref } = useWorkspaceEntryCta('kitchen')
 </script>

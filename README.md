@@ -46,7 +46,7 @@ Extensions add reusable domains, integrations, and App capabilities.
 | `fireux-sproochli`     | Reviewed multilingual copy and translation.                  | [README](packages/extensions/fireux-sproochli/README.md)     |
 | `fireux-suppliers`     | Supplier identity, catalogue, and Workspace operations.      | [README](packages/extensions/fireux-suppliers/README.md)     |
 | `fireux-tasks`         | Cross-domain task tracking for portfolios.                   | [README](packages/extensions/fireux-tasks/README.md)         |
-| `fireux-workspace`     | Optional Workspace layout, navigation, and Entity selection. | [README](packages/extensions/fireux-workspace/README.md)     |
+| `fireux-workspace`     | Shared Workspace greeting and domain authority utilities. | [README](packages/extensions/fireux-workspace/README.md)     |
 
 ## Ecosystems
 

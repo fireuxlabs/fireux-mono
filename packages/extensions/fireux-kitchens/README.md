@@ -48,10 +48,7 @@ be derived, and a slot does not define a Firestore field or collection.
 
 ## Identity & brand
 
-The [Workspace editor](src/runtime/kitchen/components/Workspace/Identity/Index.vue)
-edits the selected Kitchen's root name, slug, status, visibility, description,
-primary image URL and optional Place ID. The
-[trusted update](src/runtime/kitchen/server/identity/update.ts) checks the App
+The [trusted update](src/runtime/kitchen/server/identity/update.ts) checks the App
 membership and Kitchen grant in the write transaction. It checks flat and
 legacy slugs in the shared Kitchen URL namespace. Renaming leaves the slug
 intact. A Place link refers to an existing Place and does not update it.
@@ -60,20 +57,6 @@ Context remains internal. The flat public summary requires an explicit active
 status, public visibility and a slug. Existing directory and detail reads
 enforce visibility. The flat summary is available for the later Public Kitchen
 implementation.
-
-## Kitchen-only Workspace
-
-Install `['fireux-kitchens', { workspaceOnly: true }]` with the
-[Workspace module and layer](../fireux-workspace/README.md#registration), and
-declare `kitchen` in the App's `workspaces`. The
-[Kitchen page](src/runtime/kitchen/pages/workspace.vue) creates a Kitchen and
-shows its name after creation. Core owns sign-in. The existing App membership and
-Kitchen grants continue to control access.
-
-Add `workspaceItems: true` to load the selected Kitchen's Items on the
-[Items route](src/runtime/kitchen/pages/items.vue). The page passes
-`kitchen.items` to the list and detail surfaces. Create, edit, and delete use
-the existing protected Item commands. Delete still checks saved references.
 
 ### Reset boundaries
 
@@ -91,7 +74,6 @@ restricted Firestore Rules changes are local source for emulator verification.
 Kitchen owns its root and its domain access record bound to current App membership.
 Place owns venue identity. AppUser owns App membership; it carries no Kitchen
 index or primary selection. Team is a roster and does not grant access by inference.
-Workspace selection is local App/family state.
 
 [Kitchen access](src/runtime/kitchen/composables/useKitchenAccess.ts) waits for
 Firebase Auth, the current AppUser membership and its Kitchen grants. It resolves
@@ -142,12 +124,7 @@ lists only granted Kitchen roots. Older documents can use their stored
 `identity.name` or a same-ID Place name as a display fallback. A missing or
 failed Place read leaves the Kitchen accessible under its document ID.
 
-The [Items list](src/runtime/pages/workspace/kitchen/menu/items/index.vue) and
-[Item detail](src/runtime/pages/workspace/kitchen/menu/items/%5BitemId%5D.vue)
-share the [Items page](src/runtime/kitchen/components/Workspace/Items/Page.vue).
-It reads the granted Kitchen's `items` collection, handles loading, empty and
-error states, and passes the loaded `kitchen.items` to the list and editor.
-Both modes use the existing protected create, update and delete commands.
+Item writes retain the protected create, update and delete commands. Delete checks stored references.
 
 The [Item model](src/runtime/kitchen/models/item.model.ts) owns identity, food or
 drink kind, and selling terms on the same document. A name-only Item is valid.

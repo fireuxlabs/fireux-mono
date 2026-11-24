@@ -6,22 +6,16 @@ import { useRoute } from '#imports'
 import { computed, unref, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import type { MenuCreateInput } from '../../../utils/records/create-input'
 export type { MenuCreateInput } from '../../../utils/records/create-input'
 export function useMenuCreate(
   options: {
     kitchenId?: string | Ref<string | null | undefined>
-    useSelectedKitchen?: boolean
   } = {}
 ) {
-  const { selectedId } = useWorkspace('kitchen')
   const { currentUser } = useAuth()
   const defaultKitchenId = computed(() =>
-    String(
-      unref(options.kitchenId) ||
-        (options.useSelectedKitchen ? selectedId.value : '')
-    ).trim()
+    String(unref(options.kitchenId) || '').trim()
   )
   const config = useFireUXConfig(),
     route = useRoute(),

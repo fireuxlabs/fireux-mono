@@ -1,4 +1,4 @@
-import { addComponent, type Resolver } from '@nuxt/kit'
+import { type Resolver } from '@nuxt/kit'
 import { registerComponentsDir } from 'fireux-core/config/module/module-helpers'
 
 /**
@@ -9,22 +9,6 @@ export function configureComponents(resolver: Resolver) {
     global: false,
     pathPrefix: true,
     prefix: 'PublicProject',
-  })
-
-  registerComponentsDir(resolver, './runtime/project/components/Workspace', {
-    global: false,
-    pathPrefix: true,
-    prefix: 'WorkspaceProject',
-    priority: 20,
-    ignore: ['Navigation.vue'],
-  })
-
-  addComponent({
-    name: 'WorkspaceProjectNavigation',
-    filePath: resolver.resolve(
-      './runtime/project/components/Workspace/Navigation.vue'
-    ),
-    global: true,
   })
 
   registerComponentsDir(resolver, './runtime/project/components', {

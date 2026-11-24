@@ -8,7 +8,6 @@ import { computed, ref, watch, onScopeDispose } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useKitchenCollection } from './useKitchenCollection'
-import { useWorkspace } from 'fireux-workspace/runtime/workspace/composables/useWorkspace'
 import type {
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPlace,
@@ -206,7 +205,6 @@ export function useKitchenOnboarding(options: {
   const kitchens = useKitchenCollection()
   // Onboarding needs the live collection, not the Workspace index's automatic
   // reconciliation. Selection happens only in the explicit completion branch.
-  const workspace = useWorkspace('kitchen')
   onScopeDispose(() => cancelWait?.())
   watch(
     authoritySources,
@@ -270,7 +268,6 @@ export function useKitchenOnboarding(options: {
           })
         }
         if (!current()) return
-        workspace.select(result.kitchen_id)
       }
       if (!current()) return
       options.onCreated(result)
