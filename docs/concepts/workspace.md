@@ -4,8 +4,9 @@
 package for composing an Entity management experience. Core provides Dashboard
 for account, Profiles, App membership and App settings.
 
-The App owns its route and supplies the domain label. Misebox currently composes
-a shared greeting at `/workspace`. Domain packages own Entity models, readers,
+The App owns its route hierarchy and supplies the domain label. Misebox
+composes the shared shell in a parent route and renders Workspace content
+through a nested route outlet. Domain packages own Entity models, readers,
 capabilities, access policy and trusted commands. Shared team and onboarding
 utilities continue to serve domain commands independently of the page.
 

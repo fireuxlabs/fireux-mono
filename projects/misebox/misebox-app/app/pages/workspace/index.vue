@@ -32,7 +32,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { authRedirectPath } from 'fireux-core/runtime/user/utils/auth-redirect'
 import { useKitchenCollection } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenCollection'
 
-definePageMeta({ layout: 'workspace', requiresAuth: false })
+definePageMeta({ requiresAuth: false })
 
 const { currentUser, hasAuthState, isAuthenticated, lastBindError } = useAuth()
 const { kitchens, outcome } = useKitchenCollection({
