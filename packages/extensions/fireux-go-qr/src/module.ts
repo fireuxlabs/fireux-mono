@@ -1,5 +1,4 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { configureComponents } from './config/module/components-config.ts'
 
 export type FireuxGoQrModuleOptions = {
@@ -44,9 +43,7 @@ export default defineNuxtModule<FireuxGoQrModuleOptions>({
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    configureFireuxModule(resolver, nuxt, {
-      runtime: (nuxt) => setGoQrRuntime(nuxt, options),
-      components: configureComponents,
-    })
+    setGoQrRuntime(nuxt, options)
+    configureComponents(resolver)
   },
 })

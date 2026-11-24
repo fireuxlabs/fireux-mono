@@ -1,9 +1,5 @@
 // FILE: packages/core/fireux-core/src/module.ts
-// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: register the authenticated runtime App membership endpoint.
-// Concurrent edit — 2026-07-20 12:59 CEST — Account consent slice: register trusted UserAccount provisioning.
 // User handle updates use the trusted canonical User endpoint.
-// Concurrent edit — 2026-07-20 16:25 CEST — Repo Efficiency Pass 1 of 6: register narrow public status and keep authenticated dev surfaces client-only.
-// Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: register exact public identity and App-admin people endpoints.
 import { defaultMaxListeners, setMaxListeners } from 'node:events'
 import { addServerHandler, createResolver, defineNuxtModule } from '@nuxt/kit'
 import {
@@ -12,7 +8,6 @@ import {
   mergeSitemapPaths,
   type FireuxSeoConfig,
 } from './config/app/seo-config.ts'
-import { configureFireuxModule } from './config/module/module-wiring.ts'
 import { registerComposablesDirs } from './config/module/module-helpers.ts'
 import { configureComponents } from './config/module/components-config.ts'
 import { configurePageTransitions } from './config/module/pages-config.ts'
@@ -171,28 +166,25 @@ export default defineNuxtModule({
     registerReservedRootRouteKeys(nuxt, [])
     configurePageTransitions(nuxt)
 
-    configureFireuxModule(resolver, nuxt, {
-      composables: (resolver) =>
-        registerComposablesDirs(resolver, [
-          './runtime/composables',
-          './runtime/app/composables',
-          './runtime/app/composables/identity',
-          './runtime/app/composables/featured',
-          './runtime/app/composables/membership',
-          './runtime/app/composables/initialization',
-          './runtime/app/composables/brand',
-          './runtime/app/composables/config',
-          './runtime/ecosystem/composables',
-          './runtime/user/composables',
-          './runtime/user/composables/account',
-          './runtime/user/composables/directory',
-          './runtime/user/composables/identity',
-          './runtime/user/composables/notifications',
-          './runtime/user/composables/profile',
-          './runtime/user/composables/session',
-        ]),
-      components: configureComponents,
-      assets: configureAssets,
-    })
+    registerComposablesDirs(resolver, [
+      './runtime/composables',
+      './runtime/app/composables',
+      './runtime/app/composables/identity',
+      './runtime/app/composables/featured',
+      './runtime/app/composables/membership',
+      './runtime/app/composables/initialization',
+      './runtime/app/composables/brand',
+      './runtime/app/composables/config',
+      './runtime/ecosystem/composables',
+      './runtime/user/composables',
+      './runtime/user/composables/account',
+      './runtime/user/composables/directory',
+      './runtime/user/composables/identity',
+      './runtime/user/composables/notifications',
+      './runtime/user/composables/profile',
+      './runtime/user/composables/session',
+    ])
+    configureComponents(resolver)
+    configureAssets(resolver, nuxt)
   },
 })

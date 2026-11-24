@@ -1,5 +1,4 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerComposablesDir } from 'fireux-core/config/module/module-helpers'
 import { configureComponents } from './config/module/components-config.ts'
 
@@ -37,10 +36,8 @@ export default defineNuxtModule<FireuxSproochliModuleOptions>({
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    configureFireuxModule(resolver, nuxt, {
-      runtime: (nuxt) => setSproochliRuntime(nuxt, options),
-      composables: registerComposablesDir,
-      components: configureComponents,
-    })
+    setSproochliRuntime(nuxt, options)
+    registerComposablesDir(resolver)
+    configureComponents(resolver)
   },
 })

@@ -1,5 +1,4 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerComposablesDirs } from 'fireux-core/config/module/module-helpers'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 import type {
@@ -56,18 +55,14 @@ export default defineNuxtModule({
       }
     )
 
-    configureFireuxModule(resolver, nuxt, {
-      runtime: (nuxt) =>
-        setProductsRuntime(nuxt, {
-          enabled: options.enabled ?? true,
-          ...(Array.isArray(options.productKinds)
-            ? { productKinds: options.productKinds }
-            : {}),
-        }),
-      composables: (resolver) =>
-        registerComposablesDirs(resolver, ['./runtime/product/composables']),
-      components: configureComponents,
-      pages: requireNativeRuntimeLayer,
+    setProductsRuntime(nuxt, {
+      enabled: options.enabled ?? true,
+      ...(Array.isArray(options.productKinds)
+        ? { productKinds: options.productKinds }
+        : {}),
     })
+    registerComposablesDirs(resolver, ['./runtime/product/composables'])
+    configureComponents(resolver)
+    requireNativeRuntimeLayer(resolver, nuxt)
   },
 })

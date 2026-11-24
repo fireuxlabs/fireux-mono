@@ -47,15 +47,12 @@ for (const [lane, name, workspace] of [
           createResolver: () => ({ resolve: (path) => resolve(source, path) }),
           defineNuxtModule: (definition) => definition,
           ecosystemConfig: {},
-          configureComponents: () => {},
+          configureComponents: () => {
+            calls.components = true
+          },
           configureModulePages: () => {},
           configureFireuxEcosystemModule: (_resolver, _nuxt, options) => {
             calls.components = Boolean(options.configureComponents)
-          },
-          configureFireuxModule: (resolver, _nuxt, steps) => {
-            calls.components = Boolean(steps.components)
-            steps.composables?.(resolver)
-            steps.server?.(resolver)
           },
           registerComposablesDirs: (_resolver, directories) =>
             calls.composables.push(...directories),

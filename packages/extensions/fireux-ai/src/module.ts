@@ -1,5 +1,4 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerComposablesDir } from 'fireux-core/config/module/module-helpers'
 import { requireNativeRuntimeLayer } from 'fireux-core/config/module/runtime-layer'
 import { configureRuntime } from './config/module/runtime-config.ts'
@@ -39,11 +38,9 @@ export default defineNuxtModule<ModuleOptions>({
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    configureFireuxModule(resolver, nuxt, {
-      runtime: (nuxt) => configureRuntime(nuxt, options),
-      composables: registerComposablesDir,
-      components: configureComponents,
-      pages: requireNativeRuntimeLayer,
-    })
+    configureRuntime(nuxt, options)
+    registerComposablesDir(resolver)
+    configureComponents(resolver)
+    requireNativeRuntimeLayer(resolver, nuxt)
   },
 })

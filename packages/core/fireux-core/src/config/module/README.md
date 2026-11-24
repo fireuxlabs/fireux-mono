@@ -3,8 +3,9 @@
 Core's [`src/module.ts`](../../module.ts) is its Nuxt module entrypoint. This
 directory holds registration and wiring used by Core and other FireUX packages.
 
-- [`module-wiring.ts`](module-wiring.ts) runs module setup steps.
-  [`module-helpers.ts`](module-helpers.ts) provides explicit registration for
+Call Nuxt Kit directly where native layer discovery does not cover a registration.
+
+- [`module-helpers.ts`](module-helpers.ts) provides explicit registration for
   components, composables and server handlers.
 - [`components-config.ts`](components-config.ts),
   [`assets-config.ts`](assets-config.ts) and [`pages-config.ts`](pages-config.ts)

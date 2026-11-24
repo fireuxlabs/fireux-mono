@@ -1,5 +1,4 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerComposablesDirs } from 'fireux-core/config/module/module-helpers'
 import type {
   FireuxSeoExtendContext,
@@ -58,26 +57,22 @@ export default defineNuxtModule({
       }
     )
 
-    configureFireuxModule(resolver, nuxt, {
-      runtime: (nuxt) =>
-        setBlogsRuntime(nuxt, {
-          enabled: options.enabled ?? true,
-          ...(options.languages ? { languages: options.languages } : {}),
-          ...(options.defaultLanguage
-            ? { defaultLanguage: options.defaultLanguage }
-            : {}),
-          ...(options.selectionCookie
-            ? { selectionCookie: options.selectionCookie }
-            : {}),
-          ...(options.queryParameter
-            ? { queryParameter: options.queryParameter }
-            : {}),
-        }),
-      composables: (resolver) =>
-        registerComposablesDirs(resolver, ['./runtime/blog/composables']),
-      components: configureComponents,
-      pages: requireNativeRuntimeLayer,
-      server: configureServer,
+    setBlogsRuntime(nuxt, {
+      enabled: options.enabled ?? true,
+      ...(options.languages ? { languages: options.languages } : {}),
+      ...(options.defaultLanguage
+        ? { defaultLanguage: options.defaultLanguage }
+        : {}),
+      ...(options.selectionCookie
+        ? { selectionCookie: options.selectionCookie }
+        : {}),
+      ...(options.queryParameter
+        ? { queryParameter: options.queryParameter }
+        : {}),
     })
+    registerComposablesDirs(resolver, ['./runtime/blog/composables'])
+    configureComponents(resolver)
+    requireNativeRuntimeLayer(resolver, nuxt)
+    configureServer(resolver)
   },
 })

@@ -1,5 +1,4 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import {
   registerComposablesDirs,
   registerServerHandlers,
@@ -19,31 +18,25 @@ const module = defineNuxtModule({
       nuxt.options.runtimeConfig.public?.fireux?.workspaces?.includes(
         'project'
       ) === true
-    configureFireuxModule(resolver, nuxt, {
-      pages: configureModulePages,
-      ...(selected
-        ? {
-            components: configureComponents,
-            composables: (resolver) =>
-              registerComposablesDirs(resolver, [
-                './runtime/project/composables',
-              ]),
-            server: (resolver) =>
-              registerServerHandlers(resolver, [
-                {
-                  route: '/api/workspace/project/tests/intent',
-                  method: 'post',
-                  handler: './runtime/project/server/http/test-intent.post',
-                },
-                {
-                  route: '/api/workspace/project/intent',
-                  method: 'post',
-                  handler: './runtime/project/server/http/intent.post',
-                },
-              ]),
-          }
-        : {}),
-    })
+    if (selected) {
+      registerComposablesDirs(resolver, ['./runtime/project/composables'])
+      configureComponents(resolver)
+    }
+    configureModulePages(resolver, nuxt)
+    if (selected) {
+      registerServerHandlers(resolver, [
+        {
+          route: '/api/workspace/project/tests/intent',
+          method: 'post',
+          handler: './runtime/project/server/http/test-intent.post',
+        },
+        {
+          route: '/api/workspace/project/intent',
+          method: 'post',
+          handler: './runtime/project/server/http/intent.post',
+        },
+      ])
+    }
   },
 })
 

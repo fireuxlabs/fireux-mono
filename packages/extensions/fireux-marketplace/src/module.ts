@@ -1,5 +1,4 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerComposablesDirs } from 'fireux-core/config/module/module-helpers'
 import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
 import { configureServer } from './config/module/server-config'
@@ -23,22 +22,18 @@ export default defineNuxtModule<FireuxMarketplaceModuleOptions>({
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    configureFireuxModule(resolver, nuxt, {
-      runtime: (nuxt) =>
-        configureRuntimeDefaults(
-          nuxt,
-          'marketplace',
-          {
-            enabled: options.enabled ?? true,
-            currencyCode: options.currencyCode || 'CHF',
-          },
-          { merge: true }
-        ),
-      composables: (resolver) =>
-        registerComposablesDirs(resolver, [
-          './runtime/marketplace-store/composables',
-        ]),
-      server: configureServer,
-    })
+    configureRuntimeDefaults(
+      nuxt,
+      'marketplace',
+      {
+        enabled: options.enabled ?? true,
+        currencyCode: options.currencyCode || 'CHF',
+      },
+      { merge: true }
+    )
+    registerComposablesDirs(resolver, [
+      './runtime/marketplace-store/composables',
+    ])
+    configureServer(resolver)
   },
 })

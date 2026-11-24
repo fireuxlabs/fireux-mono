@@ -1,13 +1,8 @@
-// Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: publish category and workplace configuration.
-// Concurrent edit — 2026-07-21 12:53 CEST — Job Directory: retire visibility-only raw-root sitemap discovery.
-// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: reserve App configuration for category deltas only.
-// Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: publish explicit all-versus-allowlist runtime authority.
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import {
   defaultFireuxJobsConfig,
   type FireuxJobCategorySelection,
 } from './config/jobs.config.ts'
-import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerComposablesDirs } from 'fireux-core/config/module/module-helpers'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
@@ -96,28 +91,24 @@ export default defineNuxtModule<ModuleOptions>({
       categoryScope === 'allowlist' ? options?.categories : [],
       defaultFireuxJobsConfig.categories
     )
-    configureFireuxModule(resolver, nuxt, {
-      runtime: (nuxt) =>
-        configureRuntimeDefaults(
-          nuxt,
-          'jobs',
-          {
-            enabled: true,
-            categoryScope,
-            categories,
-          },
-          { merge: true }
-        ),
-      composables: (resolver) =>
-        registerComposablesDirs(resolver, [
-          './runtime/composables',
-          './runtime/job/composables',
-          './runtime/user/composables',
-        ]),
-      components: configureComponents,
-      pages: (resolver, nuxt) => configurePages(resolver, nuxt, capabilities),
-      assets: configureAssets,
-      server: configureServer,
-    })
+    configureRuntimeDefaults(
+      nuxt,
+      'jobs',
+      {
+        enabled: true,
+        categoryScope,
+        categories,
+      },
+      { merge: true }
+    )
+    registerComposablesDirs(resolver, [
+      './runtime/composables',
+      './runtime/job/composables',
+      './runtime/user/composables',
+    ])
+    configureComponents(resolver)
+    configurePages(resolver, nuxt, capabilities)
+    configureAssets(resolver, nuxt)
+    configureServer(resolver)
   },
 })

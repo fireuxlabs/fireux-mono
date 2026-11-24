@@ -1,5 +1,4 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerComposablesDirs } from 'fireux-core/config/module/module-helpers'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
@@ -32,20 +31,16 @@ export default defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
     registerReservedRootRouteKeys(nuxt, ['compliance'])
 
-    configureFireuxModule(resolver, nuxt, {
-      runtime: (nuxt) =>
-        configureRuntimeDefaults(
-          nuxt,
-          'compliance',
-          {
-            enabled: options.enabled !== false,
-            dueSoonDays: 30,
-          },
-          { merge: true }
-        ),
-      composables: (resolver) =>
-        registerComposablesDirs(resolver, ['./runtime/portfolio/composables']),
-      pages: requireNativeRuntimeLayer,
-    })
+    configureRuntimeDefaults(
+      nuxt,
+      'compliance',
+      {
+        enabled: options.enabled !== false,
+        dueSoonDays: 30,
+      },
+      { merge: true }
+    )
+    registerComposablesDirs(resolver, ['./runtime/portfolio/composables'])
+    requireNativeRuntimeLayer(resolver, nuxt)
   },
 })

@@ -1,6 +1,5 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configurePlaces } from './config/module/places-config.ts'
-import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerComposablesDirs } from 'fireux-core/config/module/module-helpers'
 import type {
   FireuxSeoExtendContext,
@@ -62,19 +61,15 @@ export default defineNuxtModule<ModuleOptions>({
       }
     )
 
-    configureFireuxModule(resolver, nuxt, {
-      runtime: (nuxt) =>
-        configurePlaces(nuxt, {
-          debug: Boolean(options.debug),
-          types: options.types || [],
-          googleAutocompleteTypeFilters:
-            options.googleAutocompleteTypeFilters || {},
-        }),
-      composables: (resolver) =>
-        registerComposablesDirs(resolver, ['./runtime/place/composables']),
-      components: configureComponents,
-      pages: requireNativeRuntimeLayer,
-      server: configureServer,
+    configurePlaces(nuxt, {
+      debug: Boolean(options.debug),
+      types: options.types || [],
+      googleAutocompleteTypeFilters:
+        options.googleAutocompleteTypeFilters || {},
     })
+    registerComposablesDirs(resolver, ['./runtime/place/composables'])
+    configureComponents(resolver)
+    requireNativeRuntimeLayer(resolver, nuxt)
+    configureServer(resolver)
   },
 })
