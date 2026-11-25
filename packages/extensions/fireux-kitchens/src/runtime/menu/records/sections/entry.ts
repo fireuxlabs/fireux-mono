@@ -1,4 +1,4 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type MenuEntryStatus = 'active' | 'archived'
@@ -6,7 +6,7 @@ export type MenuEntryReference =
   | { item_id: string; promotion_id?: never }
   | { promotion_id: string; item_id?: never }
 
-export type MenuEntry = FireuxStamped &
+export type MenuEntry = FireuxStamps &
   MenuEntryReference & {
     id: string
     kitchen_id: string
@@ -33,12 +33,12 @@ export const MenuEntryDefaults: Extract<MenuEntry, { item_id: string }> = {
   sort_order: 0,
   created: {
     at: {} as FirebaseTimestamp,
-    by: '' as FireuxStamped['created']['by'],
-    app_id: '' as FireuxStamped['created']['app_id'],
+    by: '' as FireuxStamps['created']['by'],
+    app_id: '' as FireuxStamps['created']['app_id'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: '' as FireuxStamped['updated']['by'],
+    by: '' as FireuxStamps['updated']['by'],
   },
 }
 export type MenuEntryCreateInput = Omit<MenuEntry, 'created' | 'updated'>

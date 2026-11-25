@@ -1,7 +1,4 @@
-import type {
-  FireuxCreatedStamp,
-  FireuxUpdatedStamp,
-} from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 
 export type ItemKind = 'food' | 'drink'
 
@@ -31,8 +28,8 @@ export type Item = {
   /** One photographic image URL, delivered through the shared photo contract. */
   image?: string
   /** Older records may lack provenance; creation commands still write both stamps. */
-  created?: FireuxCreatedStamp
-  updated?: FireuxUpdatedStamp
+  created?: FireuxStamps['created']
+  updated?: FireuxStamps['updated']
 }
 
 export const ItemStorage = {

@@ -1,5 +1,5 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { KitchenTableRoundStatus } from './table-round.ts'
 
 export type KitchenTableTabStatus =
@@ -10,7 +10,7 @@ export type KitchenTableTabStatus =
   | 'closed'
   | 'cancelled'
 
-export interface KitchenTableTab extends FireuxStamped {
+export interface KitchenTableTab extends FireuxStamps {
   id: string
   kitchen_id: string
   table_id: string

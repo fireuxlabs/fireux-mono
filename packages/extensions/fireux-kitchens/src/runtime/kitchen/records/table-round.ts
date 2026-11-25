@@ -1,5 +1,5 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 
 export type KitchenTableRoundStatus =
   | 'staging'
@@ -16,7 +16,7 @@ export interface KitchenTableRoundLine {
   unit_price_chf: number
   subtotal_chf: number
 }
-export interface KitchenTableRound extends FireuxStamped {
+export interface KitchenTableRound extends FireuxStamps {
   id: string
   kitchen_id: string
   table_tab_id: string

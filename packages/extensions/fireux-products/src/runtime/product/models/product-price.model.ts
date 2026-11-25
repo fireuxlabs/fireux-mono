@@ -1,11 +1,11 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 
 export type PriceInterval = 'day' | 'week' | 'month' | 'year'
 export type PriceType = 'one_time' | 'recurring'
 export type BillingScheme = 'per_unit' | 'tiered'
 export type ProductPriceProvider = 'stripe' | 'manual' | string
 
-export interface ProductPrice extends FireuxStamped {
+export interface ProductPrice extends FireuxStamps {
   id: string
   product_id: string
   label: string

@@ -1,7 +1,4 @@
-import type {
-  FireuxCreatedStamp,
-  FireuxUpdatedStamp,
-} from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 
 export type RecipeInput = {
   kind: 'ingredient' | 'preparation'
@@ -21,6 +18,6 @@ export type Recipe = {
   inputs: RecipeInput[]
   method: string[]
   source?: { title: string; url: string }
-  created?: FireuxCreatedStamp
-  updated?: FireuxUpdatedStamp
+  created?: FireuxStamps['created']
+  updated?: FireuxStamps['updated']
 }

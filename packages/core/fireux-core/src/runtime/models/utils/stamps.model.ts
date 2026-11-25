@@ -1,19 +1,13 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
 
-export interface FireuxCreatedStamp {
-  at: FirebaseTimestamp
-  by?: string
-  app_id?: string
+export type FireuxStamps = {
+  created: {
+    at: FirebaseTimestamp
+    by?: string
+    app_id?: string
+  }
+  updated: {
+    at: FirebaseTimestamp
+    by?: string
+  }
 }
-
-export interface FireuxUpdatedStamp {
-  at: FirebaseTimestamp
-  by?: string
-}
-
-export interface FireuxStamps {
-  created: FireuxCreatedStamp
-  updated: FireuxUpdatedStamp
-}
-
-export type FireuxStamped = FireuxStamps

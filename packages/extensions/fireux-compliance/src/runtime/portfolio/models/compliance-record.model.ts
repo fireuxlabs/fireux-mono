@@ -1,4 +1,4 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -36,12 +36,12 @@ export const ComplianceRecordModel = {
   notes: '' as string,
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
+    by: undefined as FireuxStamps['created']['by'],
+    app_id: undefined as FireuxStamps['created']['app_id'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
+    by: undefined as FireuxStamps['updated']['by'],
   },
 } as const
 

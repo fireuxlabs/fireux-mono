@@ -1,8 +1,8 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { FireuxStamped } from '../../models/utils/stamps.model.ts'
+import type { FireuxStamps } from '../../models/utils/stamps.model.ts'
 
 /** Owner-only account support stored below the canonical User. */
-export interface UserAccount extends FireuxStamped {
+export interface UserAccount extends FireuxStamps {
   email: string
   terms: {
     version: string

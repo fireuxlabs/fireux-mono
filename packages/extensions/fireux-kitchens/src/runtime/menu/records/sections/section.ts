@@ -1,8 +1,8 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type MenuSectionStatus = 'active' | 'archived'
-export type MenuSection = FireuxStamped & {
+export type MenuSection = FireuxStamps & {
   id: string
   kitchen_id: string
   menu_id: string
@@ -31,12 +31,12 @@ export const MenuSectionDefaults: MenuSection = {
   sort_order: 0,
   created: {
     at: {} as FirebaseTimestamp,
-    by: '' as FireuxStamped['created']['by'],
-    app_id: '' as FireuxStamped['created']['app_id'],
+    by: '' as FireuxStamps['created']['by'],
+    app_id: '' as FireuxStamps['created']['app_id'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: '' as FireuxStamped['updated']['by'],
+    by: '' as FireuxStamps['updated']['by'],
   },
 }
 export type MenuSectionCreateInput = Omit<MenuSection, 'created' | 'updated'>

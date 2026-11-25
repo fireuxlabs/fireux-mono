@@ -1,10 +1,10 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { Agent } from '../../../models/profiles/Agent/Agent.model'
 
 export type * from '../../../models/profiles/Agent/Agent.model'
 export const AgentStorage = { shape: 'user-owned', path: 'users/{userId}/profiles/agent', collection: 'profiles', document: 'agent', idParam: 'userId' } as const
-export const AgentDefaults: Agent = { id: '', kind: 'agent', title: '', summary: '', agent_bio: '', agent_image: '', agent_placement_types: [], agent_coverage_areas: [], agent_contact_email: '', agent_contact_phone: '', agent_website_url: '', subtitle: '', tagline: '', tags: [], created: { at: {} as FirebaseTimestamp, by: undefined as FireuxStamped['created']['by'] }, updated: { at: {} as FirebaseTimestamp, by: undefined as FireuxStamped['updated']['by'] } }
+export const AgentDefaults: Agent = { id: '', kind: 'agent', title: '', summary: '', agent_bio: '', agent_image: '', agent_placement_types: [], agent_coverage_areas: [], agent_contact_email: '', agent_contact_phone: '', agent_website_url: '', subtitle: '', tagline: '', tags: [], created: { at: {} as FirebaseTimestamp, by: undefined as FireuxStamps['created']['by'] }, updated: { at: {} as FirebaseTimestamp, by: undefined as FireuxStamps['updated']['by'] } }
 export type AgentProfile = Omit<Agent, 'created' | 'updated'>
 export type AgentProfilePayload = Omit<AgentProfile, 'id'>
 export type AgentDirectoryProfilePayload = Pick<AgentProfilePayload, 'title' | 'summary' | 'agent_bio' | 'agent_image' | 'agent_placement_types' | 'tags' | 'agent_contact_email' | 'agent_contact_phone' | 'agent_website_url'>

@@ -1,4 +1,4 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 
@@ -73,8 +73,8 @@ export type Reservation = {
     state: ReservationSyncState
     channel_updated_at: FirebaseTimestamp | null
   }
-  created: FireuxStamped['created']
-  updated: FireuxStamped['updated']
+  created: FireuxStamps['created']
+  updated: FireuxStamps['updated']
 }
 
 export type ReservationCreateInput = Omit<

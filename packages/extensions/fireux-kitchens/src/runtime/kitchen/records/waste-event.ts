@@ -1,4 +1,4 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type KitchenWasteReason =
@@ -17,7 +17,7 @@ export type KitchenWasteSource =
   | 'customer_return'
   | 'other'
 
-export type KitchenWasteEvent = FireuxStamped & {
+export type KitchenWasteEvent = FireuxStamps & {
   id: string
   kitchen_id: string
   item_name: string

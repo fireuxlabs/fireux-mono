@@ -1,4 +1,4 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 
 export type MenuSourceUploadStatus =
   | 'uploaded'
@@ -17,7 +17,7 @@ export type MenuSourceUploadFile = {
   sort_order: number
 }
 
-export type MenuSourceUpload = FireuxStamped & {
+export type MenuSourceUpload = FireuxStamps & {
   id: string
   kitchen_id: string
   app_id: string

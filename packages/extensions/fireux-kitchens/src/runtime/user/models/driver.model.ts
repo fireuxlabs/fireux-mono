@@ -1,4 +1,4 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { ProfileAppStateBase } from 'fireux-core/runtime/user/models/profile.model'
 
 export type DriverKitchenLink = {
@@ -10,7 +10,7 @@ export type DriverKitchenLink = {
   active: boolean
 }
 export type DriverCoverage = { radius_m: number }
-export type Driver = FireuxStamped & {
+export type Driver = FireuxStamps & {
   id: string
   kind: 'driver'
   title: string

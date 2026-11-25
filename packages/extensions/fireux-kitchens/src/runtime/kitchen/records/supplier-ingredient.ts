@@ -1,6 +1,6 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 
-export interface KitchenSupplierIngredient extends FireuxStamped {
+export interface KitchenSupplierIngredient extends FireuxStamps {
   id: string
   kitchen_id: string
   supplier_id: string

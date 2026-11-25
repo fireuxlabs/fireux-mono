@@ -1,7 +1,7 @@
-import type { FireuxStamped } from '../../models/utils/stamps.model.ts'
+import type { FireuxStamps } from '../../models/utils/stamps.model.ts'
 
 /** Private ecosystem-scoped AI memory for one authenticated User. */
-export interface UserContext extends FireuxStamped {
+export interface UserContext extends FireuxStamps {
   id: string
   context: string
 }

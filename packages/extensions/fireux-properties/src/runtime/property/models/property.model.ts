@@ -1,4 +1,4 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/types/entity-management'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
@@ -161,12 +161,12 @@ export const PropertyModel = {
   identity: PropertyIdentityModel,
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
+    by: undefined as FireuxStamps['created']['by'],
+    app_id: undefined as FireuxStamps['created']['app_id'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
+    by: undefined as FireuxStamps['updated']['by'],
   },
 } as const
 
@@ -181,7 +181,7 @@ export type PropertyIdentity = Omit<
 
 export type PropertyManual = WidenLiteral<typeof PropertyManualModel>
 
-export type PropertyManualRecord = PropertyManual & FireuxStamped
+export type PropertyManualRecord = PropertyManual & FireuxStamps
 
 export type Property = Omit<
   WidenLiteral<typeof PropertyModel>,

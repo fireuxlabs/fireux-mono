@@ -1,5 +1,5 @@
 import { ProfileAppStateStamps } from 'fireux-core/runtime/user/models/profile.model'
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { Driver, DriverAppState } from '../models/driver.model'
 
@@ -29,11 +29,11 @@ export const DriverDefaults: Driver = {
   coverage: { radius_m: 1500 },
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
+    by: undefined as FireuxStamps['created']['by'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
+    by: undefined as FireuxStamps['updated']['by'],
   },
 }
 export const DriverAppStateDefaults: DriverAppState = {

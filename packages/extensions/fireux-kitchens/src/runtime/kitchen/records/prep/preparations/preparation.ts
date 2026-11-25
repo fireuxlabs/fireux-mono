@@ -1,7 +1,4 @@
-import type {
-  FireuxCreatedStamp,
-  FireuxUpdatedStamp,
-} from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 
 /** Kitchen-owned reusable output record, whether a component or a finished dish. */
 export type Preparation = {
@@ -9,6 +6,6 @@ export type Preparation = {
   name: string
   description?: string
   image?: string
-  created?: FireuxCreatedStamp
-  updated?: FireuxUpdatedStamp
+  created?: FireuxStamps['created']
+  updated?: FireuxStamps['updated']
 }

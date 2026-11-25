@@ -1,5 +1,5 @@
 import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.model'
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 
 export type MenuThemeMode = 'kitchen' | 'default'
 
@@ -12,7 +12,7 @@ export type MenuDocument = {
   storage_path: string
 }
 
-export type Menu = FireuxStamped & {
+export type Menu = FireuxStamps & {
   id: string
   slug: string
   name: string

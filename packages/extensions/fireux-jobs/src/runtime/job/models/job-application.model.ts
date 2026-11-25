@@ -1,4 +1,4 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export const JobApplicationStorage = {
@@ -33,12 +33,12 @@ export type JobApplication = {
   offer_job_updated_at: FirebaseTimestamp | null
   direct_employment_terms_version: string | null
   direct_employment_terms_accepted_at: FirebaseTimestamp | null
-  created: FireuxStamped['created'] & {
+  created: FireuxStamps['created'] & {
     at: FirebaseTimestamp
     by: string
     app_id: string
   }
-  updated: FireuxStamped['updated'] & {
+  updated: FireuxStamps['updated'] & {
     at: FirebaseTimestamp
     by: string
   }

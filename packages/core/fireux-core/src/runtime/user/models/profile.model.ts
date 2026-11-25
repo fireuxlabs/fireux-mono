@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: support atomic domain-owned root profile seeds.
 // Concurrent edit — 2026-07-20 17:41 CEST — Repo Efficiency Pass 2 of 6: route profile creation through trusted domain provisioners.
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { FireuxStamped } from '../../models/utils/stamps.model'
+import type { FireuxStamps } from '../../models/utils/stamps.model'
 
 /**
  * Runtime models canon: docs/ai/gpt-context.md
@@ -19,12 +19,12 @@ import type { FireuxStamped } from '../../models/utils/stamps.model'
 export const ProfileAppStateStamps = {
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
+    by: undefined as FireuxStamps['created']['by'],
+    app_id: undefined as FireuxStamps['created']['app_id'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
+    by: undefined as FireuxStamps['updated']['by'],
   },
 } as const
 
@@ -37,7 +37,7 @@ export const ProfileAppStateStamps = {
  * - Only profile families that actually share these fields should use this
  *   base; domain models own their exact persisted creation shape.
  */
-export type ProfileBase = FireuxStamped & {
+export type ProfileBase = FireuxStamps & {
   id: string
   kind: string
 
@@ -59,7 +59,7 @@ export type ProfileRecord = {
  * Delta-only by design.
  * Keep it minimal until you truly need overlay fields.
  */
-export type ProfileAppStateBase = FireuxStamped &
+export type ProfileAppStateBase = FireuxStamps &
   ProfileRecord & {
     profile_kind: string
     app_id: string

@@ -1,5 +1,5 @@
 import type { FireuxAppSubscriptionCapacity } from 'fireux-core/config/app/types'
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { Menu } from './menu.model'
 
@@ -29,12 +29,12 @@ export const MenuDefaults: Menu = {
   sort_order: 0,
   created: {
     at: {} as FirebaseTimestamp,
-    by: '' as FireuxStamped['created']['by'],
-    app_id: '' as FireuxStamped['created']['app_id'],
+    by: '' as FireuxStamps['created']['by'],
+    app_id: '' as FireuxStamps['created']['app_id'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: '' as FireuxStamped['updated']['by'],
+    by: '' as FireuxStamps['updated']['by'],
   },
 }
 

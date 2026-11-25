@@ -3,7 +3,7 @@
 // Concurrent edit — 2026-07-21 15:26 CEST — Misebox Nitro startup fix: resolve server-loaded core model and Firebase type imports explicitly.
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: make Agent authority, Place identity, scheduling, and compensation explicit.
 
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 
@@ -78,12 +78,12 @@ export type Job = {
   description: string
   status: JobStatus
 
-  created: FireuxStamped['created'] & {
+  created: FireuxStamps['created'] & {
     at: FirebaseTimestamp
     by: string
     app_id: string
   }
-  updated: FireuxStamped['updated'] & {
+  updated: FireuxStamps['updated'] & {
     at: FirebaseTimestamp
     by: string
   }

@@ -1,4 +1,4 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/types/entity-management'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
@@ -70,13 +70,13 @@ export type MarketplaceLocality = {
   postal_code: string
 }
 
-type MarketplaceAudit = FireuxStamped & {
-  created: FireuxStamped['created'] & {
+type MarketplaceAudit = FireuxStamps & {
+  created: FireuxStamps['created'] & {
     at: FirebaseTimestamp
     by: string
     app_id: string
   }
-  updated: FireuxStamped['updated'] & {
+  updated: FireuxStamps['updated'] & {
     at: FirebaseTimestamp
     by: string
   }

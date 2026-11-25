@@ -1,10 +1,10 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxStamps } from 'fireux-core/runtime/models/utils/stamps.model'
 
 export interface ProductFeature { title: string; description?: string; available: boolean }
 export interface ProductImage { url: string; alt?: string; order?: number }
 export type ProductVisibility = 'app' | 'public'
 export type ProductType = string
-export interface Product extends FireuxStamped {
+export interface Product extends FireuxStamps {
   id: string
   source_app_id: string
   visibility: ProductVisibility
