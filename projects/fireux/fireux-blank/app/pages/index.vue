@@ -1,6 +1,6 @@
 <template>
   <UContainer>
-    <UPageHeader title="Hello FireUX World" />
+    <UPageHeader title="Hello FireUX World" description="App identity and discovery" />
 
     <UAlert v-if="read.status === 'setup'" title="Configure the local Firestore emulator" />
 
@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { collection, doc, getDoc, getDocs, type Firestore } from 'firebase/firestore'
-import { readAppSummary, type AppSummary } from '../app-summary'
+import { readAppDetail, readAppSummary, type AppDetailDisplay, type AppSummary } from '../app-summary'
 
 const { appId } = useAppConfig().fireux
 const { $firestore } = useNuxtApp()
@@ -22,7 +22,7 @@ const { projectId, databaseId, emulatorHost, emulatorPort } = useRuntimeConfig()
 const read = ref<
   | { status: 'setup' }
   | { status: 'loading' | 'missing' | 'error' }
-  | { status: 'ready'; app: AppSummary }
+  | { status: 'ready'; app: AppDetailDisplay }
 >({ status: 'loading' })
 
 const appsRead = ref<
@@ -44,7 +44,7 @@ async function readApps(firestore: Firestore) {
 
     const apps: AppSummary[] = []
     for (const document of snapshot.docs) {
-      const app = readAppSummary(document.id, document.get('name'))
+      const app = readAppSummary(document.id, document.data())
       if (!app) {
         appsRead.value = { status: 'error' }
         return
@@ -78,7 +78,7 @@ onMounted(async () => {
       return
     }
 
-    const app = readAppSummary(snapshot.id, snapshot.get('name'))
+    const app = readAppDetail(snapshot.id, snapshot.data())
     read.value = app
       ? { status: 'ready', app }
       : { status: 'error' }
