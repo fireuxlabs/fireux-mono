@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { collection, doc, getDoc, getDocs, type Firestore } from 'firebase/firestore'
-import type { App } from 'fireux-core/app'
+import { readAppSummary, type AppSummary } from '../app-summary'
 
 const { appId } = useAppConfig().fireux
 const { $firestore } = useNuxtApp()
@@ -40,12 +40,12 @@ const { projectId, databaseId, emulatorHost, emulatorPort } = useRuntimeConfig()
 
 const read = ref<
   | { status: 'loading' | 'setup' | 'missing' | 'error' }
-  | { status: 'ready'; app: Pick<App, 'id' | 'name'> }
+  | { status: 'ready'; app: AppSummary }
 >({ status: 'loading' })
 
 const appsRead = ref<
   | { status: 'loading' | 'empty' | 'error' }
-  | { status: 'ready'; apps: Pick<App, 'id' | 'name'>[] }
+  | { status: 'ready'; apps: AppSummary[] }
 >({ status: 'loading' })
 
 async function readApps(firestore: Firestore) {
@@ -60,14 +60,14 @@ async function readApps(firestore: Firestore) {
       return
     }
 
-    const apps: Pick<App, 'id' | 'name'>[] = []
+    const apps: AppSummary[] = []
     for (const document of snapshot.docs) {
-      const name: unknown = document.get('name')
-      if (typeof name !== 'string' || !name.trim()) {
+      const app = readAppSummary(document.id, document.get('name'))
+      if (!app) {
         appsRead.value = { status: 'error' }
         return
       }
-      apps.push({ id: document.id, name })
+      apps.push(app)
     }
     appsRead.value = { status: 'ready', apps }
   } catch {
@@ -96,9 +96,9 @@ onMounted(async () => {
       return
     }
 
-    const name: unknown = snapshot.get('name')
-    read.value = typeof name === 'string' && name.trim()
-      ? { status: 'ready', app: { id: snapshot.id, name } }
+    const app = readAppSummary(snapshot.id, snapshot.get('name'))
+    read.value = app
+      ? { status: 'ready', app }
       : { status: 'error' }
   } catch {
     read.value = { status: 'error' }
