@@ -14,6 +14,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import type { App } from 'fireux-core/app'
 
+const { appId } = useAppConfig().fireux
 const { $firestore } = useNuxtApp()
 const { projectId, databaseId, emulatorHost, emulatorPort } = useRuntimeConfig().public.firebase
 
@@ -31,7 +32,7 @@ onMounted(async () => {
   }
 
   try {
-    const snapshot = await getDoc(doc($firestore, 'apps', 'fireux-blank'))
+    const snapshot = await getDoc(doc($firestore, 'apps', appId))
     if (snapshot.metadata.fromCache) {
       read.value = { status: 'error' }
       return
