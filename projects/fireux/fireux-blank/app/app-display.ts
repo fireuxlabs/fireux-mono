@@ -1,4 +1,4 @@
-import type { App } from 'fireux-core/app'
+import { APP_ROLES, APP_STATUSES, type App } from 'fireux-core/app'
 
 export type AppSummary = Pick<App, 'id' | 'name' | 'tagline'> &
   Partial<Pick<App, 'role' | 'status'>>
@@ -28,13 +28,12 @@ export function readAppSummary(id: App['id'], data: Record<string, unknown>): Ap
   const name = displayText(data.name)
   if (!name) return null
 
-  const { role, status } = data
   return {
     id,
     name,
     tagline: displayText(data.tagline),
-    role: role === 'global' || role === 'tenant' || role === 'standalone' ? role : undefined,
-    status: status === 'active' || status === 'inactive' ? status : undefined,
+    role: APP_ROLES.find(role => role === data.role),
+    status: APP_STATUSES.find(status => status === data.status),
   }
 }
 
@@ -58,10 +57,16 @@ export function readAppDetail(id: App['id'], data: Record<string, unknown>): App
   if (socials && typeof socials === 'object') {
     for (const [key, label] of Object.entries(socialLabels)) {
       const value = (socials as Record<string, unknown>)[key]
-      const email = typeof value === 'string' ? value.trim().replace(/^mailto:/i, '') : ''
-      const to = key === 'email'
-        ? (/^[\w.+-]+@[\w.-]+\.[a-z]+$/i.test(email) ? `mailto:${email}` : undefined)
-        : webUrl(value)
+      if (key === 'email') {
+        if (typeof value !== 'string') continue
+        const email = value.trim().replace(/^mailto:/i, '')
+        if (/^[\w.+-]+@[\w.-]+\.[a-z]+$/i.test(email)) {
+          links.push({ label, to: `mailto:${email}` })
+        }
+        continue
+      }
+
+      const to = webUrl(value)
       if (to) links.push({ label, to })
     }
   }
