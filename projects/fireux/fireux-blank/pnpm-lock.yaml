@@ -30,6 +30,9 @@ importers:
       '@types/node':
         specifier: 22.18.1
         version: 22.18.1
+      fireux-core:
+        specifier: link:../../../packages/core/fireux-core
+        version: link:../../../packages/core/fireux-core
       typescript:
         specifier: 5.9.2
         version: 5.9.2

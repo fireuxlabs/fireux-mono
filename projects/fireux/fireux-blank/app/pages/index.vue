@@ -2,23 +2,24 @@
   <UContainer>
     <UPageHeader title="Hello FireUX World" />
 
-    <UAlert v-if="read.status === 'loading'" title="Loading Firestore document" />
+    <UAlert v-if="read.status === 'loading'" title="Loading App" />
     <UAlert v-else-if="read.status === 'setup'" title="Configure the local Firestore emulator" />
-    <UAlert v-else-if="read.status === 'missing'" title="Firestore document not found" />
-    <UAlert v-else-if="read.status === 'error'" color="error" title="Could not read Firestore document" />
-    <UAlert v-else-if="read.status === 'ready'" :title="read.id" :description="read.message" />
+    <UAlert v-else-if="read.status === 'missing'" title="App not found" />
+    <UAlert v-else-if="read.status === 'error'" color="error" title="Could not read App" />
+    <UAlert v-else-if="read.status === 'ready'" :title="read.app.name" :description="read.app.id" />
   </UContainer>
 </template>
 
 <script setup lang="ts">
 import { doc, getDoc } from 'firebase/firestore'
+import type { App } from 'fireux-core/app'
 
 const { $firestore } = useNuxtApp()
 const { projectId, databaseId, emulatorHost, emulatorPort } = useRuntimeConfig().public.firebase
 
 const read = ref<
   | { status: 'loading' | 'setup' | 'missing' | 'error' }
-  | { status: 'ready'; id: string; message: string }
+  | { status: 'ready'; app: Pick<App, 'id' | 'name'> }
 >({ status: 'loading' })
 
 onMounted(async () => {
@@ -30,7 +31,7 @@ onMounted(async () => {
   }
 
   try {
-    const snapshot = await getDoc(doc($firestore, 'examples', 'hello'))
+    const snapshot = await getDoc(doc($firestore, 'apps', 'fireux-blank'))
     if (snapshot.metadata.fromCache) {
       read.value = { status: 'error' }
       return
@@ -40,9 +41,9 @@ onMounted(async () => {
       return
     }
 
-    const message = snapshot.get('message')
-    read.value = typeof message === 'string'
-      ? { status: 'ready', id: snapshot.id, message }
+    const name: unknown = snapshot.get('name')
+    read.value = typeof name === 'string' && name.trim()
+      ? { status: 'ready', app: { id: snapshot.id, name } }
       : { status: 'error' }
   } catch {
     read.value = { status: 'error' }
