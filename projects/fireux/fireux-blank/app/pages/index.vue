@@ -5,27 +5,8 @@
     <UAlert v-if="read.status === 'setup'" title="Configure the local Firestore emulator" />
 
     <template v-else>
-      <UCard>
-        <template #header><h2>My App</h2></template>
-
-        <UAlert v-if="read.status === 'loading'" title="Loading App" />
-        <UAlert v-else-if="read.status === 'missing'" title="App not found" />
-        <UAlert v-else-if="read.status === 'error'" color="error" title="Could not read App" />
-        <UAlert v-else-if="read.status === 'ready'" :title="read.app.name" :description="read.app.id" />
-      </UCard>
-
-      <UCard>
-        <template #header><h2>Apps in this database</h2></template>
-
-        <UAlert v-if="appsRead.status === 'loading'" title="Loading Apps" />
-        <UAlert v-else-if="appsRead.status === 'empty'" title="No Apps in this database" />
-        <UAlert v-else-if="appsRead.status === 'error'" color="error" title="Could not read Apps" />
-        <ul v-else-if="appsRead.status === 'ready'">
-          <li v-for="app in appsRead.apps" :key="app.id">
-            <UAlert :title="app.name" :description="app.id" />
-          </li>
-        </ul>
-      </UCard>
+      <AppDetail :read="read" />
+      <AppCollection :read="appsRead" />
     </template>
   </UContainer>
 </template>
@@ -39,7 +20,8 @@ const { $firestore } = useNuxtApp()
 const { projectId, databaseId, emulatorHost, emulatorPort } = useRuntimeConfig().public.firebase
 
 const read = ref<
-  | { status: 'loading' | 'setup' | 'missing' | 'error' }
+  | { status: 'setup' }
+  | { status: 'loading' | 'missing' | 'error' }
   | { status: 'ready'; app: AppSummary }
 >({ status: 'loading' })
 
