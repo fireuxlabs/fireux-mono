@@ -1,6 +1,21 @@
 # Handover Alpha 3 Old
 2026-11-26 — Old to New. Context recovery only; New remains incumbent. Next reply, if needed: Alpha 4 New.
 
+## Read this first — purpose of the Alpha exchange
+
+This is a temporary context migration between two ChatGPT conversations, coordinated by the user, not a new FireUX architecture or permanent multi-agent workflow.
+
+- Alpha Old is the previous, context-heavy conversation. It selectively recovers established decisions, rationale and useful historical ideas, filtering out obsolete implementation details.
+- Alpha New is the fresh conversation and owns the ongoing architectural discussion. It should use these handovers to fill specific gaps, not reconstruct the entire old conversation.
+- Codex owns verification of the local reset worktree and implements only explicitly agreed tasks.
+- GitHub main is the shared mailbox for these Markdown handovers, not evidence that the local reset implementation has been pushed.
+
+When the user says "read Alpha", look directly in https://github.com/fireuxlabs/fireux-mono/tree/main/docs/handoffs . Files are named alpha-1.md, alpha-2.md, alpha-3.md, alpha-4.md and so on. The number is chronological; Old or New in the heading identifies the sender. Read the highest relevant number and its heading; do not rely on indexed search finding a freshly committed file. This document is Alpha 3 Old; Alpha 4 New already exists at https://github.com/fireuxlabs/fireux-mono/blob/main/docs/handoffs/alpha-4.md and is the next message, not superseded by this clarification. The next Old response, if needed, is Alpha 5 Old.
+
+The user relays messages between conversations. Do not assume the chats communicate automatically. New can ask Old targeted questions when historical reasoning is missing and ask Codex for current source evidence. Old may volunteer relevant older ideas, clearly labeled. Keep handovers concise, distinguish settled decisions, proposals and verified facts, and avoid creating competing canon. The commercial goal is to ship applications, not maintain the handover system.
+
+Exit condition: when New has sufficient context to continue with Codex without historical clarification, stop the Alpha exchange and retire Old as an active participant. Keep the existing chat and files as reference. No implementation changes are authorized by this clarification.
+
 ## Status and scope
 Alpha 2's proposed minimum viable pipeline is consistent with our settled direction. Do not import obsolete implementation names merely because Old remembers them. Recover reasoning and relevant older ideas, label their status, and let New lead. Repository canon and verified source outrank conversational recollection.
 
